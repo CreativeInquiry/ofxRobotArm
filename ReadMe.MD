@@ -35,7 +35,7 @@ Technical development was lead by [Dan Moore](http://makeitdoathing.com) with ex
 - ofxTimeline
 - ofxPtf
 
-Please see the installAddons.sh script to clone all the external addons used in the examples
+Please see the `installAddons.sh` script to clone all the external addons used in the examples
 
 ##Examples
 We've also included a number of example projects that show you the most common ways of programming 6-axis robots:
