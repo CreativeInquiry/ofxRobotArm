@@ -32,7 +32,7 @@ Technical development was lead by [Dan Moore](http://makeitdoathing.com) with ex
 - ofxTimeline
 - ofxPtf
 
-Please see the `installAddons.sh` script to clone all the external addons used in the examples
+Please see the `installAddons.sh` script to clone all the external addons used in the examples.  Also please note that these addons might depend on other external addons.  Please reference the README for each of the external addons. 
 
 ##Examples
 We've also included a number of example projects that show you the most common ways of programming 6-axis robots:
@@ -117,6 +117,14 @@ Here are some of the references and resources that have made `ofxRobotArm` possi
 - [UR Report](http://orbit.dtu.dk/files/117833332/Universal_Robot_report.pdf)
 
 
+ ##Known Issues
+ There are several known issues:
+ - Crashing on Exit when Not Connected to a UR5
+ - Intermittent Protective Stops or Sudden Stops after long run times
  
+##Future Development
+Physics!
+ABB Robotic Arms
+More Robotic Arms
 
 
