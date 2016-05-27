@@ -1,13 +1,16 @@
-![KinematicModel](data/ezgif.com-video-to-gif%20(1).gif)
 #ofxRobotArm
 ######An openFrameworks addon for controlling and interacting with robot arms.
+![KinematicModel](data/ezgif.com-video-to-gif%20(1).gif)
 
   - [About](#about)
+  - [Dependencies](#dependencies)
   - [Overview](#overview)
   - [Getting Started](#getting-started)
+  - [Examples](#examples)
   - [Licensing](#licensing)
   - [Contact Info](#contact-info)
   - [Additional Resources](#additional-resources)
+  - [Known Issues](#known-issues)
 
 
 ##About
@@ -18,9 +21,6 @@ Currently the addon is configured to just work with Universal Robot's [UR5](http
 Development for `ofxRobotArm` is sponsored by [The Frank-Ratchye STUDIO for Creative Inquiry](http://studioforcreativeinquiry.org/). 
 Technical development was lead by [Dan Moore](http://makeitdoathing.com) with examples from [Madeline Gannon](http://madlab.cc).
 
-
-##Overview
-`ofxRobotArm` is structured as two parts: `ofxURDriver` holds the specific control software and kinematic model for a [UR5](http://www.universal-robots.com/products/ur5-robot/) robot; `ofxRobotArm` holds the generic tools and techniques for controlling and interacting with a robot arm. `ofxURDriver` adapts ThomasTimm's (ur_modern_driver)[https://github.com/ThomasTimm/ur_modern_driver] package for ROS to openFrameworks. To customize `ofxRobot` to work with your specific model and brand of robot, use `ofxURDriver` as a template for your robot's kinematic model and control protocol.
 
 ##Dependencies
 - ofxURDriver
@@ -34,12 +34,18 @@ Technical development was lead by [Dan Moore](http://makeitdoathing.com) with ex
 
 Please see the `installAddons.sh` script to clone all the external addons used in the examples.  Also please note that these addons might depend on other external addons.  Please reference the README for each of the external addons. 
 
+##Overview
+`ofxRobotArm` is structured as two parts: `ofxURDriver` holds the specific control software and kinematic model for a [UR5](http://www.universal-robots.com/products/ur5-robot/) robot; `ofxRobotArm` holds the generic tools and techniques for controlling and interacting with a robot arm. `ofxURDriver` adapts ThomasTimm's (ur_modern_driver)[https://github.com/ThomasTimm/ur_modern_driver] package for ROS to openFrameworks. To customize `ofxRobot` to work with your specific model and brand of robot, use `ofxURDriver` as a template for your robot's kinematic model and control protocol.
+
+
 ##Examples
 We've also included a number of example projects that show you the most common ways of programming 6-axis robots:
 
 **1. Direct Manipulation**
  - [`example-basic-move`](/example-basic-move) lets you use your mouse to drag around and rotate your robot.
  
+![example-basic-move](example-basic-move/screengrab-basic.gif)
+
 **2. Timeline & KeyFramed Animation**
  - [`example-timeline`](/example-timeline) lets you use build keyframed animations to record and play robot movements.
 
@@ -47,11 +53,15 @@ We've also included a number of example projects that show you the most common w
 **3. Geometry-Driven Movements**
  - [`example-follow-path`](/example-follow-path) lets you import 2D and 3D paths for the robot to follow.
  - [`example-follow-surface`](/example-follow-surface) lets you project paths on a 3D surface for the robot to follow.
+![surface](example-follow-surface/screengrab-surface.png)
+![path](example-follow-path/screengrab-path.gif)
+
 
 **4. Motion Capture Based Interactions**
  - [`example-follow-mocap`](/example-follow-mocap) lets the robot follow a rigid body detected by an OptiTrack Motion Capture System.
  - [`example-follow-mocap-path`](/example-follow-surface) lets you record a path for the robot follow using an OptiTrack Motion Capture System.
-![Following](data/mocap-follow.gif)
+![mocap](example-follow-mocap/screengrab-mocap.gif)
+![mocap-following](example-follow-mocap-path/googly-eye.gif)
 
 
 ##Getting Started
@@ -117,11 +127,12 @@ Here are some of the references and resources that have made `ofxRobotArm` possi
 - [UR Report](http://orbit.dtu.dk/files/117833332/Universal_Robot_report.pdf)
 
 
- ##Known Issues
+##Known Issues
  There are several known issues:
  - Crashing on Exit when Not Connected to a UR5
  - Intermittent Protective Stops or Sudden Stops after long run times
  
+
 ##Future Development
 Physics!
 ABB Robotic Arms
