@@ -1,6 +1,6 @@
 #ofxRobotArm
 ######An openFrameworks addon for controlling and interacting with robot arms.
-![KinematicModel](data/ezgif.com-video-to-gif%20(1).gif)
+
 
   - [About](#about)
   - [Dependencies](#dependencies)
@@ -21,6 +21,7 @@ Currently the addon is configured to just work with Universal Robot's [UR5](http
 Development for `ofxRobotArm` is sponsored by [The Frank-Ratchye STUDIO for Creative Inquiry](http://studioforcreativeinquiry.org/). 
 Technical development was lead by [Dan Moore](http://makeitdoathing.com) with examples from [Madeline Gannon](http://madlab.cc).
 
+![KinematicModel](data/ezgif.com-video-to-gif%20(1).gif)
 
 ##Dependencies
 - ofxURDriver
