@@ -1,8 +1,5 @@
-
-#ofxRobotArm
-
 ![KinematicModel](data/ezgif.com-video-to-gif%20(1).gif)
-
+#ofxRobotArm
 ######An openFrameworks addon for controlling and interacting with robot arms.
 
   - [About](#about)
