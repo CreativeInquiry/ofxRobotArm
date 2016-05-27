@@ -52,15 +52,16 @@ We've also included a number of example projects that show you the most common w
 
 **3. Geometry-Driven Movements**
  - [`example-follow-path`](/example-follow-path) lets you import 2D and 3D paths for the robot to follow.
+![path](example-follow-path/screengrab-path.gif)
  - [`example-follow-surface`](/example-follow-surface) lets you project paths on a 3D surface for the robot to follow.
 ![surface](example-follow-surface/screengrab-surface.png)
-![path](example-follow-path/screengrab-path.gif)
+
 
 
 **4. Motion Capture Based Interactions**
  - [`example-follow-mocap`](/example-follow-mocap) lets the robot follow a rigid body detected by an OptiTrack Motion Capture System.
- - [`example-follow-mocap-path`](/example-follow-surface) lets you record a path for the robot follow using an OptiTrack Motion Capture System.
 ![mocap](example-follow-mocap/screengrab-mocap.gif)
+ - [`example-follow-mocap-path`](/example-follow-surface) lets you record a path for the robot follow using an OptiTrack Motion Capture System.
 ![mocap-following](example-follow-mocap-path/googly-eye.gif)
 
 
