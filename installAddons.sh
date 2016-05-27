@@ -12,6 +12,7 @@ ${PREFIX}CreativeInquiry/ofxNatNet
 ${PREFIX}danzeeeman/ofxGML
 ${PREFIX}danzeeeman/ofxGizmo
 ${PREFIX}danzeeeman/ofxTimeline
+${PREFIX}danzeeeman/ofxURDriver
 ${PREFIX}neilmendoza/ofxPtf
 
 cd ../addons/ofxRobotArm
