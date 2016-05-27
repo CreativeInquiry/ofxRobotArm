@@ -34,32 +34,33 @@ Technical development was lead by [Dan Moore](http://makeitdoathing.com) with ex
 - ofxGizmo
 - ofxTimeline
 
+##Examples
 We've also included a number of example projects that show you the most common ways of programming 6-axis robots:
 
 **1. Direct Manipulation**
- - [`example-basic-move`](https://github.com/danzeeeman/robotArmRepo/tree/master/example-basic-move) lets you use your mouse to drag around and rotate your robot.
+ - [`example-basic-move`](/example-basic-move) lets you use your mouse to drag around and rotate your robot.
  
 **2. Timeline & KeyFramed Animation**
- - [`example-timeline`](https://github.com/danzeeeman/robotArmRepo/tree/master/example-timeline) lets you use build keyframed animations to record and play robot movements.
+ - [`example-timeline`](/example-timeline) lets you use build keyframed animations to record and play robot movements.
 
 
 **3. Geometry-Driven Movements**
- - [`example-follow-path`](https://github.com/danzeeeman/robotArmRepo/tree/master/example-follow-path) lets you import 2D and 3D paths for the robot to follow.
- - [`example-follow-surface`](https://github.com/danzeeeman/robotArmRepo/tree/master/example-follow-surface) lets you project paths on a 3D surface for the robot to follow.
+ - [`example-follow-path`](/example-follow-path) lets you import 2D and 3D paths for the robot to follow.
+ - [`example-follow-surface`](/example-follow-surface) lets you project paths on a 3D surface for the robot to follow.
 
 **4. Motion Capture Based Interactions**
- - [`example-follow-mocap`](https://github.com/danzeeeman/robotArmRepo/tree/master/example-follow-mocap) lets the robot follow a rigid body detected by an OptiTrack Motion Capture System.
- - [`example-follow-mocap-path`](https://github.com/danzeeeman/robotArmRepo/tree/master/example-follow-surface) lets you record a path for the robot follow using an OptiTrack Motion Capture System.
+ - [`example-follow-mocap`](/example-follow-mocap) lets the robot follow a rigid body detected by an OptiTrack Motion Capture System.
+ - [`example-follow-mocap-path`](/example-follow-surface) lets you record a path for the robot follow using an OptiTrack Motion Capture System.
 ![Following](data/mocap-follow.gif)
 
 
 ##Getting Started
-We've included a tutorial for getting started with `ofxRobotArm` as [here](https://github.com/danzeeeman/robotArmRepo/tree/master/example-basic-move/README.md). 
+We've included a tutorial for getting started with `ofxRobotArm` as [here](/example-basic-move/README.md). 
 
-1. Start with [`example-basic-move`](https://github.com/danzeeeman/robotArmRepo/tree/master/example-basic-move) to learn how set up your robot for open-loop control, and to get the basic structure and workflow for `ofxRobotArm`.
-2. Next try [`example-timeline`](https://github.com/danzeeeman/robotArmRepo/tree/master/example-timeline).
-3. After that, move on to the geometry examples: [`example-follow-path`] (https://github.com/danzeeeman/robotArmRepo/tree/master/example-follow-path) and [`example-follow-surface`] (https://github.com/danzeeeman/robotArmRepo/tree/master/example-follow-surface).
-4. The motion capture examples [`example-follow-mocap`](https://github.com/danzeeeman/robotArmRepo/tree/master/example-follow-mocap) and [`example-follow-mocap-path`](https://github.com/danzeeeman/robotArmRepo/tree/master/example-follow-mocap-path) are fairly advanced and require very specific hardware configurations to run properly. A more common motion capture sensor, like a Kinect, could be used in place of an OptiTrack system to get similar results.
+1. Start with [`example-basic-move`](/example-basic-move) to learn how set up your robot for open-loop control, and to get the basic structure and workflow for `ofxRobotArm`.
+2. Next try [`example-timeline`](/example-timeline).
+3. After that, move on to the geometry examples: [`example-follow-path`] (/example-follow-path) and [`example-follow-surface`] (/example-follow-surface).
+4. The motion capture examples [`example-follow-mocap`](/example-follow-mocap) and [`example-follow-mocap-path`](/example-follow-mocap-path) are fairly advanced and require very specific hardware configurations to run properly. A more common motion capture sensor, like a Kinect, could be used in place of an OptiTrack system to get similar results.
 
 
 ##Licensing
