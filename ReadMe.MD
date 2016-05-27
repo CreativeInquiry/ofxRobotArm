@@ -112,7 +112,7 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ##Contact Info
-**Dan Moore** | [makeitdoathing](http://www.makeitdoathing.com ) | [@danzeeeman](https://github.com/danzeeeman)
+**Dan Moore** | [Make It Do A Thing!](http://www.makeitdoathing.com ) | [@danzeeeman](https://github.com/danzeeeman)
 
 **Madeline Gannon** | [MADLAB R&D](http://www.madlab.cc) | [@madelinegannon](https://github.com/madelinegannon)
 
