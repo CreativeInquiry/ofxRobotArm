@@ -12,5 +12,6 @@ ${PREFIX}CreativeInquiry/ofxNatNet
 ${PREFIX}danzeeeman/ofxGML
 ${PREFIX}danzeeeman/ofxGizmo
 ${PREFIX}danzeeeman/ofxTimeline
+${PREFIX}neilmendoza/ofxPtf
 
-cd ../apps/robotArmRepo
+cd ../addons/ofxRobotArm
