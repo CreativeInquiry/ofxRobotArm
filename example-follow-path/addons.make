@@ -5,3 +5,5 @@ ofxGui
 ofxPtf
 ofxTiming
 ofxXmlSettings
+ofxRobotArm
+ofxURDriver
