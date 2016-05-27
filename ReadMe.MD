@@ -1,6 +1,8 @@
 
 #ofxRobotArm
 
+![KinematicModel](data/ezgif.com-video-to-gif%20(1).gif)
+
 ######An openFrameworks addon for controlling and interacting with robot arms.
 
   - [About](#about)
@@ -23,7 +25,7 @@ Technical development was lead by [Dan Moore](http://makeitdoathing.com) with ex
 ##Overview
 `ofxRobotArm` is structured as two parts: `urDriver` holds the specific control software and kinematic model for a [UR5](http://www.universal-robots.com/products/ur5-robot/) robot; `sharedCode` holds the generic tools and techniques for controlling and interacting with a robot arm. `urDriver` adapts ThomasTimm's (ur_modern_driver)[https://github.com/ThomasTimm/ur_modern_driver] package for ROS to openFrameworks. To customize `ofxRobot` to work with your specific model and brand of robot, use `urDriver` as a template for your robot's kinematic model and control protocol.
 
-![KinematicModel](data/ezgif.com-video-to-gif%20(1).gif)
+
 
 We've also included a number of example projects that show you the most common ways of programming 6-axis robots:
 
