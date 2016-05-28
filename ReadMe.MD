@@ -1,7 +1,6 @@
 #ofxRobotArm
 ######An openFrameworks addon for controlling and interacting with robot arms.
 
-
   - [About](#about)
   - [Dependencies](#dependencies)
   - [Overview](#overview)
@@ -14,12 +13,12 @@
 
 
 ##About
-`ofxRobotArm` is an openFrameworks addon for doing creative things with robot arms. The goal of the addon is to remove as many technical barriers as possible to get up and running with 6-axis robots. We've included a number of examples that show you how different ways of controlling and interacting with a robot arm, including direct manipulation, geometry-based manipulation, motion capture-based interactions, and keyframe animation. By building `ofxRobotArm` in openFrameworks, we hope to help you extend human-robot interaction in new and diverse ways.
+`ofxRobotArm` is an openFrameworks addon for doing creative things with robot arms. The goal of the addon is to remove as many technical barriers as possible to get up and running with 6-axis robots. We've included a number of examples that show you how different ways of controlling and interacting with a robot arm, including direct manipulation, geometry-based manipulation, motion capture-based interactions, and keyframe animation. By developing `ofxRobotArm` for openFrameworks, we hope to help you extend human-robot interaction in new and diverse ways.
 
-Currently the addon is configured to just work with Universal Robot's [UR5](http://www.universal-robots.com/products/ur5-robot/) robot. In future development, we would like to include kinematic models for additional robot brands. Please [contact us]() if you would like us to include your robot model or if you would like specific features implemented.
+Currently the addon is configured to just work with Universal Robot's [UR5](http://www.universal-robots.com/products/ur5-robot/) robot. In future developments, we would like to include kinematic models for additional robot brands. Please [contact us]() if you would like us to include your robot model or if you would like specific features implemented.
 
 Development for `ofxRobotArm` is sponsored by [The Frank-Ratchye STUDIO for Creative Inquiry](http://studioforcreativeinquiry.org/). 
-Technical development was lead by [Dan Moore](http://makeitdoathing.com) with examples from [Madeline Gannon](http://madlab.cc).
+Technical development was lead by [Dan Moore](http://makeitdoathing.com) with examples by [Madeline Gannon](http://madlab.cc).
 
 ![KinematicModel](data/ezgif.com-video-to-gif%20(1).gif)
 
@@ -136,8 +135,9 @@ Here are some of the references and resources that have made `ofxRobotArm` possi
  
 
 ##Future Development
-Physics!
-ABB Robotic Arms
-More Robotic Arms
+
+* Physics!
+* ABB Robotic Arms
+* More Robotic Arms
 
 
