@@ -14,7 +14,10 @@ _Basic Move_ goes over:
   
 
 ##Getting Started
-To get started, you need to set up your robot's ethernet connection. 
+To get started with `ofxRobotArm` you first need to grab all the dependant libraries for the addon. Use the installAddons.sh script to clone all the external addons used in the examples. Also please note that these addons might depend on other external addons, so reference the README of each external addons to make sure you've got everything.
+
+The next step is to set up your robot's ethernet connection. 
+
 Universal Robots has instructions for setting up ethernet communication in their [User Manual](http://www.universal-robots.com/download/). But they also provide a walk-thru [here](http://www.universal-robots.com/how-tos-and-faqs/how-to/ur-how-tos/ethernet-ip-guide-18712/).
 
 Once you have an IP address for your robot, all you should need to do is modify one line of code in `example-basic-move` to connect to your robot:
