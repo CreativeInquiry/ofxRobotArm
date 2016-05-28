@@ -14,7 +14,7 @@ _Basic Move_ goes over:
   
 
 ##Getting Started
-To get started with `ofxRobotArm` you first need to grab all the dependant libraries for the addon. Use the installAddons.sh script to clone all the external addons used in the examples. Also please note that these addons might depend on other external addons, so reference the README of each external addons to make sure you've got everything.
+To get started with `ofxRobotArm` you first need to grab all the dependant libraries for the addon. Use the `installAddons.sh` script to clone all the external addons used in the examples. Also please note that these addons might depend on other external addons, so reference the README of each external addons to make sure you've got everything.
 
 The next step is to set up your robot's ethernet connection. 
 
