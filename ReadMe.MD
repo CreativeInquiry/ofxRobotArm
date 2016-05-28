@@ -66,7 +66,7 @@ We've also included a number of example projects that show you the most common w
 
 
 ##Getting Started
-We've included a tutorial for getting started with `ofxRobotArm` as [here](/example-basic-move/README.md). 
+We've included a tutorial for getting started with `ofxRobotArm` [here](/example-basic-move/README.md). 
 
 1. Start with [`example-basic-move`](/example-basic-move) to learn how set up your robot for open-loop control, and to get the basic structure and workflow for `ofxRobotArm`.
 2. Next try [`example-timeline`](/example-timeline).
@@ -130,14 +130,15 @@ Here are some of the references and resources that have made `ofxRobotArm` possi
 
 ##Known Issues
  There are several known issues:
- - Crashing on Exit when Not Connected to a UR5
+ - Crashing on Exit when Not Connected to a robot
  - Intermittent Protective Stops or Sudden Stops after long run times
  
 
 ##Future Development
 
-* Physics!
-* ABB Robotic Arms
-* More Robotic Arms
+* Collision Detection
+* UR3/UR10 Support
+* Support for ABB Robot Arms
+* More Robot Arms!
 
 
