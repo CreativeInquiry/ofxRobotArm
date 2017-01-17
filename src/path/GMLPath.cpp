@@ -3,7 +3,7 @@
 //
 
 #include "GMLPath.h"
-
+using namespace ofxRobotArm;
 void GMLPath::setup(){
     setup(0, 0, 1, 1);
 }

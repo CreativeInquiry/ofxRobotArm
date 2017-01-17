@@ -1,7 +1,7 @@
 #include "PathController.h"
 // Copyright (c) 2016, Daniel Moore, Madeline Gannon, and The Frank-Ratchye STUDIO for Creative Inquiry All rights reserved.
 //
-
+using namespace ofxRobotArm;
 PathController::PathController():currentState(NOT_READY){
     
 }

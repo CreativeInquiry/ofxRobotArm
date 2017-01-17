@@ -14,7 +14,7 @@
 #include "RobotController.h"
 #include "RobotParameters.h"
 #include "URIKFast.h"
-
+#include "RobotArmSafety.h"
 #define N_CAMERAS 2
 
 class ofApp : public ofBaseApp{
@@ -36,10 +36,12 @@ public:
     void dragEvent(ofDragInfo dragInfo);
     void gotMessage(ofMessage msg);
     
-    RobotParameters parameters;
+    
     
     URIKFast kinematics;
-    
+    ofxRobotArm::RobotArmSafety safety;
+    ofxRobotArm::RobotController robot;
+    ofxRobotArm::RobotParameters parameters;
     ofxGizmo gizmo;
     ofNode tcpNode;
     
@@ -56,7 +58,7 @@ public:
     ofxPanel panelJointsSpeed;
     
     
-    RobotController robot;
+    
     void moveTCP();
     
     

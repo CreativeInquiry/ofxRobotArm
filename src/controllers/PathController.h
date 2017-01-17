@@ -12,51 +12,53 @@
 #include "Path.h"
 #include "GMLPath.h"
 #include "Path3D.h"
-class PathController{
-public:
-    PathController();
-    ~PathController();
-    
-    enum PathState{
-        NOT_READY = 0,
-        LOADED,
-        DRAWING,
-        PAUSED,
-        FINISHED,
-        READY
+namespace ofxRobotArm{
+    class PathController{
+    public:
+        PathController();
+        ~PathController();
+        
+        enum PathState{
+            NOT_READY = 0,
+            LOADED,
+            DRAWING,
+            PAUSED,
+            FINISHED,
+            READY
+        };
+        
+        enum PathType{
+            BASE_PATH = 0,
+            GML_PATH,
+            TWO_D_PATH,
+            THREE_D_PATH,
+            RECORDED_PATH
+        };
+        
+        void setup();
+        void setup(vector<Path *> paths);
+        
+        void update();
+        ofMatrix4x4 getNextPose();
+        void draw();
+        void addPath(Path *path);
+        void pauseDrawing();
+        void startDrawing();
+        void endDrawing();
+        void loadPath(string file);
+        int size();
+        
+        vector<Path *> paths;
+        int pathIndex;
+        
+        PathState currentState;
+        
+        void keyPressed(int key);
+        
+        bool isDone;
+        bool pause;
+        
+    private:
+        
     };
-    
-    enum PathType{
-        BASE_PATH = 0,
-        GML_PATH,
-        TWO_D_PATH,
-        THREE_D_PATH,
-        RECORDED_PATH
-    };
-    
-    void setup();
-    void setup(vector<Path *> paths);
-
-    void update();
-    ofMatrix4x4 getNextPose();
-    void draw();
-    void addPath(Path *path);
-    void pauseDrawing();
-    void startDrawing();
-    void endDrawing();
-    void loadPath(string file);
-    int size();
-    
-    vector<Path *> paths;
-    int pathIndex;
-    
-    PathState currentState;
-    
-    void keyPressed(int key);
-    
-    bool isDone;
-    bool pause;
-    
-private:
-    
-};
+}

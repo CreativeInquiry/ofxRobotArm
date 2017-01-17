@@ -106,7 +106,6 @@ void ofApp::moveTCP(){
         parameters.targetTCP.position.interpolate(tcpNode.getPosition()/1000.0, parameters.followLerp);
         parameters.targetTCP.rotation = tcpNode.getOrientationQuat();
         parameters.targetTCPOrientation = ofVec4f(parameters.targetTCP.rotation.x(), parameters.targetTCP.rotation.y(), parameters.targetTCP.rotation.z(), parameters.targetTCP.rotation.w());
-        
     }
 }
 

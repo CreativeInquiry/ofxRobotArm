@@ -2,8 +2,9 @@ ofxAssimpModelLoader
 ofxGML
 ofxGizmo
 ofxGui
+ofxIKArm
 ofxPtf
-ofxTiming
-ofxXmlSettings
 ofxRobotArm
+ofxTiming
 ofxURDriver
+ofxXmlSettings
