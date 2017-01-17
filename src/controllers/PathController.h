@@ -5,6 +5,8 @@
 //  Created by dantheman on 4/4/16.
 //
 //
+// Copyright (c) 2016, Daniel Moore, Madeline Gannon, and The Frank-Ratchye STUDIO for Creative Inquiry All rights reserved.
+//
 #pragma once
 #include "ofMain.h"
 #include "Path.h"
