@@ -31,6 +31,10 @@ void ofApp::setup(){
     ofBackground(0);
     ofSetLogLevel(OF_LOG_SILENT);
     
+    lastCodeGesture = false;
+    appParams.setName("App Parameters");
+    appParams.add(codeGesture.set("Code Gesture", lastCodeGesture));
+    
     setupViewports();
     
     parameters.setup();
@@ -76,6 +80,17 @@ void ofApp::draw(){
 }
 
 void ofApp::moveTCP(){
+    
+    if(codeGesture) {
+        if(!lastCodeGesture) {
+            previousTCP = parameters.targetTCP;
+        }
+        float r = 200;
+        float speed = .25 * TWO_PI;
+        parameters.targetTCP.position.x = previousTCP.position.x + r * cos(speed * ofGetElapsedTimef())/1000.;
+        parameters.targetTCP.position.z = previousTCP.position.z + r * sin(speed * ofGetElapsedTimef())/1000.;
+    }
+    lastCodeGesture = codeGesture;
     
     // assign the target pose to the current robot pose
     if(parameters.bCopy){
@@ -140,6 +155,9 @@ void ofApp::setupViewports(){
 void ofApp::setupGUI(){
     
     panel.setup(parameters.robotArmParams);
+    
+    panel.add(appParams);
+    
     panel.add(parameters.pathRecorderParams);
     
     panelJoints.setup(parameters.joints);

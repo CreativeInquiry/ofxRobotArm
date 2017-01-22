@@ -126,12 +126,12 @@ void RobotController::close(){
     }
 }
 
-void RobotController::draw(){
-    actualArm.draw();
+void RobotController::draw(bool bDrawDebug){
+    actualArm.draw(bDrawDebug);
 }
 
-void RobotController::drawPreview(){
-    previewArm.draw();
+void RobotController::drawPreview(bool bDrawDebug){
+    previewArm.draw(bDrawDebug);
 }
 
 void RobotController::enableControlJointsExternally() {
