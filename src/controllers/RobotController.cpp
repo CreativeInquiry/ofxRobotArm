@@ -27,7 +27,8 @@ void RobotController::setup(RobotParameters & params) {
     mIKArm.setShoulderUpVectorEnabled( true );
     mIKArm.setShoulderUpVector( ofVec3f(0,-1,0));
     mIKArm.setInverted( true );
-            cout << "Setting up the ik arm " << mIKArm.getArmLength() << " shoulder: " << mIKArm.getUpperArmLength() << " forearm len: " << mIKArm.getLowerArmLength() << " | " << ofGetFrameNum() << endl;
+    robotSafety.setup();
+    cout << "Setting up the ik arm " << mIKArm.getArmLength() << " shoulder: " << mIKArm.getUpperArmLength() << " forearm len: " << mIKArm.getLowerArmLength() << " | " << ofGetFrameNum() << endl;
 }
 
 void RobotController::setup(string ipAddress, RobotParameters & params){
@@ -45,8 +46,8 @@ void RobotController::setup(string ipAddress, RobotParameters & params){
     mIKArm.setShoulderUpVectorEnabled( true );
     mIKArm.setShoulderUpVector( ofVec3f(0,-1,0));
     mIKArm.setInverted( true );
-    
-            cout << "Setting up the ik arm " << mIKArm.getArmLength() << " shoulder: " << mIKArm.getUpperArmLength() << " forearm len: " << mIKArm.getLowerArmLength() << " | " << ofGetFrameNum() << endl;
+    robotSafety.setup();
+    cout << "Setting up the ik arm " << mIKArm.getArmLength() << " shoulder: " << mIKArm.getUpperArmLength() << " forearm len: " << mIKArm.getLowerArmLength() << " | " << ofGetFrameNum() << endl;
 }
 
 vector<double> RobotController::getCurrentPose(){
@@ -62,7 +63,11 @@ void RobotController::update(){
         if(selectedSolution > -1){
             targetPose = targetPoses[selectedSolution];
             for(int i = 0; i < targetPose.size(); i++){
-                robotParams->ikPose[i] = targetPose[i];
+                float tpose = (float)targetPose[i];
+                if( isnan(tpose) ) {
+                    tpose = 0.f;
+                }
+                robotParams->ikPose[i] = tpose;
             }
         }
     }else{
@@ -81,7 +86,7 @@ void RobotController::update(){
         mIKArm.setTarget(robotParams->targetTCP.position*1000);
         mIKArm.update();
         
-       targetPose = robot.getCurrentPose();
+        targetPose = robot.getCurrentPose();
         
         // figure out how to pull out the angles //
         // the y is the forward, so we can measure the rotation around the xaxis //
@@ -102,20 +107,36 @@ void RobotController::update(){
         
         
         for(int i = 0; i < targetPose.size(); i++){
-            robotParams->ikPose[i] = targetPose[i];
+            float tpose = (float)targetPose[i];
+            if( isnan(tpose) ) {
+                tpose = 0.f;
+            }
+            robotParams->ikPose[i] = tpose;
         }
         
         
     }
+    safetyCheck();
     updateMovement();
     targetPose = movement.getTargetJointPose();
     for(int i = 0; i < targetPose.size(); i++){
-        robotParams->targetPose[i] = ofRadToDeg(targetPose[i]);
+        float tpose = (float)targetPose[i];
+        if( isnan(tpose) ) {
+            tpose = 0.f;
+        }
+        robotParams->targetPose[i] = ofRadToDeg(tpose);
     }
     previewArm.setPose(targetPose);
 }
 void RobotController::update(vector<double> _pose){
     targetPose = _pose;
+}
+
+void RobotController::safetyCheck(){
+    robotSafety.setCurrentRobotArmAnlges(robot.getCurrentPose());
+    robotSafety.setDesiredAngles(targetPose);
+    robotSafety.update(1/60);
+    targetPose = robotSafety.getDesiredAngles();
 }
 
 
@@ -144,16 +165,16 @@ void RobotController::updateMovement(){
         stopPosition = movement.getTargetJointPose();
         stopCount = 30;
     }
-    //    else{
-    //        if( stopCount > 0 && stopPosition.size() == movement.targetJointPose.size() && stopPosition.size() > 0 ){
-    //            for(int d = 0; d < stopPosition.size(); d++){
-    //                stopPosition[d] *= 0.9998;
-    //            }
-    //            robot.setPosition(stopPosition);
-    //            cout << " Doing stop count " << stopCount << endl;
-    //            stopCount--;
-    //        }
-    //    }
+//    else{
+//        if( stopCount > 0 && stopPosition.size() == movement.targetJointPose.size() && stopPosition.size() > 0 ){
+//            for(int d = 0; d < stopPosition.size(); d++){
+//                stopPosition[d] *= 0.9998;
+//            }
+//            robot.setPosition(stopPosition);
+//            cout << " Doing stop count " << stopCount << endl;
+//            stopCount--;
+//        }
+//    }
     
 }
 
@@ -183,13 +204,14 @@ void RobotController::close(){
     }
 }
 
-void RobotController::draw(){
-    actualArm.draw();
+void RobotController::draw(bool debug){
+    actualArm.draw(debug);
 }
 
 void RobotController::drawPreview(){
-    previewArm.draw();
+    previewArm.draw(false);
     mIKArm.draw();
+
 }
 
 void RobotController::enableControlJointsExternally() {

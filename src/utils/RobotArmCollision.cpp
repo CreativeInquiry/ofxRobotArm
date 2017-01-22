@@ -45,7 +45,7 @@ void RobotArmCollision::setup() {
 
 //--------------------------------------------------------------
 void RobotArmCollision::setRobotAngles( vector< double > aAcutalRobotAngles ) {
-    mModel->setAngles( aAcutalRobotAngles );
+    mModel->setPose( aAcutalRobotAngles );
     
     if( mAppendages.size() ) {
         for( int i = 0; i < mAppendages.size(); i++ ) {
@@ -421,7 +421,7 @@ void RobotArmCollision::updateModel( shared_ptr< UR5KinematicModel > amodel, vec
         tempPredictiveAngles.push_back( aAppendages[i].currentAngle );
     }
     if( amodel ) {
-        amodel->setAngles( tempPredictiveAngles );
+        amodel->setPose( tempPredictiveAngles );
         updateAppendages( amodel, aAppendages );
     }
 }

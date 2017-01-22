@@ -25,9 +25,9 @@ namespace ofxRobotArm {
         bool canReachTarget( int aIndex, float aCurrentAngleInRadians, float aTargetInRadians, float aEpsilonRadians, bool bUseClosest );
         float getAngleToTargetDifference( int aIndex, float aCurrentAngleInRadians, float aTargetInRadians, bool bUseClosest );
         float getCloserLimit( int aIndex, float aTargetInRadians );
-        
+         ofParameterGroup params;
     protected:
-        ofParameterGroup params;
+       
         ofParameter< float > mMinGlobalAngle, mMaxGlobalAngle;
         vector< ofParameter< float > > m_angleMinLimits;
         vector< ofParameter< float > > m_angleMaxLimits;

@@ -64,13 +64,13 @@ namespace ofxRobotArm {
         
         bool hasMainCollisionWarnings();
         bool isNeckHittingForearm();
-        
+        ofParameterGroup params;
+
     protected:
         void solveMainCollisions();
         void solveHeadToForearmCollision();
         
-        ofParameterGroup params;
-        ofParameter< bool > bApply;
+                ofParameter< bool > bApply;
         ofParameter< bool > bDrawWarnings, bDrawStops;
         vector< ofParameter< float > > mPaddings;
         ofParameter< float > mCorrectStepAngle;
