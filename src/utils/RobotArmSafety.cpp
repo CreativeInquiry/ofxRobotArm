@@ -19,10 +19,6 @@ void RobotArmSafety::setup() {
     params.add( m_minDegreesPerSecToSpeedLerp.set("MinDegPerSecToLerpDown", 70, 10, 300));
     params.add( m_maxDegreesPerSecToSpeedLerp.set("MaxDegPerSecToLerpDown", 150, 90, 1000));
     
-//    m_minDegreesPerSecToSpeedLerp = 450;
-//    m_maxDegreesPerSecToSpeedLerp = 1000;
-    
-
     m_jointRestrictor = shared_ptr< JointRestrictor >( new JointRestrictor() );
     m_jointRestrictor->setup();
     
@@ -44,17 +40,17 @@ void RobotArmSafety::setCurrentRobotArmAnlges( vector< double > aRobotArmAngles 
     if( mCollision ) mCollision->setRobotAngles( aRobotArmAngles );
 }
 
-//--------------------------------------------------------------
-void RobotArmSafety::update( RobotController& aRobotController ) {
-    m_bWithinCylinder = false;
-    if( mCylinderRestrictor ) {
-        if( mCylinderRestrictor->isEnabled() ) {
-            m_bWithinCylinder = mCylinderRestrictor->isWithinCylinder( &aRobotController.previewArm );
-        } else {
-            m_bWithinCylinder = true;
-        }
-    }
-}
+////--------------------------------------------------------------
+//void RobotArmSafety::update( RobotController& aRobotController ) {
+//    m_bWithinCylinder = false;
+//    if( mCylinderRestrictor ) {
+//        if( mCylinderRestrictor->isEnabled() ) {
+//            m_bWithinCylinder = mCylinderRestrictor->isWithinCylinder( &aRobotController.previewArm );
+//        } else {
+//            m_bWithinCylinder = true;
+//        }
+//    }
+//}
 
 //--------------------------------------------------------------
 void RobotArmSafety::update( float aDeltaTimef ) {

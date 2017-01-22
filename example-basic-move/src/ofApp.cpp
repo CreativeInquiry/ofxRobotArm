@@ -39,6 +39,7 @@ void ofApp::setup(){
     
     parameters.setup();
     robot.setup("192.168.1.9", parameters); // <-- change to your robot's ip address
+  
     robot.disableControlJointsExternally();
     
     setupGUI();
@@ -163,7 +164,7 @@ void ofApp::setupGUI(){
     panelTargetJoints.setup(parameters.targetJoints);
     panelJointsSpeed.setup(parameters.jointSpeeds);
     panelJointsIK.setup(parameters.jointsIK);
-    
+
     panel.add(robot.movement.movementParams);
     parameters.bMove = false;
     // get the current pose on start up
@@ -185,15 +186,20 @@ void ofApp::positionGUI(){
     panelJointsIK.setPosition(panelJointsSpeed.getPosition().x+panelJoints.getWidth(), 10);
     panelTargetJoints.setPosition(panelJointsIK.getPosition().x+panelJoints.getWidth(), 10);
     panelJoints.setPosition(panelTargetJoints.getPosition().x+panelJoints.getWidth(), 10);
+    
+    panelJoints.add(robot.robotSafety.params);
+    panelJoints.add(robot.robotSafety.mCollision->params);
+    panelJoints.add(robot.robotSafety.mCylinderRestrictor->params);
+    panelJoints.add(robot.robotSafety.m_jointRestrictor->params);
 }
 
 //--------------------------------------------------------------
 void ofApp::drawGUI(){
     panel.draw();
     panelJoints.draw();
-//    panelJointsIK.draw();
-//    panelJointsSpeed.draw();
-//    panelTargetJoints.draw();
+    panelJointsIK.draw();
+    panelJointsSpeed.draw();
+    panelTargetJoints.draw();
     
     hightlightViewports();
 }
@@ -259,7 +265,7 @@ void ofApp::handleViewportPresets(int key){
         // PERSPECTIVE VIEW
         else if (key == '4'){
             cams[activeCam]->reset();
-            cams[activeCam]->setPosition(dist, dist, dist/4);
+            cams[activeCam]->setPosition(dist/4, dist, dist/4);
             cams[activeCam]->lookAt(ofVec3f(0, 0, 0), ofVec3f(0, 0, 1));
             viewportLabels[activeCam] = "PERSPECTIVE VIEW";
         }

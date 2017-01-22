@@ -8,6 +8,7 @@
 #include "URIKFast.h"
 #include "UR5KinematicModel.h"
 #include "ofxIKArm.h"
+#include "RobotArmSafety.h"
 
 namespace ofxRobotArm {
     class RobotController{
@@ -24,6 +25,7 @@ namespace ofxRobotArm {
         /// \params params default parameters for the robot & GUI
         void setup(string ipAddress, RobotParameters & params);
         
+        void safetyCheck();
         void updateMovement();
         void updateRobotData();
         void update();
@@ -46,6 +48,7 @@ namespace ofxRobotArm {
         URIKFast urKinematics;
         int stopCount = 0;
         ofxIKArm mIKArm;
+        RobotArmSafety robotSafety;
     protected:
         vector <double> stopPosition;
         bool m_bSettingJointsExternally = false;

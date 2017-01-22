@@ -18,9 +18,9 @@ namespace ofxRobotArm {
         
         bool isEnabled();
         bool isWithinCylinder( UR5KinematicModel* amodel );
-        
+         ofParameterGroup params;
     protected:
-        ofParameterGroup params;
+       
         ofParameter< bool > bEnableCylinderLimit;
         ofParameter< bool > bDrawCylinderLimit;
         ofParameter< float > m_cylinderRadius;
