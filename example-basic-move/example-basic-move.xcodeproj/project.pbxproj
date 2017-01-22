@@ -8,54 +8,56 @@
 
 /* Begin PBXBuildFile section */
 		03B14860C85545A54080C30A /* tagWriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BE7DB470D57A91A0701B9FCD /* tagWriter.cpp */; };
+		0729D1663E37DF8CFF90C82D /* RobotStateMachine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 72E6D0C6A054BC873D14AB15 /* RobotStateMachine.cpp */; };
+		082DC05315657589B3BE7B55 /* RobotController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA5CE3AAAEA430BCB11164DF /* RobotController.cpp */; };
 		0E33E39B0F7BD7C01D368551 /* GizmoTransformRender.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BB503F534BC39BB8E1699F73 /* GizmoTransformRender.cpp */; };
+		1CC0FA5C65A07541A80AC56C /* ur_realtime_communication.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 013AE5F9F28404C80CC237B0 /* ur_realtime_communication.cpp */; };
 		1CD33E884D9E3358252E82A1 /* ofxToggle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 907C5B5E104864A2D3A25745 /* ofxToggle.cpp */; };
+		1E855678068F9CE35DAB6A71 /* RobotArmSafety.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5BFC332E8D9D0DD7096ECD4C /* RobotArmSafety.cpp */; };
 		2678BE5C3074D11B5F284D2D /* GizmoTransformScale.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DEF09DF951DBD1CB252E2064 /* GizmoTransformScale.cpp */; };
 		3415942CF8402F92CD12F9A1 /* ofxGizmo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A4ADDF22CE7DB649CE8312B /* ofxGizmo.cpp */; };
 		39C1076FC679109A21E21816 /* tagReader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D2841F49C423B13E5FE1D6A8 /* tagReader.cpp */; };
 		3B8120368B4FCCD80883BAF3 /* ofxAssimpAnimation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 36068D6C1D6D412786A5C4C1 /* ofxAssimpAnimation.cpp */; };
-		3DC109191DEDF7E500794AB6 /* URIKFast.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3DC109171DEDF7E500794AB6 /* URIKFast.cpp */; };
 		41E2223E5B0F12AB2C7D678B /* GizmoTransformMove.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 46E5A67A084793468ED74D5B /* GizmoTransformMove.cpp */; };
 		483908258D00B98B4BE69F07 /* ofxLabel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 78D67A00EB899FAC09430597 /* ofxLabel.cpp */; };
 		483FA4F6D5FA6422C559B1F5 /* ofxAssimpMeshHelper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F67FE68E327BEFBD4B777571 /* ofxAssimpMeshHelper.cpp */; };
+		4AB68BB26317E4EB3C98B6BE /* CylinderRestrictor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 90D59C9241C66731F1FE635C /* CylinderRestrictor.cpp */; };
+		4D55698F6511778290B39D89 /* URMove.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C5BDDC3F0B2AA494B8D5C91F /* URMove.cpp */; };
+		4E2C68172A93BDE6837C4CD3 /* URIKFast.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C8F3734D628321E27EA9DC6 /* URIKFast.cpp */; };
+		4EF6DFC4658F60F6D47DE985 /* ur_kin.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2466E5D654F3379742DE357C /* ur_kin.cpp */; };
 		5A4349E9754D6FA14C0F2A3A /* tinyxmlparser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC5DA1C87211D4F6377DA719 /* tinyxmlparser.cpp */; };
 		5CBB2AB3A60F65431D7B555D /* ofxButton.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C88333E71C9457E441C33474 /* ofxButton.cpp */; };
 		63B57AC5BF4EF088491E0317 /* ofxXmlSettings.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50DF87D612C5AAE17AAFA6C0 /* ofxXmlSettings.cpp */; };
 		658E7D8B200D6D15D55EFF62 /* GizmoTransformRotate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0EAE769591A0A91EAB53C484 /* GizmoTransformRotate.cpp */; };
+		67D6A2F5F66F741FE4A699E9 /* URToolHead.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DE68117CEF63B2A20F96D231 /* URToolHead.cpp */; };
+		67DE674DE0BF5B334486DB1A /* JointRestrictor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BD04D0C437565C7E252934C3 /* JointRestrictor.cpp */; };
+		6AB712D7ADFCF5E6EC880EF3 /* ofxJoint.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4552D8FA7E6C28D94987074E /* ofxJoint.cpp */; };
 		714509BA4B4022405175C461 /* ParallelTransportFrames.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6E5D9731EE0AF0961BFB8300 /* ParallelTransportFrames.cpp */; };
+		7747F13174613C4D4B13E548 /* ur_driver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 631BA0AA35BB179BFCC3AE0C /* ur_driver.cpp */; };
+		831D911ACEB793F4A6C0D720 /* RobotAngleOffsets.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B5AB5AEA915F8C01226E77DE /* RobotAngleOffsets.cpp */; };
 		837220E80EB56CD44AD27F2A /* ofxSlider.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 15F2C6477A769C03A56D1401 /* ofxSlider.cpp */; };
 		856AA354D08AB4B323081444 /* ofxBaseGui.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9604B925D32EE39065747725 /* ofxBaseGui.cpp */; };
+		868D5DCCF10A5D8FC9FCAAAC /* URDriver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D4528B99691869AA10142514 /* URDriver.cpp */; };
 		8DED5056525646FA71980866 /* ofxAssimpModelLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDE55D82BD962DAC0E94B708 /* ofxAssimpModelLoader.cpp */; };
+		8E200E09D012F0CB4F19A5BE /* PathRecorder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7BC22D4CEE584EE036BA40AB /* PathRecorder.cpp */; };
 		933A2227713C720CEFF80FD9 /* tinyxml.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2B40EDA85BEB63E46785BC29 /* tinyxml.cpp */; };
 		9D44DC88EF9E7991B4A09951 /* tinyxmlerror.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 832BDC407620CDBA568B713D /* tinyxmlerror.cpp */; };
 		B266578FC55D23BFEBC042E7 /* ofxGuiGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ECF8674C7975F1063C5E30CA /* ofxGuiGroup.cpp */; };
+		B445C4E2D17F03833AF4E3C9 /* ur_communication.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 024203D3DF3DB458B7E2EE1E /* ur_communication.cpp */; };
 		B56FE57CC35806596D38118C /* ofxSliderGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 802251BAF1B35B1D67B32FD0 /* ofxSliderGroup.cpp */; };
 		B8846EF8E504895A4A9EFEC0 /* ofxAssimpTexture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B6F2EE44AD04FF549AB13699 /* ofxAssimpTexture.cpp */; };
-		C86BCF3E1D1B0D0300002551 /* UR5KinematicModel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C86BCF221D1B0D0300002551 /* UR5KinematicModel.cpp */; };
-		C86BCF3F1D1B0D0300002551 /* URDriver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C86BCF241D1B0D0300002551 /* URDriver.cpp */; };
-		C86BCF401D1B0D0300002551 /* URMove.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C86BCF261D1B0D0300002551 /* URMove.cpp */; };
-		C86BCF411D1B0D0300002551 /* URToolHead.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C86BCF281D1B0D0300002551 /* URToolHead.cpp */; };
-		C86BCF421D1B0D0300002551 /* do_output.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C86BCF2D1D1B0D0300002551 /* do_output.cpp */; };
-		C86BCF431D1B0D0300002551 /* robot_state.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C86BCF301D1B0D0300002551 /* robot_state.cpp */; };
-		C86BCF441D1B0D0300002551 /* robot_state_RT.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C86BCF321D1B0D0300002551 /* robot_state_RT.cpp */; };
-		C86BCF451D1B0D0300002551 /* ur_communication.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C86BCF341D1B0D0300002551 /* ur_communication.cpp */; };
-		C86BCF461D1B0D0300002551 /* ur_driver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C86BCF361D1B0D0300002551 /* ur_driver.cpp */; };
-		C86BCF471D1B0D0300002551 /* ur_realtime_communication.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C86BCF381D1B0D0300002551 /* ur_realtime_communication.cpp */; };
-		C86BCF481D1B0D0300002551 /* ur_kin.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C86BCF3C1D1B0D0300002551 /* ur_kin.cpp */; };
-		C87E81781CF8FF2200D7B6BE /* PathController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C87E81601CF8FF2200D7B6BE /* PathController.cpp */; };
-		C87E81791CF8FF2200D7B6BE /* RobotController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C87E81621CF8FF2200D7B6BE /* RobotController.cpp */; };
-		C87E817A1CF8FF2200D7B6BE /* GMLPath.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C87E81651CF8FF2200D7B6BE /* GMLPath.cpp */; };
-		C87E817B1CF8FF2200D7B6BE /* Path.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C87E81671CF8FF2200D7B6BE /* Path.cpp */; };
-		C87E817C1CF8FF2200D7B6BE /* Path3D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C87E81691CF8FF2200D7B6BE /* Path3D.cpp */; };
-		C87E817D1CF8FF2200D7B6BE /* PathPlayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C87E816C1CF8FF2200D7B6BE /* PathPlayer.cpp */; };
-		C87E817E1CF8FF2200D7B6BE /* PathRecorder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C87E816E1CF8FF2200D7B6BE /* PathRecorder.cpp */; };
-		C87E817F1CF8FF2200D7B6BE /* RobotStateMachine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C87E81711CF8FF2200D7B6BE /* RobotStateMachine.cpp */; };
-		C87E81801CF8FF2200D7B6BE /* WorkSurface3D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C87E81751CF8FF2200D7B6BE /* WorkSurface3D.cpp */; };
+		C3374E1A8F3DC0A50B8AC765 /* PathPlayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D3DCA9428F24E33925F0F04B /* PathPlayer.cpp */; };
+		C654720CBC7B8B2A650C789F /* UR5KinematicModel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 222B6934F141E6EAF54ED25E /* UR5KinematicModel.cpp */; };
+		CC8C937FD7773D0611844D2B /* ofxIKArm.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 24848D908EEBDE666458FF1B /* ofxIKArm.cpp */; };
 		E4328149138ABC9F0047C5CB /* openFrameworksDebug.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E4328148138ABC890047C5CB /* openFrameworksDebug.a */; };
 		E4B69E200A3A1BDC003C02F2 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4B69E1D0A3A1BDC003C02F2 /* main.cpp */; };
 		E4B69E210A3A1BDC003C02F2 /* ofApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4B69E1E0A3A1BDC003C02F2 /* ofApp.cpp */; };
 		F090A3379D0F9EA5625F5896 /* ZBaseMaths.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E29B894615B821AE7C356646 /* ZBaseMaths.cpp */; };
+		F261F51259685209998CA01D /* robot_state_RT.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0F11BD3E6E65535043F31971 /* robot_state_RT.cpp */; };
 		F285EB3169F1566CA3D93C20 /* ofxPanel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E112B3AEBEA2C091BF2B40AE /* ofxPanel.cpp */; };
+		F300A7F27D82FA670DD11C4D /* RobotArmCollision.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3BEBC70C0E8764A4DA57D4B2 /* RobotArmCollision.cpp */; };
+		F7D0C4D9408396052CA1866D /* do_output.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4BB8B6DD80C317F67936086D /* do_output.cpp */; };
+		F88565C7439651CA957E4CE7 /* robot_state.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6C565D9509FD68A92E3DF959 /* robot_state.cpp */; };
 		FCBD7626110FDE944C671566 /* ZMathsFunc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5571DA36D741639FD5715042 /* ZMathsFunc.cpp */; };
 /* End PBXBuildFile section */
 
@@ -89,22 +91,34 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		013AE5F9F28404C80CC237B0 /* ur_realtime_communication.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ur_realtime_communication.cpp; path = ../../../addons/ofxURDriver/libs/urDriver/ur_realtime_communication.cpp; sourceTree = SOURCE_ROOT; };
 		01DCC0911400F9ACF5B65578 /* ofxXmlSettings.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxXmlSettings.h; path = ../../../addons/ofxXmlSettings/src/ofxXmlSettings.h; sourceTree = SOURCE_ROOT; };
+		024203D3DF3DB458B7E2EE1E /* ur_communication.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ur_communication.cpp; path = ../../../addons/ofxURDriver/libs/urDriver/ur_communication.cpp; sourceTree = SOURCE_ROOT; };
+		035D1B90C43C3D5DE17C10DB /* RobotArmSafety.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = RobotArmSafety.h; path = ../../../addons/ofxRobotArm/src/utils/RobotArmSafety.h; sourceTree = SOURCE_ROOT; };
 		0853C1E83DCC54A6D30F5C5A /* Hysteresis.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = Hysteresis.h; path = ../../../addons/ofxTiming/src/Hysteresis.h; sourceTree = SOURCE_ROOT; };
 		0A1DAC09F322AE313A40706D /* ofxToggle.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxToggle.h; path = ../../../addons/ofxGui/src/ofxToggle.h; sourceTree = SOURCE_ROOT; };
 		0D702AA6218CF2E7333AFBA7 /* LibBase.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = LibBase.h; path = ../../../addons/ofxGizmo/libs/LibGizmo/LibBase.h; sourceTree = SOURCE_ROOT; };
 		0E3FB6D73DB6B260295B6855 /* LogStream.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = LogStream.hpp; path = ../../../addons/ofxAssimpModelLoader/libs/assimp/include/assimp/LogStream.hpp; sourceTree = SOURCE_ROOT; };
+		0E66BAFCB58F46A14E59E166 /* ofxURDriver.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxURDriver.h; path = ../../../addons/ofxURDriver/src/ofxURDriver.h; sourceTree = SOURCE_ROOT; };
 		0EAE769591A0A91EAB53C484 /* GizmoTransformRotate.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = GizmoTransformRotate.cpp; path = ../../../addons/ofxGizmo/libs/LibGizmo/GizmoTransformRotate.cpp; sourceTree = SOURCE_ROOT; };
+		0F11BD3E6E65535043F31971 /* robot_state_RT.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = robot_state_RT.cpp; path = ../../../addons/ofxURDriver/libs/urDriver/robot_state_RT.cpp; sourceTree = SOURCE_ROOT; };
+		1165D0A99F28E69382136050 /* ur_realtime_communication.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ur_realtime_communication.h; path = ../../../addons/ofxURDriver/libs/urDriver/ur_realtime_communication.h; sourceTree = SOURCE_ROOT; };
+		118519C351E34960CEFA6C75 /* ofxIKArm.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxIKArm.h; path = ../../../addons/ofxIKArm/src/ofxIKArm.h; sourceTree = SOURCE_ROOT; };
 		136F731EDA7630A1FE7A6DCD /* LerpTimer.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = LerpTimer.h; path = ../../../addons/ofxTiming/src/LerpTimer.h; sourceTree = SOURCE_ROOT; };
 		15F2C6477A769C03A56D1401 /* ofxSlider.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ofxSlider.cpp; path = ../../../addons/ofxGui/src/ofxSlider.cpp; sourceTree = SOURCE_ROOT; };
 		1745304BC68B28EC148E6900 /* ofxGizmo.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxGizmo.h; path = ../../../addons/ofxGizmo/src/ofxGizmo.h; sourceTree = SOURCE_ROOT; };
 		17E65988300FBD9AAA2CD0CA /* ofxGui.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxGui.h; path = ../../../addons/ofxGui/src/ofxGui.h; sourceTree = SOURCE_ROOT; };
 		18D6965F094E05B40B20AFB8 /* IOStream.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = IOStream.hpp; path = ../../../addons/ofxAssimpModelLoader/libs/assimp/include/assimp/IOStream.hpp; sourceTree = SOURCE_ROOT; };
 		1C0DA2561397A7DE0246858B /* ofxGuiGroup.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxGuiGroup.h; path = ../../../addons/ofxGui/src/ofxGuiGroup.h; sourceTree = SOURCE_ROOT; };
+		1C8F3734D628321E27EA9DC6 /* URIKFast.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = URIKFast.cpp; path = ../../../addons/ofxURDriver/src/URIKFast.cpp; sourceTree = SOURCE_ROOT; };
 		1E0C80A97E66F858E3720C91 /* quaternion.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = quaternion.h; path = ../../../addons/ofxAssimpModelLoader/libs/assimp/include/assimp/quaternion.h; sourceTree = SOURCE_ROOT; };
 		221A6B45269330B270549CB3 /* texture.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = texture.h; path = ../../../addons/ofxAssimpModelLoader/libs/assimp/include/assimp/texture.h; sourceTree = SOURCE_ROOT; };
+		222B6934F141E6EAF54ED25E /* UR5KinematicModel.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = UR5KinematicModel.cpp; path = ../../../addons/ofxURDriver/src/UR5KinematicModel.cpp; sourceTree = SOURCE_ROOT; };
+		23B734403C00D72D356FD6C1 /* ur_driver.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ur_driver.h; path = ../../../addons/ofxURDriver/libs/urDriver/ur_driver.h; sourceTree = SOURCE_ROOT; };
 		2412104B96C3E5E004D85DED /* cimport.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = cimport.h; path = ../../../addons/ofxAssimpModelLoader/libs/assimp/include/assimp/cimport.h; sourceTree = SOURCE_ROOT; };
+		2466E5D654F3379742DE357C /* ur_kin.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ur_kin.cpp; path = ../../../addons/ofxURDriver/libs/urKinematics/ur_kin.cpp; sourceTree = SOURCE_ROOT; };
 		24814572966A916B92F96257 /* DefaultLogger.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = DefaultLogger.hpp; path = ../../../addons/ofxAssimpModelLoader/libs/assimp/include/assimp/DefaultLogger.hpp; sourceTree = SOURCE_ROOT; };
+		24848D908EEBDE666458FF1B /* ofxIKArm.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ofxIKArm.cpp; path = ../../../addons/ofxIKArm/src/ofxIKArm.cpp; sourceTree = SOURCE_ROOT; };
 		26149D52CBE031B3F154D862 /* defs.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = defs.h; path = ../../../addons/ofxAssimpModelLoader/libs/assimp/include/assimp/defs.h; sourceTree = SOURCE_ROOT; };
 		2834D88A62CD23F3DE2C47D1 /* ofxButton.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxButton.h; path = ../../../addons/ofxGui/src/ofxButton.h; sourceTree = SOURCE_ROOT; };
 		28A42A2103C59E7D30E9D245 /* Exporter.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = Exporter.hpp; path = ../../../addons/ofxAssimpModelLoader/libs/assimp/include/assimp/Exporter.hpp; sourceTree = SOURCE_ROOT; };
@@ -114,30 +128,48 @@
 		36068D6C1D6D412786A5C4C1 /* ofxAssimpAnimation.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ofxAssimpAnimation.cpp; path = ../../../addons/ofxAssimpModelLoader/src/ofxAssimpAnimation.cpp; sourceTree = SOURCE_ROOT; };
 		37D4DEA1F4D0AEEC12CE355A /* FadeTimer.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = FadeTimer.h; path = ../../../addons/ofxTiming/src/FadeTimer.h; sourceTree = SOURCE_ROOT; };
 		389EE521B07BE2E894ACC362 /* ZBaseMaths.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ZBaseMaths.h; path = ../../../addons/ofxGizmo/libs/LibGizmo/ZBaseMaths.h; sourceTree = SOURCE_ROOT; };
+		38C6AC348E6D0EB2247AA95B /* ur_communication.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ur_communication.h; path = ../../../addons/ofxURDriver/libs/urDriver/ur_communication.h; sourceTree = SOURCE_ROOT; };
+		3BB1910912C684F5A351D302 /* RobotController.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = RobotController.h; path = ../../../addons/ofxRobotArm/src/controllers/RobotController.h; sourceTree = SOURCE_ROOT; };
+		3BEBC70C0E8764A4DA57D4B2 /* RobotArmCollision.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = RobotArmCollision.cpp; path = ../../../addons/ofxRobotArm/src/utils/RobotArmCollision.cpp; sourceTree = SOURCE_ROOT; };
 		3D5F33D66F2F166A4E8EA438 /* cfileio.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = cfileio.h; path = ../../../addons/ofxAssimpModelLoader/libs/assimp/include/assimp/cfileio.h; sourceTree = SOURCE_ROOT; };
-		3DC109171DEDF7E500794AB6 /* URIKFast.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = URIKFast.cpp; sourceTree = "<group>"; };
-		3DC109181DEDF7E500794AB6 /* URIKFast.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = URIKFast.h; sourceTree = "<group>"; };
 		3DE27F8F3350100A56220776 /* ai_assert.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ai_assert.h; path = ../../../addons/ofxAssimpModelLoader/libs/assimp/include/assimp/ai_assert.h; sourceTree = SOURCE_ROOT; };
+		4043141805B99499A5B40B81 /* ikfast.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ikfast.h; path = ../../../addons/ofxURDriver/libs/urKinematics/ikfast.h; sourceTree = SOURCE_ROOT; };
 		41DBF41AB15D7C33CA52C05F /* NullLogger.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = NullLogger.hpp; path = ../../../addons/ofxAssimpModelLoader/libs/assimp/include/assimp/NullLogger.hpp; sourceTree = SOURCE_ROOT; };
+		41EFFE350A47D62150A849BD /* ofxJoint.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxJoint.h; path = ../../../addons/ofxIKArm/src/ofxJoint.h; sourceTree = SOURCE_ROOT; };
 		42B5D460590D03DC3009F243 /* material.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = material.h; path = ../../../addons/ofxAssimpModelLoader/libs/assimp/include/assimp/material.h; sourceTree = SOURCE_ROOT; };
 		42CF3D667745BC39E66B472C /* ofxPtf.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxPtf.h; path = ../../../addons/ofxPtf/src/ofxPtf.h; sourceTree = SOURCE_ROOT; };
 		42D77E59A87937F5313E468D /* postprocess.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = postprocess.h; path = ../../../addons/ofxAssimpModelLoader/libs/assimp/include/assimp/postprocess.h; sourceTree = SOURCE_ROOT; };
+		4552D8FA7E6C28D94987074E /* ofxJoint.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ofxJoint.cpp; path = ../../../addons/ofxIKArm/src/ofxJoint.cpp; sourceTree = SOURCE_ROOT; };
+		4563E43F41CFF46E5CA6F084 /* RobotArmCollision.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = RobotArmCollision.h; path = ../../../addons/ofxRobotArm/src/utils/RobotArmCollision.h; sourceTree = SOURCE_ROOT; };
 		46E5A67A084793468ED74D5B /* GizmoTransformMove.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = GizmoTransformMove.cpp; path = ../../../addons/ofxGizmo/libs/LibGizmo/GizmoTransformMove.cpp; sourceTree = SOURCE_ROOT; };
+		46F94FFB245452ED46037748 /* RobotAngleOffsets.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = RobotAngleOffsets.h; path = ../../../addons/ofxRobotArm/src/utils/RobotAngleOffsets.h; sourceTree = SOURCE_ROOT; };
+		49D9A8B073B6AABDAA85C75B /* JointRestrictor.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = JointRestrictor.h; path = ../../../addons/ofxRobotArm/src/utils/JointRestrictor.h; sourceTree = SOURCE_ROOT; };
+		4BB8B6DD80C317F67936086D /* do_output.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = do_output.cpp; path = ../../../addons/ofxURDriver/libs/urDriver/do_output.cpp; sourceTree = SOURCE_ROOT; };
 		4FAE4A0F69A8990513603BDF /* ofxAssimpUtils.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxAssimpUtils.h; path = ../../../addons/ofxAssimpModelLoader/src/ofxAssimpUtils.h; sourceTree = SOURCE_ROOT; };
 		50AF571137A6869FB18716D5 /* ZMathsFunc.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ZMathsFunc.h; path = ../../../addons/ofxGizmo/libs/LibGizmo/ZMathsFunc.h; sourceTree = SOURCE_ROOT; };
 		50DF87D612C5AAE17AAFA6C0 /* ofxXmlSettings.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ofxXmlSettings.cpp; path = ../../../addons/ofxXmlSettings/src/ofxXmlSettings.cpp; sourceTree = SOURCE_ROOT; };
 		52AFA1F08C420992CAAAE648 /* ofxSlider.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxSlider.h; path = ../../../addons/ofxGui/src/ofxSlider.h; sourceTree = SOURCE_ROOT; };
 		5571DA36D741639FD5715042 /* ZMathsFunc.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ZMathsFunc.cpp; path = ../../../addons/ofxGizmo/libs/LibGizmo/ZMathsFunc.cpp; sourceTree = SOURCE_ROOT; };
+		596C21D8D5250D0E18F1FFEF /* robot_state_RT.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = robot_state_RT.h; path = ../../../addons/ofxURDriver/libs/urDriver/robot_state_RT.h; sourceTree = SOURCE_ROOT; };
+		5BFC332E8D9D0DD7096ECD4C /* RobotArmSafety.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = RobotArmSafety.cpp; path = ../../../addons/ofxRobotArm/src/utils/RobotArmSafety.cpp; sourceTree = SOURCE_ROOT; };
 		60106973CB36D5462ED7A8EA /* GizmoTransformScale.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = GizmoTransformScale.h; path = ../../../addons/ofxGizmo/libs/LibGizmo/GizmoTransformScale.h; sourceTree = SOURCE_ROOT; };
+		62FE79ED350E17A0DA1AE837 /* PathRecorder.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = PathRecorder.h; path = ../../../addons/ofxRobotArm/src/utils/PathRecorder.h; sourceTree = SOURCE_ROOT; };
 		6308FEC6DC6B1700C7099DFF /* IGizmo.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = IGizmo.h; path = ../../../addons/ofxGizmo/libs/LibGizmo/IGizmo.h; sourceTree = SOURCE_ROOT; };
+		631BA0AA35BB179BFCC3AE0C /* ur_driver.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ur_driver.cpp; path = ../../../addons/ofxURDriver/libs/urDriver/ur_driver.cpp; sourceTree = SOURCE_ROOT; };
 		6A0E743407465957DB764ED3 /* mesh.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = mesh.h; path = ../../../addons/ofxAssimpModelLoader/libs/assimp/include/assimp/mesh.h; sourceTree = SOURCE_ROOT; };
+		6C565D9509FD68A92E3DF959 /* robot_state.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = robot_state.cpp; path = ../../../addons/ofxURDriver/libs/urDriver/robot_state.cpp; sourceTree = SOURCE_ROOT; };
 		6E069CE4C58E970E3429DBE5 /* Importer.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = Importer.hpp; path = ../../../addons/ofxAssimpModelLoader/libs/assimp/include/assimp/Importer.hpp; sourceTree = SOURCE_ROOT; };
 		6E5D9731EE0AF0961BFB8300 /* ParallelTransportFrames.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ParallelTransportFrames.cpp; path = ../../../addons/ofxPtf/src/ParallelTransportFrames.cpp; sourceTree = SOURCE_ROOT; };
+		703F4E95B5B48A7AC8B885CF /* UR5KinematicModel.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = UR5KinematicModel.h; path = ../../../addons/ofxURDriver/src/UR5KinematicModel.h; sourceTree = SOURCE_ROOT; };
+		71C38933AA8ABACAA111DE9B /* RobotParameters.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = RobotParameters.h; path = ../../../addons/ofxRobotArm/src/utils/RobotParameters.h; sourceTree = SOURCE_ROOT; };
+		72E6D0C6A054BC873D14AB15 /* RobotStateMachine.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = RobotStateMachine.cpp; path = ../../../addons/ofxRobotArm/src/utils/RobotStateMachine.cpp; sourceTree = SOURCE_ROOT; };
 		7620CA3C88E962880DCCC1A6 /* ofxTiming.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxTiming.h; path = ../../../addons/ofxTiming/src/ofxTiming.h; sourceTree = SOURCE_ROOT; };
+		78B2EEFB99B02A6D2715EB7F /* URToolHead.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = URToolHead.h; path = ../../../addons/ofxURDriver/src/URToolHead.h; sourceTree = SOURCE_ROOT; };
 		78D67A00EB899FAC09430597 /* ofxLabel.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ofxLabel.cpp; path = ../../../addons/ofxGui/src/ofxLabel.cpp; sourceTree = SOURCE_ROOT; };
 		7920005E4069FBD68DF30F56 /* config.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = config.h; path = ../../../addons/ofxAssimpModelLoader/libs/assimp/include/assimp/config.h; sourceTree = SOURCE_ROOT; };
 		79E18F66440A2CC08B4F0996 /* GizmoTransformRotate.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = GizmoTransformRotate.h; path = ../../../addons/ofxGizmo/libs/LibGizmo/GizmoTransformRotate.h; sourceTree = SOURCE_ROOT; };
 		7B454555CF8F39CFBAAFDFA2 /* camera.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = camera.h; path = ../../../addons/ofxAssimpModelLoader/libs/assimp/include/assimp/camera.h; sourceTree = SOURCE_ROOT; };
+		7BC22D4CEE584EE036BA40AB /* PathRecorder.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = PathRecorder.cpp; path = ../../../addons/ofxRobotArm/src/utils/PathRecorder.cpp; sourceTree = SOURCE_ROOT; };
 		7DF381F656E8FD352E21346E /* ofxAssimpModelLoader.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxAssimpModelLoader.h; path = ../../../addons/ofxAssimpModelLoader/src/ofxAssimpModelLoader.h; sourceTree = SOURCE_ROOT; };
 		802251BAF1B35B1D67B32FD0 /* ofxSliderGroup.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ofxSliderGroup.cpp; path = ../../../addons/ofxGui/src/ofxSliderGroup.cpp; sourceTree = SOURCE_ROOT; };
 		808F0EC060E7C8DA90947996 /* light.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = light.h; path = ../../../addons/ofxAssimpModelLoader/libs/assimp/include/assimp/light.h; sourceTree = SOURCE_ROOT; };
@@ -149,81 +181,52 @@
 		8B473495EAE4247AC1A851F1 /* ofxAssimpTexture.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxAssimpTexture.h; path = ../../../addons/ofxAssimpModelLoader/src/ofxAssimpTexture.h; sourceTree = SOURCE_ROOT; };
 		8C1263988BAD8EF51EE807C1 /* ParallelTransportFrames.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ParallelTransportFrames.h; path = ../../../addons/ofxPtf/src/ParallelTransportFrames.h; sourceTree = SOURCE_ROOT; };
 		907C5B5E104864A2D3A25745 /* ofxToggle.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ofxToggle.cpp; path = ../../../addons/ofxGui/src/ofxToggle.cpp; sourceTree = SOURCE_ROOT; };
+		90D59C9241C66731F1FE635C /* CylinderRestrictor.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = CylinderRestrictor.cpp; path = ../../../addons/ofxRobotArm/src/utils/CylinderRestrictor.cpp; sourceTree = SOURCE_ROOT; };
 		9339B8AD0EF31B7708C53B9F /* ProgressHandler.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ProgressHandler.hpp; path = ../../../addons/ofxAssimpModelLoader/libs/assimp/include/assimp/ProgressHandler.hpp; sourceTree = SOURCE_ROOT; };
 		95067C8021B0D29AD193312B /* GizmoTransformMove.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = GizmoTransformMove.h; path = ../../../addons/ofxGizmo/libs/LibGizmo/GizmoTransformMove.h; sourceTree = SOURCE_ROOT; };
 		9604B925D32EE39065747725 /* ofxBaseGui.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ofxBaseGui.cpp; path = ../../../addons/ofxGui/src/ofxBaseGui.cpp; sourceTree = SOURCE_ROOT; };
 		96EBF8A6CD3F11C79F7950BC /* cexport.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = cexport.h; path = ../../../addons/ofxAssimpModelLoader/libs/assimp/include/assimp/cexport.h; sourceTree = SOURCE_ROOT; };
 		98033501202172DF458BD6CF /* vector2.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = vector2.h; path = ../../../addons/ofxAssimpModelLoader/libs/assimp/include/assimp/vector2.h; sourceTree = SOURCE_ROOT; };
 		9A5DAADD2DFD7F6E8784E8AC /* GizmoTransformRender.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = GizmoTransformRender.h; path = ../../../addons/ofxGizmo/libs/LibGizmo/GizmoTransformRender.h; sourceTree = SOURCE_ROOT; };
+		9B50C994070D1B9EF57BE907 /* Synchronized.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = Synchronized.h; path = ../../../addons/ofxURDriver/src/Synchronized.h; sourceTree = SOURCE_ROOT; };
 		9CE6814AF2746D4770EAB7E9 /* ZBaseDefs.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ZBaseDefs.h; path = ../../../addons/ofxGizmo/libs/LibGizmo/ZBaseDefs.h; sourceTree = SOURCE_ROOT; };
 		9FECF0FCF0CCAEC9C58FE54F /* version.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = version.h; path = ../../../addons/ofxAssimpModelLoader/libs/assimp/include/assimp/version.h; sourceTree = SOURCE_ROOT; };
 		A6197D72F51ED9030D7C5F16 /* vector3.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = vector3.h; path = ../../../addons/ofxAssimpModelLoader/libs/assimp/include/assimp/vector3.h; sourceTree = SOURCE_ROOT; };
 		A7579B6BD9B77152BF320192 /* matrix4x4.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = matrix4x4.h; path = ../../../addons/ofxAssimpModelLoader/libs/assimp/include/assimp/matrix4x4.h; sourceTree = SOURCE_ROOT; };
+		A9652D8F76D36A11EE9BD151 /* URMove.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = URMove.h; path = ../../../addons/ofxURDriver/src/URMove.h; sourceTree = SOURCE_ROOT; };
+		AA5CE3AAAEA430BCB11164DF /* RobotController.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = RobotController.cpp; path = ../../../addons/ofxRobotArm/src/controllers/RobotController.cpp; sourceTree = SOURCE_ROOT; };
+		AB70F8E58E5B54B3AF74A0C1 /* PathPlayer.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = PathPlayer.h; path = ../../../addons/ofxRobotArm/src/utils/PathPlayer.h; sourceTree = SOURCE_ROOT; };
+		ADAAB8D07746FBC6EF9614B2 /* RobotStateMachine.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = RobotStateMachine.h; path = ../../../addons/ofxRobotArm/src/utils/RobotStateMachine.h; sourceTree = SOURCE_ROOT; };
 		ADAE582E4696B9BD64E5B2B8 /* IOSystem.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = IOSystem.hpp; path = ../../../addons/ofxAssimpModelLoader/libs/assimp/include/assimp/IOSystem.hpp; sourceTree = SOURCE_ROOT; };
 		AED6F84D8DABA623CAF59F13 /* color4.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = color4.h; path = ../../../addons/ofxAssimpModelLoader/libs/assimp/include/assimp/color4.h; sourceTree = SOURCE_ROOT; };
 		B0E9FD47655BB938D2540CD4 /* ZCollisionsUtils.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ZCollisionsUtils.h; path = ../../../addons/ofxGizmo/libs/LibGizmo/ZCollisionsUtils.h; sourceTree = SOURCE_ROOT; };
 		B21E7E5F548EEA92F368040B /* tinyxml.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = tinyxml.h; path = ../../../addons/ofxXmlSettings/libs/tinyxml.h; sourceTree = SOURCE_ROOT; };
+		B4589B18048A5D84001E83AE /* CylinderRestrictor.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = CylinderRestrictor.h; path = ../../../addons/ofxRobotArm/src/utils/CylinderRestrictor.h; sourceTree = SOURCE_ROOT; };
 		B49364860623966C182D611B /* tagReader.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = tagReader.h; path = ../../../addons/ofxGML/src/gml/tagReader.h; sourceTree = SOURCE_ROOT; };
+		B5AB5AEA915F8C01226E77DE /* RobotAngleOffsets.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = RobotAngleOffsets.cpp; path = ../../../addons/ofxRobotArm/src/utils/RobotAngleOffsets.cpp; sourceTree = SOURCE_ROOT; };
 		B6F2EE44AD04FF549AB13699 /* ofxAssimpTexture.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ofxAssimpTexture.cpp; path = ../../../addons/ofxAssimpModelLoader/src/ofxAssimpTexture.cpp; sourceTree = SOURCE_ROOT; };
 		B87C60311EC1FE841C1ECD89 /* ofxLabel.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxLabel.h; path = ../../../addons/ofxGui/src/ofxLabel.h; sourceTree = SOURCE_ROOT; };
 		B9E58FA154DEDDC5329ABED3 /* GizmoTransform.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = GizmoTransform.h; path = ../../../addons/ofxGizmo/libs/LibGizmo/GizmoTransform.h; sourceTree = SOURCE_ROOT; };
 		BB503F534BC39BB8E1699F73 /* GizmoTransformRender.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = GizmoTransformRender.cpp; path = ../../../addons/ofxGizmo/libs/LibGizmo/GizmoTransformRender.cpp; sourceTree = SOURCE_ROOT; };
+		BC16509169365C1F6A9EB705 /* do_output.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = do_output.h; path = ../../../addons/ofxURDriver/libs/urDriver/do_output.h; sourceTree = SOURCE_ROOT; };
+		BD04D0C437565C7E252934C3 /* JointRestrictor.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = JointRestrictor.cpp; path = ../../../addons/ofxRobotArm/src/utils/JointRestrictor.cpp; sourceTree = SOURCE_ROOT; };
 		BE7DB470D57A91A0701B9FCD /* tagWriter.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = tagWriter.cpp; path = ../../../addons/ofxGML/src/gml/tagWriter.cpp; sourceTree = SOURCE_ROOT; };
+		C140D4FDAD2699F29A8407ED /* endian.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = endian.h; path = ../../../addons/ofxURDriver/libs/urDriver/endian.h; sourceTree = SOURCE_ROOT; };
 		C1638C371AC7701E1A4D6671 /* types.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = types.h; path = ../../../addons/ofxAssimpModelLoader/libs/assimp/include/assimp/types.h; sourceTree = SOURCE_ROOT; };
 		C224E0400677911C78D08627 /* poppack1.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = poppack1.h; path = ../../../addons/ofxAssimpModelLoader/libs/assimp/include/assimp/Compiler/poppack1.h; sourceTree = SOURCE_ROOT; };
+		C39639351A5EA2CFDEBC2100 /* URDriver.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = URDriver.h; path = ../../../addons/ofxURDriver/src/URDriver.h; sourceTree = SOURCE_ROOT; };
+		C5BDDC3F0B2AA494B8D5C91F /* URMove.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = URMove.cpp; path = ../../../addons/ofxURDriver/src/URMove.cpp; sourceTree = SOURCE_ROOT; };
 		C70D8946940288799E82131E /* ofxSliderGroup.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxSliderGroup.h; path = ../../../addons/ofxGui/src/ofxSliderGroup.h; sourceTree = SOURCE_ROOT; };
-		C86BCF201D1B0D0300002551 /* ofxURDriver.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxURDriver.h; sourceTree = "<group>"; };
-		C86BCF211D1B0D0300002551 /* Synchronized.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Synchronized.h; sourceTree = "<group>"; };
-		C86BCF221D1B0D0300002551 /* UR5KinematicModel.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = UR5KinematicModel.cpp; sourceTree = "<group>"; };
-		C86BCF231D1B0D0300002551 /* UR5KinematicModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UR5KinematicModel.h; sourceTree = "<group>"; };
-		C86BCF241D1B0D0300002551 /* URDriver.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = URDriver.cpp; sourceTree = "<group>"; };
-		C86BCF251D1B0D0300002551 /* URDriver.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = URDriver.h; sourceTree = "<group>"; };
-		C86BCF261D1B0D0300002551 /* URMove.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = URMove.cpp; sourceTree = "<group>"; };
-		C86BCF271D1B0D0300002551 /* URMove.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = URMove.h; sourceTree = "<group>"; };
-		C86BCF281D1B0D0300002551 /* URToolHead.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = URToolHead.cpp; sourceTree = "<group>"; };
-		C86BCF291D1B0D0300002551 /* URToolHead.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = URToolHead.h; sourceTree = "<group>"; };
-		C86BCF2A1D1B0D0300002551 /* URUtils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = URUtils.h; sourceTree = "<group>"; };
-		C86BCF2D1D1B0D0300002551 /* do_output.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = do_output.cpp; sourceTree = "<group>"; };
-		C86BCF2E1D1B0D0300002551 /* do_output.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = do_output.h; sourceTree = "<group>"; };
-		C86BCF2F1D1B0D0300002551 /* endian.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = endian.h; sourceTree = "<group>"; };
-		C86BCF301D1B0D0300002551 /* robot_state.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = robot_state.cpp; sourceTree = "<group>"; };
-		C86BCF311D1B0D0300002551 /* robot_state.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = robot_state.h; sourceTree = "<group>"; };
-		C86BCF321D1B0D0300002551 /* robot_state_RT.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = robot_state_RT.cpp; sourceTree = "<group>"; };
-		C86BCF331D1B0D0300002551 /* robot_state_RT.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = robot_state_RT.h; sourceTree = "<group>"; };
-		C86BCF341D1B0D0300002551 /* ur_communication.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ur_communication.cpp; sourceTree = "<group>"; };
-		C86BCF351D1B0D0300002551 /* ur_communication.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ur_communication.h; sourceTree = "<group>"; };
-		C86BCF361D1B0D0300002551 /* ur_driver.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ur_driver.cpp; sourceTree = "<group>"; };
-		C86BCF371D1B0D0300002551 /* ur_driver.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ur_driver.h; sourceTree = "<group>"; };
-		C86BCF381D1B0D0300002551 /* ur_realtime_communication.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ur_realtime_communication.cpp; sourceTree = "<group>"; };
-		C86BCF391D1B0D0300002551 /* ur_realtime_communication.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ur_realtime_communication.h; sourceTree = "<group>"; };
-		C86BCF3B1D1B0D0300002551 /* ikfast.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ikfast.h; sourceTree = "<group>"; };
-		C86BCF3C1D1B0D0300002551 /* ur_kin.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ur_kin.cpp; sourceTree = "<group>"; };
-		C86BCF3D1D1B0D0300002551 /* ur_kin.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ur_kin.h; sourceTree = "<group>"; };
-		C87E81601CF8FF2200D7B6BE /* PathController.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = PathController.cpp; sourceTree = "<group>"; };
-		C87E81611CF8FF2200D7B6BE /* PathController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PathController.h; sourceTree = "<group>"; };
-		C87E81621CF8FF2200D7B6BE /* RobotController.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = RobotController.cpp; sourceTree = "<group>"; };
-		C87E81631CF8FF2200D7B6BE /* RobotController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RobotController.h; sourceTree = "<group>"; };
-		C87E81651CF8FF2200D7B6BE /* GMLPath.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = GMLPath.cpp; sourceTree = "<group>"; };
-		C87E81661CF8FF2200D7B6BE /* GMLPath.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GMLPath.h; sourceTree = "<group>"; };
-		C87E81671CF8FF2200D7B6BE /* Path.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Path.cpp; sourceTree = "<group>"; };
-		C87E81681CF8FF2200D7B6BE /* Path.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Path.h; sourceTree = "<group>"; };
-		C87E81691CF8FF2200D7B6BE /* Path3D.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Path3D.cpp; sourceTree = "<group>"; };
-		C87E816A1CF8FF2200D7B6BE /* Path3D.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Path3D.h; sourceTree = "<group>"; };
-		C87E816C1CF8FF2200D7B6BE /* PathPlayer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = PathPlayer.cpp; sourceTree = "<group>"; };
-		C87E816D1CF8FF2200D7B6BE /* PathPlayer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PathPlayer.h; sourceTree = "<group>"; };
-		C87E816E1CF8FF2200D7B6BE /* PathRecorder.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = PathRecorder.cpp; sourceTree = "<group>"; };
-		C87E816F1CF8FF2200D7B6BE /* PathRecorder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PathRecorder.h; sourceTree = "<group>"; };
-		C87E81701CF8FF2200D7B6BE /* RobotParameters.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RobotParameters.h; sourceTree = "<group>"; };
-		C87E81711CF8FF2200D7B6BE /* RobotStateMachine.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = RobotStateMachine.cpp; sourceTree = "<group>"; };
-		C87E81721CF8FF2200D7B6BE /* RobotStateMachine.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RobotStateMachine.h; sourceTree = "<group>"; };
-		C87E81741CF8FF2200D7B6BE /* WorkSurface.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WorkSurface.h; sourceTree = "<group>"; };
-		C87E81751CF8FF2200D7B6BE /* WorkSurface3D.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = WorkSurface3D.cpp; sourceTree = "<group>"; };
-		C87E81761CF8FF2200D7B6BE /* WorkSurface3D.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WorkSurface3D.h; sourceTree = "<group>"; };
+		C852A4DA6EFA7E8A9C9F5376 /* robot_state.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = robot_state.h; path = ../../../addons/ofxURDriver/libs/urDriver/robot_state.h; sourceTree = SOURCE_ROOT; };
 		C88333E71C9457E441C33474 /* ofxButton.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ofxButton.cpp; path = ../../../addons/ofxGui/src/ofxButton.cpp; sourceTree = SOURCE_ROOT; };
+		C9F83AD0A4F7603411877809 /* URUtils.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = URUtils.h; path = ../../../addons/ofxURDriver/src/URUtils.h; sourceTree = SOURCE_ROOT; };
 		D1B370068072AAB890CD42D2 /* pstdint.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = pstdint.h; path = ../../../addons/ofxAssimpModelLoader/libs/assimp/include/assimp/Compiler/pstdint.h; sourceTree = SOURCE_ROOT; };
 		D2841F49C423B13E5FE1D6A8 /* tagReader.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = tagReader.cpp; path = ../../../addons/ofxGML/src/gml/tagReader.cpp; sourceTree = SOURCE_ROOT; };
+		D3DCA9428F24E33925F0F04B /* PathPlayer.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = PathPlayer.cpp; path = ../../../addons/ofxRobotArm/src/utils/PathPlayer.cpp; sourceTree = SOURCE_ROOT; };
+		D4528B99691869AA10142514 /* URDriver.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = URDriver.cpp; path = ../../../addons/ofxURDriver/src/URDriver.cpp; sourceTree = SOURCE_ROOT; };
 		D501EB9AF5A65F43CB972589 /* matrix3x3.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = matrix3x3.h; path = ../../../addons/ofxAssimpModelLoader/libs/assimp/include/assimp/matrix3x3.h; sourceTree = SOURCE_ROOT; };
 		D825FF1F1EA48B305BB428B7 /* scene.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = scene.h; path = ../../../addons/ofxAssimpModelLoader/libs/assimp/include/assimp/scene.h; sourceTree = SOURCE_ROOT; };
+		DE68117CEF63B2A20F96D231 /* URToolHead.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = URToolHead.cpp; path = ../../../addons/ofxURDriver/src/URToolHead.cpp; sourceTree = SOURCE_ROOT; };
 		DEF09DF951DBD1CB252E2064 /* GizmoTransformScale.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = GizmoTransformScale.cpp; path = ../../../addons/ofxGizmo/libs/LibGizmo/GizmoTransformScale.cpp; sourceTree = SOURCE_ROOT; };
 		E112B3AEBEA2C091BF2B40AE /* ofxPanel.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ofxPanel.cpp; path = ../../../addons/ofxGui/src/ofxPanel.cpp; sourceTree = SOURCE_ROOT; };
 		E29B894615B821AE7C356646 /* ZBaseMaths.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ZBaseMaths.cpp; path = ../../../addons/ofxGizmo/libs/LibGizmo/ZBaseMaths.cpp; sourceTree = SOURCE_ROOT; };
@@ -246,7 +249,9 @@
 		F4D1BF6330BE3A8690AD22FF /* tagWriter.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = tagWriter.h; path = ../../../addons/ofxGML/src/gml/tagWriter.h; sourceTree = SOURCE_ROOT; };
 		F67FE68E327BEFBD4B777571 /* ofxAssimpMeshHelper.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ofxAssimpMeshHelper.cpp; path = ../../../addons/ofxAssimpModelLoader/src/ofxAssimpMeshHelper.cpp; sourceTree = SOURCE_ROOT; };
 		F83C455FD621A83C98719147 /* RateTimer.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = RateTimer.h; path = ../../../addons/ofxTiming/src/RateTimer.h; sourceTree = SOURCE_ROOT; };
+		FA0FA6296E9454AE2871F8DF /* ur_kin.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ur_kin.h; path = ../../../addons/ofxURDriver/libs/urKinematics/ur_kin.h; sourceTree = SOURCE_ROOT; };
 		FC5DA1C87211D4F6377DA719 /* tinyxmlparser.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = tinyxmlparser.cpp; path = ../../../addons/ofxXmlSettings/libs/tinyxmlparser.cpp; sourceTree = SOURCE_ROOT; };
+		FD56B7E2433C512E7AD28CCF /* URIKFast.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = URIKFast.h; path = ../../../addons/ofxURDriver/src/URIKFast.h; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -261,6 +266,26 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0EC913C7F563FE40DE9D152F /* src */ = {
+			isa = PBXGroup;
+			children = (
+				0E66BAFCB58F46A14E59E166 /* ofxURDriver.h */,
+				9B50C994070D1B9EF57BE907 /* Synchronized.h */,
+				222B6934F141E6EAF54ED25E /* UR5KinematicModel.cpp */,
+				703F4E95B5B48A7AC8B885CF /* UR5KinematicModel.h */,
+				D4528B99691869AA10142514 /* URDriver.cpp */,
+				C39639351A5EA2CFDEBC2100 /* URDriver.h */,
+				1C8F3734D628321E27EA9DC6 /* URIKFast.cpp */,
+				FD56B7E2433C512E7AD28CCF /* URIKFast.h */,
+				C5BDDC3F0B2AA494B8D5C91F /* URMove.cpp */,
+				A9652D8F76D36A11EE9BD151 /* URMove.h */,
+				DE68117CEF63B2A20F96D231 /* URToolHead.cpp */,
+				78B2EEFB99B02A6D2715EB7F /* URToolHead.h */,
+				C9F83AD0A4F7603411877809 /* URUtils.h */,
+			);
+			name = src;
+			sourceTree = "<group>";
+		};
 		1F4FB5C423662B96ADFDCC0B /* ofxXmlSettings */ = {
 			isa = PBXGroup;
 			children = (
@@ -287,12 +312,29 @@
 			name = ofxGML;
 			sourceTree = "<group>";
 		};
+		3A6CB03BE366F4F8AD5F5E69 /* ofxURDriver */ = {
+			isa = PBXGroup;
+			children = (
+				0EC913C7F563FE40DE9D152F /* src */,
+				ADD541C02429F22CE68F0C7D /* libs */,
+			);
+			name = ofxURDriver;
+			sourceTree = "<group>";
+		};
 		480A780D8D0308AE4A368801 /* ofxGui */ = {
 			isa = PBXGroup;
 			children = (
 				A763ED608B35AE3310251DEE /* src */,
 			);
 			name = ofxGui;
+			sourceTree = "<group>";
+		};
+		51F30F1B160ED9625B8C5A4A /* ofxRobotArm */ = {
+			isa = PBXGroup;
+			children = (
+				5A21DBDE55A6B70A05431360 /* src */,
+			);
+			name = ofxRobotArm;
 			sourceTree = "<group>";
 		};
 		57CE74485B53B82183FFCDD7 /* LibGizmo */ = {
@@ -334,6 +376,25 @@
 				1745304BC68B28EC148E6900 /* ofxGizmo.h */,
 			);
 			name = src;
+			sourceTree = "<group>";
+		};
+		5A21DBDE55A6B70A05431360 /* src */ = {
+			isa = PBXGroup;
+			children = (
+				C40A4A2CF4AA0F1032A8EA98 /* controllers */,
+				BB98C88482804420F7419374 /* utils */,
+			);
+			name = src;
+			sourceTree = "<group>";
+		};
+		67ABF0B13B19711B7FA03FE8 /* urKinematics */ = {
+			isa = PBXGroup;
+			children = (
+				4043141805B99499A5B40B81 /* ikfast.h */,
+				2466E5D654F3379742DE357C /* ur_kin.cpp */,
+				FA0FA6296E9454AE2871F8DF /* ur_kin.h */,
+			);
+			name = urKinematics;
 			sourceTree = "<group>";
 		};
 		67AD613537D3ED7FD883659E /* assimp */ = {
@@ -520,6 +581,15 @@
 			name = src;
 			sourceTree = "<group>";
 		};
+		ADD541C02429F22CE68F0C7D /* libs */ = {
+			isa = PBXGroup;
+			children = (
+				D743B2C3EB5FE119E016BA77 /* urDriver */,
+				67ABF0B13B19711B7FA03FE8 /* urKinematics */,
+			);
+			name = libs;
+			sourceTree = "<group>";
+		};
 		B77F1220F7C30BFF6034CC97 /* Compiler */ = {
 			isa = PBXGroup;
 			children = (
@@ -537,13 +607,47 @@
 				3990BDD3729EB86DA1712921 /* ofxGML */,
 				7BE4B635EB972225AD764197 /* ofxGizmo */,
 				480A780D8D0308AE4A368801 /* ofxGui */,
+				FE56FD07D1D653B95C48AE0B /* ofxIKArm */,
 				987B3A088F337E8FF6045A15 /* ofxPtf */,
+				51F30F1B160ED9625B8C5A4A /* ofxRobotArm */,
 				8127CCF7E18A4765F290687E /* ofxTiming */,
+				3A6CB03BE366F4F8AD5F5E69 /* ofxURDriver */,
 				1F4FB5C423662B96ADFDCC0B /* ofxXmlSettings */,
-				C87E815B1CF8FF2200D7B6BE /* ofxRobotArm */,
-				C86BCF1E1D1B0D0300002551 /* ofxURDriver */,
 			);
 			name = addons;
+			sourceTree = "<group>";
+		};
+		BB98C88482804420F7419374 /* utils */ = {
+			isa = PBXGroup;
+			children = (
+				90D59C9241C66731F1FE635C /* CylinderRestrictor.cpp */,
+				B4589B18048A5D84001E83AE /* CylinderRestrictor.h */,
+				BD04D0C437565C7E252934C3 /* JointRestrictor.cpp */,
+				49D9A8B073B6AABDAA85C75B /* JointRestrictor.h */,
+				D3DCA9428F24E33925F0F04B /* PathPlayer.cpp */,
+				AB70F8E58E5B54B3AF74A0C1 /* PathPlayer.h */,
+				7BC22D4CEE584EE036BA40AB /* PathRecorder.cpp */,
+				62FE79ED350E17A0DA1AE837 /* PathRecorder.h */,
+				B5AB5AEA915F8C01226E77DE /* RobotAngleOffsets.cpp */,
+				46F94FFB245452ED46037748 /* RobotAngleOffsets.h */,
+				3BEBC70C0E8764A4DA57D4B2 /* RobotArmCollision.cpp */,
+				4563E43F41CFF46E5CA6F084 /* RobotArmCollision.h */,
+				5BFC332E8D9D0DD7096ECD4C /* RobotArmSafety.cpp */,
+				035D1B90C43C3D5DE17C10DB /* RobotArmSafety.h */,
+				71C38933AA8ABACAA111DE9B /* RobotParameters.h */,
+				72E6D0C6A054BC873D14AB15 /* RobotStateMachine.cpp */,
+				ADAAB8D07746FBC6EF9614B2 /* RobotStateMachine.h */,
+			);
+			name = utils;
+			sourceTree = "<group>";
+		};
+		C40A4A2CF4AA0F1032A8EA98 /* controllers */ = {
+			isa = PBXGroup;
+			children = (
+				AA5CE3AAAEA430BCB11164DF /* RobotController.cpp */,
+				3BB1910912C684F5A351D302 /* RobotController.h */,
+			);
+			name = controllers;
 			sourceTree = "<group>";
 		};
 		C721A9AF1157766AFE54645E /* libs */ = {
@@ -554,142 +658,24 @@
 			name = libs;
 			sourceTree = "<group>";
 		};
-		C86BCF1E1D1B0D0300002551 /* ofxURDriver */ = {
+		D743B2C3EB5FE119E016BA77 /* urDriver */ = {
 			isa = PBXGroup;
 			children = (
-				C86BCF1F1D1B0D0300002551 /* src */,
-				C86BCF2B1D1B0D0300002551 /* libs */,
+				4BB8B6DD80C317F67936086D /* do_output.cpp */,
+				BC16509169365C1F6A9EB705 /* do_output.h */,
+				C140D4FDAD2699F29A8407ED /* endian.h */,
+				6C565D9509FD68A92E3DF959 /* robot_state.cpp */,
+				C852A4DA6EFA7E8A9C9F5376 /* robot_state.h */,
+				0F11BD3E6E65535043F31971 /* robot_state_RT.cpp */,
+				596C21D8D5250D0E18F1FFEF /* robot_state_RT.h */,
+				024203D3DF3DB458B7E2EE1E /* ur_communication.cpp */,
+				38C6AC348E6D0EB2247AA95B /* ur_communication.h */,
+				631BA0AA35BB179BFCC3AE0C /* ur_driver.cpp */,
+				23B734403C00D72D356FD6C1 /* ur_driver.h */,
+				013AE5F9F28404C80CC237B0 /* ur_realtime_communication.cpp */,
+				1165D0A99F28E69382136050 /* ur_realtime_communication.h */,
 			);
-			name = ofxURDriver;
-			sourceTree = "<group>";
-		};
-		C86BCF1F1D1B0D0300002551 /* src */ = {
-			isa = PBXGroup;
-			children = (
-				3DC109171DEDF7E500794AB6 /* URIKFast.cpp */,
-				3DC109181DEDF7E500794AB6 /* URIKFast.h */,
-				C86BCF201D1B0D0300002551 /* ofxURDriver.h */,
-				C86BCF211D1B0D0300002551 /* Synchronized.h */,
-				C86BCF221D1B0D0300002551 /* UR5KinematicModel.cpp */,
-				C86BCF231D1B0D0300002551 /* UR5KinematicModel.h */,
-				C86BCF241D1B0D0300002551 /* URDriver.cpp */,
-				C86BCF251D1B0D0300002551 /* URDriver.h */,
-				C86BCF261D1B0D0300002551 /* URMove.cpp */,
-				C86BCF271D1B0D0300002551 /* URMove.h */,
-				C86BCF281D1B0D0300002551 /* URToolHead.cpp */,
-				C86BCF291D1B0D0300002551 /* URToolHead.h */,
-				C86BCF2A1D1B0D0300002551 /* URUtils.h */,
-			);
-			name = src;
-			path = ../../ofxURDriver/src;
-			sourceTree = "<group>";
-		};
-		C86BCF2B1D1B0D0300002551 /* libs */ = {
-			isa = PBXGroup;
-			children = (
-				C86BCF2C1D1B0D0300002551 /* urDriver */,
-				C86BCF3A1D1B0D0300002551 /* urKinematics */,
-			);
-			name = libs;
-			path = ../../ofxURDriver/libs;
-			sourceTree = "<group>";
-		};
-		C86BCF2C1D1B0D0300002551 /* urDriver */ = {
-			isa = PBXGroup;
-			children = (
-				C86BCF2D1D1B0D0300002551 /* do_output.cpp */,
-				C86BCF2E1D1B0D0300002551 /* do_output.h */,
-				C86BCF2F1D1B0D0300002551 /* endian.h */,
-				C86BCF301D1B0D0300002551 /* robot_state.cpp */,
-				C86BCF311D1B0D0300002551 /* robot_state.h */,
-				C86BCF321D1B0D0300002551 /* robot_state_RT.cpp */,
-				C86BCF331D1B0D0300002551 /* robot_state_RT.h */,
-				C86BCF341D1B0D0300002551 /* ur_communication.cpp */,
-				C86BCF351D1B0D0300002551 /* ur_communication.h */,
-				C86BCF361D1B0D0300002551 /* ur_driver.cpp */,
-				C86BCF371D1B0D0300002551 /* ur_driver.h */,
-				C86BCF381D1B0D0300002551 /* ur_realtime_communication.cpp */,
-				C86BCF391D1B0D0300002551 /* ur_realtime_communication.h */,
-			);
-			path = urDriver;
-			sourceTree = "<group>";
-		};
-		C86BCF3A1D1B0D0300002551 /* urKinematics */ = {
-			isa = PBXGroup;
-			children = (
-				C86BCF3B1D1B0D0300002551 /* ikfast.h */,
-				C86BCF3C1D1B0D0300002551 /* ur_kin.cpp */,
-				C86BCF3D1D1B0D0300002551 /* ur_kin.h */,
-			);
-			path = urKinematics;
-			sourceTree = "<group>";
-		};
-		C87E815B1CF8FF2200D7B6BE /* ofxRobotArm */ = {
-			isa = PBXGroup;
-			children = (
-				C87E815C1CF8FF2200D7B6BE /* src */,
-			);
-			name = ofxRobotArm;
-			sourceTree = "<group>";
-		};
-		C87E815C1CF8FF2200D7B6BE /* src */ = {
-			isa = PBXGroup;
-			children = (
-				C87E815F1CF8FF2200D7B6BE /* controllers */,
-				C87E81641CF8FF2200D7B6BE /* path */,
-				C87E816B1CF8FF2200D7B6BE /* utils */,
-				C87E81731CF8FF2200D7B6BE /* world */,
-			);
-			name = src;
-			path = ../src;
-			sourceTree = "<group>";
-		};
-		C87E815F1CF8FF2200D7B6BE /* controllers */ = {
-			isa = PBXGroup;
-			children = (
-				C87E81601CF8FF2200D7B6BE /* PathController.cpp */,
-				C87E81611CF8FF2200D7B6BE /* PathController.h */,
-				C87E81621CF8FF2200D7B6BE /* RobotController.cpp */,
-				C87E81631CF8FF2200D7B6BE /* RobotController.h */,
-			);
-			path = controllers;
-			sourceTree = "<group>";
-		};
-		C87E81641CF8FF2200D7B6BE /* path */ = {
-			isa = PBXGroup;
-			children = (
-				C87E81651CF8FF2200D7B6BE /* GMLPath.cpp */,
-				C87E81661CF8FF2200D7B6BE /* GMLPath.h */,
-				C87E81671CF8FF2200D7B6BE /* Path.cpp */,
-				C87E81681CF8FF2200D7B6BE /* Path.h */,
-				C87E81691CF8FF2200D7B6BE /* Path3D.cpp */,
-				C87E816A1CF8FF2200D7B6BE /* Path3D.h */,
-			);
-			path = path;
-			sourceTree = "<group>";
-		};
-		C87E816B1CF8FF2200D7B6BE /* utils */ = {
-			isa = PBXGroup;
-			children = (
-				C87E816C1CF8FF2200D7B6BE /* PathPlayer.cpp */,
-				C87E816D1CF8FF2200D7B6BE /* PathPlayer.h */,
-				C87E816E1CF8FF2200D7B6BE /* PathRecorder.cpp */,
-				C87E816F1CF8FF2200D7B6BE /* PathRecorder.h */,
-				C87E81701CF8FF2200D7B6BE /* RobotParameters.h */,
-				C87E81711CF8FF2200D7B6BE /* RobotStateMachine.cpp */,
-				C87E81721CF8FF2200D7B6BE /* RobotStateMachine.h */,
-			);
-			path = utils;
-			sourceTree = "<group>";
-		};
-		C87E81731CF8FF2200D7B6BE /* world */ = {
-			isa = PBXGroup;
-			children = (
-				C87E81741CF8FF2200D7B6BE /* WorkSurface.h */,
-				C87E81751CF8FF2200D7B6BE /* WorkSurface3D.cpp */,
-				C87E81761CF8FF2200D7B6BE /* WorkSurface3D.h */,
-			);
-			path = world;
+			name = urDriver;
 			sourceTree = "<group>";
 		};
 		E4328144138ABC890047C5CB /* Products */ = {
@@ -740,6 +726,25 @@
 			name = include;
 			sourceTree = "<group>";
 		};
+		F536DD4A5DAEC6AA55D2D2E7 /* src */ = {
+			isa = PBXGroup;
+			children = (
+				24848D908EEBDE666458FF1B /* ofxIKArm.cpp */,
+				118519C351E34960CEFA6C75 /* ofxIKArm.h */,
+				4552D8FA7E6C28D94987074E /* ofxJoint.cpp */,
+				41EFFE350A47D62150A849BD /* ofxJoint.h */,
+			);
+			name = src;
+			sourceTree = "<group>";
+		};
+		FE56FD07D1D653B95C48AE0B /* ofxIKArm */ = {
+			isa = PBXGroup;
+			children = (
+				F536DD4A5DAEC6AA55D2D2E7 /* src */,
+			);
+			name = ofxIKArm;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -751,7 +756,6 @@
 				E4B69B590A3A1756003C02F2 /* Frameworks */,
 				E4B6FFFD0C3F9AB9008CF71C /* ShellScript */,
 				E4C2427710CC5ABF004149E2 /* CopyFiles */,
-				8466F1851C04CA0E00918B1C /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -808,19 +812,6 @@
 /* End PBXReferenceProxy section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		8466F1851C04CA0E00918B1C /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 12;
-			files = (
-			);
-			inputPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "echo \"$GCC_PREPROCESSOR_DEFINITIONS\";\nAPPSTORE=`expr \"$GCC_PREPROCESSOR_DEFINITIONS\" : \".*APPSTORE=\\([0-9]*\\)\"`\nif [ -z \"$APPSTORE\" ] ; then\necho \"Note: Not copying bin/data to App Package or doing App Code signing. Use AppStore target for AppStore distribution\";\nelse\n# Copy bin/data into App/Resources\nrsync -avz --exclude='.DS_Store' \"${SRCROOT}/bin/data/\" \"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/data/\"\n\n# ---- Code Sign App Package ----\n \n# WARNING: You may have to run Clean in Xcode after changing CODE_SIGN_IDENTITY!\n\n# Verify that $CODE_SIGN_IDENTITY is set\nif [ -z \"${CODE_SIGN_IDENTITY}\" ] ; then\necho \"CODE_SIGN_IDENTITY needs to be set for framework code-signing\"\nexit 0\nfi\n\nif [ -z \"${CODE_SIGN_ENTITLEMENTS}\" ] ; then\necho \"CODE_SIGN_ENTITLEMENTS needs to be set for framework code-signing!\"\n\nif [ \"${CONFIGURATION}\" = \"Release\" ] ; then\nexit 1\nelse\n# Code-signing is optional for non-release builds.\nexit 0\nfi\nfi\n\nITEMS=\"\"\n\nFRAMEWORKS_DIR=\"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}\"\necho \"$FRAMEWORKS_DIR\"\nif [ -d \"$FRAMEWORKS_DIR\" ] ; then\nFRAMEWORKS=$(find \"${FRAMEWORKS_DIR}\" -depth -type d -name \"*.framework\" -or -name \"*.dylib\" -or -name \"*.bundle\" | sed -e \"s/\\(.*framework\\)/\\1\\/Versions\\/A\\//\")\nRESULT=$?\nif [[ $RESULT != 0 ]] ; then\nexit 1\nfi\n\nITEMS=\"${FRAMEWORKS}\"\nfi\n\nLOGINITEMS_DIR=\"${TARGET_BUILD_DIR}/${CONTENTS_FOLDER_PATH}/Library/LoginItems/\"\nif [ -d \"$LOGINITEMS_DIR\" ] ; then\nLOGINITEMS=$(find \"${LOGINITEMS_DIR}\" -depth -type d -name \"*.app\")\nRESULT=$?\nif [[ $RESULT != 0 ]] ; then\nexit 1\nfi\n\nITEMS=\"${ITEMS}\"$'\\n'\"${LOGINITEMS}\"\nfi\n\n# Prefer the expanded name, if available.\nCODE_SIGN_IDENTITY_FOR_ITEMS=\"${EXPANDED_CODE_SIGN_IDENTITY_NAME}\"\nif [ \"${CODE_SIGN_IDENTITY_FOR_ITEMS}\" = \"\" ] ; then\n# Fall back to old behavior.\nCODE_SIGN_IDENTITY_FOR_ITEMS=\"${CODE_SIGN_IDENTITY}\"\nfi\n\necho \"Identity:\"\necho \"${CODE_SIGN_IDENTITY_FOR_ITEMS}\"\n\necho \"Entitlements:\"\necho \"${CODE_SIGN_ENTITLEMENTS}\"\n\necho \"Found:\"\necho \"${ITEMS}\"\n\n# Change the Internal Field Separator (IFS) so that spaces in paths will not cause problems below.\nSAVED_IFS=$IFS\nIFS=$(echo -en \"\\n\\b\")\n\n# Loop through all items.\nfor ITEM in $ITEMS;\ndo\necho \"Signing '${ITEM}'\"\ncodesign --force --verbose --sign \"${CODE_SIGN_IDENTITY_FOR_ITEMS}\" --entitlements \"${CODE_SIGN_ENTITLEMENTS}\" \"${ITEM}\"\nRESULT=$?\nif [[ $RESULT != 0 ]] ; then\necho \"Failed to sign '${ITEM}'.\"\nIFS=$SAVED_IFS\nexit 1\nfi\ndone\n\n# Restore $IFS.\nIFS=$SAVED_IFS\n\nfi\n";
-		};
 		E4B6FFFD0C3F9AB9008CF71C /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -832,7 +823,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "mkdir -p \"$TARGET_BUILD_DIR/$PRODUCT_NAME.app/Contents/Resources/\"\n# Copy default icon file into App/Resources\nrsync -aved \"$ICON_FILE\" \"$TARGET_BUILD_DIR/$PRODUCT_NAME.app/Contents/Resources/\"\n# Copy libfmod and change install directory for fmod to run\nrsync -aved ../../../libs/fmodex/lib/osx/libfmodex.dylib \"$TARGET_BUILD_DIR/$PRODUCT_NAME.app/Contents/Frameworks/\";\ninstall_name_tool -change @executable_path/libfmodex.dylib @executable_path/../Frameworks/libfmodex.dylib \"$TARGET_BUILD_DIR/$PRODUCT_NAME.app/Contents/MacOS/$PRODUCT_NAME\";\n\necho \"$GCC_PREPROCESSOR_DEFINITIONS\";\nAPPSTORE=`expr \"$GCC_PREPROCESSOR_DEFINITIONS\" : \".*APPSTORE=\\([0-9]*\\)\"`\nif [ -z \"${APPSTORE}\" ] ; then\necho \"Copying GLUT framework\";\n# Copy GLUT framework (must remove for AppStore submissions)\nrsync -aved ../../../libs/glut/lib/osx/GLUT.framework \"$TARGET_BUILD_DIR/$PRODUCT_NAME.app/Contents/Frameworks/\"\nelse\necho \"Not including GLUT\";\nfi\n";
+			shellScript = "mkdir -p \"$TARGET_BUILD_DIR/$PRODUCT_NAME.app/Contents/Resources/\"\n# Copy default icon file into App/Resources\nrsync -aved \"$ICON_FILE\" \"$TARGET_BUILD_DIR/$PRODUCT_NAME.app/Contents/Resources/\"\n# Copy libfmod and change install directory for fmod to run\nrsync -aved ../../../libs/fmodex/lib/osx/libfmodex.dylib \"$TARGET_BUILD_DIR/$PRODUCT_NAME.app/Contents/Frameworks/\";\ninstall_name_tool -change @executable_path/libfmodex.dylib @executable_path/../Frameworks/libfmodex.dylib \"$TARGET_BUILD_DIR/$PRODUCT_NAME.app/Contents/MacOS/$PRODUCT_NAME\";\n# Copy GLUT framework (must remove for AppStore submissions)\nrsync -aved ../../../libs/glut/lib/osx/GLUT.framework \"$TARGET_BUILD_DIR/$PRODUCT_NAME.app/Contents/Frameworks/\"\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -841,55 +832,57 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C87E81781CF8FF2200D7B6BE /* PathController.cpp in Sources */,
-				C86BCF471D1B0D0300002551 /* ur_realtime_communication.cpp in Sources */,
 				E4B69E200A3A1BDC003C02F2 /* main.cpp in Sources */,
 				E4B69E210A3A1BDC003C02F2 /* ofApp.cpp in Sources */,
 				3B8120368B4FCCD80883BAF3 /* ofxAssimpAnimation.cpp in Sources */,
-				C87E817E1CF8FF2200D7B6BE /* PathRecorder.cpp in Sources */,
 				483FA4F6D5FA6422C559B1F5 /* ofxAssimpMeshHelper.cpp in Sources */,
-				C86BCF461D1B0D0300002551 /* ur_driver.cpp in Sources */,
-				C86BCF3F1D1B0D0300002551 /* URDriver.cpp in Sources */,
-				C86BCF411D1B0D0300002551 /* URToolHead.cpp in Sources */,
 				8DED5056525646FA71980866 /* ofxAssimpModelLoader.cpp in Sources */,
 				B8846EF8E504895A4A9EFEC0 /* ofxAssimpTexture.cpp in Sources */,
 				39C1076FC679109A21E21816 /* tagReader.cpp in Sources */,
-				C87E817A1CF8FF2200D7B6BE /* GMLPath.cpp in Sources */,
-				C87E817D1CF8FF2200D7B6BE /* PathPlayer.cpp in Sources */,
 				03B14860C85545A54080C30A /* tagWriter.cpp in Sources */,
-				C86BCF3E1D1B0D0300002551 /* UR5KinematicModel.cpp in Sources */,
 				3415942CF8402F92CD12F9A1 /* ofxGizmo.cpp in Sources */,
 				41E2223E5B0F12AB2C7D678B /* GizmoTransformMove.cpp in Sources */,
-				C87E81801CF8FF2200D7B6BE /* WorkSurface3D.cpp in Sources */,
-				C87E817C1CF8FF2200D7B6BE /* Path3D.cpp in Sources */,
 				0E33E39B0F7BD7C01D368551 /* GizmoTransformRender.cpp in Sources */,
 				658E7D8B200D6D15D55EFF62 /* GizmoTransformRotate.cpp in Sources */,
 				2678BE5C3074D11B5F284D2D /* GizmoTransformScale.cpp in Sources */,
 				F090A3379D0F9EA5625F5896 /* ZBaseMaths.cpp in Sources */,
-				C86BCF431D1B0D0300002551 /* robot_state.cpp in Sources */,
 				FCBD7626110FDE944C671566 /* ZMathsFunc.cpp in Sources */,
 				856AA354D08AB4B323081444 /* ofxBaseGui.cpp in Sources */,
 				5CBB2AB3A60F65431D7B555D /* ofxButton.cpp in Sources */,
-				C86BCF401D1B0D0300002551 /* URMove.cpp in Sources */,
 				B266578FC55D23BFEBC042E7 /* ofxGuiGroup.cpp in Sources */,
-				C87E817B1CF8FF2200D7B6BE /* Path.cpp in Sources */,
 				483908258D00B98B4BE69F07 /* ofxLabel.cpp in Sources */,
-				C86BCF451D1B0D0300002551 /* ur_communication.cpp in Sources */,
 				F285EB3169F1566CA3D93C20 /* ofxPanel.cpp in Sources */,
-				C86BCF481D1B0D0300002551 /* ur_kin.cpp in Sources */,
 				837220E80EB56CD44AD27F2A /* ofxSlider.cpp in Sources */,
 				B56FE57CC35806596D38118C /* ofxSliderGroup.cpp in Sources */,
-				3DC109191DEDF7E500794AB6 /* URIKFast.cpp in Sources */,
-				C87E817F1CF8FF2200D7B6BE /* RobotStateMachine.cpp in Sources */,
 				1CD33E884D9E3358252E82A1 /* ofxToggle.cpp in Sources */,
+				CC8C937FD7773D0611844D2B /* ofxIKArm.cpp in Sources */,
+				6AB712D7ADFCF5E6EC880EF3 /* ofxJoint.cpp in Sources */,
 				714509BA4B4022405175C461 /* ParallelTransportFrames.cpp in Sources */,
+				082DC05315657589B3BE7B55 /* RobotController.cpp in Sources */,
+				4AB68BB26317E4EB3C98B6BE /* CylinderRestrictor.cpp in Sources */,
+				67DE674DE0BF5B334486DB1A /* JointRestrictor.cpp in Sources */,
+				C3374E1A8F3DC0A50B8AC765 /* PathPlayer.cpp in Sources */,
+				8E200E09D012F0CB4F19A5BE /* PathRecorder.cpp in Sources */,
+				831D911ACEB793F4A6C0D720 /* RobotAngleOffsets.cpp in Sources */,
+				F300A7F27D82FA670DD11C4D /* RobotArmCollision.cpp in Sources */,
+				1E855678068F9CE35DAB6A71 /* RobotArmSafety.cpp in Sources */,
+				0729D1663E37DF8CFF90C82D /* RobotStateMachine.cpp in Sources */,
+				C654720CBC7B8B2A650C789F /* UR5KinematicModel.cpp in Sources */,
+				868D5DCCF10A5D8FC9FCAAAC /* URDriver.cpp in Sources */,
+				4E2C68172A93BDE6837C4CD3 /* URIKFast.cpp in Sources */,
+				4D55698F6511778290B39D89 /* URMove.cpp in Sources */,
+				67D6A2F5F66F741FE4A699E9 /* URToolHead.cpp in Sources */,
+				F7D0C4D9408396052CA1866D /* do_output.cpp in Sources */,
+				F88565C7439651CA957E4CE7 /* robot_state.cpp in Sources */,
+				F261F51259685209998CA01D /* robot_state_RT.cpp in Sources */,
+				B445C4E2D17F03833AF4E3C9 /* ur_communication.cpp in Sources */,
+				7747F13174613C4D4B13E548 /* ur_driver.cpp in Sources */,
+				1CC0FA5C65A07541A80AC56C /* ur_realtime_communication.cpp in Sources */,
+				4EF6DFC4658F60F6D47DE985 /* ur_kin.cpp in Sources */,
 				63B57AC5BF4EF088491E0317 /* ofxXmlSettings.cpp in Sources */,
-				C86BCF441D1B0D0300002551 /* robot_state_RT.cpp in Sources */,
 				933A2227713C720CEFF80FD9 /* tinyxml.cpp in Sources */,
 				9D44DC88EF9E7991B4A09951 /* tinyxmlerror.cpp in Sources */,
-				C87E81791CF8FF2200D7B6BE /* RobotController.cpp in Sources */,
 				5A4349E9754D6FA14C0F2A3A /* tinyxmlparser.cpp in Sources */,
-				C86BCF421D1B0D0300002551 /* do_output.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -904,120 +897,6 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		99FA3DBB1C7456C400CFA0EE /* AppStore */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = E4EB6923138AFD0F00A09F29 /* Project.xcconfig */;
-			buildSettings = {
-				CONFIGURATION_BUILD_DIR = "$(SRCROOT)/bin/";
-				COPY_PHASE_STRIP = YES;
-				DEAD_CODE_STRIPPING = YES;
-				GCC_AUTO_VECTORIZATION = YES;
-				GCC_ENABLE_SSE3_EXTENSIONS = YES;
-				GCC_ENABLE_SUPPLEMENTAL_SSE3_INSTRUCTIONS = YES;
-				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
-				GCC_OPTIMIZATION_LEVEL = 3;
-				"GCC_PREPROCESSOR_DEFINITIONS[arch=*]" = "DISTRIBUTION=1";
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				GCC_UNROLL_LOOPS = YES;
-				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = YES;
-				GCC_WARN_ABOUT_INVALID_OFFSETOF_MACRO = NO;
-				GCC_WARN_ALLOW_INCOMPLETE_PROTOCOL = NO;
-				GCC_WARN_UNINITIALIZED_AUTOS = NO;
-				GCC_WARN_UNUSED_VALUE = NO;
-				GCC_WARN_UNUSED_VARIABLE = NO;
-				HEADER_SEARCH_PATHS = (
-					"$(OF_CORE_HEADERS)",
-					src,
-					../../../addons/ofxAssimpModelLoader/libs,
-					../../../addons/ofxAssimpModelLoader/libs/assimp,
-					../../../addons/ofxAssimpModelLoader/libs/assimp/include,
-					../../../addons/ofxAssimpModelLoader/libs/assimp/include/assimp,
-					../../../addons/ofxAssimpModelLoader/libs/assimp/include/assimp/Compiler,
-					../../../addons/ofxAssimpModelLoader/libs/assimp/lib,
-					../../../addons/ofxAssimpModelLoader/libs/assimp/lib/emscripten,
-					../../../addons/ofxAssimpModelLoader/libs/assimp/lib/osx,
-					../../../addons/ofxAssimpModelLoader/libs/assimp/license,
-					../../../addons/ofxAssimpModelLoader/src,
-					../../../addons/ofxGML/src,
-					../../../addons/ofxGML/src/gml,
-					../../../addons/ofxGizmo/libs,
-					../../../addons/ofxGizmo/libs/LibGizmo,
-					../../../addons/ofxGizmo/src,
-					../../../addons/ofxGui/src,
-					../../../addons/ofxPtf/src,
-					../../../addons/ofxTiming/src,
-					../../../addons/ofxXmlSettings/libs,
-					../../../addons/ofxXmlSettings/src,
-				);
-				MACOSX_DEPLOYMENT_TARGET = 10.8;
-				OTHER_CPLUSPLUSFLAGS = (
-					"-D__MACOSX_CORE__",
-					"-mtune=native",
-				);
-				OTHER_LDFLAGS = (
-					"$(OF_CORE_FRAMEWORKS)",
-					"$(OF_CORE_LIBS)",
-					../../../addons/ofxAssimpModelLoader/libs/assimp/lib/osx/assimp.a,
-				);
-				SDKROOT = macosx;
-			};
-			name = AppStore;
-		};
-		99FA3DBC1C7456C400CFA0EE /* AppStore */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = E4EB6923138AFD0F00A09F29 /* Project.xcconfig */;
-			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
-				COPY_PHASE_STRIP = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
-				);
-				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../../libs/glut/lib/osx\"";
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_MODEL_TUNING = NONE;
-				"GCC_PREPROCESSOR_DEFINITIONS[arch=*]" = "APPSTORE=1";
-				HEADER_SEARCH_PATHS = (
-					"$(OF_CORE_HEADERS)",
-					src,
-					../../../addons/ofxAssimpModelLoader/libs,
-					../../../addons/ofxAssimpModelLoader/libs/assimp,
-					../../../addons/ofxAssimpModelLoader/libs/assimp/include,
-					../../../addons/ofxAssimpModelLoader/libs/assimp/include/assimp,
-					../../../addons/ofxAssimpModelLoader/libs/assimp/include/assimp/Compiler,
-					../../../addons/ofxAssimpModelLoader/libs/assimp/lib,
-					../../../addons/ofxAssimpModelLoader/libs/assimp/lib/emscripten,
-					../../../addons/ofxAssimpModelLoader/libs/assimp/lib/osx,
-					../../../addons/ofxAssimpModelLoader/libs/assimp/license,
-					../../../addons/ofxAssimpModelLoader/src,
-					../../../addons/ofxGML/src,
-					../../../addons/ofxGML/src/gml,
-					../../../addons/ofxGizmo/libs,
-					../../../addons/ofxGizmo/libs/LibGizmo,
-					../../../addons/ofxGizmo/src,
-					../../../addons/ofxGui/src,
-					../../../addons/ofxPtf/src,
-					../../../addons/ofxTiming/src,
-					../../../addons/ofxXmlSettings/libs,
-					../../../addons/ofxXmlSettings/src,
-				);
-				ICON = "$(ICON_NAME_RELEASE)";
-				ICON_FILE = "$(ICON_FILE_PATH)$(ICON)";
-				INFOPLIST_FILE = "openFrameworks-Info.plist";
-				INSTALL_PATH = /Applications;
-				LIBRARY_SEARCH_PATHS = "$(inherited)";
-				OTHER_LDFLAGS = (
-					"$(OF_CORE_FRAMEWORKS)",
-					"$(OF_CORE_LIBS)",
-					../../../addons/ofxAssimpModelLoader/libs/assimp/lib/osx/assimp.a,
-				);
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				USER_HEADER_SEARCH_PATHS = "";
-				WRAPPER_EXTENSION = app;
-				baseConfigurationReference = E4EB6923138AFD0F00A09F29;
-			};
-			name = AppStore;
-		};
 		E4B69B4E0A3A1720003C02F2 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = E4EB6923138AFD0F00A09F29 /* Project.xcconfig */;
@@ -1056,8 +935,18 @@
 					../../../addons/ofxGizmo/libs/LibGizmo,
 					../../../addons/ofxGizmo/src,
 					../../../addons/ofxGui/src,
+					../../../addons/ofxIKArm/src,
 					../../../addons/ofxPtf/src,
+					../../../addons/ofxRobotArm/src,
+					../../../addons/ofxRobotArm/src/controllers,
+					../../../addons/ofxRobotArm/src/path,
+					../../../addons/ofxRobotArm/src/utils,
+					../../../addons/ofxRobotArm/src/world,
 					../../../addons/ofxTiming/src,
+					../../../addons/ofxURDriver/libs,
+					../../../addons/ofxURDriver/libs/urDriver,
+					../../../addons/ofxURDriver/libs/urKinematics,
+					../../../addons/ofxURDriver/src,
 					../../../addons/ofxXmlSettings/libs,
 					../../../addons/ofxXmlSettings/src,
 				);
@@ -1115,8 +1004,18 @@
 					../../../addons/ofxGizmo/libs/LibGizmo,
 					../../../addons/ofxGizmo/src,
 					../../../addons/ofxGui/src,
+					../../../addons/ofxIKArm/src,
 					../../../addons/ofxPtf/src,
+					../../../addons/ofxRobotArm/src,
+					../../../addons/ofxRobotArm/src/controllers,
+					../../../addons/ofxRobotArm/src/path,
+					../../../addons/ofxRobotArm/src/utils,
+					../../../addons/ofxRobotArm/src/world,
 					../../../addons/ofxTiming/src,
+					../../../addons/ofxURDriver/libs,
+					../../../addons/ofxURDriver/libs/urDriver,
+					../../../addons/ofxURDriver/libs/urKinematics,
+					../../../addons/ofxURDriver/src,
 					../../../addons/ofxXmlSettings/libs,
 					../../../addons/ofxXmlSettings/src,
 				);
@@ -1167,8 +1066,18 @@
 					../../../addons/ofxGizmo/libs/LibGizmo,
 					../../../addons/ofxGizmo/src,
 					../../../addons/ofxGui/src,
+					../../../addons/ofxIKArm/src,
 					../../../addons/ofxPtf/src,
+					../../../addons/ofxRobotArm/src,
+					../../../addons/ofxRobotArm/src/controllers,
+					../../../addons/ofxRobotArm/src/path,
+					../../../addons/ofxRobotArm/src/utils,
+					../../../addons/ofxRobotArm/src/world,
 					../../../addons/ofxTiming/src,
+					../../../addons/ofxURDriver/libs,
+					../../../addons/ofxURDriver/libs/urDriver,
+					../../../addons/ofxURDriver/libs/urKinematics,
+					../../../addons/ofxURDriver/src,
 					../../../addons/ofxXmlSettings/libs,
 					../../../addons/ofxXmlSettings/src,
 				);
@@ -1183,7 +1092,6 @@
 					../../../addons/ofxAssimpModelLoader/libs/assimp/lib/osx/assimp.a,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)Debug";
-				USER_HEADER_SEARCH_PATHS = "";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -1220,8 +1128,18 @@
 					../../../addons/ofxGizmo/libs/LibGizmo,
 					../../../addons/ofxGizmo/src,
 					../../../addons/ofxGui/src,
+					../../../addons/ofxIKArm/src,
 					../../../addons/ofxPtf/src,
+					../../../addons/ofxRobotArm/src,
+					../../../addons/ofxRobotArm/src/controllers,
+					../../../addons/ofxRobotArm/src/path,
+					../../../addons/ofxRobotArm/src/utils,
+					../../../addons/ofxRobotArm/src/world,
 					../../../addons/ofxTiming/src,
+					../../../addons/ofxURDriver/libs,
+					../../../addons/ofxURDriver/libs/urDriver,
+					../../../addons/ofxURDriver/libs/urKinematics,
+					../../../addons/ofxURDriver/src,
 					../../../addons/ofxXmlSettings/libs,
 					../../../addons/ofxXmlSettings/src,
 				);
@@ -1236,7 +1154,6 @@
 					../../../addons/ofxAssimpModelLoader/libs/assimp/lib/osx/assimp.a,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				USER_HEADER_SEARCH_PATHS = "";
 				WRAPPER_EXTENSION = app;
 				baseConfigurationReference = E4EB6923138AFD0F00A09F29;
 			};
@@ -1250,7 +1167,6 @@
 			buildConfigurations = (
 				E4B69B4E0A3A1720003C02F2 /* Debug */,
 				E4B69B4F0A3A1720003C02F2 /* Release */,
-				99FA3DBB1C7456C400CFA0EE /* AppStore */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -1260,7 +1176,6 @@
 			buildConfigurations = (
 				E4B69B600A3A1757003C02F2 /* Debug */,
 				E4B69B610A3A1757003C02F2 /* Release */,
-				99FA3DBC1C7456C400CFA0EE /* AppStore */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
