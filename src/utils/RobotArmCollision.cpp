@@ -189,7 +189,7 @@ void RobotArmCollision::update( float aDeltaTimef ) {
         
         if( isGoingToWarn() ) {
             
-            cout << "Going to warn :: hasMainCollisions: " << hasMainCollisionWarnings() << " isNeckHittingForearm: " << isNeckHittingForearm() << " | " << ofGetFrameNum() << endl;
+//            cout << "Going to warn :: hasMainCollisions: " << hasMainCollisionWarnings() << " isNeckHittingForearm: " << isNeckHittingForearm() << " | " << ofGetFrameNum() << endl;
             // try to solve for main collisions first //
             if( hasMainCollisionWarnings() ) {
                 solveMainCollisions();
@@ -204,7 +204,7 @@ void RobotArmCollision::update( float aDeltaTimef ) {
             // do we still have collision warnings //
             if( !hasMainCollisionWarnings() && isNeckHittingForearm() ) {
                 solveHeadToForearmCollision();
-                cout << "after forearm solver :: hasMainCollisions : " << hasMainCollisionWarnings() << " isNeckHittingForearm: " << isNeckHittingForearm() << " | " << ofGetFrameNum() << endl;
+//                cout << "after forearm solver :: hasMainCollisions : " << hasMainCollisionWarnings() << " isNeckHittingForearm: " << isNeckHittingForearm() << " | " << ofGetFrameNum() << endl;
             }
             
             break;
