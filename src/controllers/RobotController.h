@@ -31,8 +31,8 @@ namespace ofxRobotArm {
         void update();
         void update(vector<double> pose);
         void moveArm();
-        void draw(bool debug = false);
-        void drawPreview();
+        void draw(bool bDrawDebug=true);
+        void drawPreview(bool bDrawDebug=true);
         
         void enableControlJointsExternally();
         void disableControlJointsExternally();

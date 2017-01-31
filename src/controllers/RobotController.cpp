@@ -204,14 +204,13 @@ void RobotController::close(){
     }
 }
 
-void RobotController::draw(bool debug){
-    actualArm.draw(debug);
+void RobotController::draw(bool bDrawDebug){
+    actualArm.draw(bDrawDebug);
 }
 
-void RobotController::drawPreview(){
-    previewArm.draw(false);
+void RobotController::drawPreview(bool bDrawDebug){
+    previewArm.draw(bDrawDebug);
     mIKArm.draw();
-
 }
 
 void RobotController::enableControlJointsExternally() {

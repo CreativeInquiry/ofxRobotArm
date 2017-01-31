@@ -12,7 +12,7 @@ ${PREFIX}CreativeInquiry/ofxNatNet
 ${PREFIX}CreativeInquiry/ofxGML
 ${PREFIX}CreativeInquiry/ofxGizmo
 ${PREFIX}CreativeInquiry/ofxTimeline
-${PREFIX}CreativeInquiry/ofxURDriver
+# ${PREFIX}CreativeInquiry/ofxURDriver
 ${PREFIX}CreativeInquiry/ofxPtf
 
 cd ../addons/ofxRobotArm
