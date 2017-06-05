@@ -42,7 +42,7 @@ namespace ofxRobotArm {
             float actualRobotAngle = 0;
         };
         
-        void setup();
+        ofParameterGroup & setup();
         void setRobotAngles( vector< double > aAcutalRobotAngles );
         void setDesiredAngles( vector< double > aDesiredRobotAngles );
         void update( float aDeltaTimef );
@@ -64,21 +64,25 @@ namespace ofxRobotArm {
         
         bool hasMainCollisionWarnings();
         bool isNeckHittingForearm();
-        ofParameterGroup params;
-
+        
     protected:
         void solveMainCollisions();
-        void solveHeadToForearmCollision();
+        void solveHeadToForearmCollision(int aForcedDirection);
         
-                ofParameter< bool > bApply;
+        ofParameterGroup params;
+        ofParameter< bool > bApply;
         ofParameter< bool > bDrawWarnings, bDrawStops;
+        ofParameter< float > mStopSphereScale;
         vector< ofParameter< float > > mPaddings;
         ofParameter< float > mCorrectStepAngle;
         ofParameter< float > mMaxCorrectiveAngle;
+        ofParameter< float > mSpherePadding;
         shared_ptr< UR5KinematicModel > mModel, mPredictiveModel;
         vector< Appendage > mAppendages, mPredictiveAppendages;
         vector< double > mDesiredAngles;
         float mResetPct = 0.0f;
+        float mPrevSpherePadding = 0;
+        float mPrevSphereStopScale = 0.;
         
         ofMesh sphereMesh;
     };

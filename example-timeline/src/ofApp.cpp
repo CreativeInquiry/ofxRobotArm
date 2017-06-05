@@ -12,6 +12,7 @@ void ofApp::setup(){
     setupViewports();
     
     parameters.setup();
+    parameters.ipAddress = "192.168.1.9";
     robot.setup(parameters);
     setupGUI();
     setupTimeline();
@@ -58,7 +59,7 @@ void ofApp::setupTimeline(){
     timeline.setup();
     
     timeline.setFrameRate(60);
-    timeline.setDurationInFrames(timeline.getFrameRate()*30);
+    timeline.setDurationInFrames(60*30);
     timeline.setLoopType(OF_LOOP_NORMAL);
     
     nodeTrack = new ofxTLNodeTrack();
@@ -91,8 +92,6 @@ void ofApp::setupGUI(){
 }
 
 void ofApp::positionGUI(){
-    viewportReal.height -= (panelJoints.getHeight());
-    viewportReal.y +=(panelJoints.getHeight());
     panel.setPosition(viewportReal.x+viewportReal.width, 10);
     panelJointsSpeed.setPosition(viewportReal.x, 10);
     panelJointsIK.setPosition(panelJointsSpeed.getPosition().x+panelJoints.getWidth(), 10);
@@ -145,7 +144,7 @@ void ofApp::moveArm(){
     
     // assign the target pose to the current robot pose
     if(parameters.bCopy){
-        parameters.bCopy = false;
+        //parameters.bCopy = false;
         parameters.targetTCP.rotation = ofQuaternion(90, ofVec3f(0, 0, 1));
         parameters.targetTCP.rotation*=ofQuaternion(90, ofVec3f(1, 0, 0));
         
@@ -163,7 +162,6 @@ void ofApp::moveArm(){
     }
     // follow a user-defined position and orientation
     if(parameters.bFollow){
-        
         parameters.targetTCP.position.interpolate(tcpNode.getPosition()/1000.0, parameters.followLerp);
         parameters.targetTCP.rotation = tcpNode.getOrientationQuat();
         parameters.targetTCPOrientation = ofVec4f(parameters.targetTCP.rotation.x(), parameters.targetTCP.rotation.y(), parameters.targetTCP.rotation.z(), parameters.targetTCP.rotation.w());
@@ -183,16 +181,21 @@ void ofApp::draw(){
     
     
     cams[1]->begin(viewportSim);
+    ofEnableDepthTest();
     gizmo.draw( *cams[1] );
-    robot.movement.draw(0);
+    robot.drawPreview();
+    robot.drawSafety(*cams[1]);
+    robot.drawIK();
+    ofDisableDepthTest();
     cams[1]->end();
     
     cams[0]->begin(viewportReal);
     tcpNode.draw();
-    
+        ofEnableDepthTest();
     if (!hideRobot){
-        robot.robot.model.draw();
+        robot.draw();
     }
+    ofDisableDepthTest();
     cams[0]->end();
     
     
@@ -264,7 +267,6 @@ void ofApp::handleViewportPresets(int key){
             cams[activeCam]->reset();
             cams[activeCam]->setPosition(0, 0, dist);
             cams[activeCam]->lookAt(ofVec3f(0, 0, 0), ofVec3f(0, 0, 1));
-            //        cams[activeCam]->movedManually();
             viewportLabels[activeCam] = "TOP VIEW";
         }
         // LEFT VIEW
@@ -272,7 +274,6 @@ void ofApp::handleViewportPresets(int key){
             cams[activeCam]->reset();
             cams[activeCam]->setPosition(dist, 0, 0);
             cams[activeCam]->lookAt(ofVec3f(0, 0, 0), ofVec3f(0, 0, 1));
-            //        cams[activeCam]->movedManually();
             viewportLabels[activeCam] = "LEFT VIEW";
         }
         // FRONT VIEW
@@ -280,7 +281,6 @@ void ofApp::handleViewportPresets(int key){
             cams[activeCam]->reset();
             cams[activeCam]->setPosition(0, dist, 0);
             cams[activeCam]->lookAt(ofVec3f(0, 0, 0), ofVec3f(0, 0, 1));
-            //        cams[activeCam]->movedManually();
             viewportLabels[activeCam] = "FRONT VIEW";
         }
         // PERSPECTIVE VIEW
@@ -288,7 +288,6 @@ void ofApp::handleViewportPresets(int key){
             cams[activeCam]->reset();
             cams[activeCam]->setPosition(dist, dist, dist/4);
             cams[activeCam]->lookAt(ofVec3f(0, 0, 0), ofVec3f(0, 0, 1));
-            //        cams[activeCam]->movedManually();
             viewportLabels[activeCam] = "PERSPECTIVE VIEW";
         }
     }

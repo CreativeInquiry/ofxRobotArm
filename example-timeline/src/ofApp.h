@@ -12,7 +12,7 @@
 
 //#define ENABLE_NATNET
 
-
+using namespace ofxRobotArm;
 class ofApp : public ofBaseApp{
     
 public:

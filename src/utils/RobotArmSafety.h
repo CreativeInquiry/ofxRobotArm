@@ -14,28 +14,29 @@
 namespace ofxRobotArm {
     class RobotArmSafety {
     public:
-        void setup();
+        ofParameterGroup & setup();
         void setDesiredAngles( vector< double > aangles );
         void setCurrentRobotArmAnlges( vector< double > aRobotArmAngles );
 //        void update(RobotController& aRobotController );
         void update( float aDeltaTimef );
+        void update( UR5KinematicModel& previewArm );
         void draw();
         void draw( UR5KinematicModel* amodel, ofCamera& acam );
+        
+        void checkCollision(float aDeltaTimef);
         
         vector< double > getTargetRobotAngles();
         vector< double > getDesiredAngles();
         bool isArmPoseCloseToTargetPose();
         
         void setLerpMult( float aMult );
-    
-        ofParameterGroup params;
         
-        shared_ptr< ofxRobotArm::JointRestrictor > m_jointRestrictor;
-        shared_ptr< ofxRobotArm::CylinderRestrictor > mCylinderRestrictor;
-        shared_ptr< ofxRobotArm::RobotArmCollision > mCollision;
+        shared_ptr< JointRestrictor > m_jointRestrictor;
+        shared_ptr< CylinderRestrictor > mCylinderRestrictor;
+        shared_ptr< RobotArmCollision > mCollision;
     protected:
         float getLerpAmnt( float aDiffInRadians, float aDeltaTimef );
-
+        ofParameterGroup params;
         ofParameter< float > m_angleLerp;
         ofParameter< float > m_angleEpsilon;
         ofParameter< float > m_maxLerpAngle;

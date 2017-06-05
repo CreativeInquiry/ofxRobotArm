@@ -10,7 +10,7 @@
 using namespace ofxRobotArm;
 
 //--------------------------------------------------------------
-void CylinderRestrictor::setup() {
+ ofParameterGroup &  CylinderRestrictor::setup() {
     params.setName("CylinderRestrictor");
     
     params.add( bEnableCylinderLimit.set( "EnableCylinder", false ));
@@ -19,7 +19,7 @@ void CylinderRestrictor::setup() {
     params.add( m_cylinderHeight.set( "CylinderHeight", 900, 50, 1500 ));
     //    params.add( m_cylinderY.set( "CylinderY", 0, -1000, 1000 ));
     params.add( m_cylinderZ.set( "CylinderZ", 450, -1000, 1000 ));
-
+    return params;
 }
 
 //--------------------------------------------------------------

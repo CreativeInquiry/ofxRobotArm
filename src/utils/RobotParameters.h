@@ -43,7 +43,7 @@ namespace ofxRobotArm{
             }
             
             robotArmParams.add(bMove.set("Move", false));
-            robotArmParams.add(bDoReconnect.set("TryReconnect", false));
+            robotArmParams.add(bDoReconnect.set("TryReconnect", true));
             
             joints.setName("Joint Pos");
             targetJoints.setName("Target Joints");

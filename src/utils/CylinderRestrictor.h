@@ -12,15 +12,15 @@
 namespace ofxRobotArm {
     class CylinderRestrictor {
     public:
-        void setup();
+        ofParameterGroup &  setup();
         void update( float aDeltaTimef );
         void draw();
         
         bool isEnabled();
         bool isWithinCylinder( UR5KinematicModel* amodel );
-         ofParameterGroup params;
+        
     protected:
-       
+        ofParameterGroup params;
         ofParameter< bool > bEnableCylinderLimit;
         ofParameter< bool > bDrawCylinderLimit;
         ofParameter< float > m_cylinderRadius;

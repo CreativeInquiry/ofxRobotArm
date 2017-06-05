@@ -2,6 +2,7 @@ ofxAssimpModelLoader
 ofxGML
 ofxGizmo
 ofxGui
+ofxIKArm
 ofxMSATimer
 ofxNatNet
 ofxOpenCv
