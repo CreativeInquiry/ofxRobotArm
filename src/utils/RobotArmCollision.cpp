@@ -86,6 +86,7 @@ void RobotArmCollision::update( float aDeltaTimef ) {
     mPrevSpherePadding      = mSpherePadding;
     mPrevSphereStopScale    = mStopSphereScale;
     
+
     
     if( !mAppendages.size() ) {
         //        mAppendages.resize( mModel->nodes.size()-1 );

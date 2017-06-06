@@ -23,7 +23,7 @@ namespace ofxRobotArm {
         void draw();
         void draw( UR5KinematicModel* amodel, ofCamera& acam );
         
-        void checkCollision(float aDeltaTimef);
+        void checkCollision(vector<double> actual, vector<double> target);
         
         vector< double > getTargetRobotAngles();
         vector< double > getDesiredAngles();
