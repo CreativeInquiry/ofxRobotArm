@@ -72,6 +72,24 @@ bool CylinderRestrictor::isWithinCylinder( UR5KinematicModel* amodel ) {
 }
 
 
+//--------------------------------------------------------------
+bool CylinderRestrictor::isWithinCylinder( UR10KinematicModel* amodel ) {
+    if( !m_cylinder ) return true;
+    ofVec3f cpos = m_cylinder->getPosition();
+    // loop through the nodes //
+    float cheight = m_cylinder->getHeight();
+    float cradius = m_cylinder->getRadius();
+    for( int i = 1; i < (int)amodel->nodes.size(); i++ ) {
+        // first check for the height in z space //
+        ofVec3f npos = amodel->nodes[i].getGlobalPosition();
+        if( npos.z > cpos.z + cheight/2 ) return false;
+        if( npos.z < cpos.z - cheight/2 ) return false;
+        
+        ofVec2f npos2d( npos.x, npos.y );
+        if( npos2d.length() > cradius ) return false;
+    }
+    return true;
+}
 
 
 

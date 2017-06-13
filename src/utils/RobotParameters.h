@@ -3,6 +3,7 @@
 
 #pragma once
 #include "ofMain.h"
+#include "URJoint.h"
 namespace ofxRobotArm{
     class RobotParameters{
         public :

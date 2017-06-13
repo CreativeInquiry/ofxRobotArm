@@ -222,7 +222,7 @@ void RobotArmCollision::update( float aDeltaTimef ) {
                     mPredictiveAppendages = tempApps;
                     updateModel( mPredictiveModel, mPredictiveAppendages );
                 }
-                ofLog((OF_LOG_NOTICE)) << "after main solver :: hasMainCollisions : " << hasMainCollisionWarnings() << " isNeckHittingForearm: " << isNeckHittingForearm() << " | " << ofGetFrameNum() << endl;
+                ofLog((OF_LOG_WARNING)) << "after main solver :: hasMainCollisions : " << hasMainCollisionWarnings() << " isNeckHittingForearm: " << isNeckHittingForearm() << " | " << ofGetFrameNum() << endl;
             }
             
             // do we still have collision warnings //
@@ -236,7 +236,7 @@ void RobotArmCollision::update( float aDeltaTimef ) {
                 //                }
                 //                ofLog((OF_LOG_NOTICE)) << "after forearm solver 1 :: hasMainCollisions : " << hasMainCollisionWarnings() << " isNeckHittingForearm: " << isNeckHittingForearm() << " | " << ofGetFrameNum() << endl;
                 if( isNeckHittingForearm() ) {
-                    ofLog((OF_LOG_NOTICE)) << "after forearm solver 2 :: hasMainCollisions : " << hasMainCollisionWarnings() << " isNeckHittingForearm: " << isNeckHittingForearm() << " | " << ofGetFrameNum() << endl;
+                    ofLog((OF_LOG_WARNING)) << "after forearm solver 2 :: hasMainCollisions : " << hasMainCollisionWarnings() << " isNeckHittingForearm: " << isNeckHittingForearm() << " | " << ofGetFrameNum() << endl;
                     tempApps = mPredictiveAppendages;
                     solveHeadToForearmCollision( 1 );
                     if( isGoingToWarn() ) {
@@ -247,7 +247,7 @@ void RobotArmCollision::update( float aDeltaTimef ) {
                 if( isNeckHittingForearm() ) {
                     tempApps = mPredictiveAppendages;
                     solveHeadToForearmCollision( -1 );
-                    ofLog((OF_LOG_NOTICE)) << "after forearm solver 3 :: hasMainCollisions : " << hasMainCollisionWarnings() << " isNeckHittingForearm: " << isNeckHittingForearm() << " | " << ofGetFrameNum() << endl;
+                    ofLog((OF_LOG_WARNING)) << "after forearm solver 3 :: hasMainCollisions : " << hasMainCollisionWarnings() << " isNeckHittingForearm: " << isNeckHittingForearm() << " | " << ofGetFrameNum() << endl;
                     if( isGoingToWarn() ) {
                         mPredictiveAppendages = tempApps;
                         updateModel( mPredictiveModel, mPredictiveAppendages );
@@ -294,21 +294,12 @@ void RobotArmCollision::draw() {
     for( int i = 0; i < mAppendages.size(); i++ ) {
         Appendage& app = mAppendages[i];
         for( auto& cs : app.spheres ) {
-            ofSetColor(220, 100, 30 );
-            if( i == 1 ) {
-                ofSetColor(0, 220, 40 );
-            } else if( i == 2 ) {
-                ofSetColor( 0, 201, 230 );
-            } else if( i == 3 ) {
-                ofSetColor(210, 100, 40 );
-            } else if( i == 4 ) {
-                ofSetColor(190, 20, 180 );
-            }
+            ofSetColor(250, 0, 0, 20);
             if( cs.bCollidingWarning ) {
-                ofSetColor(200, 230, 30 );
+                ofSetColor(250, 0, 0, 60);
             }
             if( cs.bColliding ) {
-                ofSetColor(240, 20, 30 );
+                ofSetColor(250, 0, 0, 120);
             }
             //            if( bDrawStops ) ofDrawSphere( cs.globalPos, cs.radius );
             if( bDrawStops ) {

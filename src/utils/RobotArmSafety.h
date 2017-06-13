@@ -9,6 +9,7 @@
 #include "JointRestrictor.h"
 #include "CylinderRestrictor.h"
 #include "RobotArmCollision.h"
+#include "UR10KinematicModel.h"
 //#include "RobotController.h"
 
 namespace ofxRobotArm {
@@ -19,9 +20,11 @@ namespace ofxRobotArm {
         void setCurrentRobotArmAnlges( vector< double > aRobotArmAngles );
 //        void update(RobotController& aRobotController );
         void update( float aDeltaTimef );
+        void update( UR10KinematicModel& previewArm );
         void update( UR5KinematicModel& previewArm );
         void draw();
         void draw( UR5KinematicModel* amodel, ofCamera& acam );
+        void draw( UR10KinematicModel* amodel, ofCamera& acam );
         
         void checkCollision(vector<double> actual, vector<double> target);
         
