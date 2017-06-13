@@ -13,7 +13,7 @@ void ofApp::setup(){
     
     parameters.setup();
     parameters.ipAddress = "192.168.1.9";
-    ur5.setup(parameters);
+    ur10.setup(parameters);
     setupGUI();
     setupTimeline();
     positionGUI();
@@ -83,7 +83,7 @@ void ofApp::setupGUI(){
     panelJointsSpeed.setup(parameters.jointSpeeds);
     panelJointsIK.setup(parameters.jointsIK);
     
-    panel.add(robot.movement.movementParams);
+    panel.add(ur10.movement.movementParams);
     speeds.assign(6, 0);
     parameters.bMove = false;
     // get the current pose on start up
