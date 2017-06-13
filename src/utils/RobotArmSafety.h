@@ -9,6 +9,7 @@
 #include "JointRestrictor.h"
 #include "CylinderRestrictor.h"
 #include "RobotArmCollision.h"
+#include "UR5KinematicModel.h"
 #include "UR10KinematicModel.h"
 //#include "RobotController.h"
 
