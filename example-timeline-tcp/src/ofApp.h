@@ -3,7 +3,7 @@
 #define N_CAMERAS 2
 #include "ofMain.h"
 #include "ofxGui.h"
-#include "RobotController.h"
+#include "UR10Controller.h"
 #include "RobotParameters.h"
 #include "ofxGizmo.h"
 #include "ofxTimeline.h"
@@ -57,7 +57,7 @@ public:
     ofxGizmo gizmo;
     ofNode tcpNode;
     
-    RobotController robot;
+    UR10Controller robot;
 
     float acceleration;
     vector<double> speeds;

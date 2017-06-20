@@ -1,8 +1,8 @@
 <UR_5>
-	<Actual_Robot_TCP_POS>0.123713, -1.00291, 0.355093</Actual_Robot_TCP_POS>
-	<Actual_Robot_TCP_ORIENT>0.88543, 0.00713714, 0.187558, 0.425189</Actual_Robot_TCP_ORIENT>
-	<Set_TCP_POS>0.11808, -0.884148, 0.764954</Set_TCP_POS>
-	<Set_TCP_ORIENT>0.754602, -0.635699, 0.122417, -0.107129</Set_TCP_ORIENT>
+	<Actual_Robot_TCP_POS>0, -0.299751, 0.996802</Actual_Robot_TCP_POS>
+	<Actual_Robot_TCP_ORIENT>0, 0, 0, 1</Actual_Robot_TCP_ORIENT>
+	<Set_TCP_POS>0, -0.299751, 0.996802</Set_TCP_POS>
+	<Set_TCP_ORIENT>0.5, -0.5, 0.5, 0.5</Set_TCP_ORIENT>
 	<tcpOffset>0, 0, 0</tcpOffset>
 	<avgAccel>0</avgAccel>
 	<followLerp>1</followLerp>
@@ -22,7 +22,7 @@
 		<Accel>1</Accel>
 		<Accel_Multi>1</Accel_Multi>
 		<Speed_Divider>1</Speed_Divider>
-		<Delta_T>0.0166821</Delta_T>
+		<Delta_T>0.0168579</Delta_T>
 		<Joint_LerpSpeed>0.9</Joint_LerpSpeed>
 	</UR_Movements>
 <UR_5/>
