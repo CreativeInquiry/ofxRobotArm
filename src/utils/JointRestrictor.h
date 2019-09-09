@@ -31,15 +31,15 @@ namespace ofxRobotArm {
         float getAngleToTargetDifference( int aIndex, float aCurrentAngleInRadians, float aTargetInRadians, bool bUseClosest );
         float getCloserLimit( int aIndex, float aTargetInRadians );
         
-    protected:
+
         ofParameterGroup params;
         ofParameter< float > mMinGlobalAngle, mMaxGlobalAngle;
         vector< ofParameter< float > > m_angleMinLimits;
         vector< ofParameter< float > > m_angleMaxLimits;
         vector< ofParameter< bool > > m_bApplyLimits;
-        
         vector< bool > m_bInverseAngleDiffs;
         ofParameter< bool > m_bLimitElbow;
+    protected:
         float shoulderAngle = 0;
     };
 }

@@ -13,13 +13,15 @@ UR5Controller::~UR5Controller(){
 
 
 void UR5Controller::setup(RobotParameters & params) {
-    setup(params.ipAddress, params);
+    setup(params.ipAddress, params, false);
 }
 
-void UR5Controller::setup(string ipAddress, RobotParameters & params){
-    robot.setAllowReconnect(params.bDoReconnect);
-    robot.setup(ipAddress,0, 1);
-    robot.start();
+void UR5Controller::setup(string ipAddress, RobotParameters & params, bool offline){
+    if(offline){
+        robot.setAllowReconnect(params.bDoReconnect);
+        robot.setup(ipAddress,0, 1);
+        robot.start();
+    }
     robotParams = &params;
     
     this->params.setName("IKArm Commands");
@@ -49,6 +51,7 @@ void UR5Controller::setup(string ipAddress, RobotParameters & params){
     actualArm.setup();
     
     robotParams->joints.add(robotSafety.setup());
+    robotParams->joints.add(robotSafetyPreview.setup());
     robotParams->jointsIK.add(this->params);
     
     jointWeights.assign(6, 1.0f);
@@ -355,53 +358,52 @@ void UR5Controller::update(){
                 robotParams->ikPose[i] = tpose;
             }
         }
+    }else{
+        targetPoses = urKinematics.inverseKinematics(robotParams->targetTCP);
+        int selectedSolution = urKinematics.selectSolution(targetPoses, robot.getCurrentPose(), jointWeights);
+        if(selectedSolution > -1){
+            targetPose = targetPoses[selectedSolution];
+            for(int i = 0; i < targetPose.size(); i++){
+                float tpose = (float)targetPose[i];
+                if( isnan(tpose) ) {
+                    tpose = 0.f;
+                }
+                robotParams->ikPose[i] = tpose;
+            }
+            
+            for(int i = 0; i < targetPoses.size(); i++)
+            {
+                previewArms[i]->setPose(targetPoses[i]);
+            }
+        }
+        for(int i = 0; i < targetPose.size(); i++){
+            float tpose = (float)targetPose[i];
+            if( isnan(tpose) ) {
+                tpose = 0.f;
+            }
+            robotParams->targetPose[i] = ofRadToDeg(tpose);
+        }
+        targetPose = getArmIK(1.0/60.0f);
+        for(int i = 0; i < targetPose.size(); i++){
+            float tpose = (float)targetPose[i];
+            if( isnan(tpose) ) {
+                tpose = 0.f;
+            }
+            robotParams->targetPose[i] = ofRadToDeg(tpose);
+        }
+        
+        // update the look at angles after the IK has been applied //
+        // overrides the angles and sets them directly //
+        // alters joint[3] && joint[4]
+        vector< double > lookAtAngles = lookAtJoints(1.0/60.0f);
+        // determine if these angles should be added or not //
+        for( int i = 0; i < targetPose.size(); i++ ) {
+            targetPose[i] = lookAtAngles[i];
+        }
+        
+        
+        previewArm->setPose(targetPose);
     }
-//    }else{
-//        targetPoses = urKinematics.inverseKinematics(robotParams->targetTCP);
-//        int selectedSolution = urKinematics.selectSolution(targetPoses);
-//        if(selectedSolution > -1){
-//            targetPose = targetPoses[selectedSolution];
-//            for(int i = 0; i < targetPose.size(); i++){
-//                float tpose = (float)targetPose[i];
-//                if( isnan(tpose) ) {
-//                    tpose = 0.f;
-//                }
-//                robotParams->ikPose[i] = tpose;
-//            }
-//            
-//            for(int i = 0; i < targetPoses.size(); i++)
-//            {
-//                previewArms[i]->setPose(targetPoses[i]);
-//            }
-//        }
-//        for(int i = 0; i < targetPose.size(); i++){
-//            float tpose = (float)targetPose[i];
-//            if( isnan(tpose) ) {
-//                tpose = 0.f;
-//            }
-//            robotParams->targetPose[i] = ofRadToDeg(tpose);
-//        }
-//        targetPose = getArmIK(1.0/60.0f);
-//        for(int i = 0; i < targetPose.size(); i++){
-//            float tpose = (float)targetPose[i];
-//            if( isnan(tpose) ) {
-//                tpose = 0.f;
-//            }
-//            robotParams->targetPose[i] = ofRadToDeg(tpose);
-//        }
-//        
-//        // update the look at angles after the IK has been applied //
-//        // overrides the angles and sets them directly //
-//        // alters joint[3] && joint[4]
-//        vector< double > lookAtAngles = lookAtJoints(1.0/60.0f);
-//        // determine if these angles should be added or not //
-//        for( int i = 0; i < targetPose.size(); i++ ) {
-//            targetPose[i] = lookAtAngles[i];
-//        }
-//        
-//        
-//        previewArm->setPose(targetPose);
-//    }
     safetyCheck();
     updateMovement();
     targetPose = movement.getTargetJointPose();
@@ -420,11 +422,18 @@ void UR5Controller::update(vector<double> _pose){
 
 #pragma mark - Safety
 void UR5Controller::safetyCheck(){
+
+    
     robotSafety.setCurrentRobotArmAnlges(robot.getCurrentPose());
     robotSafety.setDesiredAngles(targetPose);
-    robotSafety.update(*previewArms[0]);
+    robotSafety.update(*previewArm);
     robotSafety.update(1/60);
     targetPose = robotSafety.getDesiredAngles();
+    
+    robotSafetyPreview.setCurrentRobotArmAnlges(targetPose);
+    robotSafetyPreview.setDesiredAngles(targetPose);
+    robotSafetyPreview.update(*previewArm);
+    robotSafetyPreview.update(1/60);
 }
 
 #pragma mark - Movements
@@ -452,16 +461,16 @@ void UR5Controller::updateMovement(){
         stopPosition = movement.getTargetJointPose();
         stopCount = 30;
     }
-    //        else{
-    //            if( stopCount > 0 && stopPosition.size() == movement.targetPosee.size() && stopPosition.size() > 0 ){
-    //                for(int d = 0; d < stopPosition.size(); d++){
-    //                    stopPosition[d] *= 0.9998;
-    //                }
-    //                robot.setPosition(stopPosition);
-    //                cout << " Doing stop count " << stopCount << endl;
-    //                stopCount--;
-    //            }
-    //        }
+    else{
+        if( stopCount > 0 && stopPosition.size() == movement.targetPose.size() && stopPosition.size() > 0 ){
+            for(int d = 0; d < stopPosition.size(); d++){
+                stopPosition[d] *= 0.9998;
+            }
+            robot.setPosition(stopPosition);
+            cout << " Doing stop count " << stopCount << endl;
+            stopCount--;
+        }
+    }
     
 }
 
@@ -505,7 +514,7 @@ void UR5Controller::drawPreviews(){
 }
 
 void UR5Controller::drawSafety(ofCamera & cam){
-    robotSafety.draw(previewArms[0], cam);
+    robotSafetyPreview.draw(previewArm, cam);
     robotSafety.draw();
 }
 

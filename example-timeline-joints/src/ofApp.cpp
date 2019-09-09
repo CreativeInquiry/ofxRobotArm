@@ -1,4 +1,4 @@
-//Copyright (c) 2016, Daniel Moore, Madaline Gannon, and The Frank-Ratchye STUDIO for Creative Inquiry All rights reserved.
+//Copyright (c) 2016, Daniel Moore, Madeline Gannon, and The Frank-Ratchye STUDIO for Creative Inquiry All rights reserved.
 
 #include "ofApp.h"
 #include "URUtils.h"
@@ -13,7 +13,7 @@ void ofApp::setup(){
     
     parameters.setup();
     parameters.ipAddress = "192.168.1.9";
-    ur10.setup(parameters);
+    ur5.setup(parameters);
     setupGUI();
     setupTimeline();
     positionGUI();
@@ -35,22 +35,24 @@ void ofApp::setupViewports(){
     
     cams[0]->begin(viewportReal);
     cams[0]->end();
-    cams[0]->enableMouseInput();
+//    cams[0]->enableMouseInput();
     
     
     
     cams[1]->begin(viewportSim);
     cams[1]->end();
-    cams[1]->enableMouseInput();
+//    cams[1]->enableMouseInput();
 }
 
 void ofApp::setupTimeline(){
     
     
-    gizmo.setDisplayScale(1.0);
+    gizmo.setDisplayScale(2.0);
     tcpNode.setPosition(ofVec3f(0.5, 0.5, 0.5)*1000);
     tcpNode.setOrientation(parameters.targetTCP.rotation);
+
     gizmo.setNode( tcpNode);
+    gizmo.setViewDimensions(viewportSim.width, viewportSim.height);
     
     ofDirectory dir;
     string dirName = "timeline/saves/"+ofGetTimestampString();
@@ -76,7 +78,7 @@ void ofApp::setupTimeline(){
 void ofApp::setupGUI(){
     
     panel.setup(parameters.robotArmParams);
-    panel.add(parameters.pathRecorderParams);
+//    panel.add(parameters.pathRecorderParams);
     
     panelJoints.setup(parameters.joints);
     panelTargetJoints.setup(parameters.targetJoints);
@@ -92,7 +94,7 @@ void ofApp::setupGUI(){
 }
 
 void ofApp::positionGUI(){
-       panel.setPosition(viewportReal.x+viewportReal.width, 10);
+    panel.setPosition(viewportReal.x+viewportReal.width, 10);
     panelJointsSpeed.setPosition(viewportReal.x, 10);
     panelJointsIK.setPosition(panelJointsSpeed.getPosition().x+panelJoints.getWidth(), 10);
     panelTargetJoints.setPosition(panelJointsIK.getPosition().x+panelJoints.getWidth(), 10);
@@ -107,37 +109,26 @@ void ofApp::update(){
     if(nodeTrack->lockNodeToTrack && !parameters.bCopy){
         gizmo.setNode(tcpNode);
     }else{
-        tcpNode.setTransformMatrix( gizmo.getMatrix() );
+
+        gizmo.apply( tcpNode );
     }
     moveArm();
     ur5.update();
+    
+   
     
     bool bInTimelineRect = timeline.getDrawRect().inside( ofGetMouseX(), ofGetMouseY() );
     
     if (viewportReal.inside(ofGetMouseX(), ofGetMouseY()) && !bInTimelineRect )
     {
         activeCam = 0;
-        if(!cams[0]->getMouseInputEnabled()){
-            cams[0]->enableMouseInput();
-        }
-        if(cams[1]->getMouseInputEnabled()){
-            cams[1]->disableMouseInput();
-        }
-        
     }
     if(viewportSim.inside(ofGetMouseX(), ofGetMouseY()) && !bInTimelineRect )
     {
         activeCam = 1;
-        if(!cams[1]->getMouseInputEnabled()){
-            cams[1]->enableMouseInput();
-        }
-        if(cams[0]->getMouseInputEnabled()){
-            cams[0]->disableMouseInput();
-        }
-        if(gizmo.isInteracting() && cams[1]->getMouseInputEnabled()){
-            cams[1]->disableMouseInput();
-        }
     }
+    
+
 }
 
 void ofApp::moveArm(){
@@ -176,29 +167,29 @@ void ofApp::draw(){
     
     ofSetColor(255,160);
     ofDrawBitmapString("OF FPS "+ofToString(ofGetFrameRate()), 30, ofGetWindowHeight()-50);
-    ofDrawBitmapString("Robot FPS "+ofToString(robot.robot.getThreadFPS()), 30, ofGetWindowHeight()-65);
-    gizmo.setViewDimensions(viewportSim.width, viewportSim.height);
+    ofDrawBitmapString("Robot FPS "+ofToString(ur5.robot.getThreadFPS()), 30, ofGetWindowHeight()-65);
+ 
     
     
-    cams[1]->begin(viewportSim);
-    ofEnableDepthTest();
-    gizmo.draw( *cams[1] );
-    robot.drawPreview();
-    robot.drawSafety(*cams[1]);
-    robot.drawIK();
-    ofDisableDepthTest();
-    cams[1]->end();
+
     
     cams[0]->begin(viewportReal);
     tcpNode.draw();
-        ofEnableDepthTest();
+    ofEnableDepthTest();
     if (!hideRobot){
-        robot.draw();
+        ur5.draw();
     }
     ofDisableDepthTest();
     cams[0]->end();
     
-    
+    ofEnableDepthTest();
+    cams[1]->begin(viewportSim);
+    gizmo.draw( *cams[1] );
+    ur5.drawSafety(*cams[1]);
+    ur5.drawPreview();
+    ur5.drawIK();
+    cams[1]->end();
+    ofDisableDepthTest();
     
     
     timeline.draw();
@@ -209,8 +200,7 @@ void ofApp::draw(){
     panelWorkSurface.draw();
     panelJointsSpeed.draw();
     panelTargetJoints.draw();
-    
-    //    syphon.publishScreen();
+
 }
 
 void ofApp::exit(){
@@ -252,13 +242,22 @@ void ofApp::keyPressed(int key){
         hideRobot = !hideRobot;
     }
     
+    if(key == 'c'){
+        handleViewportMounseMovement(true);
+    }
     handleViewportPresets(key);
+    
 }
 
+
+void ofApp::handleViewportMounseMovement(bool pressed){
+    if(pressed) cams[activeCam]->enableMouseInput();
+    else cams[activeCam]->disableMouseInput();
+}
 //--------------------------------------------------------------
 void ofApp::handleViewportPresets(int key){
     
-    float dist = 2000;
+    float dist = -2000;
     float zOffset = 450;
     
     if(activeCam != -1){
@@ -297,6 +296,10 @@ void ofApp::handleViewportPresets(int key){
 //--------------------------------------------------------------
 void ofApp::keyReleased(int key){
     
+    if(key == 'c'){
+        handleViewportMounseMovement(false);
+    }
+
 }
 
 //--------------------------------------------------------------
@@ -319,15 +322,7 @@ void ofApp::mouseReleased(int x, int y, int button){
     
 }
 
-//--------------------------------------------------------------
-void ofApp::mouseEntered(int x, int y){
-    
-}
 
-//--------------------------------------------------------------
-void ofApp::mouseExited(int x, int y){
-    
-}
 
 //--------------------------------------------------------------
 void ofApp::windowResized(int w, int h){

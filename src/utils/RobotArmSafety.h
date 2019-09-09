@@ -38,7 +38,7 @@ namespace ofxRobotArm {
         shared_ptr< JointRestrictor > m_jointRestrictor;
         shared_ptr< CylinderRestrictor > mCylinderRestrictor;
         shared_ptr< RobotArmCollision > mCollision;
-    protected:
+  
         float getLerpAmnt( float aDiffInRadians, float aDeltaTimef );
         ofParameterGroup params;
         ofParameter< float > m_angleLerp;
@@ -47,7 +47,7 @@ namespace ofxRobotArm {
         ofParameter< float > m_minDegreesPerSecToSpeedLerp;
         ofParameter< float > m_maxDegreesPerSecToSpeedLerp;
         
-     
+    protected:
         
         bool m_bWithinCylinder = false;
         

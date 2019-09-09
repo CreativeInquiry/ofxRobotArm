@@ -65,7 +65,7 @@ namespace ofxRobotArm {
         bool hasMainCollisionWarnings();
         bool isNeckHittingForearm();
         
-    protected:
+
         void solveMainCollisions();
         void solveHeadToForearmCollision(int aForcedDirection);
         

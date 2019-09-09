@@ -437,7 +437,7 @@ void ofxTLNodeTrack::setFrameToTime(ofxTLNodeFrame* target, unsigned long long m
 }
 
 void ofxTLNodeTrack::moveToPosition(ofxTLNodeFrame* target){
-	node->setPosition(node->getPosition().getInterpolated(target->position, dampening) );
+	node->setPosition(toOf(node->getPosition()).getInterpolated(target->position, dampening) );
 	ofQuaternion q;
 	q.slerp(dampening, node->getOrientationQuat(), target->orientation);
 	node->setOrientation(q);
@@ -468,29 +468,25 @@ void ofxTLNodeTrack::interpolateBetween(ofxTLNodeFrame* target,
 
     float alpha = 0;
     //CUT
-    if(sample1->easeOut == OFXTL_NODE_EASE_CUT || sample2->easeIn == OFXTL_NODE_EASE_CUT ){
+    if(sample1->easeOut == OFXTL_CAMERA_EASE_CUT || sample2->easeIn == OFXTL_CAMERA_EASE_CUT ){
         alpha = 0;
     }
     //LINEAR
-    else if(sample1->easeOut == OFXTL_NODE_EASE_LINEAR && sample2->easeIn == OFXTL_NODE_EASE_LINEAR){
+    else if(sample1->easeOut == OFXTL_CAMERA_EASE_LINEAR && sample2->easeIn == OFXTL_CAMERA_EASE_LINEAR){
         alpha = ofMap(millis, sample1->time, sample2->time, 0, 1.0, false);
     }
     //EASE IN
-    else if(sample1->easeOut == OFXTL_NODE_EASE_SMOOTH && sample2->easeIn == OFXTL_NODE_EASE_LINEAR){
-        ofxEasingQuad ease;
-        alpha = ofxTween::map(millis, sample1->time, sample2->time, 0, 1.0, false, ease, ofxTween::easeIn);
+    else if(sample1->easeOut == OFXTL_CAMERA_EASE_SMOOTH && sample2->easeIn == OFXTL_CAMERA_EASE_LINEAR){
+        alpha = ofxeasing::map(millis, sample1->time, sample2->time, 0, 1.0, &ofxeasing::linear::easeIn);
     }
     //EASE OUT
-    else if(sample1->easeOut == OFXTL_NODE_EASE_LINEAR && sample2->easeIn == OFXTL_NODE_EASE_SMOOTH){
-        ofxEasingQuad ease;
-        alpha = ofxTween::map(millis, sample1->time, sample2->time, 0, 1.0, false, ease, ofxTween::easeOut);
+    else if(sample1->easeOut == OFXTL_CAMERA_EASE_LINEAR && sample2->easeIn == OFXTL_CAMERA_EASE_SMOOTH){
+        alpha = ofxeasing::map(millis, sample1->time, sample2->time, 0, 1.0, &ofxeasing::linear::easeOut);
     }
     //EASE IN OUT
-    else if(sample1->easeOut == OFXTL_NODE_EASE_SMOOTH && sample2->easeIn == OFXTL_NODE_EASE_SMOOTH){
-        ofxEasingQuad ease;
-        alpha = ofxTween::map(millis, sample1->time, sample2->time, 0, 1.0, false, ease, ofxTween::easeInOut);
+    else if(sample1->easeOut == OFXTL_CAMERA_EASE_SMOOTH && sample2->easeIn == OFXTL_CAMERA_EASE_SMOOTH){
+        alpha = ofxeasing::map(millis, sample1->time, sample2->time, 0, 1.0, &ofxeasing::quad::easeInOut);
     }
-    
 	//float alpha = ofMap(millis, sample1->time, sample2->time, 0, 1.0, false);
     
 	target->time = millis;

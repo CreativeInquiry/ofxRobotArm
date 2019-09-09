@@ -34,13 +34,17 @@ void ofApp::setup(){
     setupViewports();
     
     parameters.setup();
-    robot.setup("192.168.1.9", parameters); // <-- change to your robot's ip address
+    robot.setup("192.168.1.9", parameters, true); // <-- change to your robot's ip address
   
     robot.disableControlJointsExternally();
-    
+    safety.setup();
     setupGUI();
     positionGUI();
     
+}
+
+void ofApp::exit(){
+    robot.close();
 }
 
 //--------------------------------------------------------------
@@ -61,13 +65,16 @@ void ofApp::draw(){
     
     // show realtime robot
     cams[0]->begin(viewportReal);
+    ofDrawAxis(100);
     tcpNode.draw();
+    robot.drawPreview();
     robot.draw();
     cams[0]->end();
     
     // show simulation robot
     cams[1]->begin(viewportSim);
     ofDrawAxis(100);
+    tcpNode.draw();
     gizmo.draw(*cams[1]);
     robot.drawPreview();
     cams[1]->end();
@@ -99,7 +106,7 @@ void ofApp::moveTCP(){
         
     }
     else{
-        tcpNode.setTransformMatrix(gizmo.getMatrix());
+        gizmo.apply(tcpNode);
     }
     
     // follow the gizmo's position and orientation
@@ -112,7 +119,7 @@ void ofApp::moveTCP(){
 
 void ofApp::setupViewports(){
     
-    viewportReal = ofRectangle((21*ofGetWindowWidth()/24)/2, 0, (21*ofGetWindowWidth()/24)/2, 8*ofGetWindowHeight()/8);
+    viewportReal = ofRectangle((21*ofGetWindowWidth()/24)/2, 0, (21*ofGetWindowWidth()/24)/2, 8*ofGetWindowHeight()/8);;
     viewportSim = ofRectangle(0, 0, (21*ofGetWindowWidth()/24)/2, 8*ofGetWindowHeight()/8);
     
     activeCam = 0;
@@ -131,6 +138,7 @@ void ofApp::setupViewports(){
     
     
     cams[1]->begin(viewportSim);
+    robot.draw();
     cams[1]->end();
     cams[1]->enableMouseInput();
     
@@ -161,8 +169,8 @@ void ofApp::setupGUI(){
 }
 
 void ofApp::positionGUI(){
-    viewportReal.height -= (panelJoints.getHeight());
-    viewportReal.y +=(panelJoints.getHeight());
+//    viewportReal.height -= (panelJoints.getHeight());
+//    viewportReal.y +=(panelJoints.getHeight());
     panel.setPosition(viewportReal.x+viewportReal.width, 10);
     panelJointsSpeed.setPosition(viewportReal.x, 10);
     panelJointsIK.setPosition(panelJointsSpeed.getPosition().x+panelJoints.getWidth(), 10);
@@ -219,7 +227,7 @@ void ofApp::updateActiveCamera(){
 //--------------------------------------------------------------
 void ofApp::handleViewportPresets(int key){
     
-    float dist = 2000;
+    float dist = 2500;
     float zOffset = 450;
     
     if(activeCam != -1){

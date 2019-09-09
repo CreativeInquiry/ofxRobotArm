@@ -1,10 +1,10 @@
 ofxAssimpModelLoader
+ofxEasing
 ofxGML
 ofxGizmo
 ofxGui
 ofxIKArm
 ofxMSATimer
-ofxNatNet
 ofxOpenCv
 ofxOsc
 ofxPtf
@@ -14,6 +14,5 @@ ofxTextInputField
 ofxTimecode
 ofxTimeline
 ofxTiming
-ofxTween
 ofxURDriver
 ofxXmlSettings

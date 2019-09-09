@@ -7,7 +7,7 @@
 namespace ofxRobotArm{
     class RobotParameters{
         public :
-        void setup(bool getTCP = true, bool setTCP = true, bool toolOffset = true, bool drawpath = true ) {
+        void setup(bool getTCP = true, bool setTCP = true, bool toolOffset = true, bool drawpath = true, bool record = false ) {
             robotArmParams.setName("UR 5");
             if (getTCP){
                 robotArmParams.add(tcpPosition.set("Actual Robot TCP POS", ofVec3f(0, 0, 0), ofVec3f(-1, -1, -1), ofVec3f(1, 1, 1)));
@@ -44,7 +44,7 @@ namespace ofxRobotArm{
             }
             
             robotArmParams.add(bMove.set("Move", false));
-            robotArmParams.add(bDoReconnect.set("TryReconnect", true));
+            robotArmParams.add(bDoReconnect.set("TryReconnect", false));
             
             joints.setName("Joint Pos");
             targetJoints.setName("Target Joints");
@@ -67,17 +67,17 @@ namespace ofxRobotArm{
                 jointSpeeds.add(jointVelocities.back().set("Joint Speed"+ofToString(i), 0, -100, 100));
             }
             
-            //        if (record){
-            //            pathRecorderParams.setName("Path Recording");
-            //            pathRecorderParams.add(bRecord.set("Record", false));
-            //        }
+            if (record){
+                pathRecorderParams.setName("Path Recording");
+                pathRecorderParams.add(bRecord.set("Record", false));
+            }
             
         };
         ofParameterGroup robotArmParams;
         ofParameter<ofVec3f> targetTCPPosition;
         ofParameter<ofVec4f> targetTCPOrientation;
         ofParameter<ofVec4f> tcpOrientation;
-        //    ofParameter<ofVec4f> calcTCPOrientation;
+        ofParameter<ofVec4f> calcTCPOrientation;
         ofParameter<ofVec4f> forwardTCPOrientation;
         ofParameter<ofVec3f> forwardTCPPosition;
         ofParameter<ofVec3f> tcpPosition;

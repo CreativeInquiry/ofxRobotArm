@@ -7,7 +7,7 @@
 #include "RobotParameters.h"
 #include "URIKFast.h"
 #include "UR5KinematicModel.h"
-#include "ofxIKArm.h"
+//#include "ofxIKArm.h"
 #include "RobotArmSafety.h"
 
 namespace ofxRobotArm {
@@ -25,7 +25,7 @@ namespace ofxRobotArm {
         /// \brief creates and connects to a new robot
         /// \params ipAddress ipAddress of the robot
         /// \params params default parameters for the robot & GUI
-        void setup(string ipAddress, RobotParameters & params);
+        void setup(string ipAddress, RobotParameters & params, bool offline);
         vector< double > updateJoints(float deltatime);
         vector< double > lookAtJoints( float aDeltaTimef );
         vector< double > getArmIK( float aDeltaTimef );
@@ -72,6 +72,7 @@ namespace ofxRobotArm {
         shared_ptr< ofxIKArm > mIKArm;
         shared_ptr< ofxIKArm > mIKArmInverted;
         RobotArmSafety robotSafety;
+        RobotArmSafety robotSafetyPreview;
     protected:
         vector <double> stopPosition;
         bool m_bSettingJointsExternally = false;

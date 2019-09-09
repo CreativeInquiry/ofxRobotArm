@@ -1,20 +1,21 @@
+<?xml version="1.0"?>
 <UR_5>
-	<Actual_Robot_TCP_POS>0.123713, -1.00291, 0.355093</Actual_Robot_TCP_POS>
-	<Actual_Robot_TCP_ORIENT>0.88543, 0.00713714, 0.187558, 0.425189</Actual_Robot_TCP_ORIENT>
-	<Set_TCP_POS>0.11808, -0.884148, 0.764954</Set_TCP_POS>
-	<Set_TCP_ORIENT>0.754602, -0.635699, 0.122417, -0.107129</Set_TCP_ORIENT>
+	<Actual_Robot_TCP_POS>0, -0.299751, 0.996802</Actual_Robot_TCP_POS>
+	<Actual_Robot_TCP_ORIENT>0, 0, 0, 1</Actual_Robot_TCP_ORIENT>
+	<Set_TCP_POS>0, -0.299751, 0.996802</Set_TCP_POS>
+	<Set_TCP_ORIENT>0.5, -0.5, 0.5, 0.5</Set_TCP_ORIENT>
 	<tcpOffset>0, 0, 0</tcpOffset>
 	<avgAccel>0</avgAccel>
 	<followLerp>1</followLerp>
 	<get_TCP>0</get_TCP>
-	<set_TCP>1</set_TCP>
+	<set_TCP>0</set_TCP>
 	<Use_IKFast>1</Use_IKFast>
 	<bTrace_GML>0</bTrace_GML>
 	<ThreeDPath>0</ThreeDPath>
 	<bFigure8>0</bFigure8>
 	<Move>0</Move>
-	<TryReconnect>1</TryReconnect>
-	<group/>
+	<TryReconnect>0</TryReconnect>
+	<group />
 	<UR_Movements>
 		<MIN_Speed>0</MIN_Speed>
 		<MAX_Speed>0</MAX_Speed>
@@ -25,8 +26,8 @@
 		<Delta_T>0.0166821</Delta_T>
 		<Joint_LerpSpeed>0.9</Joint_LerpSpeed>
 	</UR_Movements>
-<UR_5/>
-<RobotSafety>
+	<UR_5 />
+	<RobotSafety>
 		<AngleLerp>0.764592</AngleLerp>
 		<MaxAngleLerp>18.8874</MaxAngleLerp>
 		<AngleEpsilon>1</AngleEpsilon>
@@ -53,7 +54,7 @@
 			<ApplyLimit_5>1</ApplyLimit_5>
 			<MinAngle_5>0</MinAngle_5>
 			<MaxAngle_5>6.77628</MaxAngle_5>
-		<LimitElbow>0</LimitElbow>
+			<LimitElbow>0</LimitElbow>
 		</Joint_Restrictions>
 		<CylinderRestrictor>
 			<EnableCylinder>0</EnableCylinder>
@@ -74,7 +75,7 @@
 			<Padding_3>6.19531</Padding_3>
 			<Padding_4>6.19531</Padding_4>
 			<Padding_5>7.22613</Padding_5>
-		<StopSphereScale>1.4</StopSphereScale>
+			<StopSphereScale>1.4</StopSphereScale>
 			<SpherePadding>1.25</SpherePadding>
 		</Robot_Collisions>
 	</RobotSafety>

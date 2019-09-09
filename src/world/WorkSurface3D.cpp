@@ -200,7 +200,7 @@ namespace ofxRobotArm{
                         // find the distance between our toolpath point and the mesh face
                         ofVec3f facePos = (mesh.getFace(i).getVertex(0)+mesh.getFace(i).getVertex(1)+mesh.getFace(i).getVertex(2))/3;
                         ofVec3f face2toolPt = v - facePos;
-                        float projectedDist = face2toolPt.dot(face.getFaceNormal().getNormalized());
+                        float projectedDist = face2toolPt.dot(glm::normalize(face.getFaceNormal()));
                         
                         // use the distance as the length of a vertical projection vector
                         ofVec3f length = ofVec3f(0,0,-projectedDist - srfOffset);
@@ -244,13 +244,13 @@ namespace ofxRobotArm{
         
         for (auto &v: surfaceMesh.getVertices()){
             v += m44.getTranslation();
-            v  = v * m44.getRotate();
+            v  = toOf(v) * m44.getRotate();
         }
         for (auto &path : paths){
             // move the path
             for (auto &v : path.path.getVertices()){
                 v += m44.getTranslation();
-                v  = v * m44.getRotate();
+                v  = toOf(v) * m44.getRotate();
             }
             // update the perp frames
             path.buildPerpFrames(path.path);
