@@ -1,14 +1,14 @@
 <?xml version="1.0"?>
 <UR_5>
-	<Actual_Robot_TCP_POS>0, -0.299751, 0.996802</Actual_Robot_TCP_POS>
+	<Actual_Robot_TCP_POS>0, 0, 0</Actual_Robot_TCP_POS>
 	<Actual_Robot_TCP_ORIENT>0, 0, 0, 1</Actual_Robot_TCP_ORIENT>
 	<Set_TCP_POS>0, -0.299751, 0.996802</Set_TCP_POS>
-	<Set_TCP_ORIENT>0.5, -0.5, 0.5, 0.5</Set_TCP_ORIENT>
+	<Set_TCP_ORIENT>0, 0, 0, 1</Set_TCP_ORIENT>
 	<tcpOffset>0, 0, 0</tcpOffset>
 	<avgAccel>0</avgAccel>
 	<followLerp>1</followLerp>
 	<get_TCP>0</get_TCP>
-	<set_TCP>0</set_TCP>
+	<set_TCP>1</set_TCP>
 	<Use_IKFast>1</Use_IKFast>
 	<bTrace_GML>0</bTrace_GML>
 	<ThreeDPath>0</ThreeDPath>

@@ -58,8 +58,11 @@ public:
     ofxPanel panelJointsIK;
     ofxPanel panelJointsSpeed;
     
+    int sim, real;
+    ofVec3f camUp;
     
     
+    ofParameter<bool> lookAtTCP;
     void moveTCP();
     
     
