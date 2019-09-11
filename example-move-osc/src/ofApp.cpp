@@ -32,7 +32,7 @@ void ofApp::setup(){
     ofSetLogLevel(OF_LOG_VERBOSE);
     camUp = ofVec3f(0, 0, 1);
     
-     setupViewports();
+    setupViewports();
     parameters.setup();
     robot.setup("192.168.1.3", parameters, true); // <-- change to your robot's ip address
     
@@ -61,16 +61,17 @@ void ofApp::update(){
 }
 
 void ofApp::updateOSC(){
-   vector<double> pose;
+   
    while(receiver.hasWaitingMessages()){
        ofxOscMessage m;
        receiver.getNextMessage(m);
-       pose.clear();
+       vector<double> pose;
        for(size_t i = 0; i < m.getNumArgs(); i++){
            pose.push_back(m.getArgAsFloat(i));
        }
+       currentPose = pose;
     }
-    robot.setPose(pose);
+    robot.setPose(currentPose);
 }
 
 //--------------------------------------------------------------

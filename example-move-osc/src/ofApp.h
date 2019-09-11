@@ -53,6 +53,7 @@ public:
     void positionGUI();
     void drawGUI();
     
+    vector<double> currentPose;
     
     ofxPanel panel;
     ofxPanel panelJoints;
