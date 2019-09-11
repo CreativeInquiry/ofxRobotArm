@@ -1,8 +1,38 @@
 <positions>
-    <element name="TargetTCP">
+    <element name="Joint0">
         <x>0.000000000</x>
-        <y>52.000000000</y>
-        <width>1920.000000000</width>
+        <y>937.666625977</y>
+        <width>1088.000000000</width>
+        <height>40.000000000</height>
+    </element>
+    <element name="Joint1">
+        <x>0.000000000</x>
+        <y>1001.666625977</y>
+        <width>1088.000000000</width>
+        <height>40.000000000</height>
+    </element>
+    <element name="Joint2">
+        <x>0.000000000</x>
+        <y>1065.666625977</y>
+        <width>1088.000000000</width>
+        <height>40.000000000</height>
+    </element>
+    <element name="Joint3">
+        <x>0.000000000</x>
+        <y>1129.666625977</y>
+        <width>1088.000000000</width>
+        <height>40.000000000</height>
+    </element>
+    <element name="Joint4">
+        <x>0.000000000</x>
+        <y>1193.666625977</y>
+        <width>1088.000000000</width>
+        <height>40.000000000</height>
+    </element>
+    <element name="Joint5">
+        <x>0.000000000</x>
+        <y>1257.666625977</y>
+        <width>1088.000000000</width>
         <height>40.000000000</height>
     </element>
 </positions>

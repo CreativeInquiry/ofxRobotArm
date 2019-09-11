@@ -8,25 +8,26 @@
 #pragma once
 #include "ofMain.h"
 #include "UR5KinematicModel.h"
+#include "UR10KinematicModel.h"
 
 namespace ofxRobotArm {
     class CylinderRestrictor {
     public:
-        void setup();
+        ofParameterGroup &  setup();
         void update( float aDeltaTimef );
         void draw();
         
         bool isEnabled();
         bool isWithinCylinder( UR5KinematicModel* amodel );
-         ofParameterGroup params;
-    protected:
-       
+        bool isWithinCylinder( UR10KinematicModel* amodel );
+
+        ofParameterGroup params;
         ofParameter< bool > bEnableCylinderLimit;
         ofParameter< bool > bDrawCylinderLimit;
         ofParameter< float > m_cylinderRadius;
         ofParameter< float > m_cylinderHeight;
         ofParameter< float > m_cylinderZ;
-        
+    protected:
         shared_ptr< ofCylinderPrimitive > m_cylinder;
         
     };

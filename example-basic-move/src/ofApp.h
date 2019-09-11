@@ -11,7 +11,7 @@
 #include "ofMain.h"
 #include "ofxGui.h"
 #include "ofxGizmo.h"
-#include "RobotController.h"
+#include "UR5Controller.h"
 #include "RobotParameters.h"
 #include "URIKFast.h"
 #include "RobotArmSafety.h"
@@ -23,6 +23,7 @@ public:
     void setup();
     void update();
     void draw();
+    void exit();
     
     void keyPressed(int key);
     void keyReleased(int key);
@@ -40,7 +41,7 @@ public:
     
     URIKFast kinematics;
     ofxRobotArm::RobotArmSafety safety;
-    ofxRobotArm::RobotController robot;
+    ofxRobotArm::UR5Controller robot;
     ofxRobotArm::RobotParameters parameters;
     ofxGizmo gizmo;
     ofNode tcpNode;
@@ -62,14 +63,18 @@ public:
     ofxPanel panelJointsIK;
     ofxPanel panelJointsSpeed;
     
+    int sim, real;
+    ofVec3f camUp;
     
     
+    ofParameter<bool> lookAtTCP;
     void moveTCP();
     
     
     // 3D Navigation
     void updateActiveCamera();
     vector<ofEasyCam*> cams;
+    
     ofRectangle viewportReal;
     ofRectangle viewportSim;
     vector<ofMatrix4x4> savedCamMats;

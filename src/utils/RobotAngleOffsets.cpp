@@ -6,9 +6,9 @@
 //
 
 #include "RobotAngleOffsets.h"
-using namespace ofxRobotArm;
+
 //--------------------------------------------------------------
-void RobotAngleOffsets::setup(bool abAddInvAngles, bool abAddScales ) {
+ofParameterGroup &  RobotAngleOffsets::setup(bool abAddInvAngles, bool abAddScales ) {
     params.setName( "RobotArmOffsets" );
     
     params.add( bReset.set("Reset", false ));
@@ -32,6 +32,8 @@ void RobotAngleOffsets::setup(bool abAddInvAngles, bool abAddScales ) {
             params.add( angleScales.back() );
         }
     }
+    
+    return params;
 }
 
 //--------------------------------------------------------------
@@ -68,7 +70,7 @@ void RobotAngleOffsets::update( float aDeltaTimef ) {
     }
     for( int i = 0; i < mSmoothAddAngles.size(); i++ ) {
         
-        //cout << "mSmoothAddAngles["<<i<<"]: " << mSmoothAddAngles[i] << " | " << ofGetFrameNum() << endl;
+        //ofLog(OF_LOG_VERBOSE) << "mSmoothAddAngles["<<i<<"]: " << mSmoothAddAngles[i] << " | " << ofGetFrameNum() << endl;
 //        float tlerp = ofLerp( mSmoothAddAngles[i], addAngles[i], 0.05 * aDeltaTimef * 60.0f );
         float tlerp = (addAngles[i]-mSmoothAddAngles[i]) * tLerpAmnt;//ofLerp( mSmoothInvAddAngles[i], invAddAngles[i], 0.05 * aDeltaTimef * 60.0f );
         tlerp = ofClamp( tlerp, -maxLerp, maxLerp );

@@ -9,7 +9,7 @@
 using namespace ofxRobotArm;
 
 //--------------------------------------------------------------
-void RobotArmSafety::setup() {
+ofParameterGroup &  RobotArmSafety::setup() {
     mTargetRobotAngles.assign( 6, 0.0 );
     
     params.setName( "RobotSafety" );
@@ -20,19 +20,22 @@ void RobotArmSafety::setup() {
     params.add( m_maxDegreesPerSecToSpeedLerp.set("MaxDegPerSecToLerpDown", 150, 90, 1000));
     
     m_jointRestrictor = shared_ptr< JointRestrictor >( new JointRestrictor() );
-    m_jointRestrictor->setup();
+    params.add(m_jointRestrictor->setup());
     
     mCylinderRestrictor = shared_ptr< CylinderRestrictor >( new CylinderRestrictor() );
-    mCylinderRestrictor->setup();
+    params.add(mCylinderRestrictor->setup());
     
     mCollision = shared_ptr< RobotArmCollision >( new RobotArmCollision() );
-    mCollision->setup();
+    params.add(mCollision->setup());
+    return params;
 }
 
 //--------------------------------------------------------------
 void RobotArmSafety::setDesiredAngles( vector< double > aangles ) {
     mDesiredAngles = aangles;
+    
 }
+
 
 //--------------------------------------------------------------
 void RobotArmSafety::setCurrentRobotArmAnlges( vector< double > aRobotArmAngles ) {
@@ -41,29 +44,40 @@ void RobotArmSafety::setCurrentRobotArmAnlges( vector< double > aRobotArmAngles 
 }
 
 ////--------------------------------------------------------------
-//void RobotArmSafety::update( RobotController& aRobotController ) {
-//    m_bWithinCylinder = false;
-//    if( mCylinderRestrictor ) {
-//        if( mCylinderRestrictor->isEnabled() ) {
-//            m_bWithinCylinder = mCylinderRestrictor->isWithinCylinder( &aRobotController.previewArm );
-//        } else {
-//            m_bWithinCylinder = true;
-//        }
-//    }
-//}
+void RobotArmSafety::update( UR5KinematicModel& previewArm ) {
+    m_bWithinCylinder = false;
+    if( mCylinderRestrictor ) {
+        if( mCylinderRestrictor->isEnabled() ) {
+            m_bWithinCylinder = mCylinderRestrictor->isWithinCylinder(&previewArm);
+        } else {
+            m_bWithinCylinder = true;
+        }
+    }
+}
+
+////--------------------------------------------------------------
+void RobotArmSafety::update( UR10KinematicModel& previewArm ) {
+    m_bWithinCylinder = false;
+    if( mCylinderRestrictor ) {
+        if( mCylinderRestrictor->isEnabled() ) {
+            m_bWithinCylinder = mCylinderRestrictor->isWithinCylinder(&previewArm);
+        } else {
+            m_bWithinCylinder = true;
+        }
+    }
+}
+
 
 //--------------------------------------------------------------
 void RobotArmSafety::update( float aDeltaTimef ) {
     mDeltaTime = aDeltaTimef;
+  
     // now set the desired angles from the robot man for the collider
     // this will check against the actual robot position and alter the desired angles if it
     // detects a potential collision //
     // this will use the desired angles inside the robot man //
-    if( mCollision->shouldApply() ) {
-        mCollision->setDesiredAngles( mDesiredAngles );
-        mCollision->update( aDeltaTimef );
-        mDesiredAngles = mCollision->getDesiredAngles();
-    }
+    checkCollision(mCurrentRobotArmAngles, mDesiredAngles);
+    
     
     m_jointRestrictor->update( aDeltaTimef );
     mCylinderRestrictor->update( aDeltaTimef );
@@ -76,6 +90,7 @@ void RobotArmSafety::update( float aDeltaTimef ) {
     
     bool bOKeyPressed = ofGetKeyPressed('o');
     
+    
     if( m_bWithinCylinder && bWeAllGood ) {
         
         if( mTargetAngles.size() != mDesiredAngles.size() ) mTargetAngles.assign( mDesiredAngles.size(), 0.0f );
@@ -84,10 +99,10 @@ void RobotArmSafety::update( float aDeltaTimef ) {
         if( speedLimitLerpPerJoint.size() != mDesiredAngles.size() ) speedLimitLerpPerJoint.assign( mDesiredAngles.size(), 0.0 );
         
         for( int i = 0; i < mDesiredAngles.size(); i++ ) {
-//            cout << "RobotArmSafety " << i << " updating angle: " << mDesiredAngles[i] << " | " << ofGetFrameNum() << endl;
+            //            cout << "RobotArmSafety " << i << " updating angle: " << mDesiredAngles[i] << " | " << ofGetFrameNum() << endl;
             // now we need to determine the target angle including the mix pct //
             float targetAngle = mDesiredAngles[i];
-//            float deltaAngle = targetAngle - mCurrentRobotArmAngles[i];//ofWrapRadians( targetAngle - mCurrentRobotArmAngles[i], -TWO_PI, TWO_PI );//ofAngleDifferenceRadians( mCurrentRobotArmAngles[i], targetAngle );
+            //            float deltaAngle = targetAngle - mCurrentRobotArmAngles[i];//ofWrapRadians( targetAngle - mCurrentRobotArmAngles[i], -TWO_PI, TWO_PI );//ofAngleDifferenceRadians( mCurrentRobotArmAngles[i], targetAngle );
             float deltaAngle = ofAngleDifferenceRadians( mCurrentRobotArmAngles[i], targetAngle );
             
             float lerpAngle = getLerpAmnt( deltaAngle, aDeltaTimef );
@@ -103,7 +118,7 @@ void RobotArmSafety::update( float aDeltaTimef ) {
             //            tdesiredAngle = trestrictedAngle;
             
             if( i == 2 ) {
-//                cout << "poss to reach desired angle: " << bItsPossibleToReachDesiredAngle << " | " << ofGetFrameNum() << endl;
+                //                cout << "poss to reach desired angle: " << bItsPossibleToReachDesiredAngle << " | " << ofGetFrameNum() << endl;
             }
             
             if( !bItsPossibleToReachDesiredAngle ) {
@@ -183,18 +198,18 @@ void RobotArmSafety::update( float aDeltaTimef ) {
                     cout << "LIMIT: joint " << i  << " - needs slowing down by " << slowDownPct * 100.0 << "%. deltaSpeed is (deg/sec) " << deltaSpeedDegrees << endl;
                 }
                 
-//                if( i == 2 ){
-//                    maxDeg = MAX(maxDeg, deltaSpeedDegrees);
-//                    cout << "["<< i << "] deltaSpeed is (deg/sec) " << deltaSpeedDegrees << " max is " << maxDeg << endl;
-//                }
+                //                if( i == 2 ){
+                //                    maxDeg = MAX(maxDeg, deltaSpeedDegrees);
+                //                    cout << "["<< i << "] deltaSpeed is (deg/sec) " << deltaSpeedDegrees << " max is " << maxDeg << endl;
+                //                }
             }
             
-//            if( i == 2 ){
-//                cout << i << " speedLimitLerpPerJoint is " << speedLimitLerpPerJoint[i] << endl;
-//            }
-//            if( i == 2 ){
-//                cout << " speedLimitLerpPerJoint is " << speedLimitLerpPerJoint[i] << endl;
-//            }
+            //            if( i == 2 ){
+            //                cout << i << " speedLimitLerpPerJoint is " << speedLimitLerpPerJoint[i] << endl;
+            //            }
+            //            if( i == 2 ){
+            //                cout << " speedLimitLerpPerJoint is " << speedLimitLerpPerJoint[i] << endl;
+            //            }
             
             float mapLerp = ofMap(speedLimitLerpPerJoint[i], 0, 0.9, 0.2, 1.0, true);
             
@@ -214,17 +229,17 @@ void RobotArmSafety::update( float aDeltaTimef ) {
             accumulatedRadialVelocity[i] = ofLerp(accumulatedRadialVelocity[i], curFrameVel, 0.5 * aDeltaTimef * 60.0);
             
             // figure out if we are close enough //
-//            float tdiff = ofAngleDifferenceRadians( mCurrentRobotArmAngles[i], targetAngle );
-//
-//            if( !bItsPossibleToReachDesiredAngle ) {
-//                cout << i << " - not possible to reach angle m_currentPoseAngles[i]: " << (mCurrentRobotArmAngles[i]*RAD_TO_DEG) << " target angle: " << (targetAngle*RAD_TO_DEG) << " tdiff: " << fabs( tdiff * RAD_TO_DEG ) << " | " << ofGetFrameNum() << endl;
-//            }
-//            
-////            cout << i << " targetAngle: " << targetPose[i] << " cAngle: " << m_currentPoseAngles[i] << " lerpAngle: " << lerpAngle << " diff: " << tdiff << " epsilon: " << tEpsilon << " | " << ofGetFrameNum() << endl;
-//            
-//            if( fabs( tdiff ) > tEpsilon ) {
-//                bWeAllGood = false;
-//            }
+            //            float tdiff = ofAngleDifferenceRadians( mCurrentRobotArmAngles[i], targetAngle );
+            //
+            //            if( !bItsPossibleToReachDesiredAngle ) {
+            //                cout << i << " - not possible to reach angle m_currentPoseAngles[i]: " << (mCurrentRobotArmAngles[i]*RAD_TO_DEG) << " target angle: " << (targetAngle*RAD_TO_DEG) << " tdiff: " << fabs( tdiff * RAD_TO_DEG ) << " | " << ofGetFrameNum() << endl;
+            //            }
+            //
+            ////            cout << i << " targetAngle: " << targetPose[i] << " cAngle: " << m_currentPoseAngles[i] << " lerpAngle: " << lerpAngle << " diff: " << tdiff << " epsilon: " << tEpsilon << " | " << ofGetFrameNum() << endl;
+            //
+            //            if( fabs( tdiff ) > tEpsilon ) {
+            //                bWeAllGood = false;
+            //            }
             
         }
         
@@ -234,19 +249,28 @@ void RobotArmSafety::update( float aDeltaTimef ) {
         // changing this to use the target angles, since the joint restrictor figures out the proper approach to
         // illegal angles
         
-//        mCollision->setDesiredAngles( mTargetRobotAngles );
-//        if( mCollision->shouldApply() ) {
-//            mCollision->update( aDeltaTimef );
-//            mDesiredAngles      = mCollision->getDesiredAngles();
-//            mTargetRobotAngles  = mCollision->getDesiredAngles();
-//        }
+        //        mCollision->setDesiredAngles( mTargetRobotAngles );
+        //        if( mCollision->shouldApply() ) {
+        //            mCollision->update( aDeltaTimef );
+        //            mDesiredAngles      = mCollision->getDesiredAngles();
+        //            mTargetRobotAngles  = mCollision->getDesiredAngles();
+        //        }
     }
     
     // what's going in, what's coming out?
     if( mTargetRobotAngles.size() > 4 && mDesiredAngles.size() > 4 && bOKeyPressed ) {
-//        cout << "targetRobotAngles: " << ofRadToDeg(mTargetRobotAngles[3]) << " desired: " << ofRadToDeg( mDesiredAngles[3] ) << " diff: " << fabs(ofRadToDeg( ofAngleDifferenceRadians( mDesiredAngles[3], mTargetRobotAngles[3] ))) << " mLerpMult: " << mLerpMult << " | " << ofGetFrameNum() << endl;
+        //        cout << "targetRobotAngles: " << ofRadToDeg(mTargetRobotAngles[3]) << " desired: " << ofRadToDeg( mDesiredAngles[3] ) << " diff: " << fabs(ofRadToDeg( ofAngleDifferenceRadians( mDesiredAngles[3], mTargetRobotAngles[3] ))) << " mLerpMult: " << mLerpMult << " | " << ofGetFrameNum() << endl;
     }
+    
+}
 
+void RobotArmSafety::checkCollision(vector<double> actual, vector<double> target){
+    if( mCollision->shouldApply() ) {
+        mCollision->setRobotAngles(actual);
+        mCollision->setDesiredAngles( target );
+        mCollision->update( mDeltaTime );
+        mDesiredAngles = mCollision->getDesiredAngles();
+    }
 }
 
 //--------------------------------------------------------------
@@ -255,19 +279,42 @@ void RobotArmSafety::draw() {
         mCollision->draw();
     }
 }
-
-//--------------------------------------------------------------
-void RobotArmSafety::draw( UR5KinematicModel* amodel, ofCamera& acam ) {
+void RobotArmSafety::draw( UR10KinematicModel* amodel, ofCamera& acam ) {
     if( m_jointRestrictor ) {
         
-        //        cout << "mCurrentRobotArmAngles.size(): " << mCurrentRobotArmAngles.size() << " mTargetAngles.size(): " << mTargetAngles.size() << " mTargetRobotAngles.size(): " << mTargetRobotAngles.size() << " | " << ofGetFrameNum() << endl;
+        //cout << "mCurrentRobotArmAngles.size(): " << mCurrentRobotArmAngles.size() << " mTargetAngles.size(): " << mTargetAngles.size() << " mTargetRobotAngles.size(): " << mTargetRobotAngles.size() << " | " << ofGetFrameNum() << endl;
         
         if( mCurrentRobotArmAngles.size() && mTargetAngles.size() && mTargetRobotAngles.size() ) {
             ofSetColor( 200 );
             m_jointRestrictor->drawLimits( amodel );
             
             ofSetColor( 130, 240, 60 );
-//            m_jointRestrictor->drawAngles( amodel, mTargetRobotAngles );
+            m_jointRestrictor->drawAngles( amodel, mTargetRobotAngles );
+            m_jointRestrictor->drawAngles( amodel, mDesiredAngles );
+            ofSetColor( 200, 240, 20 );
+            m_jointRestrictor->drawAngles( amodel, mCurrentRobotArmAngles );
+            ofSetColor( 220, 40, 60 );
+            m_jointRestrictor->drawAngles( amodel, mTargetAngles );
+        }
+        
+        //            cout << "force stop: " << m_bForceStop << " | " << ofGetFrameNum() << endl;
+        ofSetColor( 100, 240, 60 );
+        if( !m_bWithinCylinder ) ofSetColor( 220, 40, 60 );
+        mCylinderRestrictor->draw();
+    }
+}
+//--------------------------------------------------------------
+void RobotArmSafety::draw( UR5KinematicModel* amodel, ofCamera& acam ) {
+    if( m_jointRestrictor ) {
+        
+        //cout << "mCurrentRobotArmAngles.size(): " << mCurrentRobotArmAngles.size() << " mTargetAngles.size(): " << mTargetAngles.size() << " mTargetRobotAngles.size(): " << mTargetRobotAngles.size() << " | " << ofGetFrameNum() << endl;
+        
+        if( mCurrentRobotArmAngles.size() && mTargetAngles.size() && mTargetRobotAngles.size() ) {
+            ofSetColor( 200 );
+            m_jointRestrictor->drawLimits( amodel );
+            
+            ofSetColor( 130, 240, 60 );
+            m_jointRestrictor->drawAngles( amodel, mTargetRobotAngles );
             m_jointRestrictor->drawAngles( amodel, mDesiredAngles );
             ofSetColor( 200, 240, 20 );
             m_jointRestrictor->drawAngles( amodel, mCurrentRobotArmAngles );
@@ -286,11 +333,11 @@ void RobotArmSafety::draw( UR5KinematicModel* amodel, ofCamera& acam ) {
 float RobotArmSafety::getLerpAmnt( float aDiffInRadians, float aDeltaTimef ) {
     float tMaxAngle = (m_maxLerpAngle * DEG_TO_RAD) * aDeltaTimef * 60.0f;
     float lerpAmnt  = m_angleLerp * mLerpMult * aDeltaTimef * 60.0f;
-//    if( isMixing() ) {
-//        //        lerpAmnt = lerpAmnt * 0.1f;
-//        lerpAmnt *= m_mixPct;
-//    }
-//    float lerpAngle = ofAngleDifferenceRadians( acurrAngle, aTargetAngle ) * lerpAmnt;
+    //    if( isMixing() ) {
+    //        //        lerpAmnt = lerpAmnt * 0.1f;
+    //        lerpAmnt *= m_mixPct;
+    //    }
+    //    float lerpAngle = ofAngleDifferenceRadians( acurrAngle, aTargetAngle ) * lerpAmnt;
     float lerpAngle = aDiffInRadians * lerpAmnt;
     
     if( lerpAngle < -tMaxAngle ) lerpAngle = -tMaxAngle;
@@ -334,6 +381,8 @@ bool RobotArmSafety::isArmPoseCloseToTargetPose() {
 void RobotArmSafety::setLerpMult( float aMult ) {
     mLerpMult = aMult;
 }
+
+
 
 
 

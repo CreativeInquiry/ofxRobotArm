@@ -1,17 +1,23 @@
-//Copyright (c) 2016, Daniel Moore, Madaline Gannon, and The Frank-Ratchye STUDIO for Creative Inquiry All rights reserved.
 #pragma once
-#define N_CAMERAS 2
+
+//--------------------------------------------------------------
+//
+//
+// Basic Move Example
+//
+//
+//--------------------------------------------------------------
+
 #include "ofMain.h"
 #include "ofxGui.h"
-#include "RobotController.h"
-#include "RobotParameters.h"
+#include "ofxGuiExtended2.h"
 #include "ofxGizmo.h"
+#include "UR5Controller.h"
+#include "RobotParameters.h"
+#include "URIKFast.h"
 #include "ofxTimeline.h"
-#include "ofxTLNodeTrack.h"
-//#include "ofxSyphon.h"
-
-//#define ENABLE_NATNET
-
+#include "RobotArmSafety.h"
+#define N_CAMERAS 2
 
 class ofApp : public ofBaseApp{
     
@@ -20,6 +26,7 @@ public:
     void update();
     void draw();
     void exit();
+    
     void keyPressed(int key);
     void keyReleased(int key);
     void mouseMoved(int x, int y );
@@ -31,64 +38,69 @@ public:
     void windowResized(int w, int h);
     void dragEvent(ofDragInfo dragInfo);
     void gotMessage(ofMessage msg);
-    void moveArm();
+    
+    ofxTimeline timeline;
+    ofCamera camP0;
+    ofCamera camP1;
+    ofCamera camP2;
+    
+    ofRectangle viewportSimP0;
+    ofRectangle viewportSimP1;
+    ofRectangle viewportSimP2;
+    
+    ofRectangle viewportRealP0;
+    ofRectangle viewportRealP1;
+    ofRectangle viewportRealP2;
+    
+    URIKFast kinematics;
+    ofxRobotArm::UR5Controller robot;
+    ofxRobotArm::RobotParameters parameters;
+    ofxGizmo gizmo;
+    ofNode tcpNode;
     
     void setupViewports();
     void setupGUI();
     void positionGUI();
-    void setupTimeline();
-    /// \brief 3D mesh with paths for robot to follow
+    void drawGUI();
+    
+    void addRealPoseKeyFrame();
 
-    ofxTLNodeTrack* nodeTrack;
-    ofxTimeline timeline;
+    ofxGui gui;
+    ofxGuiPanel* panel;
+    ofxGuiPanel* panelJoints;
+    ofxGuiPanel* panelTargetJoints;
+    ofxGuiPanel* panelJointsIK;
     
-    ofRectangle viewportReal;
-    ofRectangle viewportSim;
+    int sim, real;
+    ofVec3f camUp;
     
-    RobotParameters parameters;
-
-    ofxPanel panel;
-    ofxPanel panelWorkSurface;
-    ofxPanel panelJoints;
-    ofxPanel panelTargetJoints;
-    ofxPanel panelJointsIK;
-    ofxPanel panelJointsSpeed;
+    vector<ofxTLCurves*> curves;
     
-    ofxGizmo gizmo;
-    ofNode tcpNode;
+    ofParameter<bool> lookAtTCP;
+    void moveTCP();
     
-    RobotController robot;
-
-    float acceleration;
-    vector<double> speeds;
-
-
-    
-    ofNode parent;
-    
-    int count;
-    
-   
-    bool hideRobot;
-
     
     // 3D Navigation
+    void updateActiveCamera();
     vector<ofEasyCam*> cams;
+    vector<string> jointNames;
+    ofRectangle viewportReal;
+    ofRectangle viewportSim;
     vector<ofMatrix4x4> savedCamMats;
     vector<string> viewportLabels;
     int activeCam;
     
     /**
-         Use hotkeys to cyle through preset viewports.
-             @param key
-                 '1' = Top View      <br/>
-                 '2' = Left View     <br/>
-                 '3' = Front View    <br/>
-                 '4' = Perspective   <br/>
-                 '5' = Custom View   <br/>
-                 '6' = Save current for Custom View
+     Use hotkeys to cyle through preset viewports.
+     @param key
+     '1' = Top View      <br/>
+     '2' = Left View     <br/>
+     '3' = Front View    <br/>
+     '4' = Perspective   <br/>
      */
     void handleViewportPresets(int key);
     
-    //ofxSyphonServer syphon;
+    /// Highlights the active viewport.
+    void hightlightViewports();
+    
 };

@@ -9,40 +9,45 @@
 #include "JointRestrictor.h"
 #include "CylinderRestrictor.h"
 #include "RobotArmCollision.h"
+#include "UR5KinematicModel.h"
+#include "UR10KinematicModel.h"
 //#include "RobotController.h"
 
 namespace ofxRobotArm {
     class RobotArmSafety {
     public:
-        void setup();
+        ofParameterGroup & setup();
         void setDesiredAngles( vector< double > aangles );
         void setCurrentRobotArmAnlges( vector< double > aRobotArmAngles );
 //        void update(RobotController& aRobotController );
         void update( float aDeltaTimef );
+        void update( UR10KinematicModel& previewArm );
+        void update( UR5KinematicModel& previewArm );
         void draw();
         void draw( UR5KinematicModel* amodel, ofCamera& acam );
+        void draw( UR10KinematicModel* amodel, ofCamera& acam );
+        
+        void checkCollision(vector<double> actual, vector<double> target);
         
         vector< double > getTargetRobotAngles();
         vector< double > getDesiredAngles();
         bool isArmPoseCloseToTargetPose();
         
         void setLerpMult( float aMult );
-    
-        ofParameterGroup params;
         
-        shared_ptr< ofxRobotArm::JointRestrictor > m_jointRestrictor;
-        shared_ptr< ofxRobotArm::CylinderRestrictor > mCylinderRestrictor;
-        shared_ptr< ofxRobotArm::RobotArmCollision > mCollision;
-    protected:
+        shared_ptr< JointRestrictor > m_jointRestrictor;
+        shared_ptr< CylinderRestrictor > mCylinderRestrictor;
+        shared_ptr< RobotArmCollision > mCollision;
+  
         float getLerpAmnt( float aDiffInRadians, float aDeltaTimef );
-
+        ofParameterGroup params;
         ofParameter< float > m_angleLerp;
         ofParameter< float > m_angleEpsilon;
         ofParameter< float > m_maxLerpAngle;
         ofParameter< float > m_minDegreesPerSecToSpeedLerp;
         ofParameter< float > m_maxDegreesPerSecToSpeedLerp;
         
-     
+    protected:
         
         bool m_bWithinCylinder = false;
         

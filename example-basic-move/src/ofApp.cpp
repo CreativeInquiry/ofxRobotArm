@@ -1,4 +1,4 @@
-//Copyright (c) 2016, Daniel Moore, Madaline Gannon, and The Frank-Ratchye STUDIO for Creative Inquiry All rights reserved.
+//Copyright (c) 2016, Daniel Moore, Madeline Gannon, and The Frank-Ratchye STUDIO for Creative Inquiry All rights reserved.
 
 //--------------------------------------------------------------
 //
@@ -29,22 +29,26 @@ void ofApp::setup(){
     ofSetFrameRate(60);
     ofSetVerticalSync(true);
     ofBackground(0);
-    ofSetLogLevel(OF_LOG_SILENT);
+    ofSetLogLevel(OF_LOG_VERBOSE);
+    camUp = ofVec3f(0, 0, 1);
     
-    lastCodeGesture = false;
-    appParams.setName("App Parameters");
-    appParams.add(codeGesture.set("Code Gesture", lastCodeGesture));
-    
-    setupViewports();
-    
+     setupViewports();
     parameters.setup();
-    robot.setup("192.168.1.9", parameters); // <-- change to your robot's ip address
-  
-    robot.disableControlJointsExternally();
+    robot.setup("192.168.1.9", parameters, true); // <-- change to your robot's ip address
     
+    robot.disableControlJointsExternally();
+    safety.setup();
+   
     setupGUI();
     positionGUI();
     
+    
+    sim = 0;
+    real = 1;
+}
+
+void ofApp::exit(){
+    robot.close();
 }
 
 //--------------------------------------------------------------
@@ -61,20 +65,23 @@ void ofApp::draw(){
     ofDrawBitmapString("OF FPS "+ofToString(ofGetFrameRate()), 30, ofGetWindowHeight()-50);
     ofDrawBitmapString("Robot FPS "+ofToString(robot.robot.getThreadFPS()), 30, ofGetWindowHeight()-65);
     
-    gizmo.setViewDimensions(viewportSim.width, viewportSim.height);
+    
     
     // show realtime robot
-    cams[0]->begin(viewportReal);
+    cams[real]->begin(viewportReal);
+    ofDrawAxis(100);
     tcpNode.draw();
+    robot.drawPreview();
     robot.draw();
-    cams[0]->end();
+    cams[real]->end();
     
     // show simulation robot
-    cams[1]->begin(viewportSim);
+    cams[sim]->begin(viewportSim);
     ofDrawAxis(100);
-    gizmo.draw(*cams[1]);
+    tcpNode.draw();
+    gizmo.draw(*cams[sim]);
     robot.drawPreview();
-    cams[1]->end();
+    cams[sim]->end();
     
     drawGUI();
     
@@ -114,7 +121,7 @@ void ofApp::moveTCP(){
         
     }
     else{
-        tcpNode.setTransformMatrix(gizmo.getMatrix());
+        gizmo.apply(tcpNode);
     }
     
     // follow the gizmo's position and orientation
@@ -127,11 +134,12 @@ void ofApp::moveTCP(){
 
 void ofApp::setupViewports(){
     
-    viewportReal = ofRectangle((21*ofGetWindowWidth()/24)/2, 0, (21*ofGetWindowWidth()/24)/2, 8*ofGetWindowHeight()/8);
+    viewportReal = ofRectangle((21*ofGetWindowWidth()/24)/2, 0, (21*ofGetWindowWidth()/24)/2, 8*ofGetWindowHeight()/8);;
     viewportSim = ofRectangle(0, 0, (21*ofGetWindowWidth()/24)/2, 8*ofGetWindowHeight()/8);
     
-    activeCam = 0;
+    activeCam = real;
     
+    gizmo.setViewDimensions(viewportSim.width, viewportSim.height);
     
     for(int i = 0; i < N_CAMERAS; i++){
         cams.push_back(new ofEasyCam());
@@ -139,15 +147,24 @@ void ofApp::setupViewports(){
         viewportLabels.push_back("");
     }
     
-    cams[0]->begin(viewportReal);
+    cams[real]->reset();
+    cams[real]->setPosition(glm::vec3(-1, 1, 2500));
+    cams[real]->lookAt(glm::vec3(0, 0, 0), camUp);
+    
+    cams[sim]->reset();
+    cams[sim]->setPosition(glm::vec3(-1, 1, 2500));
+    cams[sim]->lookAt(glm::vec3(0, 0, 0), camUp);
+    
+    cams[real]->begin(viewportReal);
     robot.draw();
-    cams[0]->end();
-    cams[0]->enableMouseInput();
+    cams[real]->end();
+    cams[real]->enableMouseInput();
     
     
-    cams[1]->begin(viewportSim);
-    cams[1]->end();
-    cams[1]->enableMouseInput();
+    cams[sim]->begin(viewportSim);
+    robot.draw();
+    cams[sim]->end();
+    cams[sim]->enableMouseInput();
     
 }
 
@@ -155,16 +172,14 @@ void ofApp::setupViewports(){
 void ofApp::setupGUI(){
     
     panel.setup(parameters.robotArmParams);
-    
-    panel.add(appParams);
-    
+    panel.add(lookAtTCP.set("lookAtTCP", true));
     panel.add(parameters.pathRecorderParams);
     
     panelJoints.setup(parameters.joints);
     panelTargetJoints.setup(parameters.targetJoints);
     panelJointsSpeed.setup(parameters.jointSpeeds);
     panelJointsIK.setup(parameters.jointsIK);
-
+    
     panel.add(robot.movement.movementParams);
     parameters.bMove = false;
     // get the current pose on start up
@@ -172,15 +187,17 @@ void ofApp::setupGUI(){
     panel.loadFromFile("settings/settings.xml");
     
     // setup Gizmo
-    gizmo.setDisplayScale(1.0);
-    tcpNode.setPosition(ofVec3f(0.5, 0.5, 0.5)*1000);
+    
+    tcpNode.setPosition(ofVec3f(500, 500, 500));
     tcpNode.setOrientation(parameters.targetTCP.rotation);
     gizmo.setNode(tcpNode);
+    gizmo.setDisplayScale(2.0);
+    gizmo.show();
 }
 
 void ofApp::positionGUI(){
-    viewportReal.height -= (panelJoints.getHeight());
-    viewportReal.y +=(panelJoints.getHeight());
+    //    viewportReal.height -= (panelJoints.getHeight());
+    //    viewportReal.y +=(panelJoints.getHeight());
     panel.setPosition(viewportReal.x+viewportReal.width, 10);
     panelJointsSpeed.setPosition(viewportReal.x, 10);
     panelJointsIK.setPosition(panelJointsSpeed.getPosition().x+panelJoints.getWidth(), 10);
@@ -210,25 +227,33 @@ void ofApp::updateActiveCamera(){
     
     if (viewportReal.inside(ofGetMouseX(), ofGetMouseY()))
     {
-        activeCam = 0;
-        if(!cams[0]->getMouseInputEnabled()){
-            cams[0]->enableMouseInput();
+        activeCam = real;
+        if(!cams[real]->getMouseInputEnabled()){
+            cams[real]->enableMouseInput();
         }
-        if(cams[1]->getMouseInputEnabled()){
-            cams[1]->disableMouseInput();
+        if(cams[sim]->getMouseInputEnabled()){
+            cams[sim]->disableMouseInput();
+        }
+    }else{
+        if(cams[real]->getMouseInputEnabled()){
+            cams[real]->disableMouseInput();
         }
     }
     if(viewportSim.inside(ofGetMouseX(), ofGetMouseY()))
     {
-        activeCam = 1;
-        if(!cams[1]->getMouseInputEnabled()){
-            cams[1]->enableMouseInput();
+        activeCam = sim;
+        if(!cams[sim]->getMouseInputEnabled()){
+            cams[sim]->enableMouseInput();
         }
-        if(cams[0]->getMouseInputEnabled()){
-            cams[0]->disableMouseInput();
+        if(cams[real]->getMouseInputEnabled()){
+            cams[real]->disableMouseInput();
         }
-        if(gizmo.isInteracting() && cams[1]->getMouseInputEnabled()){
-            cams[1]->disableMouseInput();
+        if(gizmo.isInteracting() && cams[sim]->getMouseInputEnabled()){
+            cams[sim]->disableMouseInput();
+        }
+    }else{
+        if(cams[sim]->getMouseInputEnabled()){
+            cams[sim]->disableMouseInput();
         }
     }
 }
@@ -237,37 +262,54 @@ void ofApp::updateActiveCamera(){
 //--------------------------------------------------------------
 void ofApp::handleViewportPresets(int key){
     
-    float dist = 2000;
+    float dist = 2500;
     float zOffset = 450;
     
     if(activeCam != -1){
+        glm::vec3 pos = lookAtTCP.get()==true?glm::vec3(0, 0, 0):tcpNode.getPosition();
         // TOP VIEW
         if (key == '1'){
+            glm::vec3 offset = glm::vec3(-1, 1, dist);
             cams[activeCam]->reset();
-            cams[activeCam]->setPosition(0, 0, dist);
-            cams[activeCam]->lookAt(ofVec3f(0, 0, 0), ofVec3f(0, 0, 1));
+            cams[activeCam]->setPosition(pos+offset);
+            cams[activeCam]->lookAt(lookAtTCP.get()==true?tcpNode.getPosition():glm::vec3(0, 0, 0), camUp);
             viewportLabels[activeCam] = "TOP VIEW";
+            return;
         }
         // LEFT VIEW
-        else if (key == '2'){
+        if (key == '2'){
+            glm::vec3 offset = glm::vec3(dist, 1, 1);
             cams[activeCam]->reset();
-            cams[activeCam]->setPosition(dist, 0, 0);
-            cams[activeCam]->lookAt(ofVec3f(0, 0, 0), ofVec3f(0, 0, 1));
+            cams[activeCam]->setPosition(pos+offset);
+            cams[activeCam]->lookAt(lookAtTCP.get()==true?tcpNode.getPosition():glm::vec3(0, 0, 0), camUp);
             viewportLabels[activeCam] = "LEFT VIEW";
+            return;
         }
         // FRONT VIEW
-        else if (key == '3'){
+        if (key == '3'){
+            glm::vec3 offset = glm::vec3(1, dist, 1);
             cams[activeCam]->reset();
-            cams[activeCam]->setPosition(0, dist, 0);
-            cams[activeCam]->lookAt(ofVec3f(0, 0, 0), ofVec3f(0, 0, 1));
+            cams[activeCam]->setPosition(pos+offset);
+            cams[activeCam]->lookAt(lookAtTCP.get()==true?tcpNode.getPosition():glm::vec3(0, 0, 0), camUp);
             viewportLabels[activeCam] = "FRONT VIEW";
+            return;
         }
         // PERSPECTIVE VIEW
-        else if (key == '4'){
+        if (key == '4'){
+            glm::vec3 offset = glm::vec3(dist/4, dist, dist/4);
             cams[activeCam]->reset();
-            cams[activeCam]->setPosition(dist/4, dist, dist/4);
-            cams[activeCam]->lookAt(ofVec3f(0, 0, 0), ofVec3f(0, 0, 1));
+            cams[activeCam]->setPosition(pos+offset);
+            cams[activeCam]->lookAt(lookAtTCP.get()==true?tcpNode.getPosition():glm::vec3(0, 0, 0), camUp);
             viewportLabels[activeCam] = "PERSPECTIVE VIEW";
+            return;
+        }
+        if (key == '5'){
+            glm::vec3 offset = glm::vec3(-dist/4, dist, -dist/4);
+            cams[activeCam]->reset();
+            cams[activeCam]->setPosition(pos+offset);
+            cams[activeCam]->lookAt(lookAtTCP.get()==true?tcpNode.getPosition():glm::vec3(0, 0, 0), camUp);
+            viewportLabels[activeCam] = "PERSPECTIVE VIEW";
+            return;
         }
     }
 }
@@ -363,6 +405,7 @@ void ofApp::mouseExited(int x, int y){
 
 //--------------------------------------------------------------
 void ofApp::windowResized(int w, int h){
+    setupViewports();
     
 }
 

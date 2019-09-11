@@ -1,11 +1,11 @@
 ofxAssimpModelLoader
+ofxEasing
 ofxGML
 ofxGizmo
 ofxGui
+ofxGuiExtended2
+ofxIKArm
 ofxMSATimer
-ofxNatNet
-ofxOpenCv
-ofxOsc
 ofxPtf
 ofxRange
 ofxRobotArm
@@ -13,6 +13,5 @@ ofxTextInputField
 ofxTimecode
 ofxTimeline
 ofxTiming
-ofxTween
 ofxURDriver
 ofxXmlSettings
