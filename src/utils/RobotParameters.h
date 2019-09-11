@@ -3,38 +3,28 @@
 
 #pragma once
 #include "ofMain.h"
+#include "URJoint.h"
 namespace ofxRobotArm{
     class RobotParameters{
         public :
-        void setup(bool getTCP = true, bool setTCP = true, bool toolOffset = true, bool drawpath = true ) {
+        void setup(bool getTCP = true, bool setTCP = true, bool toolOffset = true, bool drawpath = true, bool record = false ) {
             robotArmParams.setName("UR 5");
-            if (getTCP){
-                robotArmParams.add(tcpPosition.set("Actual Robot TCP POS", ofVec3f(0, 0, 0), ofVec3f(-1, -1, -1), ofVec3f(1, 1, 1)));
-                robotArmParams.add(tcpOrientation.set("Actual Robot TCP ORIENT", ofVec4f(0,0,0,1), ofVec4f(-1,-1,-1,-1), ofVec4f(1,1,1,1)));
-                //            robotArmParams.add(calcTCPOrientation.set("Calculated Robot TCP ORIENT", ofVec4f(0,0,0,1), ofVec4f(-1,-1,-1,-1), ofVec4f(1,1,1,1)));
-                forwardTCPOrientation.set("Forward TCP ORIENT", ofVec4f(0,0,0,1), ofVec4f(-1,-1,-1,-1), ofVec4f(1,1,1,1));
-                //            robotArmParams.add(forwardTCPOrientation.set("Forward TCP ORIENT", ofVec4f(0,0,0,1), ofVec4f(-1,-1,-1,-1), ofVec4f(1,1,1,1)));
-                forwardTCPPosition.set("Forward TCP Pos", ofVec3f(0, 0, 0), ofVec3f(-1, -1, -1), ofVec3f(1, 1, 1));
-                //            robotArmParams.add(forwardTCPPosition.set("Forward TCP Pos", ofVec3f(0, 0, 0), ofVec3f(-1, -1, -1), ofVec3f(1, 1, 1)));
-            }
-            if (setTCP){
-                robotArmParams.add(targetTCPPosition.set("Set TCP POS", ofVec3f(0, 0, 0), ofVec3f(-1, -1, -1), ofVec3f(1, 1, 1)));
-                robotArmParams.add(targetTCPOrientation.set("Set TCP ORIENT",ofVec4f(0,0,0,1), ofVec4f(-1,-1,-1,-1), ofVec4f(1,1,1,1)));
-            }
-            if (toolOffset){
-                robotArmParams.add(tcpOffset.set("tcpOffset", ofVec3f(0, 0, 0), ofVec3f(-0.2, -0.2, -0.2), ofVec3f(0.2, 0.2, 0.2)));
-            }
+   
             
-            // should move to URMove
-            robotArmParams.add(avgAccel.set("avgAccel", 0, 0, 200));
-            robotArmParams.add(followLerp.set("followLerp", 1, 0, 1.0));
+            avgAccel.set("avgAccel", 0, 0, 200);
+            followLerp.set("followLerp", 1, 0, 1.0);
             
             if (getTCP)
                 robotArmParams.add(bCopy.set("get TCP", false));
             if (setTCP)
                 robotArmParams.add(bFollow.set("set TCP", false));
             
+            robotArmParams.add(bUseOSC.set("Use External OSC", false));
             robotArmParams.add(bUseIK.set("Use IKFast", true));
+            robotArmParams.add(bTimeline.set("Use Timeline", false));
+            robotArmParams.add(bIKArm.set("Use IKArm", false));
+            
+  
             
             if (drawpath){
                 robotArmParams.add(bTrace.set("bTrace GML", false));
@@ -66,17 +56,35 @@ namespace ofxRobotArm{
                 jointSpeeds.add(jointVelocities.back().set("Joint Speed"+ofToString(i), 0, -100, 100));
             }
             
-            //        if (record){
-            //            pathRecorderParams.setName("Path Recording");
-            //            pathRecorderParams.add(bRecord.set("Record", false));
-            //        }
+            if (record){
+                pathRecorderParams.setName("Path Recording");
+                pathRecorderParams.add(bRecord.set("Record", false));
+            }
+            
+            
+            if (getTCP){
+                robotArmParams.add(tcpPosition.set("Actual Robot TCP POS", ofVec3f(0, 0, 0), ofVec3f(-1, -1, -1), ofVec3f(1, 1, 1)));
+                robotArmParams.add(tcpOrientation.set("Actual Robot TCP ORIENT", ofVec4f(0,0,0,1), ofVec4f(-1,-1,-1,-1), ofVec4f(1,1,1,1)));
+                //            robotArmParams.add(calcTCPOrientation.set("Calculated Robot TCP ORIENT", ofVec4f(0,0,0,1), ofVec4f(-1,-1,-1,-1), ofVec4f(1,1,1,1)));
+                forwardTCPOrientation.set("Forward TCP ORIENT", ofVec4f(0,0,0,1), ofVec4f(-1,-1,-1,-1), ofVec4f(1,1,1,1));
+                //            robotArmParams.add(forwardTCPOrientation.set("Forward TCP ORIENT", ofVec4f(0,0,0,1), ofVec4f(-1,-1,-1,-1), ofVec4f(1,1,1,1)));
+                forwardTCPPosition.set("Forward TCP Pos", ofVec3f(0, 0, 0), ofVec3f(-1, -1, -1), ofVec3f(1, 1, 1));
+                //            robotArmParams.add(forwardTCPPosition.set("Forward TCP Pos", ofVec3f(0, 0, 0), ofVec3f(-1, -1, -1), ofVec3f(1, 1, 1)));
+            }
+            if (setTCP){
+                robotArmParams.add(targetTCPPosition.set("Set TCP POS", ofVec3f(0, 0, 0), ofVec3f(-1, -1, -1), ofVec3f(1, 1, 1)));
+                robotArmParams.add(targetTCPOrientation.set("Set TCP ORIENT",ofVec4f(0,0,0,1), ofVec4f(-1,-1,-1,-1), ofVec4f(1,1,1,1)));
+            }
+            if (toolOffset){
+                robotArmParams.add(tcpOffset.set("tcpOffset", ofVec3f(0, 0, 0), ofVec3f(-0.2, -0.2, -0.2), ofVec3f(0.2, 0.2, 0.2)));
+            }
             
         };
         ofParameterGroup robotArmParams;
         ofParameter<ofVec3f> targetTCPPosition;
         ofParameter<ofVec4f> targetTCPOrientation;
         ofParameter<ofVec4f> tcpOrientation;
-        //    ofParameter<ofVec4f> calcTCPOrientation;
+        ofParameter<ofVec4f> calcTCPOrientation;
         ofParameter<ofVec4f> forwardTCPOrientation;
         ofParameter<ofVec3f> forwardTCPPosition;
         ofParameter<ofVec3f> tcpPosition;
@@ -90,7 +98,7 @@ namespace ofxRobotArm{
         ofParameterGroup jointSpeeds;
         ofParameterGroup jointsIK;
         
-        
+        ofParameter<bool> bTimeline;
         
         ofParameter<float> followLerp;
         ofParameter<float> avgAccel;
@@ -104,10 +112,12 @@ namespace ofxRobotArm{
         ofParameter<bool> bTrace;
         ofParameter<bool> bFollow;
         ofParameter<bool> bCopy;
+        ofParameter<bool> bUseOSC;
         ofParameter<bool> bStop;
         ofParameter<bool> b3DPath;
         ofParameter<bool> bDoReconnect;
         ofParameter<bool> bUseIK;
+        ofParameter<bool> bIKArm;
         
         string ipAddress;
         vector<double> currentPose;

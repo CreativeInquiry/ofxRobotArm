@@ -9,7 +9,7 @@
 
 using namespace ofxRobotArm;
 //--------------------------------------------------------------
-void RobotArmCollision::setup() {
+ofParameterGroup &  RobotArmCollision::setup() {
     mModel = shared_ptr< UR5KinematicModel >( new UR5KinematicModel() );
     mModel->setup();
     
@@ -19,9 +19,11 @@ void RobotArmCollision::setup() {
     params.setName( "Robot Collisions" );
     params.add( bApply.set("ApplyCollisionDetection", true ));
     params.add( bDrawStops.set("DrawStops", false ));
+    params.add( mStopSphereScale.set("StopSphereScale", 1.4, 1.0, 2. ) );
     params.add( bDrawWarnings.set("DrawWarnings", true ));
     params.add( mCorrectStepAngle.set("CorrectStep", 0.05f, 0.005, 1.f ));
     params.add( mMaxCorrectiveAngle.set("MaxCorrectiveAngle", 45, 5, 180 ));
+    params.add( mSpherePadding.set("SpherePadding", 1.25, 0.5, 3.f ));
     
     
     bool bAddSlidersToPanel = true;
@@ -39,20 +41,24 @@ void RobotArmCollision::setup() {
         tpad.set("Padding_"+ofToString(i,0), tdefault, 1.f, 100.0f );
         if(bAddSlidersToPanel) params.add( tpad );
         mPaddings.push_back( tpad );
-    }    
+    }
+    
+    
     sphereMesh = ofMesh::icosphere( 1 );
+    
+    return params;
 }
 
 //--------------------------------------------------------------
 void RobotArmCollision::setRobotAngles( vector< double > aAcutalRobotAngles ) {
-    mModel->setPose( aAcutalRobotAngles );
+    mModel->setAngles( aAcutalRobotAngles );
     
     if( mAppendages.size() ) {
         for( int i = 0; i < mAppendages.size(); i++ ) {
             if( i < aAcutalRobotAngles.size() ) {
                 mAppendages[i].prevAngle    = mAppendages[i].actualRobotAngle;
                 if( mAppendages[i].currentAngle == 2000 ) {
-//                    // this is the first time it's being set, so make it 0 //
+                    //                    // this is the first time it's being set, so make it 0 //
                     mAppendages[i].prevAngle = aAcutalRobotAngles[i];
                 }
                 mAppendages[i].currentAngle     = aAcutalRobotAngles[i];
@@ -71,11 +77,22 @@ void RobotArmCollision::setDesiredAngles( vector< double > aDesiredRobotAngles )
 void RobotArmCollision::update( float aDeltaTimef ) {
     if( !mModel ) return;
     
+    if( mPrevSpherePadding != mSpherePadding || mPrevSphereStopScale != mStopSphereScale ) {
+        mAppendages.clear();
+        mPrevSpherePadding      = mSpherePadding;
+        mPrevSphereStopScale    = mStopSphereScale;
+        return; // need to skip this frame so it doesn't jump
+    }
+    mPrevSpherePadding      = mSpherePadding;
+    mPrevSphereStopScale    = mStopSphereScale;
+    
+
+    
     if( !mAppendages.size() ) {
-//        mAppendages.resize( mModel->nodes.size()-1 );
-//        cout << "resizing the mAppendages: " << mAppendages.size() << " | " << ofGetFrameNum() << endl;
+        //        mAppendages.resize( mModel->nodes.size()-1 );
+        //        ofLog(OF_LOG_VERBOSE) << "resizing the mAppendages: " << mAppendages.size() << " | " << ofGetFrameNum() << endl;
         // figure out the lengths //
-//        float tspacing  = 50.0f;
+        //        float tspacing  = 50.0f;
         
         for( int i = 0; i < (int)mModel->nodes.size()-1; i++ ) {
             ofNode cnode = mModel->nodes[i];
@@ -85,45 +102,45 @@ void RobotArmCollision::update( float aDeltaTimef ) {
             float tradius   = 40.f;
             if( i == 0 ) {
                 tradius = 65.0f;
-//                tradius = 5.0f; // for now, make little so it doesn't conflict with others //
+                //                tradius = 5.0f; // for now, make little so it doesn't conflict with others //
             } else if( i == 1 ) {
                 tradius = 50.0f;
             }
             
             float tpadding  = mPaddings[i];
-            float tspacing  = tradius * 1.25;
+            float tspacing  = tradius * mSpherePadding;
             
             app.length = (nnode.getGlobalPosition() - cnode.getGlobalPosition()).length();
             int tnumSpheres = ceil(app.length / tspacing);
             if( tnumSpheres < 2 ) tnumSpheres = 2;
             
-//            cout << i << " - appendage num spheres: " << tnumSpheres << endl;
+            //            ofLog(OF_LOG_VERBOSE) << i << " - appendage num spheres: " << tnumSpheres << endl;
             for( int k = 0; k < tnumSpheres; k++ ) {
                 CollisionSphere tsphere;
                 tsphere.pctAlongAppendage = ofMap( k, 0, tnumSpheres-1, 0.0, 1.0, true );
                 if( tnumSpheres == 1 ) tsphere.pctAlongAppendage = 1.0f;
                 tsphere.lengthAlongAppendage = app.length * tsphere.pctAlongAppendage;
-                tsphere.radius          = tradius;
-                tsphere.radiusWarning   = tsphere.radius + tpadding;
+                tsphere.radius          = tradius * mStopSphereScale;
+                tsphere.radiusWarning   = tradius + tpadding;
                 tsphere.appendageIndex  = i;
                 if( k == tnumSpheres-1 ) {
                     tsphere.bLastSphere = true;
                 }
                 app.spheres.push_back( tsphere );
-//                app.prevSpheres.push_back( tsphere );
+                //                app.prevSpheres.push_back( tsphere );
                 
-//                cout << "adding a sphere " << k << " " << endl;
+                //                ofLog(OF_LOG_VERBOSE) << "adding a sphere " << k << " " << endl;
             }
             mAppendages.push_back( app );
-//            cout << i << " - where the spheres go? " << mAppendages.back().spheres.size() << endl;
+            //            ofLog(OF_LOG_VERBOSE) << i << " - where the spheres go? " << mAppendages.back().spheres.size() << endl;
         }
         
-        cout << "mAppendages.size(): " << mAppendages.size() << " | " << ofGetFrameNum() << endl;
+        ofLog(OF_LOG_VERBOSE) << "mAppendages.size(): " << mAppendages.size() << " | " << ofGetFrameNum() << endl;
     }
     
     // update the angle velocities //
     for( int i = 0; i < mAppendages.size(); i++ ) {
-//        mAppendages[i].angleVel = aDeltaTimef * 60.f * ofAngleDifferenceRadians( mAppendages[i].prevAngle, mAppendages[i].currentAngle );
+        //        mAppendages[i].angleVel = aDeltaTimef * 60.f * ofAngleDifferenceRadians( mAppendages[i].prevAngle, mAppendages[i].currentAngle );
         mAppendages[i].angleVel = aDeltaTimef * 60.f * ofWrapRadians( mAppendages[i].currentAngle - mAppendages[i].prevAngle, ofDegToRad(-360), ofDegToRad(360) );
     }
     
@@ -142,23 +159,23 @@ void RobotArmCollision::update( float aDeltaTimef ) {
         mPredictiveAppendages[i].currentAngle   = mAppendages[i].currentAngle;
         mPredictiveAppendages[i].origAngle      = mPredictiveAppendages[i].currentAngle;
         mPredictiveAppendages[i].angleVel       = mAppendages[i].angleVel;
-//        mPredictiveAppendages[i].currentAngle   = ofLerpRadians( mPredictiveAppendages[i].currentAngle, mDesiredAngles[i], 0.25 * aDeltaTimef * 60.0f );
-//        mPredictiveAppendages[i].currentAngle   += mPredictiveAppendages[i].angleVel;
+        //        mPredictiveAppendages[i].currentAngle   = ofLerpRadians( mPredictiveAppendages[i].currentAngle, mDesiredAngles[i], 0.25 * aDeltaTimef * 60.0f );
+        //        mPredictiveAppendages[i].currentAngle   += mPredictiveAppendages[i].angleVel;
     }
     if( mPredictiveModel ) {
         updateModel( mPredictiveModel, mPredictiveAppendages );
-//        updateAppendages( mPredictiveModel, mPredictiveAppendages );
+        //        updateAppendages( mPredictiveModel, mPredictiveAppendages );
     }
     
-//    if( mDesiredAngles.size() > 3 && mPredictiveAppendages.size() > 3 ) {
-//        cout << "--------------------------" << endl;
-//        cout << "before correction warning: " << isGoingToWarn() << " desired angle: " << mDesiredAngles[2] << " current angle: " << mPredictiveAppendages[2].currentAngle << " | " << ofGetFrameNum() << endl;
-//    }
+    //    if( mDesiredAngles.size() > 3 && mPredictiveAppendages.size() > 3 ) {
+    //        ofLog(OF_LOG_VERBOSE) << "--------------------------" << endl;
+    //        ofLog(OF_LOG_VERBOSE) << "before correction warning: " << isGoingToWarn() << " desired angle: " << mDesiredAngles[2] << " current angle: " << mPredictiveAppendages[2].currentAngle << " | " << ofGetFrameNum() << endl;
+    //    }
     
     // get the max angle difference and then create some steps to interpolate in between //
     float tmaxAngleDiff = FLT_MIN;
-    for( int i = 0; i < mPredictiveAppendages.size(); i++ ) {
-//        float tangleDiff = ofAngleDifferenceRadians(mPredictiveAppendages[i].currentAngle, mDesiredAngles[i] );
+    for( int i = 0; i < mPredictiveAppendages.size() && i < mDesiredAngles.size(); i++ ) {
+        //        float tangleDiff = ofAngleDifferenceRadians(mPredictiveAppendages[i].currentAngle, mDesiredAngles[i] );
         float tangleDiff = ofWrapRadians(mDesiredAngles[i] - mPredictiveAppendages[i].currentAngle, ofDegToRad(-360), ofDegToRad(360) );
         if( fabs(tangleDiff) > tmaxAngleDiff ) {
             tmaxAngleDiff = tangleDiff;
@@ -174,13 +191,13 @@ void RobotArmCollision::update( float aDeltaTimef ) {
     vector< Appendage > origAppendages = mPredictiveAppendages;
     
     int tnumPredictiveApps = mPredictiveAppendages.size();
-    for( int tk = 0; tk < tnumLerpIters; tk++ ) {
+    for( int tk = 0; tk < tnumLerpIters && tk < mPredictiveAppendages.size() && tk < mDesiredAngles.size(); tk++ ) {
         if( !bApply ) break;
         
         float tpct = ofMap( tk, 0, tnumLerpIters-1, 0.0, 1.0, true );
         // update the mPredictiveAppendages with the lerped values //
         for( int tla = 0; tla < tnumPredictiveApps; tla++ ) {
-//            mPredictiveAppendages[tla].angleVel = ofAngleDifferenceRadians( mPredictiveAppendages[tla].origAngle, mDesiredAngles[tla] );
+            //            mPredictiveAppendages[tla].angleVel = ofAngleDifferenceRadians( mPredictiveAppendages[tla].origAngle, mDesiredAngles[tla] );
             mPredictiveAppendages[tla].angleVel     = ofWrapRadians( mDesiredAngles[tla] - mPredictiveAppendages[tla].origAngle, ofDegToRad(-360), ofDegToRad(360) );
             mPredictiveAppendages[tla].currentAngle = ofWrapRadians(ofLerpRadians( mPredictiveAppendages[tla].origAngle, mDesiredAngles[tla], tpct ), -TWO_PI, TWO_PI);
         }
@@ -189,22 +206,53 @@ void RobotArmCollision::update( float aDeltaTimef ) {
         
         if( isGoingToWarn() ) {
             
-//            cout << "Going to warn :: hasMainCollisions: " << hasMainCollisionWarnings() << " isNeckHittingForearm: " << isNeckHittingForearm() << " | " << ofGetFrameNum() << endl;
+            ofLog(OF_LOG_NOTICE) << "Going to warn :: hasMainCollisions: " << hasMainCollisionWarnings() << " isNeckHittingForearm: " << isNeckHittingForearm() << " | " << ofGetFrameNum() << endl;
             // try to solve for main collisions first //
             if( hasMainCollisionWarnings() ) {
+                
+                vector< Appendage > tempApps = mPredictiveAppendages;
                 solveMainCollisions();
-//                // now set the predictiveAppendages to the solved ones //
-                for( int npa = 0; npa < mPredictiveAppendages.size(); npa++ ) {
-                    mPredictiveAppendages[npa].currentAngle = mDesiredAngles[ npa ];
-                    mPredictiveAppendages[npa].angleVel     = ofWrapRadians( mDesiredAngles[npa] - mPredictiveAppendages[npa].origAngle, ofDegToRad(-360), ofDegToRad(360) );
+                //                // now set the predictiveAppendages to the solved ones //
+                if( !hasMainCollisionWarnings() ) {
+                    for( int npa = 0; npa < mPredictiveAppendages.size(); npa++ ) {
+                        mPredictiveAppendages[npa].currentAngle = mDesiredAngles[ npa ];
+                        mPredictiveAppendages[npa].angleVel     = ofWrapRadians( mDesiredAngles[npa] - mPredictiveAppendages[npa].origAngle, ofDegToRad(-360), ofDegToRad(360) );
+                    }
+                } else {
+                    mPredictiveAppendages = tempApps;
+                    updateModel( mPredictiveModel, mPredictiveAppendages );
                 }
-                cout << "after main solver :: hasMainCollisions : " << hasMainCollisionWarnings() << " isNeckHittingForearm: " << isNeckHittingForearm() << " | " << ofGetFrameNum() << endl;
+                ofLog((OF_LOG_WARNING)) << "after main solver :: hasMainCollisions : " << hasMainCollisionWarnings() << " isNeckHittingForearm: " << isNeckHittingForearm() << " | " << ofGetFrameNum() << endl;
             }
             
             // do we still have collision warnings //
-            if( !hasMainCollisionWarnings() && isNeckHittingForearm() ) {
-                solveHeadToForearmCollision();
-//                cout << "after forearm solver :: hasMainCollisions : " << hasMainCollisionWarnings() << " isNeckHittingForearm: " << isNeckHittingForearm() << " | " << ofGetFrameNum() << endl;
+            //            if( !hasMainCollisionWarnings() && isNeckHittingForearm() ) {
+            if( isNeckHittingForearm() ) {
+                vector< Appendage > tempApps = mPredictiveAppendages;
+                //                solveHeadToForearmCollision( 0 );
+                //                if( isGoingToWarn() ) {
+                //                    mPredictiveAppendages = tempApps;
+                //                    updateModel( mPredictiveModel, mPredictiveAppendages );
+                //                }
+                //                ofLog((OF_LOG_NOTICE)) << "after forearm solver 1 :: hasMainCollisions : " << hasMainCollisionWarnings() << " isNeckHittingForearm: " << isNeckHittingForearm() << " | " << ofGetFrameNum() << endl;
+                if( isNeckHittingForearm() ) {
+                    ofLog((OF_LOG_WARNING)) << "after forearm solver 2 :: hasMainCollisions : " << hasMainCollisionWarnings() << " isNeckHittingForearm: " << isNeckHittingForearm() << " | " << ofGetFrameNum() << endl;
+                    tempApps = mPredictiveAppendages;
+                    solveHeadToForearmCollision( 1 );
+                    if( isGoingToWarn() ) {
+                        mPredictiveAppendages = tempApps;
+                        updateModel( mPredictiveModel, mPredictiveAppendages );
+                    }
+                }
+                if( isNeckHittingForearm() ) {
+                    tempApps = mPredictiveAppendages;
+                    solveHeadToForearmCollision( -1 );
+                    ofLog((OF_LOG_WARNING)) << "after forearm solver 3 :: hasMainCollisions : " << hasMainCollisionWarnings() << " isNeckHittingForearm: " << isNeckHittingForearm() << " | " << ofGetFrameNum() << endl;
+                    if( isGoingToWarn() ) {
+                        mPredictiveAppendages = tempApps;
+                        updateModel( mPredictiveModel, mPredictiveAppendages );
+                    }
+                }
             }
             
             break;
@@ -213,29 +261,29 @@ void RobotArmCollision::update( float aDeltaTimef ) {
     
     
     if( mDesiredAngles.size() > 3 && mPredictiveAppendages.size() > 3 ) {
-//        cout << "after correction warning: " << isGoingToWarn() << " desired angle: " << mDesiredAngles[2] << " current angle: " << mPredictiveAppendages[2].currentAngle << " tdir: " << mPredictiveAppendages[2].angleDir << " | " << ofGetFrameNum() << endl;
+        //        ofLog(OF_LOG_VERBOSE) << "after correction warning: " << isGoingToWarn() << " desired angle: " << mDesiredAngles[2] << " current angle: " << mPredictiveAppendages[2].currentAngle << " tdir: " << mPredictiveAppendages[2].angleDir << " | " << ofGetFrameNum() << endl;
     }
     
     // another check using the desired angles //
-    for( int i = 0; i < mPredictiveAppendages.size(); i++ ) {
+    for( int i = 0; i < mPredictiveAppendages.size() && i < mDesiredAngles.size(); i++ ) {
         mPredictiveAppendages[i].currentAngle = mDesiredAngles[i];
     }
     updateModel( mPredictiveModel, mPredictiveAppendages );
-//    for( int i = 0; i < mPredictiveAppendages.size(); i++ ) {
-//        if( mPredictiveAppendages[i].bCollidingWarning ) {
-//            mDesiredAngles[i] = mAppendages[i].currentAngle;
-//        }
-//    }
+    //    for( int i = 0; i < mPredictiveAppendages.size(); i++ ) {
+    //        if( mPredictiveAppendages[i].bCollidingWarning ) {
+    //            mDesiredAngles[i] = mAppendages[i].currentAngle;
+    //        }
+    //    }
     
-    
-    for( int i = 0; i < mAppendages.size(); i++ ) {
-        if( mAppendages[i].bColliding ) {
+    bool bStillGoingToCollide = isGoingToCollide();// || isGoingToWarn();
+    for( int i = 0; i < mAppendages.size() && i < mDesiredAngles.size(); i++ ) {
+        if( bStillGoingToCollide ) {
             mDesiredAngles[i] = mAppendages[i].actualRobotAngle;
         }
     }
     
     if( mDesiredAngles.size() > 4 ) {
-//        cout << "RobotArmCollision :: angle[2]: " << ofRadToDeg( mDesiredAngles[2] ) << " | " << ofGetFrameNum() << endl;
+        //        ofLog(OF_LOG_VERBOSE) << "RobotArmCollision :: angle[2]: " << ofRadToDeg( mDesiredAngles[2] ) << " | " << ofGetFrameNum() << endl;
     }
     
 }
@@ -246,23 +294,14 @@ void RobotArmCollision::draw() {
     for( int i = 0; i < mAppendages.size(); i++ ) {
         Appendage& app = mAppendages[i];
         for( auto& cs : app.spheres ) {
-            ofSetColor(220, 100, 30 );
-            if( i == 1 ) {
-                ofSetColor(0, 220, 40 );
-            } else if( i == 2 ) {
-                ofSetColor( 0, 201, 230 );
-            } else if( i == 3 ) {
-                ofSetColor(210, 100, 40 );
-            } else if( i == 4 ) {
-                ofSetColor(190, 20, 180 );
-            }
+            ofSetColor(250, 0, 0, 20);
             if( cs.bCollidingWarning ) {
-                ofSetColor(200, 230, 30 );
+                ofSetColor(250, 0, 0, 60);
             }
             if( cs.bColliding ) {
-                ofSetColor(240, 20, 30 );
+                ofSetColor(250, 0, 0, 120);
             }
-//            if( bDrawStops ) ofDrawSphere( cs.globalPos, cs.radius );
+            //            if( bDrawStops ) ofDrawSphere( cs.globalPos, cs.radius );
             if( bDrawStops ) {
                 ofPushMatrix(); {
                     ofTranslate( cs.globalPos );
@@ -270,8 +309,8 @@ void RobotArmCollision::draw() {
                     sphereMesh.draw();
                 } ofPopMatrix();
             }
-//            ofNoFill();
-//            if( bDrawWarnings ) ofDrawSphere( cs.globalPos, cs.radiusWarning );
+            //            ofNoFill();
+            //            if( bDrawWarnings ) ofDrawSphere( cs.globalPos, cs.radiusWarning );
             if( bDrawWarnings ) {
                 ofPushMatrix(); {
                     ofTranslate( cs.globalPos );
@@ -279,9 +318,9 @@ void RobotArmCollision::draw() {
                     sphereMesh.drawWireframe();
                 } ofPopMatrix();
             }
-//            ofFill();
+            //            ofFill();
             ofSetColor(230, 230, 230 );
-//            ofDrawLine( cs.globalPos, cs.globalPos + cs.vel * 50.0f );
+            //            ofDrawLine( cs.globalPos, cs.globalPos + cs.vel * 50.0f );
         }
         if( i >= 4 ) {
             break;
@@ -298,7 +337,7 @@ vector< double > RobotArmCollision::getDesiredAngles() {
 void RobotArmCollision::updateAppendages( shared_ptr< UR5KinematicModel > amodel, vector< Appendage >& aAppendages ) {
     // calculate the positions of the sphere //
     // there is one less appendage than nodes //
-    //    cout << "mModel num nodes: " << mModel->nodes.size() << " | " << ofGetFrameNum() << endl;
+    //    ofLog(OF_LOG_VERBOSE) << "mModel num nodes: " << mModel->nodes.size() << " | " << ofGetFrameNum() << endl;
     for( int i = 0; i < aAppendages.size(); i++ ) {
         if( i >= amodel->nodes.size() ) continue;
         Appendage& app  = aAppendages[i];
@@ -327,7 +366,7 @@ void RobotArmCollision::updateAppendages( shared_ptr< UR5KinematicModel > amodel
         }
         
         ndir.normalize();
-        //        cout << i << " - mModel node: " << " num spheres: " << app.spheres.size() << " | " << ofGetFrameNum() << endl;
+        //        ofLog(OF_LOG_VERBOSE) << i << " - mModel node: " << " num spheres: " << app.spheres.size() << " | " << ofGetFrameNum() << endl;
         // so we can calculate velocities //
         app.prevSpheres = app.spheres;
         
@@ -421,7 +460,7 @@ void RobotArmCollision::updateModel( shared_ptr< UR5KinematicModel > amodel, vec
         tempPredictiveAngles.push_back( aAppendages[i].currentAngle );
     }
     if( amodel ) {
-        amodel->setPose( tempPredictiveAngles );
+        amodel->setAngles( tempPredictiveAngles );
         updateAppendages( amodel, aAppendages );
     }
 }
@@ -526,7 +565,7 @@ void RobotArmCollision::solveMainCollisions() {
     int tnumPredictiveApps = mPredictiveAppendages.size();
     if( tnumPredictiveApps < 5 ) return; // just in case //
     vector< Appendage > tempStoredPredictive = mPredictiveAppendages;
-        
+    
     //            for( int i = tnumPredictiveApps-1; i > 1; i-- ) {
     //            for( int i = 3; i > 0; i-- ) {
     for( int i = 2; i < 4; i++ ) { // works most of the time //
@@ -535,28 +574,28 @@ void RobotArmCollision::solveMainCollisions() {
         mPredictiveAppendages = tempStoredPredictive;
         
         {
-        //                float tcurrentAngle = mPredictiveAppendages[i].currentAngle;
-        //                float testAngleA    = ofWrapRadians( mPredictiveAppendages[i].currentAngle + ofDegToRad(1.5f) );
-        //                float testAngleB    = ofWrapRadians( mPredictiveAppendages[i].currentAngle - ofDegToRad(1.5f) );
-        //                float testDistSqA   = FLT_MAX;
-        //                float testDistSqB   = FLT_MAX;
-        //
-        //                // first determine the direction //
-        //                mPredictiveAppendages[i].angleDir = -1;
-        //
-        //                mPredictiveAppendages[i].currentAngle = testAngleA;
-        //                updateModel( mPredictiveModel, mPredictiveAppendages );
-        //                testDistSqA = getClosestCollisionDistanceSq();
-        //                mPredictiveAppendages[i].currentAngle = testAngleB;
-        //                updateModel( mPredictiveModel, mPredictiveAppendages );
-        //                testDistSqB = getClosestCollisionDistanceSq();
-        //
-        //                if( testDistSqA > testDistSqB ) {
-        //                    mPredictiveAppendages[i].angleDir = 1.0;
-        //                } else {
-        //                    mPredictiveAppendages[i].angleDir = -1.0;
-        //                }
-        //                mPredictiveAppendages[i].currentAngle = tcurrentAngle;
+            //                float tcurrentAngle = mPredictiveAppendages[i].currentAngle;
+            //                float testAngleA    = ofWrapRadians( mPredictiveAppendages[i].currentAngle + ofDegToRad(1.5f) );
+            //                float testAngleB    = ofWrapRadians( mPredictiveAppendages[i].currentAngle - ofDegToRad(1.5f) );
+            //                float testDistSqA   = FLT_MAX;
+            //                float testDistSqB   = FLT_MAX;
+            //
+            //                // first determine the direction //
+            //                mPredictiveAppendages[i].angleDir = -1;
+            //
+            //                mPredictiveAppendages[i].currentAngle = testAngleA;
+            //                updateModel( mPredictiveModel, mPredictiveAppendages );
+            //                testDistSqA = getClosestCollisionDistanceSq();
+            //                mPredictiveAppendages[i].currentAngle = testAngleB;
+            //                updateModel( mPredictiveModel, mPredictiveAppendages );
+            //                testDistSqB = getClosestCollisionDistanceSq();
+            //
+            //                if( testDistSqA > testDistSqB ) {
+            //                    mPredictiveAppendages[i].angleDir = 1.0;
+            //                } else {
+            //                    mPredictiveAppendages[i].angleDir = -1.0;
+            //                }
+            //                mPredictiveAppendages[i].currentAngle = tcurrentAngle;
         }
         
         //                for( int j = i; j > 1; j-- ) {
@@ -565,31 +604,31 @@ void RobotArmCollision::solveMainCollisions() {
             Appendage& tapp = mPredictiveAppendages[j];
             
             // get the closest warning //
-//                        float tcurrentAngle = tapp.currentAngle;
-//                        float testAngleA    = ( tapp.currentAngle + ofDegToRad(1.5f) );
-//                        float testAngleB    = ( tapp.currentAngle - ofDegToRad(1.5f) );
-//                        float testDistSqA   = FLT_MAX;
-//                        float testDistSqB   = FLT_MAX;
+            //                        float tcurrentAngle = tapp.currentAngle;
+            //                        float testAngleA    = ( tapp.currentAngle + ofDegToRad(1.5f) );
+            //                        float testAngleB    = ( tapp.currentAngle - ofDegToRad(1.5f) );
+            //                        float testDistSqA   = FLT_MAX;
+            //                        float testDistSqB   = FLT_MAX;
             
             // first determine the direction //
             float tdir = -1.f;
             
-//                    tapp.currentAngle = testAngleA;
-//                    updateModel( mPredictiveModel, mPredictiveAppendages );
-//                    testDistSqA = getClosestCollisionDistanceSq();
-//                    tapp.currentAngle = testAngleB;
-//                    updateModel( mPredictiveModel, mPredictiveAppendages );
-//                    testDistSqB = getClosestCollisionDistanceSq();
-//
-//                    if( testDistSqA > testDistSqB ) {
-//                        tdir = 1.0;
-//                    } else {
-//                        tdir = -1.0;
-//                    }
-//
-//                    if( j == 2 ) {
-//                        cout << "angle dir: " << tapp.angleDir << " testDistA: " << testDistSqA << " testDistB: " << testDistSqB << " | " << ofGetFrameNum() << endl;
-//                    }
+            //                    tapp.currentAngle = testAngleA;
+            //                    updateModel( mPredictiveModel, mPredictiveAppendages );
+            //                    testDistSqA = getClosestCollisionDistanceSq();
+            //                    tapp.currentAngle = testAngleB;
+            //                    updateModel( mPredictiveModel, mPredictiveAppendages );
+            //                    testDistSqB = getClosestCollisionDistanceSq();
+            //
+            //                    if( testDistSqA > testDistSqB ) {
+            //                        tdir = 1.0;
+            //                    } else {
+            //                        tdir = -1.0;
+            //                    }
+            //
+            //                    if( j == 2 ) {
+            //                        ofLog(OF_LOG_VERBOSE) << "angle dir: " << tapp.angleDir << " testDistA: " << testDistSqA << " testDistB: " << testDistSqB << " | " << ofGetFrameNum() << endl;
+            //                    }
             
             //                        tapp.currentAngle = tcurrentAngle;
             //
@@ -611,14 +650,14 @@ void RobotArmCollision::solveMainCollisions() {
                 if( !hasMainCollisionWarnings() ) {
                     // now set the desired angles //
                     mDesiredAngles[j] = mPredictiveAppendages[j].currentAngle;
-//                    for( int m = j; m < tnumPredictiveApps; m++ ) {
-//                        if( m < mDesiredAngles.size() ) {
-//                            if( m == 2 ) {
-////                                cout << j << " - changing from: " << mDesiredAngles[m] << " to " << mPredictiveAppendages[m].currentAngle << " | " << ofGetFrameNum() << endl;
-//                            }
-//                            mDesiredAngles[m] = mPredictiveAppendages[m].currentAngle;
-//                        }
-//                    }
+                    //                    for( int m = j; m < tnumPredictiveApps; m++ ) {
+                    //                        if( m < mDesiredAngles.size() ) {
+                    //                            if( m == 2 ) {
+                    ////                                ofLog(OF_LOG_VERBOSE) << j << " - changing from: " << mDesiredAngles[m] << " to " << mPredictiveAppendages[m].currentAngle << " | " << ofGetFrameNum() << endl;
+                    //                            }
+                    //                            mDesiredAngles[m] = mPredictiveAppendages[m].currentAngle;
+                    //                        }
+                    //                    }
                     bSolved = true;
                     break;
                 }
@@ -634,7 +673,7 @@ void RobotArmCollision::solveMainCollisions() {
 }
 
 //--------------------------------------------------------------
-void RobotArmCollision::solveHeadToForearmCollision() {
+void RobotArmCollision::solveHeadToForearmCollision( int aForcedDirection ) {
     float tangleStep    = ofDegToRad( mCorrectStepAngle );
     int tMaxIterations  = ofDegToRad( mMaxCorrectiveAngle )/tangleStep;
     bool bSolved        = false;
@@ -643,56 +682,67 @@ void RobotArmCollision::solveHeadToForearmCollision() {
     if( tnumPredictiveApps < 5 ) return; // just in case //
     vector< Appendage > tempStoredPredictive = mPredictiveAppendages;
     
-    for( int i = 3; i > 2; i-- ) {
+    for( int i = 4; i > 2; i-- ) {
         mPredictiveAppendages = tempStoredPredictive;
-//        cout << "Reseting the mPredictiveAppendages :: " << i << " | " << ofGetFrameNum() << endl;
+        //        ofLog(OF_LOG_VERBOSE) << "Reseting the mPredictiveAppendages :: " << i << " | " << ofGetFrameNum() << endl;
         for( int j = i; j < 4; j++ ) {
             //                    for( int j = i; j >= 2; j-- ) {
             Appendage& tapp = mPredictiveAppendages[j];
-//            cout << "Testing appendage: " << j << " | " << ofGetFrameNum() << endl;
+            //            ofLog(OF_LOG_VERBOSE) << "Testing appendage: " << j << " | " << ofGetFrameNum() << endl;
             
             // first determine the direction //
             // get the closest warning //
             float tcurrentAngle = tapp.currentAngle;
-            float testAngleA    = ( tapp.currentAngle + ofDegToRad(1.5f) );
-            float testAngleB    = ( tapp.currentAngle - ofDegToRad(1.5f) );
-            float testDistSqA   = FLT_MAX;
-            float testDistSqB   = FLT_MAX;
-            int tnumCollidingA  = 0;
-            int tnumCollidingB  = 0;
+            //            float testAngleA    = ( tapp.currentAngle + ofDegToRad(1.5f) );
+            //            float testAngleB    = ( tapp.currentAngle - ofDegToRad(1.5f) );
+            //            float testDistSqA   = FLT_MAX;
+            //            float testDistSqB   = FLT_MAX;
+            //            int tnumCollidingA  = 0;
+            //            int tnumCollidingB  = 0;
             
             // first determine the direction //
-            float tdir = -1.f;
+            float tdir          = -1.f;
             
-            tapp.currentAngle = testAngleA;
-            updateModel( mPredictiveModel, mPredictiveAppendages );
-            testDistSqA     = getClosestCollisionDistanceSq();
-            tnumCollidingA  = getNumWarningCollisions();
-            tapp.currentAngle = testAngleB;
-            updateModel( mPredictiveModel, mPredictiveAppendages );
-            testDistSqB     = getClosestCollisionDistanceSq();
-            tnumCollidingB  = getNumWarningCollisions();
+            //            tapp.currentAngle = testAngleA;
+            //            updateModel( mPredictiveModel, mPredictiveAppendages );
+            //            testDistSqA     = getClosestCollisionDistanceSq();
+            //            tnumCollidingA  = getNumWarningCollisions();
+            //            tapp.currentAngle = testAngleB;
+            //            updateModel( mPredictiveModel, mPredictiveAppendages );
+            //            testDistSqB     = getClosestCollisionDistanceSq();
+            //            tnumCollidingB  = getNumWarningCollisions();
+            //
+            //            if( tnumCollidingA == tnumCollidingB ) {
+            //                if( testDistSqA > testDistSqB ) {
+            //                    tdir = -1.0;
+            //                } else {
+            //                    tdir = 1.0;
+            //                }
+            //            } else {
+            //                if( tnumCollidingA > tnumCollidingB ) {
+            //                    tdir = -1;
+            //                } else {
+            //                    tdir = 1;
+            //                }
+            //            }
             
-            if( tnumCollidingA == tnumCollidingB ) {
-                if( testDistSqA > testDistSqB ) {
-                    tdir = -1.0;
-                } else {
-                    tdir = 1.0;
-                }
-            } else {
-                if( tnumCollidingA > tnumCollidingB ) {
-                    tdir = -1;
-                } else {
-                    tdir = 1;
-                }
+            tdir = 1;
+            if( tapp.angleVel > 0 ) {
+                tdir = -1;
             }
             
-//                        float tdir = -1.f;
-//                        if( tapp.angleVel < 0 ) {
-//                            tdir = 1;
-//                        }
-            tapp.angleDir       = tdir;
-            tapp.currentAngle   = tcurrentAngle;
+            if( aForcedDirection != 0 ) {
+                tdir = (float)aForcedDirection;
+            }
+            
+            tapp.angleDir = tdir;
+            
+            //                        float tdir = -1.f;
+            //                        if( tapp.angleVel < 0 ) {
+            //                            tdir = 1;
+            //                        }
+            //            tapp.angleDir       = tdir;
+            //            tapp.currentAngle   = tcurrentAngle;
             
             // I think we might need to calculate the direction better,
             // if the joint gets 'fixed' by this algorithm, then it will adjust the ang velocity //
@@ -703,8 +753,13 @@ void RobotArmCollision::solveHeadToForearmCollision() {
                 updateModel( mPredictiveModel, mPredictiveAppendages );
                 if( !isGoingToWarn() ) {
                     // now set the desired angles //
-//                    cout << "Set the new desired angle for " << j << " mpredictive " << ofRadToDeg(mPredictiveAppendages[j].currentAngle) << " | " << ofGetFrameNum() << endl;
-                    mDesiredAngles[j] = mPredictiveAppendages[j].currentAngle;
+                    //                    ofLog(OF_LOG_VERBOSE) << "Set the new desired angle for " << j << " mpredictive " << ofRadToDeg(mPredictiveAppendages[j].currentAngle) << " | " << ofGetFrameNum() << endl;
+                    for( int m = j; m < 4; m++ ) {
+                        if( m < mDesiredAngles.size() ) {
+                            mDesiredAngles[m] = mPredictiveAppendages[m].currentAngle;
+                        }
+                    }
+                    //                    mDesiredAngles[j] = mPredictiveAppendages[j].currentAngle;
                     bSolved = true;
                     break;
                 }
