@@ -7,6 +7,14 @@ UR5Controller::UR5Controller(){
 }
 
 UR5Controller::~UR5Controller(){
+//    if(robotParams){
+//        delete robotParams;
+//        robotParams = NULL;
+//    }
+    if(previewArm){
+        delete previewArm;
+        previewArm = NULL;
+    }
     
     
 }
@@ -51,7 +59,7 @@ void UR5Controller::setup(string ipAddress, RobotParameters & params, bool offli
     actualArm.setup();
     
     robotParams->joints.add(robotSafety.setup());
-    robotParams->joints.add(robotSafetyPreview.setup());
+ 
     robotParams->jointsIK.add(this->params);
     
     jointWeights.assign(6, 1.0f);
@@ -341,6 +349,11 @@ float UR5Controller::getZValueForIkRobotLocalY( float aLocalY, float aWorldZ ) {
     return retZ;
 }
 
+void UR5Controller::setPose(vector<double> pose){
+    targetPose = pose;
+
+}
+
 #pragma mark - Update
 void UR5Controller::update(){
     
@@ -358,7 +371,9 @@ void UR5Controller::update(){
                 robotParams->ikPose[i] = tpose;
             }
         }
-    }else{
+    }else if(robotParams->bTimeline || robotParams->bUseOSC){
+        previewArm->setPose(targetPose);
+    }else if(robotParams->bIKArm){
         targetPoses = urKinematics.inverseKinematics(robotParams->targetTCP);
         int selectedSolution = urKinematics.selectSolution(targetPoses, robot.getCurrentPose(), jointWeights);
         if(selectedSolution > -1){
@@ -370,7 +385,7 @@ void UR5Controller::update(){
                 }
                 robotParams->ikPose[i] = tpose;
             }
-            
+
             for(int i = 0; i < targetPoses.size(); i++)
             {
                 previewArms[i]->setPose(targetPoses[i]);
@@ -391,7 +406,7 @@ void UR5Controller::update(){
             }
             robotParams->targetPose[i] = ofRadToDeg(tpose);
         }
-        
+
         // update the look at angles after the IK has been applied //
         // overrides the angles and sets them directly //
         // alters joint[3] && joint[4]
@@ -400,8 +415,8 @@ void UR5Controller::update(){
         for( int i = 0; i < targetPose.size(); i++ ) {
             targetPose[i] = lookAtAngles[i];
         }
-        
-        
+
+
         previewArm->setPose(targetPose);
     }
     safetyCheck();
@@ -430,10 +445,6 @@ void UR5Controller::safetyCheck(){
     robotSafety.update(1/60);
     targetPose = robotSafety.getDesiredAngles();
     
-    robotSafetyPreview.setCurrentRobotArmAnlges(targetPose);
-    robotSafetyPreview.setDesiredAngles(targetPose);
-    robotSafetyPreview.update(*previewArm);
-    robotSafetyPreview.update(1/60);
 }
 
 #pragma mark - Movements
@@ -452,6 +463,7 @@ void UR5Controller::updateMovement(){
             tspeed = 0.f;
         }
         robotParams->jointVelocities[i] = tspeed;
+
         tempSpeeds[i] = tspeed;
     }
     // move the robot to the target TCP
@@ -514,7 +526,6 @@ void UR5Controller::drawPreviews(){
 }
 
 void UR5Controller::drawSafety(ofCamera & cam){
-    robotSafetyPreview.draw(previewArm, cam);
     robotSafety.draw();
 }
 

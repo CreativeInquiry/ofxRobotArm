@@ -1,0 +1,26 @@
+<colors>
+	<guiBackground>
+		<r>0</r><g>0</g><b>0</b><a>0</a>
+	</guiBackground>
+	<background>
+		<r>0</r><g>0</g><b>0</b><a>255</a>
+	</background>
+	<text>
+		<r>255</r><g>255</g><b>255</b><a>255</a>
+	</text>
+	<key>
+		<r>31</r><g>137</g><b>204</b><a>255</a>
+	</key>
+	<highlight>
+		<r>255</r><g>65</g><b>65</b><a>255</a>
+	</highlight>
+	<disabled>
+		<r>36</r><g>123</g><b>179</b><a>255</a>
+	</disabled>
+	<modalBackground>
+		<r>0</r><g>0</g><b>0</b><a>255</a>
+	</modalBackground>
+	<outline>
+		<r>179</r><g>27</g><b>27</b><a>255</a>
+	</outline>
+</colors>

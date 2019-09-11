@@ -11,6 +11,7 @@
 #include "ofMain.h"
 #include "ofxGui.h"
 #include "ofxGizmo.h"
+#include "ofxOsc.h"
 #include "UR5Controller.h"
 #include "RobotParameters.h"
 #include "URIKFast.h"
@@ -38,6 +39,7 @@ public:
     void gotMessage(ofMessage msg);
     
     
+    ofxOscReceiver receiver;
     
     URIKFast kinematics;
     ofxRobotArm::RobotArmSafety safety;
@@ -63,7 +65,7 @@ public:
     
     
     ofParameter<bool> lookAtTCP;
-    void moveTCP();
+    void updateOSC();
     
     
     // 3D Navigation

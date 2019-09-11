@@ -54,6 +54,8 @@ namespace ofxRobotArm {
         void drawIK();
         void drawSafety(ofCamera & cam);
         
+        void setPose(vector<double> pose);
+        
         void enableControlJointsExternally();
         void disableControlJointsExternally();
         bool areJointsControlledExternally();
@@ -72,7 +74,7 @@ namespace ofxRobotArm {
         shared_ptr< ofxIKArm > mIKArm;
         shared_ptr< ofxIKArm > mIKArmInverted;
         RobotArmSafety robotSafety;
-        RobotArmSafety robotSafetyPreview;
+
     protected:
         vector <double> stopPosition;
         bool m_bSettingJointsExternally = false;

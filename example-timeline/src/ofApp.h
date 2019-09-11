@@ -10,10 +10,12 @@
 
 #include "ofMain.h"
 #include "ofxGui.h"
+#include "ofxGuiExtended2.h"
 #include "ofxGizmo.h"
 #include "UR5Controller.h"
 #include "RobotParameters.h"
 #include "URIKFast.h"
+#include "ofxTimeline.h"
 #include "RobotArmSafety.h"
 #define N_CAMERAS 2
 
@@ -37,10 +39,20 @@ public:
     void dragEvent(ofDragInfo dragInfo);
     void gotMessage(ofMessage msg);
     
+    ofxTimeline timeline;
+    ofCamera camP0;
+    ofCamera camP1;
+    ofCamera camP2;
     
+    ofRectangle viewportSimP0;
+    ofRectangle viewportSimP1;
+    ofRectangle viewportSimP2;
+    
+    ofRectangle viewportRealP0;
+    ofRectangle viewportRealP1;
+    ofRectangle viewportRealP2;
     
     URIKFast kinematics;
-    ofxRobotArm::RobotArmSafety safety;
     ofxRobotArm::UR5Controller robot;
     ofxRobotArm::RobotParameters parameters;
     ofxGizmo gizmo;
@@ -51,16 +63,18 @@ public:
     void positionGUI();
     void drawGUI();
     
-    
-    ofxPanel panel;
-    ofxPanel panelJoints;
-    ofxPanel panelTargetJoints;
-    ofxPanel panelJointsIK;
-    ofxPanel panelJointsSpeed;
+    void addRealPoseKeyFrame();
+
+    ofxGui gui;
+    ofxGuiPanel* panel;
+    ofxGuiPanel* panelJoints;
+    ofxGuiPanel* panelTargetJoints;
+    ofxGuiPanel* panelJointsIK;
     
     int sim, real;
     ofVec3f camUp;
     
+    vector<ofxTLCurves*> curves;
     
     ofParameter<bool> lookAtTCP;
     void moveTCP();
@@ -69,7 +83,7 @@ public:
     // 3D Navigation
     void updateActiveCamera();
     vector<ofEasyCam*> cams;
-    
+    vector<string> jointNames;
     ofRectangle viewportReal;
     ofRectangle viewportSim;
     vector<ofMatrix4x4> savedCamMats;

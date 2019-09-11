@@ -32,23 +32,31 @@ void ofApp::setup(){
     ofSetLogLevel(OF_LOG_VERBOSE);
     camUp = ofVec3f(0, 0, 1);
     
-     setupViewports();
-    parameters.setup();
-    robot.setup("192.168.1.9", parameters, true); // <-- change to your robot's ip address
     
-    robot.disableControlJointsExternally();
-    safety.setup();
-   
+    parameters.setup();
+    robot.setup("192.168.1.3", parameters, true); // <-- change to your robot's ip address
+    
+    
+    
+    setupViewports();
     setupGUI();
     positionGUI();
     
     
     sim = 0;
     real = 1;
+    
+    handleViewportPresets('1');
 }
 
 void ofApp::exit(){
     robot.close();
+    for(int i = 0 ; i < cams.size(); i++){
+        if(cams[i]){
+            delete cams[i];
+            cams[i] = NULL;
+        }
+    }
 }
 
 //--------------------------------------------------------------
@@ -73,15 +81,19 @@ void ofApp::draw(){
     tcpNode.draw();
     robot.drawPreview();
     robot.draw();
+    robot.drawSafety(*cams[real]);
     cams[real]->end();
     
     // show simulation robot
     cams[sim]->begin(viewportSim);
     ofDrawAxis(100);
     tcpNode.draw();
-    gizmo.draw(*cams[sim]);
     robot.drawPreview();
+    robot.drawSafety(*cams[sim]);
+    gizmo.draw(*cams[sim]);
     cams[sim]->end();
+    
+    
     
     drawGUI();
     
@@ -119,12 +131,32 @@ void ofApp::moveTCP(){
         parameters.targetTCP.rotation = tcpNode.getOrientationQuat();
         parameters.targetTCPOrientation = ofVec4f(parameters.targetTCP.rotation.x(), parameters.targetTCP.rotation.y(), parameters.targetTCP.rotation.z(), parameters.targetTCP.rotation.w());
     }
+    
+    if(parameters.bTimeline){
+        robot.enableControlJointsExternally();
+        vector<double> pose;
+        for(int i = 0; i < jointNames.size(); i++){
+            pose.push_back(timeline.getValue(jointNames[i]));
+        }
+        
+        robot.setPose(pose);
+    }else{
+        robot.disableControlJointsExternally();
+    }
 }
 
 void ofApp::setupViewports(){
     
-    viewportReal = ofRectangle((21*ofGetWindowWidth()/24)/2, 0, (21*ofGetWindowWidth()/24)/2, 8*ofGetWindowHeight()/8);;
-    viewportSim = ofRectangle(0, 0, (21*ofGetWindowWidth()/24)/2, 8*ofGetWindowHeight()/8);
+    viewportReal = ofRectangle((21*ofGetWindowWidth()/24)/2, 0,  (21*ofGetWindowWidth()/24)/2, 6*ofGetWindowHeight()/8);
+    viewportSim = ofRectangle(0, 0, (21*ofGetWindowWidth()/24)/2, 3*ofGetWindowHeight()/8);
+    
+    viewportSimP0 = ofRectangle(0, viewportSim.height, viewportSim.width/3, viewportSim.width/3);
+    viewportSimP1 = ofRectangle(viewportSim.width/3, viewportSim.height, viewportSim.width/3, viewportSim.width/3);
+    viewportSimP2 = ofRectangle(2*viewportSim.width/3, viewportSim.height, viewportSim.width/3,viewportSim.width/3);
+    
+    viewportRealP0 = ofRectangle(viewportReal.x, viewportReal.height, viewportReal.width/3, viewportReal.width/3);
+    viewportRealP1 = ofRectangle(viewportReal.x+viewportReal.width/3, viewportReal.height, viewportReal.width/3, viewportReal.width/3);
+    viewportRealP2 = ofRectangle(viewportReal.x+2*viewportReal.width/3, viewportReal.height, viewportReal.width/3, viewportReal.width/3);
     
     activeCam = real;
     
@@ -136,11 +168,11 @@ void ofApp::setupViewports(){
         viewportLabels.push_back("");
     }
     
-    cams[real]->reset();
+    
     cams[real]->setPosition(glm::vec3(-1, 1, 2500));
     cams[real]->lookAt(glm::vec3(0, 0, 0), camUp);
     
-    cams[sim]->reset();
+    
     cams[sim]->setPosition(glm::vec3(-1, 1, 2500));
     cams[sim]->lookAt(glm::vec3(0, 0, 0), camUp);
     
@@ -160,20 +192,49 @@ void ofApp::setupViewports(){
 //--------------------------------------------------------------
 void ofApp::setupGUI(){
     
-    panel.setup(parameters.robotArmParams);
-    panel.add(lookAtTCP.set("lookAtTCP", true));
-    panel.add(parameters.pathRecorderParams);
     
-    panelJoints.setup(parameters.joints);
-    panelTargetJoints.setup(parameters.targetJoints);
-    panelJointsSpeed.setup(parameters.jointSpeeds);
-    panelJointsIK.setup(parameters.jointsIK);
     
-    panel.add(robot.movement.movementParams);
+    panel = gui.addPanel(parameters.robotArmParams);
+    panel->add(lookAtTCP.set("lookAtTCP", true));
+    panel->loadTheme("theme_light.json", true);
+    
+    panelJoints = gui.addPanel(parameters.joints);
+    panelJoints->loadTheme("theme_light.json", true);
+    panelTargetJoints = gui.addPanel(parameters.targetJoints);
+    panelTargetJoints->loadTheme("theme_light.json", true);
+    panelJointsIK = gui.addPanel(parameters.jointsIK);
+    panelJointsIK->loadTheme("theme_light.json", true);
+    
+    
     parameters.bMove = false;
     // get the current pose on start up
     parameters.bCopy = true;
-    panel.loadFromFile("settings/settings.xml");
+    panel->loadFromFile("settings/settings.xml");
+    
+    
+    //setup timeline
+    
+    timeline.setup();
+    timeline.setWidth(viewportSim.width);
+    timeline.setHeight(ofGetWindowHeight()/8);
+    timeline.setOffset(ofVec2f(0, viewportSimP0.y+viewportSimP0.height));
+    timeline.setLoopType(OF_LOOP_NORMAL);
+    timeline.setDurationInSeconds(500);
+    //each call to "add keyframes" add's another track to the timeline
+    
+    jointNames.push_back("Joint0");
+    jointNames.push_back("Joint1");
+    jointNames.push_back("Joint2");
+    jointNames.push_back("Joint3");
+    jointNames.push_back("Joint4");
+    jointNames.push_back("Joint5");
+    
+    curves.push_back(timeline.addCurves(jointNames[0], ofRange(-TWO_PI, TWO_PI)));
+    curves.push_back(timeline.addCurves(jointNames[1], ofRange(-TWO_PI, TWO_PI)));
+    curves.push_back(timeline.addCurves(jointNames[2], ofRange(-TWO_PI, TWO_PI)));
+    curves.push_back(timeline.addCurves(jointNames[3], ofRange(-TWO_PI, TWO_PI)));
+    curves.push_back(timeline.addCurves(jointNames[4], ofRange(-TWO_PI, TWO_PI)));
+    curves.push_back(timeline.addCurves(jointNames[5], ofRange(-TWO_PI, TWO_PI)));
     
     // setup Gizmo
     
@@ -184,31 +245,74 @@ void ofApp::setupGUI(){
     gizmo.show();
 }
 
-void ofApp::positionGUI(){
-    //    viewportReal.height -= (panelJoints.getHeight());
-    //    viewportReal.y +=(panelJoints.getHeight());
-    panel.setPosition(viewportReal.x+viewportReal.width, 10);
-    panelJointsSpeed.setPosition(viewportReal.x, 10);
-    panelJointsIK.setPosition(panelJointsSpeed.getPosition().x+panelJoints.getWidth(), 10);
-    panelTargetJoints.setPosition(panelJointsIK.getPosition().x+panelJoints.getWidth(), 10);
-    panelJoints.setPosition(panelTargetJoints.getPosition().x+panelJoints.getWidth(), 10);
+void ofApp::addRealPoseKeyFrame(){
+    auto pose = robot.getCurrentPose();
     
-    panelJoints.add(robot.robotSafety.params);
-    panelJoints.add(robot.robotSafety.mCollision->params);
-    panelJoints.add(robot.robotSafety.mCylinderRestrictor->params);
-    panelJoints.add(robot.robotSafety.m_jointRestrictor->params);
+    for(int i = 0 ; i < curves.size(); i++){
+        curves[i]->addKeyframe((pose[i]));
+    }
+}
+
+void ofApp::positionGUI(){
+
+    panel->setPosition(viewportReal.x+viewportReal.width, 10);
+    panelJointsIK->setPosition(panel->getPosition().x+panelJoints->getWidth(), 10);
+    panelTargetJoints->setPosition(panelJointsIK->getPosition().x+panelJoints->getWidth(), 10);
+    panelJoints->setPosition(panelTargetJoints->getPosition().x+panelJoints->getWidth(), 10);
+    
+    panelJoints->add(robot.robotSafety.params);
+//    panel->add(robot.robotSafety.mCollision->params);
+//    panel->add(robot.robotSafety.mCylinderRestrictor->params);
+//    panel->add(robot.robotSafety.m_jointRestrictor->params);
 }
 
 //--------------------------------------------------------------
 void ofApp::drawGUI(){
-    panel.draw();
-    panelJoints.draw();
-    panelJointsIK.draw();
-    panelJointsSpeed.draw();
-    panelTargetJoints.draw();
+    
+    
+    camP0.begin(viewportSimP0);
+    ofDrawAxis(100);
+    tcpNode.draw();
+    robot.drawPreview();
+    camP0.end();
+    
+    camP1.begin(viewportSimP1);
+    ofDrawAxis(100);
+    tcpNode.draw();
+    robot.drawPreview();
+    camP1.end();
+    
+    camP2.begin(viewportSimP2);
+    ofDrawAxis(100);
+    tcpNode.draw();
+    robot.drawPreview();
+    camP2.end();
+    
+    camP0.begin(viewportRealP0);
+    ofDrawAxis(100);
+    tcpNode.draw();
+    robot.draw();
+    camP0.end();
+    
+    camP1.begin(viewportRealP1);
+    ofDrawAxis(100);
+    tcpNode.draw();
+    robot.draw();
+    camP1.end();
+    
+    camP2.begin(viewportRealP2);
+    ofDrawAxis(100);
+    tcpNode.draw();
+    robot.draw();
+    camP2.end();
+    
+    
+    timeline.draw();
+    
     
     hightlightViewports();
 }
+
 
 
 //--------------------------------------------------------------
@@ -251,7 +355,7 @@ void ofApp::updateActiveCamera(){
 //--------------------------------------------------------------
 void ofApp::handleViewportPresets(int key){
     
-    float dist = 2500;
+    float dist = 1500;
     float zOffset = 450;
     
     if(activeCam != -1){
@@ -263,6 +367,14 @@ void ofApp::handleViewportPresets(int key){
             cams[activeCam]->setPosition(pos+offset);
             cams[activeCam]->lookAt(lookAtTCP.get()==true?tcpNode.getPosition():glm::vec3(0, 0, 0), camUp);
             viewportLabels[activeCam] = "TOP VIEW";
+            
+            camP0.setPosition(glm::vec3(dist, 1, 1));
+            camP1.setPosition(glm::vec3(1, dist, 1));
+            camP2.setPosition(glm::vec3(dist/4, dist, dist/4));
+            camP0.lookAt(glm::vec3(0, 0, 0), camUp);
+            camP1.lookAt(glm::vec3(0, 0, 0), camUp);
+            camP2.lookAt(glm::vec3(0, 0, 0), camUp);
+            
             return;
         }
         // LEFT VIEW
@@ -272,6 +384,14 @@ void ofApp::handleViewportPresets(int key){
             cams[activeCam]->setPosition(pos+offset);
             cams[activeCam]->lookAt(lookAtTCP.get()==true?tcpNode.getPosition():glm::vec3(0, 0, 0), camUp);
             viewportLabels[activeCam] = "LEFT VIEW";
+            
+            camP0.setPosition(glm::vec3(-1, 1, dist));
+            camP1.setPosition(glm::vec3(1, dist, 1));
+            camP2.setPosition(glm::vec3(dist/4, dist, dist/4));
+            camP0.lookAt(glm::vec3(0, 0, 0), camUp);
+            camP1.lookAt(glm::vec3(0, 0, 0), camUp);
+            camP2.lookAt(glm::vec3(0, 0, 0), camUp);
+            
             return;
         }
         // FRONT VIEW
@@ -281,6 +401,14 @@ void ofApp::handleViewportPresets(int key){
             cams[activeCam]->setPosition(pos+offset);
             cams[activeCam]->lookAt(lookAtTCP.get()==true?tcpNode.getPosition():glm::vec3(0, 0, 0), camUp);
             viewportLabels[activeCam] = "FRONT VIEW";
+            
+            camP0.setPosition(glm::vec3(dist, 1, 1));
+            camP1.setPosition(glm::vec3(-1, 1, dist));
+            camP2.setPosition(glm::vec3(dist/4, dist, dist/4));
+            camP0.lookAt(glm::vec3(0, 0, 0), camUp);
+            camP1.lookAt(glm::vec3(0, 0, 0), camUp);
+            camP2.lookAt(glm::vec3(0, 0, 0), camUp);
+            
             return;
         }
         // PERSPECTIVE VIEW
@@ -290,14 +418,14 @@ void ofApp::handleViewportPresets(int key){
             cams[activeCam]->setPosition(pos+offset);
             cams[activeCam]->lookAt(lookAtTCP.get()==true?tcpNode.getPosition():glm::vec3(0, 0, 0), camUp);
             viewportLabels[activeCam] = "PERSPECTIVE VIEW";
-            return;
-        }
-        if (key == '5'){
-            glm::vec3 offset = glm::vec3(-dist/4, dist, -dist/4);
-            cams[activeCam]->reset();
-            cams[activeCam]->setPosition(pos+offset);
-            cams[activeCam]->lookAt(lookAtTCP.get()==true?tcpNode.getPosition():glm::vec3(0, 0, 0), camUp);
-            viewportLabels[activeCam] = "PERSPECTIVE VIEW";
+            
+            
+            camP0.setPosition(glm::vec3(dist, 1, 1));
+            camP1.setPosition(glm::vec3(1, dist, 1));
+            camP2.setPosition(glm::vec3(-1, 1, dist));
+            camP0.lookAt(glm::vec3(0, 0, 0), camUp);
+            camP1.lookAt(glm::vec3(0, 0, 0), camUp);
+            camP2.lookAt(glm::vec3(0, 0, 0), camUp);
             return;
         }
     }
@@ -340,7 +468,6 @@ void ofApp::keyPressed(int key){
     if(key == 'm'){
         parameters.bMove = !parameters.bMove;
     }
-    
     if( key == 'r' ) {
         gizmo.setType( ofxGizmo::OFX_GIZMO_ROTATE );
     }
@@ -352,6 +479,9 @@ void ofApp::keyPressed(int key){
     }
     if( key == 'e' ) {
         gizmo.toggleVisible();
+    }
+    if(key == '='){
+        addRealPoseKeyFrame();
     }
     
     handleViewportPresets(key);

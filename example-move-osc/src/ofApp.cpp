@@ -34,7 +34,7 @@ void ofApp::setup(){
     
      setupViewports();
     parameters.setup();
-    robot.setup("192.168.1.9", parameters, true); // <-- change to your robot's ip address
+    robot.setup("192.168.1.3", parameters, true); // <-- change to your robot's ip address
     
     robot.disableControlJointsExternally();
     safety.setup();
@@ -45,6 +45,8 @@ void ofApp::setup(){
     
     sim = 0;
     real = 1;
+    
+    receiver.setup(12345);
 }
 
 void ofApp::exit(){
@@ -53,9 +55,22 @@ void ofApp::exit(){
 
 //--------------------------------------------------------------
 void ofApp::update(){
-    moveTCP();
+    updateOSC();
     robot.update();
     updateActiveCamera();
+}
+
+void ofApp::updateOSC(){
+   vector<double> pose;
+   while(receiver.hasWaitingMessages()){
+       ofxOscMessage m;
+       receiver.getNextMessage(m);
+       pose.clear();
+       for(size_t i = 0; i < m.getNumArgs(); i++){
+           pose.push_back(m.getArgAsFloat(i));
+       }
+    }
+    robot.setPose(pose);
 }
 
 //--------------------------------------------------------------
@@ -87,39 +102,7 @@ void ofApp::draw(){
     
 }
 
-void ofApp::moveTCP(){
-    
-    // assign the target pose to the current robot pose
-    if(parameters.bCopy){
-        parameters.bCopy = false;
-        
-        parameters.bCopy = false;
-        parameters.targetTCP.rotation = ofQuaternion(90, ofVec3f(0, 0, 1));
-        parameters.targetTCP.rotation*=ofQuaternion(90, ofVec3f(1, 0, 0));
-        
-        // get the robot's position
-        parameters.targetTCP.position = parameters.actualTCP.position;
-        parameters.targetTCP.rotation*=parameters.actualTCP.rotation;
-        
-        tcpNode.setPosition(parameters.targetTCP.position*1000);
-        tcpNode.setOrientation(parameters.targetTCP.rotation);
-        gizmo.setNode(tcpNode);
-        // update GUI params
-        parameters.targetTCPPosition = parameters.targetTCP.position;
-        parameters.targetTCPOrientation = ofVec4f(parameters.targetTCP.rotation.x(), parameters.targetTCP.rotation.y(), parameters.targetTCP.rotation.z(), parameters.targetTCP.rotation.w());
-        
-    }
-    else{
-        gizmo.apply(tcpNode);
-    }
-    
-    // follow the gizmo's position and orientation
-    if(parameters.bFollow){
-        parameters.targetTCP.position.interpolate(tcpNode.getPosition()/1000.0, parameters.followLerp);
-        parameters.targetTCP.rotation = tcpNode.getOrientationQuat();
-        parameters.targetTCPOrientation = ofVec4f(parameters.targetTCP.rotation.x(), parameters.targetTCP.rotation.y(), parameters.targetTCP.rotation.z(), parameters.targetTCP.rotation.w());
-    }
-}
+
 
 void ofApp::setupViewports(){
     

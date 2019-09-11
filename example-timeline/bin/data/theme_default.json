@@ -1,0 +1,59 @@
+{
+    "default": {
+        "base": {
+            "background-color": "rgba(0,0,0,0.2)",
+            "fill-color": "rgba(200,200,200,0.42)",
+            "border-width": 1,
+            "padding": 2,
+            "border-color": "rgb(255,255,255)",
+            "margin": 4,
+            "text-color": "#ffffff"
+        },
+        "toggle": {
+
+        },
+        "button": {
+
+        },
+        "slider": {
+
+        },
+        "label": {
+            "border-width": 0,
+            "background-color": "rgba(0,0,0,0)"
+        },
+        "group": {
+            "border-color": "rgba(255,255,255,0.7)",
+            "padding": 0,
+            "border-width": 0
+        },
+        "group-header": {
+            "align-self": "flex-start",
+            "flex": "none",
+            "width": "100%",
+            "margin": 0,
+            "border-width": 0,
+            "padding": 0,
+            "text-color": "#ffffff"
+        },
+        "panel": {
+
+        },
+        "panel-header": {
+
+        },
+        "tabs": {
+            "show-header": false,
+            "margin-top": 10
+        },
+        "value-plotter": {
+
+        },
+        "function-plotter": {
+
+        },
+        "input-field": {
+
+        }
+    }
+}
