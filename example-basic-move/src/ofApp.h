@@ -46,6 +46,11 @@ public:
     ofxGizmo gizmo;
     ofNode tcpNode;
     
+    ofParameterGroup appParams;
+    ofParameter<bool> codeGesture;
+    bool lastCodeGesture;
+    Joint previousTCP;
+    
     void setupViewports();
     void setupGUI();
     void positionGUI();
