@@ -89,6 +89,17 @@ void ofApp::draw(){
 
 void ofApp::moveTCP(){
     
+    if(codeGesture) {
+        if(!lastCodeGesture) {
+            previousTCP = parameters.targetTCP;
+        }
+        float r = 200;
+        float speed = .25 * TWO_PI;
+        parameters.targetTCP.position.x = previousTCP.position.x + r * cos(speed * ofGetElapsedTimef())/1000.;
+        parameters.targetTCP.position.z = previousTCP.position.z + r * sin(speed * ofGetElapsedTimef())/1000.;
+    }
+    lastCodeGesture = codeGesture;
+    
     // assign the target pose to the current robot pose
     if(parameters.bCopy){
         parameters.bCopy = false;
