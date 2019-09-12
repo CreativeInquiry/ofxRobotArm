@@ -21,7 +21,7 @@
 //      - Realign default perp plane to local axes
 
 #include "ofApp.h"
-
+using namespace ofxRobotArm;
 //--------------------------------------------------------------
 void ofApp::setup(){
 
@@ -33,7 +33,7 @@ void ofApp::setup(){
     setupViewports();
     
     parameters.setup();
-    robot.setup("192.168.1.9",parameters); // <-- swap with your robot's ip address
+    robot.setup("192.168.1.3",parameters, true); // <-- swap with your robot's ip address
     
     setupGUI();
     positionGUI();
@@ -73,7 +73,7 @@ ofPolyline ofApp::buildPath(){
         n1.tilt(2);
         n2.roll(1);
         
-        ofPoint p = n2.getGlobalPosition().rotate(90, ofVec3f(1,0,0));
+        ofVec3f p = toOf(n2.getGlobalPosition()).getRotated(90, ofVec3f(1, 0, 0));
         
         // and point to path
         temp.addVertex(p);
@@ -109,7 +109,8 @@ void ofApp::draw(){
     cams[0]->begin(viewportReal);
     tcpNode.draw();
     paths.draw();
-    robot.robot.model.draw();
+    robot.draw();
+    robot.drawSafety(*cams[0]);
     cams[0]->end();
     
     // show simulation robot
@@ -117,7 +118,7 @@ void ofApp::draw(){
     if (parameters.bFollow)
         gizmo.draw(*cams[1]);
     paths.draw();
-    robot.movement.draw(0);
+    robot.drawPreview();
     cams[1]->end();
     
     drawGUI();
@@ -148,7 +149,7 @@ void ofApp::moveArm(){
     }
     else{
         // update the tool tcp
-        tcpNode.setTransformMatrix(gizmo.getMatrix());
+        gizmo.apply(tcpNode);
     }
 
     
