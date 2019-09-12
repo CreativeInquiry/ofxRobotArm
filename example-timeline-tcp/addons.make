@@ -1,5 +1,4 @@
 ofxAssimpModelLoader
-ofxGML
 ofxGizmo
 ofxGui
 ofxIKArm
