@@ -7,23 +7,23 @@
 namespace ofxRobotArm{
     class RobotParameters{
         public :
-        void setup(bool getTCP = true, bool setTCP = true, bool toolOffset = true, bool record = false ) {
+        void setup() {
             robotArmParams.setName("UR 5");
-   
-            if (getTCP)
-                robotArmParams.add(bCopy.set("get TCP", false));
-            if (setTCP){
-                robotArmParams.add(bFollow.set("set TCP", false));
-                robotArmParams.add(followLerp.set("Follow Lerp", 0.04, 0.001, 0.99));
-            }
             
+            
+            robotArmParams.add(bCopy.set("get TCP", false));
+            
+            robotArmParams.add(bFollow.set("set TCP", false));
+            robotArmParams.add(followLerp.set("Follow Lerp", 0.04, 0.001, 0.99));
+            
+            robotArmParams.add(bTrace.set("Trace Path", false));
             robotArmParams.add(bTeachMode.set("Teach Mode", false));
             robotArmParams.add(bUseOSC.set("Use External OSC", false));
             robotArmParams.add(bUseIKFast.set("Use IKFast", true));
             robotArmParams.add(bUseTimeline.set("Use Timeline", false));
             robotArmParams.add(bUseIKArm.set("Use IKArm", false));
             
-            
+            robotArmParams.add(bLookAtTCP.set("Look at TCP", false));
             robotArmParams.add(bMove.set("Move", false));
             robotArmParams.add(bDoReconnect.set("TryReconnect", false));
             
@@ -48,28 +48,26 @@ namespace ofxRobotArm{
                 jointSpeeds.add(jointVelocities.back().set("Joint Speed"+ofToString(i), 0, -100, 100));
             }
             
-            if (record){
-                pathRecorderParams.setName("Path Recording");
-                pathRecorderParams.add(bRecord.set("Record", false));
-            }
+            pathRecorderParams.setName("Path Recording");
+            pathRecorderParams.add(bRecord.set("Record", false));
             
             
-            if (getTCP){
-                robotArmParams.add(tcpPosition.set("Actual Robot TCP POS", ofVec3f(0, 0, 0), ofVec3f(-1, -1, -1), ofVec3f(1, 1, 1)));
-                robotArmParams.add(tcpOrientation.set("Actual Robot TCP ORIENT", ofVec4f(0,0,0,1), ofVec4f(-1,-1,-1,-1), ofVec4f(1,1,1,1)));
-                //            robotArmParams.add(calcTCPOrientation.set("Calculated Robot TCP ORIENT", ofVec4f(0,0,0,1), ofVec4f(-1,-1,-1,-1), ofVec4f(1,1,1,1)));
-                forwardTCPOrientation.set("Forward TCP ORIENT", ofVec4f(0,0,0,1), ofVec4f(-1,-1,-1,-1), ofVec4f(1,1,1,1));
-                //            robotArmParams.add(forwardTCPOrientation.set("Forward TCP ORIENT", ofVec4f(0,0,0,1), ofVec4f(-1,-1,-1,-1), ofVec4f(1,1,1,1)));
-                forwardTCPPosition.set("Forward TCP Pos", ofVec3f(0, 0, 0), ofVec3f(-1, -1, -1), ofVec3f(1, 1, 1));
-                //            robotArmParams.add(forwardTCPPosition.set("Forward TCP Pos", ofVec3f(0, 0, 0), ofVec3f(-1, -1, -1), ofVec3f(1, 1, 1)));
-            }
-            if (setTCP){
-                robotArmParams.add(targetTCPPosition.set("Set TCP POS", ofVec3f(0, 0, 0), ofVec3f(-1, -1, -1), ofVec3f(1, 1, 1)));
-                robotArmParams.add(targetTCPOrientation.set("Set TCP ORIENT",ofVec4f(0,0,0,1), ofVec4f(-1,-1,-1,-1), ofVec4f(1,1,1,1)));
-            }
-            if (toolOffset){
-                robotArmParams.add(tcpOffset.set("tcpOffset", ofVec3f(0, 0, 0), ofVec3f(-0.2, -0.2, -0.2), ofVec3f(0.2, 0.2, 0.2)));
-            }
+            
+            
+            robotArmParams.add(tcpPosition.set("Actual Robot TCP POS", ofVec3f(0, 0, 0), ofVec3f(-1, -1, -1), ofVec3f(1, 1, 1)));
+            robotArmParams.add(tcpOrientation.set("Actual Robot TCP ORIENT", ofVec4f(0,0,0,1), ofVec4f(-1,-1,-1,-1), ofVec4f(1,1,1,1)));
+            //            robotArmParams.add(calcTCPOrientation.set("Calculated Robot TCP ORIENT", ofVec4f(0,0,0,1), ofVec4f(-1,-1,-1,-1), ofVec4f(1,1,1,1)));
+            forwardTCPOrientation.set("Forward TCP ORIENT", ofVec4f(0,0,0,1), ofVec4f(-1,-1,-1,-1), ofVec4f(1,1,1,1));
+            //            robotArmParams.add(forwardTCPOrientation.set("Forward TCP ORIENT", ofVec4f(0,0,0,1), ofVec4f(-1,-1,-1,-1), ofVec4f(1,1,1,1)));
+            forwardTCPPosition.set("Forward TCP Pos", ofVec3f(0, 0, 0), ofVec3f(-1, -1, -1), ofVec3f(1, 1, 1));
+            //            robotArmParams.add(forwardTCPPosition.set("Forward TCP Pos", ofVec3f(0, 0, 0), ofVec3f(-1, -1, -1), ofVec3f(1, 1, 1)));
+            
+            
+            robotArmParams.add(targetTCPPosition.set("Set TCP POS", ofVec3f(0, 0, 0), ofVec3f(-1, -1, -1), ofVec3f(1, 1, 1)));
+            robotArmParams.add(targetTCPOrientation.set("Set TCP ORIENT",ofVec4f(0,0,0,1), ofVec4f(-1,-1,-1,-1), ofVec4f(1,1,1,1)));
+            
+            robotArmParams.add(tcpOffset.set("tcpOffset", ofVec3f(0, 0, 0), ofVec3f(-0.2, -0.2, -0.2), ofVec3f(0.2, 0.2, 0.2)));
+            
             
         };
         ofParameterGroup robotArmParams;
@@ -93,7 +91,7 @@ namespace ofxRobotArm{
         ofParameter<bool> bUseTimeline;
         
         ofParameter<float> followLerp;
-
+        
         vector<ofParameter<float> > ikPose;
         vector<ofParameter<float> > pCurrentPose;
         vector<ofParameter<float> > targetPose;
@@ -106,6 +104,7 @@ namespace ofxRobotArm{
         ofParameter<bool> bCopy;
         ofParameter<bool> bUseOSC;
         ofParameter<bool> bStop;
+        ofParameter<bool> bLookAtTCP;
         ofParameter<bool> bDoReconnect;
         ofParameter<bool> bUseIKFast;
         ofParameter<bool> bUseIKArm;

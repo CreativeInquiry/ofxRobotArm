@@ -198,7 +198,7 @@ void ofApp::setupGUI(){
     
     
     panel = gui.addPanel(parameters.robotArmParams);
-    panel->add(lookAtTCP.set("lookAtTCP", true));
+ 
     panel->loadTheme("theme_light.json", true);
     
     panelJoints = gui.addPanel(parameters.joints);
@@ -258,12 +258,12 @@ void ofApp::addRealPoseKeyFrame(){
 
 void ofApp::positionGUI(){
 
-    panel->setPosition(viewportReal.x+viewportReal.width, 10);
-    panelJointsIK->setPosition(panel->getPosition().x+panelJoints->getWidth(), 10);
-    panelTargetJoints->setPosition(panelJointsIK->getPosition().x+panelJoints->getWidth(), 10);
-    panelJoints->setPosition(panelTargetJoints->getPosition().x+panelJoints->getWidth(), 10);
+//    panel->setPosition(viewportReal.x+viewportReal.width, 10);
+//    panelJointsIK->setPosition(panel->getPosition().x+panelJoints->getWidth(), 10);
+//    panelTargetJoints->setPosition(panelJointsIK->getPosition().x+panelJoints->getWidth(), 10);
+//    panelJoints->setPosition(panelTargetJoints->getPosition().x+panelJoints->getWidth(), 10);
     
-    panelJoints->add(robot.robotSafety.params);
+//    panelJoints->add(robot.robotSafety.params);
 //    panel->add(robot.robotSafety.mCollision->params);
 //    panel->add(robot.robotSafety.mCylinderRestrictor->params);
 //    panel->add(robot.robotSafety.m_jointRestrictor->params);
