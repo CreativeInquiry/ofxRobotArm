@@ -3,36 +3,36 @@
         <x>0.000000000</x>
         <y>965.333374023</y>
         <width>1120.000000000</width>
-        <height>177.699218750</height>
+        <height>74.546875000</height>
     </element>
     <element name="Joint1">
         <x>0.000000000</x>
-        <y>1167.032592773</y>
+        <y>1063.880249023</y>
         <width>1120.000000000</width>
-        <height>40.000000000</height>
+        <height>23.085937500</height>
     </element>
     <element name="Joint2">
         <x>0.000000000</x>
-        <y>1231.032592773</y>
+        <y>1110.966186523</y>
         <width>1120.000000000</width>
-        <height>40.000000000</height>
+        <height>22.863281250</height>
     </element>
     <element name="Joint3">
         <x>0.000000000</x>
-        <y>1295.032592773</y>
+        <y>1157.829467773</y>
         <width>1120.000000000</width>
         <height>40.000000000</height>
     </element>
     <element name="Joint4">
         <x>0.000000000</x>
-        <y>1359.032592773</y>
+        <y>1221.829467773</y>
         <width>1120.000000000</width>
         <height>40.000000000</height>
     </element>
     <element name="Joint5">
         <x>0.000000000</x>
-        <y>1423.032592773</y>
+        <y>1285.829467773</y>
         <width>1120.000000000</width>
-        <height>40.000000000</height>
+        <height>105.453125000</height>
     </element>
 </positions>
