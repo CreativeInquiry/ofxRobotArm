@@ -7,19 +7,29 @@ UR10Controller::UR10Controller(){
 }
 
 UR10Controller::~UR10Controller(){
+    //    if(robotParams){
+    //        delete robotParams;
+    //        robotParams = NULL;
+    //    }
+    if(previewArm){
+        delete previewArm;
+        previewArm = NULL;
+    }
     
     
 }
 
 
 void UR10Controller::setup(RobotParameters & params) {
-    setup(params.ipAddress, params);
+    setup(params.ipAddress, params, false);
 }
 
-void UR10Controller::setup(string ipAddress, RobotParameters & params){
-    robot.setAllowReconnect(params.bDoReconnect);
-    robot.setup(ipAddress,0, 1);
-    robot.start();
+void UR10Controller::setup(string ipAddress, RobotParameters & params, bool offline){
+    if(offline){
+        robot.setAllowReconnect(params.bDoReconnect);
+        robot.setup(ipAddress,0, 1);
+        robot.start();
+    }
     robotParams = &params;
     
     this->params.setName("IKArm Commands");
@@ -49,6 +59,7 @@ void UR10Controller::setup(string ipAddress, RobotParameters & params){
     actualArm.setup();
     
     robotParams->joints.add(robotSafety.setup());
+    
     robotParams->jointsIK.add(this->params);
     
     jointWeights.assign(6, 1.0f);
@@ -338,73 +349,80 @@ float UR10Controller::getZValueForIkRobotLocalY( float aLocalY, float aWorldZ ) 
     return retZ;
 }
 
-#pragma mark - Update
-void UR10Controller::update(){
-    
-    updateRobotData();
-    if(robotParams->bUseIK){
-        targetPoses = urKinematics.inverseKinematics(robotParams->targetTCP);
-        int selectedSolution = urKinematics.selectSolution(targetPoses, robot.getCurrentPose(), jointWeights);
-        if(selectedSolution > -1){
-            targetPose = targetPoses[selectedSolution];
-            for(int i = 0; i < targetPose.size(); i++){
-                float tpose = (float)targetPose[i];
-                if( isnan(tpose) ) {
-                    tpose = 0.f;
-                }
-                robotParams->ikPose[i] = tpose;
+
+void UR10Controller::updateIKFast(){
+    targetPoses = urKinematics.inverseKinematics(robotParams->targetTCP);
+    int selectedSolution = urKinematics.selectSolution(targetPoses, robot.getCurrentPose(), jointWeights);
+    if(selectedSolution > -1){
+        targetPose = targetPoses[selectedSolution];
+        for(int i = 0; i < targetPose.size(); i++){
+            float tpose = (float)targetPose[i];
+            if( isnan(tpose) ) {
+                tpose = 0.f;
             }
+            robotParams->ikPose[i] = tpose;
         }
     }
-//    }else{
-//        targetPoses = urKinematics.inverseKinematics(robotParams->targetTCP);
-//        int selectedSolution = urKinematics.selectSolution(targetPoses);
-//        if(selectedSolution > -1){
-//            targetPose = targetPoses[selectedSolution];
-//            for(int i = 0; i < targetPose.size(); i++){
-//                float tpose = (float)targetPose[i];
-//                if( isnan(tpose) ) {
-//                    tpose = 0.f;
-//                }
-//                robotParams->ikPose[i] = tpose;
-//            }
-//            
-//            for(int i = 0; i < targetPoses.size(); i++)
-//            {
-//                previewArms[i]->setPose(targetPoses[i]);
-//            }
-//        }
-//        for(int i = 0; i < targetPose.size(); i++){
-//            float tpose = (float)targetPose[i];
-//            if( isnan(tpose) ) {
-//                tpose = 0.f;
-//            }
-//            robotParams->targetPose[i] = ofRadToDeg(tpose);
-//        }
-//        targetPose = getArmIK(1.0/60.0f);
-//        for(int i = 0; i < targetPose.size(); i++){
-//            float tpose = (float)targetPose[i];
-//            if( isnan(tpose) ) {
-//                tpose = 0.f;
-//            }
-//            robotParams->targetPose[i] = ofRadToDeg(tpose);
-//        }
-//        
-//        // update the look at angles after the IK has been applied //
-//        // overrides the angles and sets them directly //
-//        // alters joint[3] && joint[4]
-//        vector< double > lookAtAngles = lookAtJoints(1.0/60.0f);
-//        // determine if these angles should be added or not //
-//        for( int i = 0; i < targetPose.size(); i++ ) {
-//            targetPose[i] = lookAtAngles[i];
-//        }
-//        
-//        
-//        previewArm->setPose(targetPose);
-//    }
+}
+
+void UR10Controller::updateIKArm(){
+    targetPoses = urKinematics.inverseKinematics(robotParams->targetTCP);
+    int selectedSolution = urKinematics.selectSolution(targetPoses, robot.getCurrentPose(), jointWeights);
+    if(selectedSolution > -1){
+        targetPose = targetPoses[selectedSolution];
+        for(int i = 0; i < targetPose.size(); i++){
+            float tpose = (float)targetPose[i];
+            if( isnan(tpose) ) {
+                tpose = 0.f;
+            }
+            robotParams->ikPose[i] = tpose;
+        }
+        
+        for(int i = 0; i < targetPoses.size(); i++)
+        {
+            previewArms[i]->setPose(targetPoses[i]);
+        }
+    }
+    for(int i = 0; i < targetPose.size(); i++){
+        float tpose = (float)targetPose[i];
+        if( isnan(tpose) ) {
+            tpose = 0.f;
+        }
+        robotParams->targetPose[i] = ofRadToDeg(tpose);
+    }
+    targetPose = getArmIK(1.0/60.0f);
+    for(int i = 0; i < targetPose.size(); i++){
+        float tpose = (float)targetPose[i];
+        if( isnan(tpose) ) {
+            tpose = 0.f;
+        }
+        robotParams->targetPose[i] = ofRadToDeg(tpose);
+    }
+    
+    // update the look at angles after the IK has been applied //
+    // overrides the angles and sets them directly //
+    // alters joint[3] && joint[4]
+    vector< double > lookAtAngles = lookAtJoints(1.0/60.0f);
+    // determine if these angles should be added or not //
+    for( int i = 0; i < targetPose.size(); i++ ) {
+        targetPose[i] = lookAtAngles[i];
+    }
+    
+    previewArm->setPose(targetPose);
+}
+
+#pragma mark - Update
+void UR10Controller::update(){
+    updateRobotData();
+    if(robotParams->bUseIKFast){
+        updateIKFast();
+    }else if(robotParams->bUseIKArm){
+        updateIKArm();
+    }
+    
     safetyCheck();
     updateMovement();
-    targetPose = movement.getTargetJointPose();
+    
     for(int i = 0; i < targetPose.size(); i++){
         float tpose = (float)targetPose[i];
         if( isnan(tpose) ) {
@@ -416,35 +434,25 @@ void UR10Controller::update(){
 }
 void UR10Controller::update(vector<double> _pose){
     targetPose = _pose;
+    update();
+    
 }
 
 #pragma mark - Safety
 void UR10Controller::safetyCheck(){
+    
+    
     robotSafety.setCurrentRobotArmAnlges(robot.getCurrentPose());
     robotSafety.setDesiredAngles(targetPose);
-    robotSafety.update(*previewArms[0]);
+    robotSafety.update(*previewArm);
     robotSafety.update(1/60);
     targetPose = robotSafety.getDesiredAngles();
+    
 }
 
 #pragma mark - Movements
 void UR10Controller::updateMovement(){
     
-    movement.addTargetJointPose(targetPose);
-    movement.update();
-    
-    // set the joint speeds
-    vector<double> tempSpeeds;
-    tempSpeeds.assign(6, 0);
-    tempSpeeds = movement.getCurrentJointVelocities();
-    for(int i = 0; i < tempSpeeds.size(); i++){
-        float tspeed = (float)tempSpeeds[i];
-        if( isnan(tspeed) ) {
-            tspeed = 0.f;
-        }
-        robotParams->jointVelocities[i] = tspeed;
-        tempSpeeds[i] = tspeed;
-    }
     // move the robot to the target TCP
     if(robotParams->bMove){
         //        robot.setSpeed(tempSpeeds, movement.getAcceleration());
@@ -452,16 +460,16 @@ void UR10Controller::updateMovement(){
         stopPosition = movement.getTargetJointPose();
         stopCount = 30;
     }
-    //        else{
-    //            if( stopCount > 0 && stopPosition.size() == movement.targetPosee.size() && stopPosition.size() > 0 ){
-    //                for(int d = 0; d < stopPosition.size(); d++){
-    //                    stopPosition[d] *= 0.9998;
-    //                }
-    //                robot.setPosition(stopPosition);
-    //                cout << " Doing stop count " << stopCount << endl;
-    //                stopCount--;
-    //            }
-    //        }
+    else{
+        if( stopCount > 0 && stopPosition.size() == movement.targetPose.size() && stopPosition.size() > 0 ){
+            for(int d = 0; d < stopPosition.size(); d++){
+                stopPosition[d] *= 0.9998;
+            }
+            robot.setPosition(stopPosition);
+            cout << " Doing stop count " << stopCount << endl;
+            stopCount--;
+        }
+    }
     
 }
 
@@ -505,7 +513,6 @@ void UR10Controller::drawPreviews(){
 }
 
 void UR10Controller::drawSafety(ofCamera & cam){
-    robotSafety.draw(previewArms[0], cam);
     robotSafety.draw();
 }
 

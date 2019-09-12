@@ -9,9 +9,11 @@
 #include "UR10KinematicModel.h"
 #include "ofxIKArm.h"
 #include "RobotArmSafety.h"
-
+#include "URJoint.h"
 namespace ofxRobotArm {
-    class UR10Controller{
+    
+    
+    class UR10Controller {
     public:
         UR10Controller();
         ~UR10Controller();
@@ -23,12 +25,12 @@ namespace ofxRobotArm {
         /// \brief creates and connects to a new robot
         /// \params ipAddress ipAddress of the robot
         /// \params params default parameters for the robot & GUI
-        void setup(string ipAddress, RobotParameters & params);
+        void setup(string ipAddress, RobotParameters & params, bool offline);
         vector< double > updateJoints(float deltatime);
         vector< double > lookAtJoints( float aDeltaTimef );
         vector< double > getArmIK( float aDeltaTimef );
         vector< double > getArmIK( ofVec3f aTargetWorldPos, ofVec3f aElbowWorldPos, bool aBInvertElbow, float aDeltaTimef );
-
+        
         
         bool shouldApplyIk();
         ofVec3f getYawPitchRoll( ofQuaternion aquat );
@@ -43,14 +45,20 @@ namespace ofxRobotArm {
         void safetyCheck();
         void updateMovement();
         void updateRobotData();
+        
         void update();
         void update(vector<double> pose);
+        void updateIKFast();
+        void updateIKArm();
+        
         void moveArm();
         void draw(bool debug = false);
         void drawPreview();
         void drawPreviews();
         void drawIK();
         void drawSafety(ofCamera & cam);
+        
+        
         
         void enableControlJointsExternally();
         void disableControlJointsExternally();
@@ -70,6 +78,7 @@ namespace ofxRobotArm {
         shared_ptr< ofxIKArm > mIKArm;
         shared_ptr< ofxIKArm > mIKArmInverted;
         RobotArmSafety robotSafety;
+        
     protected:
         vector <double> stopPosition;
         bool m_bSettingJointsExternally = false;

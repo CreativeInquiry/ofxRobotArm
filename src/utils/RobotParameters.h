@@ -7,30 +7,22 @@
 namespace ofxRobotArm{
     class RobotParameters{
         public :
-        void setup(bool getTCP = true, bool setTCP = true, bool toolOffset = true, bool drawpath = true, bool record = false ) {
+        void setup(bool getTCP = true, bool setTCP = true, bool toolOffset = true, bool record = false ) {
             robotArmParams.setName("UR 5");
    
-            
-            avgAccel.set("avgAccel", 0, 0, 200);
-            followLerp.set("followLerp", 1, 0, 1.0);
-            
             if (getTCP)
                 robotArmParams.add(bCopy.set("get TCP", false));
-            if (setTCP)
+            if (setTCP){
                 robotArmParams.add(bFollow.set("set TCP", false));
-            
-            robotArmParams.add(bUseOSC.set("Use External OSC", false));
-            robotArmParams.add(bUseIK.set("Use IKFast", true));
-            robotArmParams.add(bTimeline.set("Use Timeline", false));
-            robotArmParams.add(bIKArm.set("Use IKArm", false));
-            
-  
-            
-            if (drawpath){
-                robotArmParams.add(bTrace.set("bTrace GML", false));
-                robotArmParams.add(b3DPath.set("ThreeDPath", false));
-                robotArmParams.add(bFigure8.set("bFigure8", false));
+                robotArmParams.add(followLerp.set("Follow Lerp", 0.04, 0.001, 0.99));
             }
+            
+            robotArmParams.add(bTeachMode.set("Teach Mode", false));
+            robotArmParams.add(bUseOSC.set("Use External OSC", false));
+            robotArmParams.add(bUseIKFast.set("Use IKFast", true));
+            robotArmParams.add(bUseTimeline.set("Use Timeline", false));
+            robotArmParams.add(bUseIKArm.set("Use IKArm", false));
+            
             
             robotArmParams.add(bMove.set("Move", false));
             robotArmParams.add(bDoReconnect.set("TryReconnect", false));
@@ -98,26 +90,25 @@ namespace ofxRobotArm{
         ofParameterGroup jointSpeeds;
         ofParameterGroup jointsIK;
         
-        ofParameter<bool> bTimeline;
+        ofParameter<bool> bUseTimeline;
         
         ofParameter<float> followLerp;
-        ofParameter<float> avgAccel;
+
         vector<ofParameter<float> > ikPose;
         vector<ofParameter<float> > pCurrentPose;
         vector<ofParameter<float> > targetPose;
         vector<ofParameter<float> > jointVelocities;
         
         ofParameter<bool> bMove;
-        ofParameter<bool> bFigure8;
+        ofParameter<bool> bTeachMode;
         ofParameter<bool> bTrace;
         ofParameter<bool> bFollow;
         ofParameter<bool> bCopy;
         ofParameter<bool> bUseOSC;
         ofParameter<bool> bStop;
-        ofParameter<bool> b3DPath;
         ofParameter<bool> bDoReconnect;
-        ofParameter<bool> bUseIK;
-        ofParameter<bool> bIKArm;
+        ofParameter<bool> bUseIKFast;
+        ofParameter<bool> bUseIKArm;
         
         string ipAddress;
         vector<double> currentPose;

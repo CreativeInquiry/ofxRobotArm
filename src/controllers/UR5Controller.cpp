@@ -349,79 +349,90 @@ float UR5Controller::getZValueForIkRobotLocalY( float aLocalY, float aWorldZ ) {
     return retZ;
 }
 
-void UR5Controller::setPose(vector<double> pose){
-    targetPose = pose;
+void UR5Controller::toggleTeachMode(){
+    robot.toggleTeachMode();
+}
 
+void UR5Controller::setTeachMode(){
+    if(isTeachModeEnabled != robotParams->bTeachMode){
+        isTeachModeEnabled = robotParams->bTeachMode;
+        robot.setTeachMode(isTeachModeEnabled);
+    }
+}
+
+void UR5Controller::updateIKFast(){
+    targetPoses = urKinematics.inverseKinematics(robotParams->targetTCP);
+    int selectedSolution = urKinematics.selectSolution(targetPoses, robot.getCurrentPose(), jointWeights);
+    if(selectedSolution > -1){
+        targetPose = targetPoses[selectedSolution];
+        for(int i = 0; i < targetPose.size(); i++){
+            float tpose = (float)targetPose[i];
+            if( isnan(tpose) ) {
+                tpose = 0.f;
+            }
+            robotParams->ikPose[i] = tpose;
+        }
+    }
+}
+
+void UR5Controller::updateIKArm(){
+    targetPoses = urKinematics.inverseKinematics(robotParams->targetTCP);
+    int selectedSolution = urKinematics.selectSolution(targetPoses, robot.getCurrentPose(), jointWeights);
+    if(selectedSolution > -1){
+        targetPose = targetPoses[selectedSolution];
+        for(int i = 0; i < targetPose.size(); i++){
+            float tpose = (float)targetPose[i];
+            if( isnan(tpose) ) {
+                tpose = 0.f;
+            }
+            robotParams->ikPose[i] = tpose;
+        }
+        
+        for(int i = 0; i < targetPoses.size(); i++)
+        {
+            previewArms[i]->setPose(targetPoses[i]);
+        }
+    }
+    for(int i = 0; i < targetPose.size(); i++){
+        float tpose = (float)targetPose[i];
+        if( isnan(tpose) ) {
+            tpose = 0.f;
+        }
+        robotParams->targetPose[i] = ofRadToDeg(tpose);
+    }
+    targetPose = getArmIK(1.0/60.0f);
+    for(int i = 0; i < targetPose.size(); i++){
+        float tpose = (float)targetPose[i];
+        if( isnan(tpose) ) {
+            tpose = 0.f;
+        }
+        robotParams->targetPose[i] = ofRadToDeg(tpose);
+    }
+    
+    // update the look at angles after the IK has been applied //
+    // overrides the angles and sets them directly //
+    // alters joint[3] && joint[4]
+    vector< double > lookAtAngles = lookAtJoints(1.0/60.0f);
+    // determine if these angles should be added or not //
+    for( int i = 0; i < targetPose.size(); i++ ) {
+        targetPose[i] = lookAtAngles[i];
+    }
+    
+    previewArm->setPose(targetPose);
 }
 
 #pragma mark - Update
 void UR5Controller::update(){
-    
     updateRobotData();
-    if(robotParams->bUseIK){
-        targetPoses = urKinematics.inverseKinematics(robotParams->targetTCP);
-        int selectedSolution = urKinematics.selectSolution(targetPoses, robot.getCurrentPose(), jointWeights);
-        if(selectedSolution > -1){
-            targetPose = targetPoses[selectedSolution];
-            for(int i = 0; i < targetPose.size(); i++){
-                float tpose = (float)targetPose[i];
-                if( isnan(tpose) ) {
-                    tpose = 0.f;
-                }
-                robotParams->ikPose[i] = tpose;
-            }
-        }
-    }else if(robotParams->bTimeline || robotParams->bUseOSC){
-        previewArm->setPose(targetPose);
-    }else if(robotParams->bIKArm){
-        targetPoses = urKinematics.inverseKinematics(robotParams->targetTCP);
-        int selectedSolution = urKinematics.selectSolution(targetPoses, robot.getCurrentPose(), jointWeights);
-        if(selectedSolution > -1){
-            targetPose = targetPoses[selectedSolution];
-            for(int i = 0; i < targetPose.size(); i++){
-                float tpose = (float)targetPose[i];
-                if( isnan(tpose) ) {
-                    tpose = 0.f;
-                }
-                robotParams->ikPose[i] = tpose;
-            }
-
-            for(int i = 0; i < targetPoses.size(); i++)
-            {
-                previewArms[i]->setPose(targetPoses[i]);
-            }
-        }
-        for(int i = 0; i < targetPose.size(); i++){
-            float tpose = (float)targetPose[i];
-            if( isnan(tpose) ) {
-                tpose = 0.f;
-            }
-            robotParams->targetPose[i] = ofRadToDeg(tpose);
-        }
-        targetPose = getArmIK(1.0/60.0f);
-        for(int i = 0; i < targetPose.size(); i++){
-            float tpose = (float)targetPose[i];
-            if( isnan(tpose) ) {
-                tpose = 0.f;
-            }
-            robotParams->targetPose[i] = ofRadToDeg(tpose);
-        }
-
-        // update the look at angles after the IK has been applied //
-        // overrides the angles and sets them directly //
-        // alters joint[3] && joint[4]
-        vector< double > lookAtAngles = lookAtJoints(1.0/60.0f);
-        // determine if these angles should be added or not //
-        for( int i = 0; i < targetPose.size(); i++ ) {
-            targetPose[i] = lookAtAngles[i];
-        }
-
-
-        previewArm->setPose(targetPose);
+    if(robotParams->bUseIKFast){
+        updateIKFast();
+    }else if(robotParams->bUseIKArm){
+        updateIKArm();
     }
+    
     safetyCheck();
     updateMovement();
-    targetPose = movement.getTargetJointPose();
+      targetPose = movement.getTargetJointPose();
     for(int i = 0; i < targetPose.size(); i++){
         float tpose = (float)targetPose[i];
         if( isnan(tpose) ) {
@@ -433,6 +444,8 @@ void UR5Controller::update(){
 }
 void UR5Controller::update(vector<double> _pose){
     targetPose = _pose;
+    update();
+    
 }
 
 #pragma mark - Safety
@@ -449,23 +462,8 @@ void UR5Controller::safetyCheck(){
 
 #pragma mark - Movements
 void UR5Controller::updateMovement(){
-    
     movement.addTargetJointPose(targetPose);
     movement.update();
-    
-    // set the joint speeds
-    vector<double> tempSpeeds;
-    tempSpeeds.assign(6, 0);
-    tempSpeeds = movement.getCurrentJointVelocities();
-    for(int i = 0; i < tempSpeeds.size(); i++){
-        float tspeed = (float)tempSpeeds[i];
-        if( isnan(tspeed) ) {
-            tspeed = 0.f;
-        }
-        robotParams->jointVelocities[i] = tspeed;
-
-        tempSpeeds[i] = tspeed;
-    }
     // move the robot to the target TCP
     if(robotParams->bMove){
         //        robot.setSpeed(tempSpeeds, movement.getAcceleration());

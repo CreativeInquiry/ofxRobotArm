@@ -79,7 +79,7 @@ public:
     ofParameter<bool> lookAtTCP;
     void moveTCP();
     
-    
+    bool isTeachModeEnabled;
     // 3D Navigation
     void updateActiveCamera();
     vector<ofEasyCam*> cams;
