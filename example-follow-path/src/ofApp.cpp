@@ -161,7 +161,7 @@ void ofApp::moveArm(){
         
     }
     
-    if (parameters.bMove){
+    if (parameters.bTrace){
         ofMatrix4x4 orientation = paths.getNextPose();
         parameters.targetTCP.position = orientation.getTranslation();
         
@@ -307,7 +307,7 @@ void ofApp::handleViewportPresets(int key){
         // PERSPECTIVE VIEW
         else if (key == '4'){
             cams[activeCam]->reset();
-            cams[activeCam]->setPosition(dist, dist, dist/4);
+            cams[activeCam]->setPosition(dist/4, dist, dist/4);
             cams[activeCam]->lookAt(ofVec3f(0, 0, 0), ofVec3f(0, 0, 1));
             viewportLabels[activeCam] = "PERSPECTIVE VIEW";
         }
