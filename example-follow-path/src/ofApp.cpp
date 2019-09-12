@@ -178,11 +178,16 @@ void ofApp::moveArm(){
 
 void ofApp::setupViewports(){
     
-    viewportReal = ofRectangle((21*ofGetWindowWidth()/24)/2, 0, (21*ofGetWindowWidth()/24)/2, 8*ofGetWindowHeight()/8);
-    viewportSim = ofRectangle(0, 0, (21*ofGetWindowWidth()/24)/2, 8*ofGetWindowHeight()/8);
+    real = 1;
+    sim = 0;
     
-    activeCam = 0;
+    viewportReal = ofRectangle((21*ofGetWindowWidth()/24)/2, 0,  (21*ofGetWindowWidth()/24)/2, ofGetWindowHeight());
+    viewportSim = ofRectangle(0, 0, (21*ofGetWindowWidth()/24)/2, ofGetWindowHeight());
     
+    
+    activeCam = real;
+    
+    gizmo.setViewDimensions(viewportSim.width, viewportSim.height);
     
     for(int i = 0; i < N_CAMERAS; i++){
         cams.push_back(new ofEasyCam());
@@ -190,14 +195,24 @@ void ofApp::setupViewports(){
         viewportLabels.push_back("");
     }
     
-    cams[0]->begin(viewportReal);
-    cams[0]->end();
-    cams[0]->enableMouseInput();
+    glm::vec3 camUp = glm::vec3(0, 0, 1);
     
     
-    cams[1]->begin(viewportSim);
-    cams[1]->end();
-    cams[1]->enableMouseInput();
+    cams[real]->setPosition(glm::vec3(-1, 1, 2500));
+    cams[real]->lookAt(glm::vec3(0, 0, 0), camUp);
+    
+    
+    cams[sim]->setPosition(glm::vec3(-1, 1, 2500));
+    cams[sim]->lookAt(glm::vec3(0, 0, 0), camUp);
+    
+    cams[real]->begin(viewportReal);
+    cams[real]->end();
+    cams[real]->enableMouseInput();
+    
+    
+    cams[sim]->begin(viewportSim);
+    cams[sim]->end();
+    cams[sim]->enableMouseInput();
     
 }
 
@@ -226,15 +241,12 @@ void ofApp::setupGUI(){
 }
 
 void ofApp::positionGUI(){
-    viewportReal.height -= (panelJoints.getHeight());
-    viewportReal.y +=(panelJoints.getHeight());
     panel.setPosition(viewportReal.x+viewportReal.width, 10);
     panelJointsSpeed.setPosition(viewportReal.x, 10);
     panelJointsIK.setPosition(panelJointsSpeed.getPosition().x+panelJoints.getWidth(), 10);
     panelTargetJoints.setPosition(panelJointsIK.getPosition().x+panelJoints.getWidth(), 10);
     panelJoints.setPosition(panelTargetJoints.getPosition().x+panelJoints.getWidth(), 10);
 }
-
 //--------------------------------------------------------------
 void ofApp::drawGUI(){
     panel.draw();
