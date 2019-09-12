@@ -1,5 +1,5 @@
-#ofxRobotArm
-######An openFrameworks addon for controlling and interacting with robot arms.
+# ofxRobotArm
+###### An openFrameworks addon for controlling and interacting with robot arms.
 
   - [About](#about)
   - [Dependencies](#dependencies)
@@ -12,7 +12,7 @@
   - [Known Issues](#known-issues)
 
 
-##About
+## About
 `ofxRobotArm` is an openFrameworks addon for doing creative things with robot arms. The goal of the addon is to remove as many technical barriers as possible to get up and running with 6-axis robots. We've included a number of examples that show you how different ways of controlling and interacting with a robot arm, including direct manipulation, geometry-based manipulation, motion capture-based interactions, and keyframe animation. By developing `ofxRobotArm` for openFrameworks, we hope to help you extend human-robot interaction in new and diverse ways.
 
 Currently the addon is configured to just work with Universal Robot's [UR5](http://www.universal-robots.com/products/ur5-robot/) robot. In future developments, we would like to include kinematic models for additional robot brands. Please [contact us]() if you would like us to include your robot model or if you would like specific features implemented.
@@ -22,7 +22,7 @@ Technical development was lead by [Dan Moore](http://makeitdoathing.com) with ex
 
 ![KinematicModel](data/ezgif.com-video-to-gif%20(1).gif)
 
-##Dependencies
+## Dependencies
 - ofxURDriver
 - ofxTiming
 - ofxCV
@@ -34,11 +34,11 @@ Technical development was lead by [Dan Moore](http://makeitdoathing.com) with ex
 
 Please see the `installAddons.sh` script to clone all the external addons used in the examples.  Also please note that these addons might depend on other external addons.  Please reference the README for each of the external addons. 
 
-##Overview
+## Overview
 `ofxRobotArm` is structured as two parts: `ofxURDriver` holds the specific control software and kinematic model for a [UR5](http://www.universal-robots.com/products/ur5-robot/) robot; `ofxRobotArm` holds the generic tools and techniques for controlling and interacting with a robot arm. `ofxURDriver` adapts ThomasTimm's [ur_modern_driver](https://github.com/ThomasTimm/ur_modern_driver) package for ROS to openFrameworks. To customize `ofxRobotArm` to work with your specific model and brand of robot, use `ofxURDriver` as a template for your robot's kinematic model and control protocol.
 
 
-##Examples
+## Examples
 We've also included a number of example projects that show you the most common ways of programming 6-axis robots:
 
 **1. Direct Manipulation**
@@ -74,7 +74,7 @@ We've included a tutorial for getting started with `ofxRobotArm` [here](/example
 4. The motion capture examples [`example-follow-mocap`](/example-follow-mocap) and [`example-follow-mocap-path`](/example-follow-mocap-path) are fairly advanced and require very specific hardware configurations to run properly. A more common motion capture sensor, like a Kinect, could be used in place of an OptiTrack system to get similar results.
 
 
-##Licensing
+## Licensing
 `ofxRobotArm` is licensed for **NON-COMMERCIAL USE ONLY**. 
 
 Copyright (c) 2016, Daniel Moore, Madeline Gannon, and The Frank-Ratchye STUDIO for Creative Inquiry
@@ -112,15 +112,15 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-##Contact Info
+## Contact Info
 **Dan Moore** | [Make It Do A Thing!](http://www.makeitdoathing.com ) | [@danzeeeman](https://github.com/danzeeeman)
 
-**Madeline Gannon** | [MADLAB R&D](http://www.madlab.cc) | [@madelinegannon](https://github.com/madelinegannon)
+**Madeline Gannon** | [A TON A TON](http://atonaton.com) | [@madelinegannon](https://github.com/madelinegannon)
 
 **The Frank-Ratchye STUDIO for Creative Inquiry** | [studioforcreativeinquiry.org](http://studioforcreativeinquiry.org) | [@creativeinquiry](https://github.com/CreativeInquiry)
 
 
-##Additional Resources
+## Additional Resources
 Here are some of the references and resources that have made `ofxRobotArm` possible:
 
 - [ur_modern_driver](https://github.com/ThomasTimm/ur_modern_driver)
@@ -129,14 +129,14 @@ Here are some of the references and resources that have made `ofxRobotArm` possi
 - [UR Report](http://orbit.dtu.dk/files/117833332/Universal_Robot_report.pdf)
 
 
-##Known Issues
+## Known Issues
  There are several known issues:
  - Crashing on Exit when Not Connected to a robot
  - Intermittent Protective Stops or Sudden Stops
 
  
 
-##Future Development
+## Future Development
 
 * Collision Detection
 * UR3/UR10 Support
