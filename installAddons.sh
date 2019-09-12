@@ -14,5 +14,6 @@ ${PREFIX}NickHardeman/ofxGizmo
 ${PREFIX}danzeeeman/ofxTimeline
 ${PREFIX}danzeeeman/ofxURDriver
 ${PREFIX}CreativeInquiry/ofxPtf
+${PREFIX}CreativeInquiry/ofxIKArm
 
 cd ../addons/ofxRobotArm
