@@ -20,7 +20,7 @@
 
 
 #include "ofApp.h"
-
+using namespace ofxRobotArm;
 //--------------------------------------------------------------
 void ofApp::setup(){
 
@@ -32,7 +32,7 @@ void ofApp::setup(){
     setupViewports();
     
     parameters.setup();
-    robot.setup("192.168.1.9", parameters); // <-- swap your robot's ip address here
+    robot.setup("192.168.1.9", parameters, true); // <-- swap your robot's ip address here
     
     setupGUI();
     positionGUI();
@@ -46,8 +46,9 @@ void ofApp::setup(){
     
     // add mesh and toolpaths to a new worksurface
     ofxAssimpModelLoader loader;
-    loader.loadModel(ofToDataPath("mesh_srf.stl"));
-    ofMesh mesh = loader.getMesh(0);
+    
+    
+    ofMesh mesh = ofSpherePrimitive(20, 10).getMesh();
     workSrf.setup(mesh,toolpaths);
     
     // setup path controller
@@ -79,7 +80,7 @@ void ofApp::draw(){
     tcpNode.draw();
     workSrf.draw(true,true,false,false);
     paths.draw();
-    robot.robot.model.draw();
+    robot.draw();
     cams[0]->end();
     
     // show simulation robot
@@ -88,7 +89,7 @@ void ofApp::draw(){
         gizmo.draw(*cams[1]);
     workSrf.draw(true,true,false,false);
     paths.draw();
-    robot.movement.draw(0);
+    robot.drawPreview();
     cams[1]->end();
     
     drawGUI();
@@ -119,7 +120,7 @@ void ofApp::moveArm(){
     }
     else{
         // update the tool tcp
-        tcpNode.setTransformMatrix(gizmo.getMatrix());
+        gizmo.apply(tcpNode);
     }
 
     
