@@ -13,7 +13,7 @@
 #include "ofMain.h"
 #include "ofxGui.h"
 #include "ofxGizmo.h"
-#include "RobotController.h"
+#include "UR5Controller.h"
 #include "PathController.h"
 #include "RobotParameters.h"
 #define N_CAMERAS 2
@@ -39,7 +39,7 @@ public:
     void dragEvent(ofDragInfo dragInfo);
     void gotMessage(ofMessage msg);
     
-    RobotParameters parameters;
+    ofxRobotArm::RobotParameters parameters;
     
     ofxGizmo gizmo;
     ofNode tcpNode;
@@ -58,9 +58,9 @@ public:
     
     ofPolyline line;
     
-    RobotController robot;
-    Path3D path;
-    PathController paths;
+    ofxRobotArm::UR5Controller robot;
+    ofxRobotArm::Path3D path;
+    ofxRobotArm::PathController paths;
     void moveArm();
     
     
