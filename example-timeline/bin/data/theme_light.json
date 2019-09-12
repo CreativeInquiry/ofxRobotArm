@@ -1,7 +1,7 @@
 {
     "default": {
         "base": {
-            "background-color": "rgba(0,0,0,1)",
+            "background-color": "#093145,
             "fill-color": "rgba(179,27,27,1)",
             "border-width": 0,
             "padding": 1,
@@ -12,13 +12,14 @@
             "text-padding": 2
         },
         "group": {
-            "border-color": "rgba(31, 137,204, 1)",
+            "border-color": "#107896",
             "padding": 1,
+            "text-color": "#ffffff",
             "border-width": 1,
             "margin-left": 10
         },
         "group-header": {
-            "background-color": "rgba(255, 65, 65, 1)",
+            "background-color": "#093145",
             "text-color": "#ffffff"
         }
     }

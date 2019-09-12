@@ -38,8 +38,9 @@ void ofApp::setup(){
     
     
     
-    setupViewports();
+   
     setupGUI();
+    setupViewports();
     positionGUI();
     
     
@@ -70,7 +71,7 @@ void ofApp::update(){
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-    
+    ofPushStyle();
     ofSetColor(255,160);
     ofDrawBitmapString("OF FPS "+ofToString(ofGetFrameRate()), 30, ofGetWindowHeight()-50);
     ofDrawBitmapString("Robot FPS "+ofToString(robot.robot.getThreadFPS()), 30, ofGetWindowHeight()-65);
@@ -98,6 +99,7 @@ void ofApp::draw(){
     
     
     drawGUI();
+    ofPopStyle();
     
 }
 
@@ -149,10 +151,13 @@ void ofApp::moveTCP(){
 }
 
 void ofApp::setupViewports(){
-    
+    panelJointsIK->setWidth(ofGetWindowWidth()/24*3);
+    panelJoints->setWidth(ofGetWindowWidth()/24*2);
+    panel->setWidth(ofGetWindowWidth()/24*2);
+
     viewportReal = ofRectangle((21*ofGetWindowWidth()/24)/2, 0,  (21*ofGetWindowWidth()/24)/2, 6*ofGetWindowHeight()/8);
-    viewportSim = ofRectangle(0, 0, (21*ofGetWindowWidth()/24)/2, 3*ofGetWindowHeight()/8);
-    
+    viewportSim = ofRectangle(0, 0, (21*ofGetWindowWidth()/24)/2-panel->getWidth()+5, 3*ofGetWindowHeight()/8);
+
     viewportSimP0 = ofRectangle(0, viewportSim.height, viewportSim.width/3, viewportSim.width/3);
     viewportSimP1 = ofRectangle(viewportSim.width/3, viewportSim.height, viewportSim.width/3, viewportSim.width/3);
     viewportSimP2 = ofRectangle(2*viewportSim.width/3, viewportSim.height, viewportSim.width/3,viewportSim.width/3);
@@ -195,32 +200,24 @@ void ofApp::setupViewports(){
 //--------------------------------------------------------------
 void ofApp::setupGUI(){
     
-    
-    
     panel = gui.addPanel(parameters.robotArmParams);
  
-    panel->loadTheme("theme_light.json", true);
-    
-    panelJoints = gui.addPanel(parameters.joints);
-    panelJoints->loadTheme("theme_light.json", true);
-    panelTargetJoints = gui.addPanel(parameters.targetJoints);
-    panelTargetJoints->loadTheme("theme_light.json", true);
-    panelJointsIK = gui.addPanel(parameters.jointsIK);
-    panelJointsIK->loadTheme("theme_light.json", true);
-    
-    
+    panel->loadTheme("theme3.json", true);
+  
+    panelJoints = gui.addPanel(parameters.safety);
+    panelJoints->loadTheme("theme3.json", true);
+
+    panelJointsIK = gui.addPanel(parameters.targetJoints);
+    panelJointsIK->add(parameters.joints);
+    panelJointsIK->loadTheme("theme3.json", true);
+
     parameters.bMove = false;
     // get the current pose on start up
     parameters.bCopy = true;
     panel->loadFromFile("settings/settings.xml");
     
     
-    //setup timeline
-    
     timeline.setup();
-    timeline.setWidth(viewportSim.width);
-    timeline.setHeight(ofGetWindowHeight()/8);
-    timeline.setOffset(ofVec2f(0, viewportSimP0.y+viewportSimP0.height));
     timeline.setLoopType(OF_LOOP_NORMAL);
     timeline.setDurationInSeconds(500);
     //each call to "add keyframes" add's another track to the timeline
@@ -258,15 +255,14 @@ void ofApp::addRealPoseKeyFrame(){
 
 void ofApp::positionGUI(){
 
-//    panel->setPosition(viewportReal.x+viewportReal.width, 10);
-//    panelJointsIK->setPosition(panel->getPosition().x+panelJoints->getWidth(), 10);
-//    panelTargetJoints->setPosition(panelJointsIK->getPosition().x+panelJoints->getWidth(), 10);
-//    panelJoints->setPosition(panelTargetJoints->getPosition().x+panelJoints->getWidth(), 10);
+    panel->setPosition(viewportSim.x+viewportSim.width, 0);
+    panelJointsIK->setPosition(viewportReal.x+viewportReal.width, 0);
+    panelJoints->setPosition(viewportReal.x+viewportReal.width, panelJointsIK->getHeight());
     
-//    panelJoints->add(robot.robotSafety.params);
-//    panel->add(robot.robotSafety.mCollision->params);
-//    panel->add(robot.robotSafety.mCylinderRestrictor->params);
-//    panel->add(robot.robotSafety.m_jointRestrictor->params);
+    timeline.setWidth(viewportReal.width);
+    timeline.setHeight(2*ofGetWindowHeight()/8);
+    timeline.setOffset(ofVec2f(0, viewportSimP0.y+viewportSimP0.height));
+    
 }
 
 //--------------------------------------------------------------
@@ -528,6 +524,7 @@ void ofApp::mouseExited(int x, int y){
 //--------------------------------------------------------------
 void ofApp::windowResized(int w, int h){
     setupViewports();
+    positionGUI();
     
 }
 

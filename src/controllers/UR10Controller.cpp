@@ -58,7 +58,8 @@ void UR10Controller::setup(string ipAddress, RobotParameters & params, bool offl
     previewArm = previewArms[0];
     actualArm.setup();
     
-    robotParams->joints.add(robotSafety.setup());
+    robotParams->safety.setName("Safety");
+    robotParams->safety.add(robotSafety.setup());
     
     robotParams->jointsIK.add(this->params);
     
