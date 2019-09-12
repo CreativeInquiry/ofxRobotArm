@@ -7,9 +7,9 @@
 #include "RobotParameters.h"
 #include "URIKFast.h"
 #include "UR5KinematicModel.h"
-//#include "ofxIKArm.h"
+#include "ofxIKArm.h"
 #include "RobotArmSafety.h"
-
+#include "URJoint.h"
 namespace ofxRobotArm {
     
 
@@ -31,7 +31,9 @@ namespace ofxRobotArm {
         vector< double > getArmIK( float aDeltaTimef );
         vector< double > getArmIK( ofVec3f aTargetWorldPos, ofVec3f aElbowWorldPos, bool aBInvertElbow, float aDeltaTimef );
 
-        
+        void toggleTeachMode();
+        void setTeachMode();
+        bool isTeachModeEnabled;
         bool shouldApplyIk();
         ofVec3f getYawPitchRoll( ofQuaternion aquat );
         float getNeckAngleAlignedWithVector( ofVec3f avec );
@@ -45,8 +47,12 @@ namespace ofxRobotArm {
         void safetyCheck();
         void updateMovement();
         void updateRobotData();
+        
         void update();
         void update(vector<double> pose);
+        void updateIKFast();
+        void updateIKArm();
+        
         void moveArm();
         void draw(bool debug = false);
         void drawPreview();
@@ -54,7 +60,7 @@ namespace ofxRobotArm {
         void drawIK();
         void drawSafety(ofCamera & cam);
         
-        void setPose(vector<double> pose);
+   
         
         void enableControlJointsExternally();
         void disableControlJointsExternally();

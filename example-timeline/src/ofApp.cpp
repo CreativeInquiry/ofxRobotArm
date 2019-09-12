@@ -61,10 +61,12 @@ void ofApp::exit(){
 
 //--------------------------------------------------------------
 void ofApp::update(){
+    robot.setTeachMode();
     moveTCP();
     robot.update();
     updateActiveCamera();
 }
+
 
 //--------------------------------------------------------------
 void ofApp::draw(){
@@ -122,24 +124,25 @@ void ofApp::moveTCP(){
         
     }
     else{
-        gizmo.apply(tcpNode);
+        
     }
     
     // follow the gizmo's position and orientation
     if(parameters.bFollow){
+        gizmo.apply(tcpNode);
         parameters.targetTCP.position.interpolate(tcpNode.getPosition()/1000.0, parameters.followLerp);
         parameters.targetTCP.rotation = tcpNode.getOrientationQuat();
         parameters.targetTCPOrientation = ofVec4f(parameters.targetTCP.rotation.x(), parameters.targetTCP.rotation.y(), parameters.targetTCP.rotation.z(), parameters.targetTCP.rotation.w());
     }
     
-    if(parameters.bTimeline){
+    if(parameters.bUseTimeline){
         robot.enableControlJointsExternally();
         vector<double> pose;
         for(int i = 0; i < jointNames.size(); i++){
             pose.push_back(timeline.getValue(jointNames[i]));
         }
         
-        robot.setPose(pose);
+        robot.update(pose);
     }else{
         robot.disableControlJointsExternally();
     }
