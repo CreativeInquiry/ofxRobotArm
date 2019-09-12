@@ -46,6 +46,7 @@ class ofApp : public ofBaseApp{
         void positionGUI();
         void drawGUI();
     
+        int sim, real;
     
         ofxPanel panel;
         ofxPanel panelJoints;

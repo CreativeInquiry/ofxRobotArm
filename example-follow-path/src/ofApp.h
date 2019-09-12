@@ -57,6 +57,8 @@ public:
     ofxPanel panelJointsSpeed;
     
     ofPolyline line;
+
+    int real, sim;
     
     ofxRobotArm::UR5Controller robot;
     ofxRobotArm::Path3D path;
