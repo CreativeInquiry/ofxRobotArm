@@ -48,7 +48,9 @@ void ofApp::setup(){
     ofxAssimpModelLoader loader;
     
     
-    ofMesh mesh = ofSpherePrimitive(20, 10).getMesh();
+    loader.loadModel("mesh_srf.dae");
+    ofLog()<<loader.getMeshNames()[0]<<endl;
+    ofMesh mesh = loader.getMesh(0);
     workSrf.setup(mesh,toolpaths);
     
     // setup path controller
@@ -132,7 +134,7 @@ void ofApp::moveArm(){
         
     }
     
-    if (parameters.bMove){
+    if (parameters.bTrace){
         ofMatrix4x4 orientation = paths.getNextPose();
         parameters.targetTCP.position = orientation.getTranslation();
         
