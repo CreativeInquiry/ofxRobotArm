@@ -2,12 +2,12 @@
     "theme3": {
         "base": {
             "background-color": "rgba(0,0,0,1)",
-            "fill-color": "rgb(220,180,50)",
+            "fill-color": "rgba(9,49,69,1)",
             "border-width": 1,
             "padding": 2,
             "border-color": "rgba(0,0,0,1)",
             "margin": 5,
-            "text-color": "#000000",
+            "text-color": "#ffffff",
             "text-padding": 2,
             "border-radius": 5
         },
@@ -17,7 +17,7 @@
             "direction": "vertical",
             "show-header": true,
             "background-color": "rgba(0,0,0,1)",
-            "padding": 10,
+            "padding": 5,
             "show-header": false
         },
 
@@ -32,9 +32,8 @@
             "height": 39,
             "border-width": 0,
             "background-color": "rgba(0,0,0,1)",
-            "text-color": "#000000"
+            "text-color": "#ffffff"
         },
-
         "slider": {
           "precision": 3
         },

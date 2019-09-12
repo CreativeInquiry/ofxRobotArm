@@ -58,7 +58,7 @@ void UR5Controller::setup(string ipAddress, RobotParameters & params, bool offli
     previewArm = previewArms[0];
     actualArm.setup();
     
-    robotParams->joints.add(robotSafety.setup());
+    robotParams->safety.add(robotSafety.setup());
  
     robotParams->jointsIK.add(this->params);
     

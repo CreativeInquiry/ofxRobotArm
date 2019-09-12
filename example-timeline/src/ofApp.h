@@ -68,7 +68,6 @@ public:
     ofxGui gui;
     ofxGuiPanel* panel;
     ofxGuiPanel* panelJoints;
-    ofxGuiPanel* panelTargetJoints;
     ofxGuiPanel* panelJointsIK;
     
     int sim, real;
