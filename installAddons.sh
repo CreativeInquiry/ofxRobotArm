@@ -9,7 +9,6 @@ PREFIX="git clone http://github.com/"
 ${PREFIX}CreativeInquiry/ofxTiming
 ${PREFIX}kylemcdonald/ofxCV
 ${PREFIX}CreativeInquiry/ofxNatNet
-${PREFIX}CreativeInquiry/ofxGML
 ${PREFIX}NickHardeman/ofxGizmo
 ${PREFIX}CreativeInquiry/ofxTimeline
 ${PREFIX}CreativeInquiry/ofxURDriver
