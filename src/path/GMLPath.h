@@ -2,6 +2,10 @@
 // Copyright (c) 2016, Daniel Moore, Madeline Gannon, and The Frank-Ratchye STUDIO for Creative Inquiry All rights reserved.
 //
 
+// Deprecated as of 09/12/2019
+// ofxGML not compatible with OF 0.10+
+
+/**
 #pragma once
 #include "ofxGML.h"
 #include "Path.h"
@@ -26,3 +30,4 @@ namespace ofxRobotArm{
         string filepath;
     };
 }
+*/
