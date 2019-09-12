@@ -11,7 +11,7 @@
 #include "ofMain.h"
 #include "ofxGui.h"
 #include "ofxGizmo.h"
-#include "RobotController.h"
+#include "UR5Controller.h"
 #include "PathController.h"
 #include "WorkSurface3D.h"
 #include "RobotParameters.h"
@@ -36,7 +36,7 @@ class ofApp : public ofBaseApp{
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
 		
-        RobotParameters parameters;
+    ofxRobotArm::RobotParameters parameters;
     
         ofxGizmo gizmo;
         ofNode tcpNode;
@@ -54,11 +54,11 @@ class ofApp : public ofBaseApp{
         ofxPanel panelJointsSpeed;
         
         
-        RobotController robot;
+         ofxRobotArm::UR5Controller robot;
         void moveArm();
     
-        PathController paths;
-        WorkSurface3D workSrf;
+         ofxRobotArm::PathController paths;
+        ofxRobotArm::WorkSurface3D workSrf;
         ofPolyline buildToolpath(ofVec3f centroid);
     
         
