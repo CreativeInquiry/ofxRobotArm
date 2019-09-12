@@ -2,6 +2,10 @@
 // Copyright (c) 2016, Daniel Moore, Madeline Gannon, and The Frank-Ratchye STUDIO for Creative Inquiry All rights reserved.
 //
 
+// Deprecated as of 09/12/2019
+// ofxGML not compatible with OF 0.10+
+
+/**
 #include "GMLPath.h"
 using namespace ofxRobotArm;
 void GMLPath::setup(){
@@ -38,3 +42,4 @@ vector<ofPolyline> GMLPath::getPath(float scale){
     reader.scale(lines, scale, scale);
     return lines;
 }
+*/
