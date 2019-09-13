@@ -71,7 +71,7 @@ void ofApp::updateOSC(){
        }
        currentPose = pose;
     }
-    robot.setPose(currentPose);
+    robot.update(currentPose);
 }
 
 //--------------------------------------------------------------
