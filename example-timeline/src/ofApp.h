@@ -70,6 +70,13 @@ public:
     ofxGuiPanel* panelJoints;
     ofxGuiPanel* panelJointsIK;
     
+    ofFloatColor previewMode;
+    ofFloatColor realMode;
+    
+    ofFloatColor moveColor;
+    ofFloatColor freedriveColor;
+    ofFloatColor stopColor;
+    
     int sim, real;
     ofVec3f camUp;
     

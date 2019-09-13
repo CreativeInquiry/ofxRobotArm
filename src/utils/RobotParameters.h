@@ -13,7 +13,7 @@ namespace ofxRobotArm{
             
             robotArmParams.add(bCopy.set("get TCP", false));
             
-            robotArmParams.add(bFollow.set("set TCP", false));
+            robotArmParams.add(bFollow.set("set TCP", true));
             robotArmParams.add(followLerp.set("Follow Lerp", 0.04, 0.001, 0.99));
             
             robotArmParams.add(bTrace.set("Trace Path", false));

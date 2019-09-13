@@ -3,12 +3,78 @@
         <easefunc>0</easefunc>
         <easetype>0</easetype>
         <time>00:00:00:000</time>
-        <value>0.571109414</value>
+        <value>0.473891944</value>
     </key>
     <key>
         <easefunc>0</easefunc>
         <easetype>0</easetype>
-        <time>00:01:17:873</time>
-        <value>0.519421637</value>
+        <time>00:01:21:936</time>
+        <value>0.530435503</value>
+    </key>
+    <key>
+        <easefunc>0</easefunc>
+        <easetype>0</easetype>
+        <time>00:01:22:361</time>
+        <value>0.502480447</value>
+    </key>
+    <key>
+        <easefunc>0</easefunc>
+        <easetype>0</easetype>
+        <time>00:01:23:033</time>
+        <value>0.527448475</value>
+    </key>
+    <key>
+        <easefunc>0</easefunc>
+        <easetype>0</easetype>
+        <time>00:01:23:501</time>
+        <value>0.515855730</value>
+    </key>
+    <key>
+        <easefunc>0</easefunc>
+        <easetype>0</easetype>
+        <time>00:01:23:951</time>
+        <value>0.528630316</value>
+    </key>
+    <key>
+        <easefunc>0</easefunc>
+        <easetype>0</easetype>
+        <time>00:01:24:719</time>
+        <value>0.516509533</value>
+    </key>
+    <key>
+        <easefunc>0</easefunc>
+        <easetype>0</easetype>
+        <time>00:01:25:434</time>
+        <value>0.481158435</value>
+    </key>
+    <key>
+        <easefunc>0</easefunc>
+        <easetype>0</easetype>
+        <time>00:01:26:201</time>
+        <value>0.502482295</value>
+    </key>
+    <key>
+        <easefunc>0</easefunc>
+        <easetype>0</easetype>
+        <time>00:01:26:546</time>
+        <value>0.535392165</value>
+    </key>
+    <key>
+        <easefunc>0</easefunc>
+        <easetype>0</easetype>
+        <time>00:01:26:931</time>
+        <value>0.492763042</value>
+    </key>
+    <key>
+        <easefunc>0</easefunc>
+        <easetype>0</easetype>
+        <time>00:01:27:392</time>
+        <value>0.523717046</value>
+    </key>
+    <key>
+        <easefunc>0</easefunc>
+        <easetype>0</easetype>
+        <time>00:01:27:743</time>
+        <value>0.530830741</value>
     </key>
 </keyframes>
