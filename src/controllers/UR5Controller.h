@@ -54,8 +54,8 @@ namespace ofxRobotArm {
         void updateIKArm();
         
         void moveArm();
-        void draw(bool debug = false);
-        void drawPreview();
+        void draw(ofFloatColor color = ofFloatColor(1,1,1,1), bool debug = false);
+        void drawPreview(ofFloatColor color = ofFloatColor(1,1,1,1));
         void drawPreviews();
         void drawIK();
         void drawSafety(ofCamera & cam);

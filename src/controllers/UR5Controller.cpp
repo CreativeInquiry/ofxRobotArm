@@ -512,8 +512,8 @@ void UR5Controller::close(){
     }
 }
 
-void UR5Controller::draw(bool debug){
-    actualArm.draw(debug);
+void UR5Controller::draw(ofFloatColor color, bool debug){
+    actualArm.draw(color, debug);
 }
 
 void UR5Controller::drawPreviews(){
@@ -532,8 +532,8 @@ void UR5Controller::drawIK(){
     if(mIKArmInverted)mIKArmInverted->draw();
 }
 
-void UR5Controller::drawPreview(){
-    previewArm->draw();
+void UR5Controller::drawPreview(ofFloatColor color){
+    previewArm->draw(color, true);
     
 }
 

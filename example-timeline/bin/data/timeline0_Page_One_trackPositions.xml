@@ -1,38 +1,38 @@
 <positions>
     <element name="Joint0">
         <x>0.000000000</x>
-        <y>896.333374023</y>
-        <width>1120.000000000</width>
-        <height>135.683593750</height>
+        <y>728.000000000</y>
+        <width>840.000000000</width>
+        <height>42.000000000</height>
     </element>
     <element name="Joint1">
         <x>0.000000000</x>
-        <y>1056.016967773</y>
-        <width>1120.000000000</width>
-        <height>52.000000000</height>
+        <y>794.000000000</y>
+        <width>840.000000000</width>
+        <height>42.000000000</height>
     </element>
     <element name="Joint2">
         <x>0.000000000</x>
-        <y>1132.016967773</y>
-        <width>1120.000000000</width>
-        <height>52.000000000</height>
+        <y>860.000000000</y>
+        <width>840.000000000</width>
+        <height>42.000000000</height>
     </element>
     <element name="Joint3">
         <x>0.000000000</x>
-        <y>1208.016967773</y>
-        <width>1120.000000000</width>
-        <height>52.000000000</height>
+        <y>926.000000000</y>
+        <width>840.000000000</width>
+        <height>42.000000000</height>
     </element>
     <element name="Joint4">
         <x>0.000000000</x>
-        <y>1284.016967773</y>
-        <width>1120.000000000</width>
-        <height>52.000000000</height>
+        <y>992.000000000</y>
+        <width>840.000000000</width>
+        <height>42.000000000</height>
     </element>
     <element name="Joint5">
         <x>0.000000000</x>
-        <y>1360.016967773</y>
-        <width>1120.000000000</width>
-        <height>52.000000000</height>
+        <y>1058.000000000</y>
+        <width>840.000000000</width>
+        <height>42.000000000</height>
     </element>
 </positions>

@@ -32,7 +32,7 @@ void ofApp::setup(){
     ofSetLogLevel(OF_LOG_VERBOSE);
     camUp = ofVec3f(0, 0, 1);
     
-    
+        ofEnableAlphaBlending();
     parameters.setup();
     robot.setup("192.168.1.3", parameters, true); // <-- change to your robot's ip address
     
@@ -66,6 +66,23 @@ void ofApp::update(){
     moveTCP();
     robot.update();
     updateActiveCamera();
+    
+    if(parameters.bTeachMode){
+        parameters.bMove = false;
+        parameters.bCopy = true;
+    }
+    
+    if(parameters.bMove){
+        previewMode = moveColor;
+        realMode = moveColor;
+    }
+    else if(parameters.bTeachMode){
+        previewMode = freedriveColor;
+        realMode = freedriveColor;
+    }else{
+        previewMode = stopColor;
+        realMode = stopColor;
+    }
 }
 
 
@@ -77,13 +94,15 @@ void ofApp::draw(){
     ofDrawBitmapString("Robot FPS "+ofToString(robot.robot.getThreadFPS()), 30, ofGetWindowHeight()-65);
     
     
-    
+
     // show realtime robot
     cams[real]->begin(viewportReal);
     ofDrawAxis(100);
     tcpNode.draw();
-    robot.drawPreview();
-    robot.draw();
+
+    robot.draw(realMode);
+    robot.drawPreview(ofFloatColor(previewMode.r, previewMode.g, previewMode.b, 0.20));
+ 
     robot.drawSafety(*cams[real]);
     cams[real]->end();
     
@@ -91,8 +110,7 @@ void ofApp::draw(){
     cams[sim]->begin(viewportSim);
     ofDrawAxis(100);
     tcpNode.draw();
-    robot.drawPreview();
-    robot.drawSafety(*cams[sim]);
+    robot.drawPreview(previewMode);
     gizmo.draw(*cams[sim]);
     cams[sim]->end();
     
@@ -156,11 +174,13 @@ void ofApp::setupViewports(){
     panel->setWidth(ofGetWindowWidth()/24*2);
 
     viewportReal = ofRectangle((21*ofGetWindowWidth()/24)/2, 0,  (21*ofGetWindowWidth()/24)/2, 6*ofGetWindowHeight()/8);
-    viewportSim = ofRectangle(0, 0, (21*ofGetWindowWidth()/24)/2-panel->getWidth()+5, 3*ofGetWindowHeight()/8);
+    viewportSim = ofRectangle(0, 0, (21*ofGetWindowWidth()/24)/2-panel->getWidth(), 3*ofGetWindowHeight()/8);
 
-    viewportSimP0 = ofRectangle(0, viewportSim.height, viewportSim.width/3, viewportSim.width/3);
-    viewportSimP1 = ofRectangle(viewportSim.width/3, viewportSim.height, viewportSim.width/3, viewportSim.width/3);
-    viewportSimP2 = ofRectangle(2*viewportSim.width/3, viewportSim.height, viewportSim.width/3,viewportSim.width/3);
+    float simWidth = (21*ofGetWindowWidth()/24)/2;
+    
+    viewportSimP0 = ofRectangle(0, viewportSim.height, simWidth/3, viewportSim.width/3);
+    viewportSimP1 = ofRectangle(simWidth/3, viewportSim.height, simWidth/3, viewportSim.width/3);
+    viewportSimP2 = ofRectangle(2*simWidth/3, viewportSim.height, simWidth/3,viewportSim.width/3);
     
     viewportRealP0 = ofRectangle(viewportReal.x, viewportReal.height, viewportReal.width/3, viewportReal.width/3);
     viewportRealP1 = ofRectangle(viewportReal.x+viewportReal.width/3, viewportReal.height, viewportReal.width/3, viewportReal.width/3);
@@ -195,6 +215,8 @@ void ofApp::setupViewports(){
     cams[sim]->end();
     cams[sim]->enableMouseInput();
     
+    updateActiveCamera();
+    
 }
 
 //--------------------------------------------------------------
@@ -213,7 +235,6 @@ void ofApp::setupGUI(){
 
     parameters.bMove = false;
     // get the current pose on start up
-    parameters.bCopy = true;
     panel->loadFromFile("settings/settings.xml");
     
     
@@ -238,11 +259,18 @@ void ofApp::setupGUI(){
     
     // setup Gizmo
     
-    tcpNode.setPosition(ofVec3f(500, 500, 500));
+    tcpNode.setPosition(ofVec3f(200, 200, 200));
     tcpNode.setOrientation(parameters.targetTCP.rotation);
     gizmo.setNode(tcpNode);
-    gizmo.setDisplayScale(2.0);
+    gizmo.setDisplayScale(1.0);
     gizmo.show();
+    
+    moveColor = ofFloatColor(0, 1, 0, 1);
+    freedriveColor = ofFloatColor(0, 0, 1, 1);
+    stopColor = ofFloatColor(1, 0, 0, 1);
+    
+    previewMode = stopColor;
+    realMode = stopColor;
 }
 
 void ofApp::addRealPoseKeyFrame(){
@@ -272,37 +300,37 @@ void ofApp::drawGUI(){
     camP0.begin(viewportSimP0);
     ofDrawAxis(100);
     tcpNode.draw();
-    robot.drawPreview();
+    robot.drawPreview(previewMode);
     camP0.end();
     
     camP1.begin(viewportSimP1);
     ofDrawAxis(100);
     tcpNode.draw();
-    robot.drawPreview();
+    robot.drawPreview(previewMode);
     camP1.end();
     
     camP2.begin(viewportSimP2);
     ofDrawAxis(100);
     tcpNode.draw();
-    robot.drawPreview();
+    robot.drawPreview(previewMode);
     camP2.end();
     
     camP0.begin(viewportRealP0);
     ofDrawAxis(100);
     tcpNode.draw();
-    robot.draw();
+    robot.draw(realMode);
     camP0.end();
     
     camP1.begin(viewportRealP1);
     ofDrawAxis(100);
     tcpNode.draw();
-    robot.draw();
+    robot.draw(realMode);
     camP1.end();
     
     camP2.begin(viewportRealP2);
     ofDrawAxis(100);
     tcpNode.draw();
-    robot.draw();
+    robot.draw(realMode);
     camP2.end();
     
     
@@ -357,6 +385,13 @@ void ofApp::handleViewportPresets(int key){
     float dist = 1500;
     float zOffset = 450;
     
+    camP0.setPosition(glm::vec3(dist, 1, 1));
+    camP1.setPosition(glm::vec3(1, dist, 1));
+    camP2.setPosition(glm::vec3(dist/4, dist, dist/4));
+    camP0.lookAt(glm::vec3(0, 0, 0), camUp);
+    camP1.lookAt(glm::vec3(0, 0, 0), camUp);
+    camP2.lookAt(glm::vec3(0, 0, 0), camUp);
+    
     if(activeCam != -1){
         glm::vec3 pos = lookAtTCP.get()==true?glm::vec3(0, 0, 0):tcpNode.getPosition();
         // TOP VIEW
@@ -366,14 +401,7 @@ void ofApp::handleViewportPresets(int key){
             cams[activeCam]->setPosition(pos+offset);
             cams[activeCam]->lookAt(lookAtTCP.get()==true?tcpNode.getPosition():glm::vec3(0, 0, 0), camUp);
             viewportLabels[activeCam] = "TOP VIEW";
-            
-            camP0.setPosition(glm::vec3(dist, 1, 1));
-            camP1.setPosition(glm::vec3(1, dist, 1));
-            camP2.setPosition(glm::vec3(dist/4, dist, dist/4));
-            camP0.lookAt(glm::vec3(0, 0, 0), camUp);
-            camP1.lookAt(glm::vec3(0, 0, 0), camUp);
-            camP2.lookAt(glm::vec3(0, 0, 0), camUp);
-            
+        
             return;
         }
         // LEFT VIEW
@@ -384,12 +412,7 @@ void ofApp::handleViewportPresets(int key){
             cams[activeCam]->lookAt(lookAtTCP.get()==true?tcpNode.getPosition():glm::vec3(0, 0, 0), camUp);
             viewportLabels[activeCam] = "LEFT VIEW";
             
-            camP0.setPosition(glm::vec3(-1, 1, dist));
-            camP1.setPosition(glm::vec3(1, dist, 1));
-            camP2.setPosition(glm::vec3(dist/4, dist, dist/4));
-            camP0.lookAt(glm::vec3(0, 0, 0), camUp);
-            camP1.lookAt(glm::vec3(0, 0, 0), camUp);
-            camP2.lookAt(glm::vec3(0, 0, 0), camUp);
+
             
             return;
         }
@@ -401,12 +424,7 @@ void ofApp::handleViewportPresets(int key){
             cams[activeCam]->lookAt(lookAtTCP.get()==true?tcpNode.getPosition():glm::vec3(0, 0, 0), camUp);
             viewportLabels[activeCam] = "FRONT VIEW";
             
-            camP0.setPosition(glm::vec3(dist, 1, 1));
-            camP1.setPosition(glm::vec3(-1, 1, dist));
-            camP2.setPosition(glm::vec3(dist/4, dist, dist/4));
-            camP0.lookAt(glm::vec3(0, 0, 0), camUp);
-            camP1.lookAt(glm::vec3(0, 0, 0), camUp);
-            camP2.lookAt(glm::vec3(0, 0, 0), camUp);
+
             
             return;
         }
@@ -418,16 +436,13 @@ void ofApp::handleViewportPresets(int key){
             cams[activeCam]->lookAt(lookAtTCP.get()==true?tcpNode.getPosition():glm::vec3(0, 0, 0), camUp);
             viewportLabels[activeCam] = "PERSPECTIVE VIEW";
             
-            
-            camP0.setPosition(glm::vec3(dist, 1, 1));
-            camP1.setPosition(glm::vec3(1, dist, 1));
-            camP2.setPosition(glm::vec3(-1, 1, dist));
-            camP0.lookAt(glm::vec3(0, 0, 0), camUp);
-            camP1.lookAt(glm::vec3(0, 0, 0), camUp);
-            camP2.lookAt(glm::vec3(0, 0, 0), camUp);
+    
             return;
         }
     }
+    
+    
+
 }
 
 
@@ -436,17 +451,17 @@ void ofApp::hightlightViewports(){
     ofPushStyle();
     
     // highlight right viewport
-    if (activeCam == 0){
+    if (activeCam == real){
         
         ofSetLineWidth(6);
-        ofSetColor(ofColor::white,30);
+        ofSetColor(ofColor::white,0.1);
         ofDrawRectangle(viewportReal);
         
     }
     // hightlight left viewport
     else{
         ofSetLineWidth(6);
-        ofSetColor(ofColor::white,30);
+        ofSetColor(ofColor::white,0.1);
         ofDrawRectangle(viewportSim);
     }
     

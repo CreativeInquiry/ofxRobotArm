@@ -11,7 +11,7 @@
 #include "ofMain.h"
 #include "ofxGui.h"
 #include "ofxGizmo.h"
-#include "ofxOsc.h"
+
 #include "UR5Controller.h"
 #include "RobotParameters.h"
 #include "URIKFast.h"
