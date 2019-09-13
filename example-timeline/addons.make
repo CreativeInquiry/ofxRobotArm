@@ -1,6 +1,5 @@
 ofxAssimpModelLoader
 ofxEasing
-ofxGML
 ofxGizmo
 ofxGui
 ofxGuiExtended2
