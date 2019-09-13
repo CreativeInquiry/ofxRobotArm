@@ -2,7 +2,7 @@
 ## Timeline Example
 ###### This example lets you do keyframe animation to move the robot arm using _ofxRobotArm_.
 
-##Getting Started
+## Getting Started
 To get started with `ofxRobotArm` you first need to grab all the dependant libraries for the addon. Use the `installAddons.sh` script to clone all the external addons used in the examples. Also please note that these addons might depend on other external addons, so reference the README of each external addons to make sure you've got everything.
 
 The next step is to set up your robot's ethernet connection.
@@ -15,7 +15,7 @@ Once you have an IP address for your robot, all you should need to do is modify 
 After that, run the project. You should see your robot positioned properly of the left side of the screen.
 Also, you should see that the Robot's FPS is running about 120fps in the lower left hand corner of the GUI. If you don't see a robot in the GUI, or if the Robot's FPS says 0, jump down to the Troubleshooting section.
 
-##Navigating the UI
+## Navigating the UI
 The UI for _ofxRobotArm_ is laid out in a few sections:
   * The left half holds the _Simulated Robot_
       * You can manaully move and reorient _Simulated Robot_ to update your real robot
@@ -31,7 +31,7 @@ The UI for _ofxRobotArm_ is laid out in a few sections:
 
 ![screengrab](screengrab-basic.png)
 
-##Get Moving
+## Get Moving
 Here's the basic workflow for running `example-basic-move`:
 
 1. Plug in your ethernet connection between your computer and your robot, and make sure you're on the same network :)
@@ -45,7 +45,7 @@ Here's the basic workflow for running `example-basic-move`:
 6. Press `m` again to stop sending move commands to the robot.
 
 
-####Other Usage Notes
+#### Other Usage Notes
 We rely on hotkeys for triggering a lot of the UI functionality. Below are the hotkeys we use that work across all the example projects included in ofxRobotArm.
 
 KeyPressed commands for controlling the robot:
