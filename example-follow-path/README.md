@@ -1,28 +1,28 @@
 
-##Follow Path Example
+## Follow Path Example
 
 
-######This example shows you how to move the robot to follow a 2D or 3D Path 
+###### This example shows you how to move the robot to follow a 2D or 3D Path
 
 ![screenshot](screengrab-path.gif)
 
-####What You'll Learn
+#### What You'll Learn
 _Follow Path_ goes over:
   *  Import and Create 2D/3D paths
   *  Move & reiorient the robot using a PathController
   *  Dynamically move paths using keypressed
-  
 
-##Getting Started
-To get started, make sure you've gone through the [Basic Move Example](https://github.com/danzeeeman/robotArmRepo/tree/mad-working/example-basic-move) to get comfortable with open-loop control using _ofxRobotArm_. 
+
+## Getting Started
+To get started, make sure you've gone through the [Basic Move Example](https://github.com/danzeeeman/robotArmRepo/tree/mad-working/example-basic-move) to get comfortable with open-loop control using _ofxRobotArm_.
 
 Once you have an IP address for your robot, all you should need to do is modify one line of code in `example-basic-move` to connect to your robot:
    - On `line 40` replace the default ip address with your robot's ip address in `robot.setup()`
-   
+
 After that, run the project. You should see your robot positioned properly of the left side of the screen.
 Also, you should see that the Robot's FPS is running about 120fps in the lower left hand corner of the GUI. If you don't see a robot in the GUI, or if the Robot's FPS says 0, jump down to the Troubleshooting section.
 
-##Navigating the UI
+## Navigating the UI
 The UI for _ofxRobotArm_ is laid out in a few sections:
   * The left half holds the _Simulated Robot_
       * You can manaully move and reorient _Simulated Robot_ to update your real robot
@@ -51,7 +51,7 @@ Here's the basic workflow for running `example-follow-path`:
 6. Press `m` again to stop sending move commands to the robot.
 
 
-####Other Usage Notes
+#### Other Usage Notes
 We rely on hotkeys for triggering a lot of the UI functionality. Below are the hotkeys we use that work across all the example projects included in ofxRobotArm.
 
 KeyPressed commands for controlling the robot:
@@ -67,6 +67,3 @@ KeyPressed commands for viewport navigation:
 - 2: Front View
 - 3: Side View
 - 4: Perspective View
-
-
-
