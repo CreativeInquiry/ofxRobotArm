@@ -37,6 +37,9 @@ xcuserdata
 *.xcworkspace
 *.xcodeproj/
 *.plist
+*.xcconfig
+openFrameworks-Info.plist
+Makefile
 
 # Code::Blocks
 *.depend
