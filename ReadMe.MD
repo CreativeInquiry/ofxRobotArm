@@ -17,22 +17,19 @@
 
 Currently the addon is configured to just work with Universal Robot's [UR5](http://www.universal-robots.com/products/ur5-robot/) robot. In future developments, we would like to include kinematic models for additional robot brands. Please [contact us]() if you would like us to include your robot model or if you would like specific features implemented.
 
-Development for `ofxRobotArm` is sponsored by [The Frank-Ratchye STUDIO for Creative Inquiry](http://studioforcreativeinquiry.org/). 
-Technical development was lead by [Dan Moore](http://makeitdoathing.com) with examples by [Madeline Gannon](http://madlab.cc).
+Development for `ofxRobotArm` was sponsored by [The Frank-Ratchye STUDIO for Creative Inquiry](http://studioforcreativeinquiry.org/). 
+Technical development was lead by [Dan Moore](http://makeitdoathing.com) with examples by [Madeline Gannon](https://atonaton.com).
 
 ![KinematicModel](data/ezgif.com-video-to-gif%20(1).gif)
 
 ## Dependencies
+After download, you can run the `installAddons.sh` script to clone all the external addons used in the `ofxRobotArm` examples.  
+
 - ofxURDriver
-- ofxTiming
 - ofxCV
-- ofxNatNet
-- ofxGML
 - ofxGizmo
 - ofxTimeline
 - ofxPtf
-
-Please see the `installAddons.sh` script to clone all the external addons used in the examples.  Also please note that these addons might depend on other external addons.  Please reference the README for each of the external addons. 
 
 ## Overview
 `ofxRobotArm` is structured as two parts: `ofxURDriver` holds the specific control software and kinematic model for a [UR5](http://www.universal-robots.com/products/ur5-robot/) robot; `ofxRobotArm` holds the generic tools and techniques for controlling and interacting with a robot arm. `ofxURDriver` adapts ThomasTimm's [ur_modern_driver](https://github.com/ThomasTimm/ur_modern_driver) package for ROS to openFrameworks. To customize `ofxRobotArm` to work with your specific model and brand of robot, use `ofxURDriver` as a template for your robot's kinematic model and control protocol.
