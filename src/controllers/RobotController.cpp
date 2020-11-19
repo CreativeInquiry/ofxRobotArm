@@ -63,6 +63,9 @@ void RobotController::setup(string ipAddress, RobotParameters & params, bool off
     robotParams->jointsIK.add(this->params);
     
     jointWeights.assign(6, 1.0f);
+    
+    // Set up URIKFast with dynamic RobotType
+    urKinematics = URIKFast(params.get_robot_type());
 }
 
 vector<double> RobotController::getCurrentPose(){
