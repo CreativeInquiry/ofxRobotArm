@@ -65,29 +65,29 @@ void RobotArmSafety::setCurrentRobotArmAnlges( vector< double > aRobotArmAngles 
     if( mCollision ) mCollision->setRobotAngles( aRobotArmAngles );
 }
 
-////--------------------------------------------------------------
-void RobotArmSafety::update( UR5KinematicModel& previewArm ) {
-    m_bWithinCylinder = false;
-    if( mCylinderRestrictor ) {
-        if( mCylinderRestrictor->isEnabled() ) {
-            m_bWithinCylinder = mCylinderRestrictor->isWithinCylinder(&previewArm);
-        } else {
-            m_bWithinCylinder = true;
-        }
-    }
-}
-
-////--------------------------------------------------------------
-void RobotArmSafety::update( UR10KinematicModel& previewArm ) {
-    m_bWithinCylinder = false;
-    if( mCylinderRestrictor ) {
-        if( mCylinderRestrictor->isEnabled() ) {
-            m_bWithinCylinder = mCylinderRestrictor->isWithinCylinder(&previewArm);
-        } else {
-            m_bWithinCylinder = true;
-        }
-    }
-}
+//////--------------------------------------------------------------
+//void RobotArmSafety::update( UR5KinematicModel& previewArm ) {
+//    m_bWithinCylinder = false;
+//    if( mCylinderRestrictor ) {
+//        if( mCylinderRestrictor->isEnabled() ) {
+//            m_bWithinCylinder = mCylinderRestrictor->isWithinCylinder(&previewArm);
+//        } else {
+//            m_bWithinCylinder = true;
+//        }
+//    }
+//}
+//
+//////--------------------------------------------------------------
+//void RobotArmSafety::update( UR10KinematicModel& previewArm ) {
+//    m_bWithinCylinder = false;
+//    if( mCylinderRestrictor ) {
+//        if( mCylinderRestrictor->isEnabled() ) {
+//            m_bWithinCylinder = mCylinderRestrictor->isWithinCylinder(&previewArm);
+//        } else {
+//            m_bWithinCylinder = true;
+//        }
+//    }
+//}
 
 //--------------------------------------------------------------
 void RobotArmSafety::update( RobotKinematicModel& previewArm ) {
