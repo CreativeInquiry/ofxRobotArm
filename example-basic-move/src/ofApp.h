@@ -11,7 +11,7 @@
 #include "ofMain.h"
 #include "ofxGui.h"
 #include "ofxGizmo.h"
-#include "UR5Controller.h"
+#include "RobotController.h"
 #include "RobotParameters.h"
 #include "URIKFast.h"
 #include "RobotArmSafety.h"
@@ -41,7 +41,7 @@ public:
     
     URIKFast kinematics;
     ofxRobotArm::RobotArmSafety safety;
-    ofxRobotArm::UR5Controller robot;
+    ofxRobotArm::RobotController robot;
     ofxRobotArm::RobotParameters parameters;
     ofxGizmo gizmo;
     ofNode tcpNode;

@@ -32,12 +32,12 @@ void ofApp::setup(){
     ofSetLogLevel(OF_LOG_VERBOSE);
     camUp = ofVec3f(0, 0, 1);
     
-     setupViewports();
-    parameters.setup();
+    setupViewports();
+    parameters.setup(RobotType::UR5);
     robot.setup("192.168.1.9", parameters, true); // <-- change to your robot's ip address
     
     robot.disableControlJointsExternally();
-    safety.setup();
+//    safety.setup();
    
     setupGUI();
     positionGUI();
