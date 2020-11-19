@@ -7,6 +7,8 @@
 
 #pragma once
 #include "UR5KinematicModel.h"
+#include "RobotKinematicModel.h"
+#include "ofxURDriver.h"
 
 namespace ofxRobotArm {
     class RobotArmCollision {
@@ -42,7 +44,7 @@ namespace ofxRobotArm {
             float actualRobotAngle = 0;
         };
         
-        ofParameterGroup & setup();
+        ofParameterGroup & setup(RobotType type);
         void setRobotAngles( vector< double > aAcutalRobotAngles );
         void setDesiredAngles( vector< double > aDesiredRobotAngles );
         void update( float aDeltaTimef );
@@ -51,8 +53,10 @@ namespace ofxRobotArm {
         bool shouldApply() { return bApply; }
         
         vector< double > getDesiredAngles();
-        void updateAppendages( shared_ptr< UR5KinematicModel > amodel, vector< Appendage >& aAppendages );
-        void updateModel( shared_ptr< UR5KinematicModel > amodel, vector< Appendage >& aAppendages );
+//        void updateAppendages( shared_ptr< UR5KinematicModel > amodel, vector< Appendage >& aAppendages );
+//        void updateModel( shared_ptr< UR5KinematicModel > amodel, vector< Appendage >& aAppendages );
+        void updateAppendages( shared_ptr< RobotKinematicModel > amodel, vector< Appendage >& aAppendages );
+        void updateModel( shared_ptr< RobotKinematicModel > amodel, vector< Appendage >& aAppendages );
         float getClosestCollisionDistanceSq();
         int getNumWarningCollisions();
         
@@ -77,7 +81,8 @@ namespace ofxRobotArm {
         ofParameter< float > mCorrectStepAngle;
         ofParameter< float > mMaxCorrectiveAngle;
         ofParameter< float > mSpherePadding;
-        shared_ptr< UR5KinematicModel > mModel, mPredictiveModel;
+        shared_ptr< RobotKinematicModel > mModel, mPredictiveModel;
+//        shared_ptr< UR5KinematicModel > mModel, mPredictiveModel;
         vector< Appendage > mAppendages, mPredictiveAppendages;
         vector< double > mDesiredAngles;
         float mResetPct = 0.0f;

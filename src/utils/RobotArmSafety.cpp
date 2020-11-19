@@ -9,6 +9,28 @@
 using namespace ofxRobotArm;
 
 //--------------------------------------------------------------
+ofParameterGroup &  RobotArmSafety::setup(RobotType type) {
+    mTargetRobotAngles.assign( 6, 0.0 );
+    
+    params.setName( "RobotSafety" );
+    params.add( m_angleLerp.set("AngleLerp", 0.76, 0.0001, 1.0f ));
+    params.add( m_maxLerpAngle.set("MaxAngleLerp", 18.3, 0.1, 30.f ));
+    params.add( m_angleEpsilon.set("AngleEpsilon", 1.f, 0.0, 3.0 ));
+    params.add( m_minDegreesPerSecToSpeedLerp.set("MinDegPerSecToLerpDown", 70, 10, 300));
+    params.add( m_maxDegreesPerSecToSpeedLerp.set("MaxDegPerSecToLerpDown", 150, 90, 1000));
+    
+    m_jointRestrictor = shared_ptr< JointRestrictor >( new JointRestrictor() );
+    params.add(m_jointRestrictor->setup());
+    
+    mCylinderRestrictor = shared_ptr< CylinderRestrictor >( new CylinderRestrictor() );
+    params.add(mCylinderRestrictor->setup());
+    
+    mCollision = shared_ptr< RobotArmCollision >( new RobotArmCollision() );
+    params.add(mCollision->setup(type));
+    return params;
+}
+
+//--------------------------------------------------------------
 ofParameterGroup &  RobotArmSafety::setup() {
     mTargetRobotAngles.assign( 6, 0.0 );
     
@@ -26,7 +48,7 @@ ofParameterGroup &  RobotArmSafety::setup() {
     params.add(mCylinderRestrictor->setup());
     
     mCollision = shared_ptr< RobotArmCollision >( new RobotArmCollision() );
-    params.add(mCollision->setup());
+//    params.add(mCollision->setup()); //<---uncomment if using this setup() call
     return params;
 }
 
@@ -67,6 +89,18 @@ void RobotArmSafety::update( UR10KinematicModel& previewArm ) {
     }
 }
 
+//--------------------------------------------------------------
+void RobotArmSafety::update( RobotKinematicModel& previewArm ) {
+    m_bWithinCylinder = false;
+    if( mCylinderRestrictor ) {
+        if( mCylinderRestrictor->isEnabled() ) {
+            // @TODO: add generic robot arm here ...
+            //m_bWithinCylinder = mCylinderRestrictor->isWithinCylinder(&previewArm);
+        } else {
+            m_bWithinCylinder = true;
+        }
+    }
+}
 
 //--------------------------------------------------------------
 void RobotArmSafety::update( float aDeltaTimef ) {
@@ -279,32 +313,58 @@ void RobotArmSafety::draw() {
         mCollision->draw();
     }
 }
-void RobotArmSafety::draw( UR10KinematicModel* amodel, ofCamera& acam ) {
-    if( m_jointRestrictor ) {
-        
-        //cout << "mCurrentRobotArmAngles.size(): " << mCurrentRobotArmAngles.size() << " mTargetAngles.size(): " << mTargetAngles.size() << " mTargetRobotAngles.size(): " << mTargetRobotAngles.size() << " | " << ofGetFrameNum() << endl;
-        
-        if( mCurrentRobotArmAngles.size() && mTargetAngles.size() && mTargetRobotAngles.size() ) {
-            ofSetColor( 200 );
-            m_jointRestrictor->drawLimits( amodel );
-            
-            ofSetColor( 130, 240, 60 );
-            m_jointRestrictor->drawAngles( amodel, mTargetRobotAngles );
-            m_jointRestrictor->drawAngles( amodel, mDesiredAngles );
-            ofSetColor( 200, 240, 20 );
-            m_jointRestrictor->drawAngles( amodel, mCurrentRobotArmAngles );
-            ofSetColor( 220, 40, 60 );
-            m_jointRestrictor->drawAngles( amodel, mTargetAngles );
-        }
-        
-        //            cout << "force stop: " << m_bForceStop << " | " << ofGetFrameNum() << endl;
-        ofSetColor( 100, 240, 60 );
-        if( !m_bWithinCylinder ) ofSetColor( 220, 40, 60 );
-        mCylinderRestrictor->draw();
-    }
-}
+//void RobotArmSafety::draw( UR10KinematicModel* amodel, ofCamera& acam ) {
+//    if( m_jointRestrictor ) {
+//
+//        //cout << "mCurrentRobotArmAngles.size(): " << mCurrentRobotArmAngles.size() << " mTargetAngles.size(): " << mTargetAngles.size() << " mTargetRobotAngles.size(): " << mTargetRobotAngles.size() << " | " << ofGetFrameNum() << endl;
+//
+//        if( mCurrentRobotArmAngles.size() && mTargetAngles.size() && mTargetRobotAngles.size() ) {
+//            ofSetColor( 200 );
+//            m_jointRestrictor->drawLimits( amodel );
+//
+//            ofSetColor( 130, 240, 60 );
+//            m_jointRestrictor->drawAngles( amodel, mTargetRobotAngles );
+//            m_jointRestrictor->drawAngles( amodel, mDesiredAngles );
+//            ofSetColor( 200, 240, 20 );
+//            m_jointRestrictor->drawAngles( amodel, mCurrentRobotArmAngles );
+//            ofSetColor( 220, 40, 60 );
+//            m_jointRestrictor->drawAngles( amodel, mTargetAngles );
+//        }
+//
+//        //            cout << "force stop: " << m_bForceStop << " | " << ofGetFrameNum() << endl;
+//        ofSetColor( 100, 240, 60 );
+//        if( !m_bWithinCylinder ) ofSetColor( 220, 40, 60 );
+//        mCylinderRestrictor->draw();
+//    }
+//}
+////--------------------------------------------------------------
+//void RobotArmSafety::draw( UR5KinematicModel* amodel, ofCamera& acam ) {
+//    if( m_jointRestrictor ) {
+//
+//        //cout << "mCurrentRobotArmAngles.size(): " << mCurrentRobotArmAngles.size() << " mTargetAngles.size(): " << mTargetAngles.size() << " mTargetRobotAngles.size(): " << mTargetRobotAngles.size() << " | " << ofGetFrameNum() << endl;
+//
+//        if( mCurrentRobotArmAngles.size() && mTargetAngles.size() && mTargetRobotAngles.size() ) {
+//            ofSetColor( 200 );
+//            m_jointRestrictor->drawLimits( amodel );
+//
+//            ofSetColor( 130, 240, 60 );
+//            m_jointRestrictor->drawAngles( amodel, mTargetRobotAngles );
+//            m_jointRestrictor->drawAngles( amodel, mDesiredAngles );
+//            ofSetColor( 200, 240, 20 );
+//            m_jointRestrictor->drawAngles( amodel, mCurrentRobotArmAngles );
+//            ofSetColor( 220, 40, 60 );
+//            m_jointRestrictor->drawAngles( amodel, mTargetAngles );
+//        }
+//
+//        //            cout << "force stop: " << m_bForceStop << " | " << ofGetFrameNum() << endl;
+//        ofSetColor( 100, 240, 60 );
+//        if( !m_bWithinCylinder ) ofSetColor( 220, 40, 60 );
+//        mCylinderRestrictor->draw();
+//    }
+//}
+
 //--------------------------------------------------------------
-void RobotArmSafety::draw( UR5KinematicModel* amodel, ofCamera& acam ) {
+void RobotArmSafety::draw( RobotKinematicModel* amodel, ofCamera& acam ) {
     if( m_jointRestrictor ) {
         
         //cout << "mCurrentRobotArmAngles.size(): " << mCurrentRobotArmAngles.size() << " mTargetAngles.size(): " << mTargetAngles.size() << " mTargetRobotAngles.size(): " << mTargetRobotAngles.size() << " | " << ofGetFrameNum() << endl;
