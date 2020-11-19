@@ -37,7 +37,7 @@ public:
     void dragEvent(ofDragInfo dragInfo);
     void gotMessage(ofMessage msg);
     
-    
+    RobotType robot_type = RobotType::UR10;
     
     URIKFast kinematics;
     ofxRobotArm::RobotArmSafety safety;
