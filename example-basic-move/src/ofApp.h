@@ -13,7 +13,6 @@
 #include "ofxGizmo.h"
 #include "RobotController.h"
 #include "RobotParameters.h"
-#include "URIKFast.h"
 #include "RobotArmSafety.h"
 #define N_CAMERAS 2
 
@@ -37,9 +36,8 @@ public:
     void dragEvent(ofDragInfo dragInfo);
     void gotMessage(ofMessage msg);
     
-    RobotType robot_type = RobotType::UR10;
-    
-    URIKFast kinematics;
+    RobotType robot_type = RobotType::UR5;
+
     ofxRobotArm::RobotArmSafety safety;
     ofxRobotArm::RobotController robot;
     ofxRobotArm::RobotParameters parameters;
