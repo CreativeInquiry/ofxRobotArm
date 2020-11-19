@@ -7,8 +7,8 @@
 
 #pragma once
 #include "ofMain.h"
-#include "UR5KinematicModel.h"
-#include "UR10KinematicModel.h"
+//#include "UR5KinematicModel.h"
+//#include "UR10KinematicModel.h"
 #include "RobotKinematicModel.h"
 
 namespace ofxRobotArm {

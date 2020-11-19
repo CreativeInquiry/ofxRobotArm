@@ -33,11 +33,11 @@ void ofApp::setup(){
     camUp = ofVec3f(0, 0, 1);
     
     setupViewports();
-    parameters.setup(RobotType::UR5);
+    parameters.setup(robot_type);
     robot.setup("192.168.1.9", parameters, true); // <-- change to your robot's ip address
     
     robot.disableControlJointsExternally();
-//    safety.setup();
+    safety.setup(robot_type);
    
     setupGUI();
     positionGUI();
@@ -156,13 +156,13 @@ void ofApp::setupViewports(){
     cams[sim]->lookAt(glm::vec3(0, 0, 0), camUp);
     
     cams[real]->begin(viewportReal);
-    robot.draw();
+//    robot.draw();
     cams[real]->end();
     cams[real]->enableMouseInput();
     
     
     cams[sim]->begin(viewportSim);
-    robot.draw();
+//    robot.draw();
     cams[sim]->end();
     cams[sim]->enableMouseInput();
     
