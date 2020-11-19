@@ -4,13 +4,15 @@
 #pragma once
 #include "ofMain.h"
 #include "URJoint.h"
+#include "ofxUrDriver.h"
+
 namespace ofxRobotArm{
     class RobotParameters{
         public :
-        void setup() {
+        void setup(RobotType type=RobotType::UR5) {
+            this->type = type;
+            
             robotArmParams.setName("Controls");
-            
-            
             robotArmParams.add(bCopy.set("get TCP", false));
             
             robotArmParams.add(bFollow.set("set TCP", true));
@@ -66,6 +68,9 @@ namespace ofxRobotArm{
             
             
         };
+        
+        RobotType get_robot_type(){ return type; }
+        
         ofParameterGroup robotArmParams;
         ofParameter<ofVec3f> targetTCPPosition;
         ofParameter<ofVec4f> targetTCPOrientation;
@@ -110,6 +115,8 @@ namespace ofxRobotArm{
         vector<double> currentPose;
         Joint actualTCP;
         Joint targetTCP;
+        
+        RobotType type;
         
     };
 }

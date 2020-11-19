@@ -9,12 +9,51 @@
 
 using namespace ofxRobotArm;
 //--------------------------------------------------------------
-ofParameterGroup &  RobotArmCollision::setup() {
-    mModel = shared_ptr< UR5KinematicModel >( new UR5KinematicModel() );
-    mModel->setup();
+//ofParameterGroup &  RobotArmCollision::setup() {
+//    mModel = shared_ptr< UR5KinematicModel >( new UR5KinematicModel() );
+//    mModel->setup();
+//
+//    mPredictiveModel = shared_ptr< UR5KinematicModel >( new UR5KinematicModel() );
+//    mPredictiveModel->setup();
+//
+//    params.setName( "Robot Collisions" );
+//    params.add( bApply.set("ApplyCollisionDetection", true ));
+//    params.add( bDrawStops.set("DrawStops", false ));
+//    params.add( mStopSphereScale.set("StopSphereScale", 1.4, 1.0, 2. ) );
+//    params.add( bDrawWarnings.set("DrawWarnings", true ));
+//    params.add( mCorrectStepAngle.set("CorrectStep", 0.05f, 0.005, 1.f ));
+//    params.add( mMaxCorrectiveAngle.set("MaxCorrectiveAngle", 45, 5, 180 ));
+//    params.add( mSpherePadding.set("SpherePadding", 1.25, 0.5, 3.f ));
+//
+//
+//    bool bAddSlidersToPanel = true;
+//    // diff paddings for each joint //
+//    for( int i = 0; i < 6; i++ ) {
+//        ofParameter< float > tpad;
+//        float tdefault = 10.0f;
+//        if( i == 1 ) {
+//            tdefault = 60.0f;
+//        } else if( i == 3 ) {
+//            tdefault = 25;
+//        } else if( i == 4 ) {
+//            tdefault = 20;
+//        }
+//        tpad.set("Padding_"+ofToString(i,0), tdefault, 1.f, 100.0f );
+//        if(bAddSlidersToPanel) params.add( tpad );
+//        mPaddings.push_back( tpad );
+//    }
+//
+//
+//    sphereMesh = ofMesh::icosphere( 1 );
+//
+//    return params;
+//}
+ofParameterGroup &  RobotArmCollision::setup(RobotType type) {
+    mModel = shared_ptr< RobotKinematicModel >( new RobotKinematicModel() );
+    mModel->setup(type);
     
-    mPredictiveModel = shared_ptr< UR5KinematicModel >( new UR5KinematicModel() );
-    mPredictiveModel->setup();
+    mPredictiveModel = shared_ptr< RobotKinematicModel >( new RobotKinematicModel() );
+    mPredictiveModel->setup(type);
     
     params.setName( "Robot Collisions" );
     params.add( bApply.set("ApplyCollisionDetection", true ));
@@ -334,7 +373,7 @@ vector< double > RobotArmCollision::getDesiredAngles() {
 }
 
 //--------------------------------------------------------------
-void RobotArmCollision::updateAppendages( shared_ptr< UR5KinematicModel > amodel, vector< Appendage >& aAppendages ) {
+void RobotArmCollision::updateAppendages( shared_ptr< RobotKinematicModel > amodel, vector< Appendage >& aAppendages ) {
     // calculate the positions of the sphere //
     // there is one less appendage than nodes //
     //    ofLog(OF_LOG_VERBOSE) << "mModel num nodes: " << mModel->nodes.size() << " | " << ofGetFrameNum() << endl;
@@ -454,7 +493,7 @@ void RobotArmCollision::updateAppendages( shared_ptr< UR5KinematicModel > amodel
 }
 
 //--------------------------------------------------------------
-void RobotArmCollision::updateModel( shared_ptr< UR5KinematicModel > amodel, vector< Appendage >& aAppendages ) {
+void RobotArmCollision::updateModel( shared_ptr< RobotKinematicModel > amodel, vector< Appendage >& aAppendages ) {
     vector< double > tempPredictiveAngles;
     for( int i = 0; i < aAppendages.size(); i++ ) {
         tempPredictiveAngles.push_back( aAppendages[i].currentAngle );

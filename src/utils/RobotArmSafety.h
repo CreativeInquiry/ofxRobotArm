@@ -11,21 +11,26 @@
 #include "RobotArmCollision.h"
 #include "UR5KinematicModel.h"
 #include "UR10KinematicModel.h"
+#include "RobotKinematicModel.h"
+#include "ofxURDriver.h"
 //#include "RobotController.h"
 
 namespace ofxRobotArm {
     class RobotArmSafety {
     public:
         ofParameterGroup & setup();
+        ofParameterGroup & setup(RobotType type);
         void setDesiredAngles( vector< double > aangles );
         void setCurrentRobotArmAnlges( vector< double > aRobotArmAngles );
 //        void update(RobotController& aRobotController );
         void update( float aDeltaTimef );
         void update( UR10KinematicModel& previewArm );
         void update( UR5KinematicModel& previewArm );
+        void update( RobotKinematicModel& previewArm );
         void draw();
         void draw( UR5KinematicModel* amodel, ofCamera& acam );
         void draw( UR10KinematicModel* amodel, ofCamera& acam );
+        void draw( RobotKinematicModel* amodel, ofCamera& acam );
         
         void checkCollision(vector<double> actual, vector<double> target);
         
