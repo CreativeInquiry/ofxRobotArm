@@ -38,7 +38,7 @@ public:
     
     RobotType robot_type = RobotType::UR5;
 
-    ofxRobotArm::RobotArmSafety safety;
+//    ofxRobotArm::RobotArmSafety safety;
     ofxRobotArm::RobotController robot;
     ofxRobotArm::RobotParameters parameters;
     ofxGizmo gizmo;

@@ -34,10 +34,10 @@ void ofApp::setup(){
     
     setupViewports();
     parameters.setup(robot_type);
-    robot.setup("192.168.1.9", parameters, true); // <-- change to your robot's ip address
+    robot.setup("192.168.1.10", parameters, true); // <-- change to your robot's ip address
     
     robot.disableControlJointsExternally();
-    safety.setup(robot_type);
+//    safety.setup(robot_type);
    
     setupGUI();
     positionGUI();
@@ -204,10 +204,10 @@ void ofApp::positionGUI(){
     panelTargetJoints.setPosition(panelJointsIK.getPosition().x+panelJoints.getWidth(), 10);
     panelJoints.setPosition(panelTargetJoints.getPosition().x+panelJoints.getWidth(), 10);
     
-    panelJoints.add(robot.robotSafety.params);
-    panelJoints.add(robot.robotSafety.mCollision->params);
-    panelJoints.add(robot.robotSafety.mCylinderRestrictor->params);
-    panelJoints.add(robot.robotSafety.m_jointRestrictor->params);
+//    panelJoints.add(robot.robotSafety.params);
+//    panelJoints.add(robot.robotSafety.mCollision->params);
+//    panelJoints.add(robot.robotSafety.mCylinderRestrictor->params);
+//    panelJoints.add(robot.robotSafety.m_jointRestrictor->params);
 }
 
 //--------------------------------------------------------------
