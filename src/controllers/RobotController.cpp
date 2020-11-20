@@ -58,7 +58,7 @@ void RobotController::setup(string ipAddress, RobotParameters & params, bool off
     previewArm = previewArms[0];
     actualArm.setup(params.get_robot_type());
     
-    robotParams->safety.add(robotSafety.setup(params.get_robot_type()));
+//    robotParams->safety.add(robotSafety.setup(params.get_robot_type()));
  
     robotParams->jointsIK.add(this->params);
     
@@ -432,8 +432,8 @@ void RobotController::update(){
     }else if(robotParams->bUseIKArm){
         updateIKArm();
     }
-    // @TODO: SAFETY CHECK IS CURRENTLY BROKEN FOR RobotController CLASS
-    safetyCheck();
+    
+//    safetyCheck();
     updateMovement();
       targetPose = movement.getTargetJointPose();
     for(int i = 0; i < targetPose.size(); i++){
