@@ -56,6 +56,8 @@ namespace ofxRobotArm {
         void updateIKFast();
         void updateIKArm();
         
+        void set_desired(ofNode target);
+        
         void moveArm();
         void draw(ofFloatColor color = ofFloatColor(1,1,1,1), bool debug = false);
         void drawPreview(ofFloatColor color = ofFloatColor(1,1,1,1));

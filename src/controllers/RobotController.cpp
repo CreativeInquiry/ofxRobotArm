@@ -33,6 +33,7 @@ void RobotController::setup(string ipAddress, RobotType type){
     
     previewArm.setup(type); // should be called sim or desired or something
     
+    jointWeights.assign(6, 1.0f);
     urKinematics = URIKFast(type);
     
     // setup actual robot
@@ -471,6 +472,12 @@ void RobotController::update(vector<double> _pose){
     targetPose = _pose;
     update();
     
+}
+
+void RobotController::set_desired(ofNode target){
+    // convert from mm to m
+    robotParams.targetTCP.position = target.getGlobalPosition()/1000.0;
+    robotParams.targetTCP.rotation = target.getGlobalOrientation();
 }
 
 #pragma mark - Safety
