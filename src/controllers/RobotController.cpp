@@ -11,17 +11,38 @@ RobotController::~RobotController(){
 //        delete robotParams;
 //        robotParams = NULL;
 //    }
-    if(previewArm){
-        delete previewArm;
-        previewArm = NULL;
-    }
-    
-    
+//    if(previewArm){
+//        delete previewArm;
+//        previewArm = NULL;
+//    }
 }
-
 
 void RobotController::setup(RobotParameters & params) {
     setup(params.ipAddress, params, false);
+}
+
+void RobotController::setup(string ipAddress, RobotType type){
+    
+    this->type = type;
+    
+    // setup robot parameters
+    robotParams.setup(type);
+    
+    // setup Kinematic Model
+    movement.setup();       // speed profile
+    
+    previewArm.setup(type); // should be called sim or desired or something
+    
+    urKinematics = URIKFast(type);
+    
+    // setup actual robot
+    actualArm.setup(type);
+
+}
+
+void RobotController::start(){
+    // Start the connection to the actual robot over TCP/IP
+    robot.start();
 }
 
 void RobotController::setup(string ipAddress, RobotParameters & params, bool offline){
@@ -30,7 +51,7 @@ void RobotController::setup(string ipAddress, RobotParameters & params, bool off
         robot.setup(ipAddress,0, 1);
         robot.start();
     }
-    robotParams = &params;
+    robotParams = params;
     
     this->params.setName("IKArm Commands");
     this->params.add( bControlIkWithMouse.set("ControlIkWithMouse", false ));
@@ -55,12 +76,13 @@ void RobotController::setup(string ipAddress, RobotParameters & params, bool off
         foo->setup(params.get_robot_type());
         previewArms.push_back(foo);
     }
-    previewArm = previewArms[0];
+//    previewArm = previewArms[0];
+    previewArm.setup(params.get_robot_type());
     actualArm.setup(params.get_robot_type());
     
-//    robotParams->safety.add(robotSafety.setup(params.get_robot_type()));
+//    robotParams.safety.add(robotSafety.setup(params.get_robot_type()));
  
-    robotParams->jointsIK.add(this->params);
+    robotParams.jointsIK.add(this->params);
     
     jointWeights.assign(6, 1.0f);
     
@@ -74,7 +96,7 @@ vector<double> RobotController::getCurrentPose(){
 
 //------------------------------------------------------------------
 vector< double > RobotController::getArmIK( float aDeltaTimef ) {
-    vector <double> armFrom = getArmIK( robotParams->targetTCP.position*1000.0f, ofVec3f(), true, aDeltaTimef );
+    vector <double> armFrom = getArmIK( robotParams.targetTCP.position*1000.0f, ofVec3f(), true, aDeltaTimef );
     return armFrom;
 }
 
@@ -357,14 +379,14 @@ void RobotController::toggleTeachMode(){
 }
 
 void RobotController::setTeachMode(){
-    if(isTeachModeEnabled != robotParams->bTeachMode){
-        isTeachModeEnabled = robotParams->bTeachMode;
+    if(isTeachModeEnabled != robotParams.bTeachMode){
+        isTeachModeEnabled = robotParams.bTeachMode;
         robot.setTeachMode(isTeachModeEnabled);
     }
 }
 
 void RobotController::updateIKFast(){
-    targetPoses = urKinematics.inverseKinematics(robotParams->targetTCP);
+    targetPoses = urKinematics.inverseKinematics(robotParams.targetTCP);
     int selectedSolution = urKinematics.selectSolution(targetPoses, robot.getCurrentPose(), jointWeights);
     if(selectedSolution > -1){
         targetPose = targetPoses[selectedSolution];
@@ -373,13 +395,13 @@ void RobotController::updateIKFast(){
             if( isnan(tpose) ) {
                 tpose = 0.f;
             }
-            robotParams->ikPose[i] = tpose;
+            robotParams.ikPose[i] = tpose;
         }
     }
 }
 
 void RobotController::updateIKArm(){
-    targetPoses = urKinematics.inverseKinematics(robotParams->targetTCP);
+    targetPoses = urKinematics.inverseKinematics(robotParams.targetTCP);
     int selectedSolution = urKinematics.selectSolution(targetPoses, robot.getCurrentPose(), jointWeights);
     if(selectedSolution > -1){
         targetPose = targetPoses[selectedSolution];
@@ -388,7 +410,7 @@ void RobotController::updateIKArm(){
             if( isnan(tpose) ) {
                 tpose = 0.f;
             }
-            robotParams->ikPose[i] = tpose;
+            robotParams.ikPose[i] = tpose;
         }
         
         for(int i = 0; i < targetPoses.size(); i++)
@@ -401,7 +423,7 @@ void RobotController::updateIKArm(){
         if( isnan(tpose) ) {
             tpose = 0.f;
         }
-        robotParams->targetPose[i] = ofRadToDeg(tpose);
+        robotParams.targetPose[i] = ofRadToDeg(tpose);
     }
     targetPose = getArmIK(1.0/60.0f);
     for(int i = 0; i < targetPose.size(); i++){
@@ -409,7 +431,7 @@ void RobotController::updateIKArm(){
         if( isnan(tpose) ) {
             tpose = 0.f;
         }
-        robotParams->targetPose[i] = ofRadToDeg(tpose);
+        robotParams.targetPose[i] = ofRadToDeg(tpose);
     }
     
     // update the look at angles after the IK has been applied //
@@ -421,15 +443,15 @@ void RobotController::updateIKArm(){
         targetPose[i] = lookAtAngles[i];
     }
     
-    previewArm->setPose(targetPose);
+    previewArm.setPose(targetPose);
 }
 
 #pragma mark - Update
 void RobotController::update(){
     updateRobotData();
-    if(robotParams->bUseIKFast){
+    if(robotParams.bUseIKFast){
         updateIKFast();
-    }else if(robotParams->bUseIKArm){
+    }else if(robotParams.bUseIKArm){
         updateIKArm();
     }
     
@@ -441,9 +463,9 @@ void RobotController::update(){
         if( isnan(tpose) ) {
             tpose = 0.f;
         }
-        robotParams->targetPose[i] = ofRadToDeg(tpose);
+        robotParams.targetPose[i] = ofRadToDeg(tpose);
     }
-    previewArm->setPose(targetPose);
+    previewArm.setPose(targetPose);
 }
 void RobotController::update(vector<double> _pose){
     targetPose = _pose;
@@ -457,7 +479,7 @@ void RobotController::safetyCheck(){
     
     robotSafety.setCurrentRobotArmAnlges(robot.getCurrentPose());
     robotSafety.setDesiredAngles(targetPose);
-    robotSafety.update(*previewArm);
+    robotSafety.update(previewArm);
     robotSafety.update(1/60);
     targetPose = robotSafety.getDesiredAngles();
     
@@ -468,7 +490,7 @@ void RobotController::updateMovement(){
     movement.addTargetJointPose(targetPose);
     movement.update();
     // move the robot to the target TCP
-    if(robotParams->bMove){
+    if(robotParams.bMove){
         //        robot.setSpeed(tempSpeeds, movement.getAcceleration());
         robot.setPosition(movement.getTargetJointPose());
         stopPosition = movement.getTargetJointPose();
@@ -493,19 +515,19 @@ void RobotController::updateMovement(){
 void RobotController::updateRobotData(){
     // pass the current joints from the robot to the kinematic solver
     
-    robotParams->currentPose = getCurrentPose();
-    actualArm.setPose(robotParams->currentPose);
-    robotParams->actualTCP = robot.getToolPose();
-    robotParams->tcpPosition = robotParams->actualTCP.position;
-    ofQuaternion tcpO = robotParams->actualTCP.rotation;
-    robotParams->tcpOrientation = ofVec4f(tcpO.x(), tcpO.y(), tcpO.z(), tcpO.w());
+    robotParams.currentPose = getCurrentPose();
+    actualArm.setPose(robotParams.currentPose);
+    robotParams.actualTCP = robot.getToolPose();
+    robotParams.tcpPosition = robotParams.actualTCP.position;
+    ofQuaternion tcpO = robotParams.actualTCP.rotation;
+    robotParams.tcpOrientation = ofVec4f(tcpO.x(), tcpO.y(), tcpO.z(), tcpO.w());
     // update GUI params
-    for(int i = 0; i < robotParams->currentPose.size(); i++){
-        robotParams->pCurrentPose[i] = ofRadToDeg((float)robotParams->currentPose[i]);
+    for(int i = 0; i < robotParams.currentPose.size(); i++){
+        robotParams.pCurrentPose[i] = ofRadToDeg((float)robotParams.currentPose[i]);
     }
-    ofMatrix4x4 forwardIK = urKinematics.forwardKinematics(robotParams->currentPose);
+    ofMatrix4x4 forwardIK = urKinematics.forwardKinematics(robotParams.currentPose);
     
-    movement.setCurrentJointPose(robotParams->currentPose);
+    movement.setCurrentJointPose(robotParams.currentPose);
 }
 
 #pragma mark - drawing
@@ -536,7 +558,7 @@ void RobotController::drawIK(){
 }
 
 void RobotController::drawPreview(ofFloatColor color){
-    previewArm->draw(color, true);
+    previewArm.draw(color, true);
     
 }
 

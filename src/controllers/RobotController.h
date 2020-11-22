@@ -22,6 +22,9 @@ namespace ofxRobotArm {
         /// \params params default parameters for the robot & GUI
         void setup(RobotParameters & params);
         
+        void setup(string ipAddress, RobotType type);
+        void start();
+        
         /// \brief creates and connects to a new robot
         /// \params ipAddress ipAddress of the robot
         /// \params params default parameters for the robot & GUI
@@ -70,8 +73,9 @@ namespace ofxRobotArm {
         vector<double> getCurrentPose();
         ofxURDriver robot;
         URMove movement;
-        RobotParameters * robotParams;
-        RobotKinematicModel * previewArm;
+//        RobotParameters * robotParams;
+        RobotParameters robotParams;
+        RobotKinematicModel previewArm;
         vector<RobotKinematicModel*> previewArms;
         
         RobotKinematicModel actualArm;
@@ -100,6 +104,11 @@ namespace ofxRobotArm {
         
         ofParameter< bool > bControlIkWithMouse;
         ofParameter< bool > bOnlyUseInverseIk;
+        
+    private:
+        void setup_parameters();
+        
+        RobotType type;
     };
 }
 
