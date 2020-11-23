@@ -387,8 +387,10 @@ void RobotController::setTeachMode(){
 }
 
 void RobotController::updateIKFast(){
+
+    // update the plane that visualizes the robot flange
     tcp_plane.update(robotParams.targetTCP.position*1000, robotParams.targetTCP.rotation);
-    cout << ofToString(robotParams.targetTCP.rotation) << endl;
+
     targetPoses = urKinematics.inverseKinematics(robotParams.targetTCP);
     int selectedSolution = urKinematics.selectSolution(targetPoses, robot.getCurrentPose(), jointWeights);
     if(selectedSolution > -1){
