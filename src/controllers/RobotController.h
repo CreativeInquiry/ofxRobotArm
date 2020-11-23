@@ -9,7 +9,7 @@
 #include "RobotKinematicModel.h"
 #include "ofxIKArm.h"
 #include "RobotArmSafety.h"
-#include "URJoint.h"
+#include "URUtils.h"
 namespace ofxRobotArm {
     
 
@@ -57,6 +57,7 @@ namespace ofxRobotArm {
         void updateIKArm();
         
         void set_desired(ofNode target);
+        Plane tcp_plane;
         
         void moveArm();
         void draw(ofFloatColor color = ofFloatColor(1,1,1,1), bool debug = false);
