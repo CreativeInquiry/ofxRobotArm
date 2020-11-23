@@ -387,6 +387,8 @@ void RobotController::setTeachMode(){
 }
 
 void RobotController::updateIKFast(){
+    tcp_plane.update(robotParams.targetTCP.position*1000, robotParams.targetTCP.rotation);
+    cout << ofToString(robotParams.targetTCP.rotation) << endl;
     targetPoses = urKinematics.inverseKinematics(robotParams.targetTCP);
     int selectedSolution = urKinematics.selectSolution(targetPoses, robot.getCurrentPose(), jointWeights);
     if(selectedSolution > -1){
@@ -565,8 +567,8 @@ void RobotController::drawIK(){
 }
 
 void RobotController::drawPreview(ofFloatColor color){
-    previewArm.draw(color, true);
-    
+    previewArm.draw(color, false);
+    tcp_plane.draw();
 }
 
 void RobotController::enableControlJointsExternally() {
