@@ -1,9 +1,0 @@
-ofxAssimpModelLoader
-ofxGizmo
-ofxGui
-ofxIKArm
-ofxPtf
-ofxRobotArm
-ofxTiming
-ofxURDriver
-ofxXmlSettings
