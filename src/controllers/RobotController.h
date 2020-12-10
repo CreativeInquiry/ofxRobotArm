@@ -87,6 +87,8 @@ namespace ofxRobotArm {
         shared_ptr< ofxIKArm > mIKArm;
         shared_ptr< ofxIKArm > mIKArmInverted;
         RobotArmSafety robotSafety;
+        
+        void setEndEffector(string filename);
 
     protected:
         vector <double> stopPosition;
