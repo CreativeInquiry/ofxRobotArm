@@ -3,7 +3,7 @@
 
 #pragma once
 #include "ofMain.h"
-#include "URJoint.h"
+#include "Joint.h"
 #include "ofxUrDriver.h"
 
 namespace ofxRobotArm{

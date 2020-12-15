@@ -6,13 +6,15 @@
 #include "ofxURDriver.h"
 #include "RobotParameters.h"
 #include "URIKFast.h"
+#include "ABBIKFast.h"
 #include "RobotKinematicModel.h"
 #include "ofxIKArm.h"
 #include "RobotArmSafety.h"
-#include "URUtils.h"
+#include "Utils.h"
+#include "RobotConstants.hpp"
+#include "Plane.h"
 namespace ofxRobotArm {
     
-
     class RobotController {
     public:
         RobotController();

@@ -6,7 +6,7 @@
 //
 
 #include "RobotAngleOffsets.h"
-
+using namespace ofxRobotArm;
 //--------------------------------------------------------------
 ofParameterGroup &  RobotAngleOffsets::setup(bool abAddInvAngles, bool abAddScales ) {
     params.setName( "RobotArmOffsets" );

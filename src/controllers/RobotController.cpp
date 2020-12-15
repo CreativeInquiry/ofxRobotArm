@@ -34,7 +34,12 @@ void RobotController::setup(string ipAddress, RobotType type){
     previewArm.setup(type); // should be called sim or desired or something
     
     jointWeights.assign(6, 1.0f);
-    urKinematics = URIKFast(type);
+    if(type == UR3 || type == UR5 || type == UR10){
+        urKinematics = URIKFast(type);
+    }
+    if(type == IRB120){
+//        abbKinematics = ABBIKFast(type);
+    }
     
     // setup actual robot
     actualArm.setup(type);
