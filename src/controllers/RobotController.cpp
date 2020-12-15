@@ -41,6 +41,11 @@ void RobotController::setup(string ipAddress, RobotType type){
 
 }
 
+void RobotController::setEndEffector(string filename){
+    actualArm.setEndEffector(filename);
+    previewArm.setEndEffector(filename);
+}
+
 void RobotController::start(){
     // Start the connection to the actual robot over TCP/IP
     robot.start();
