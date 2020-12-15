@@ -8,7 +8,7 @@
 #pragma once
 //#include "UR5KinematicModel.h"
 #include "RobotKinematicModel.h"
-#include "ofxURDriver.h"
+#include "URDriver.h"
 
 namespace ofxRobotArm {
     class RobotArmCollision {

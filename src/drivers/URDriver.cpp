@@ -27,11 +27,11 @@ ofxURDriver::ofxURDriver(){
 }
 
 ofxURDriver::~ofxURDriver(){
-    if(robot){
-        disconnect();
-        delete robot;
-        robot = NULL;
-    }
+//    if(robot){
+//        disconnect();
+//        delete robot;
+//        robot = NULL;
+//    }
 }
 
 void ofxURDriver::stopThread(){

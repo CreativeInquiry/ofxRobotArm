@@ -3,7 +3,7 @@
 //
 #pragma once
 #include "ofMain.h"
-#include "ofxURDriver.h"
+#include "URDriver.h"
 #include "RobotParameters.h"
 #include "InverseKinemactic.h"
 #include "InverseKinemactic.h"
@@ -13,6 +13,7 @@
 #include "Utils.h"
 #include "RobotConstants.hpp"
 #include "Plane.h"
+#include "Move.h"
 namespace ofxRobotArm {
     
     class RobotController {
@@ -77,7 +78,7 @@ namespace ofxRobotArm {
         void close();
         vector<double> getCurrentPose();
         ofxURDriver robot;
-        URMove movement;
+        Move movement;
 //        RobotParameters * robotParams;
         RobotParameters robotParams;
         RobotKinematicModel previewArm;
