@@ -34,12 +34,10 @@ void RobotController::setup(string ipAddress, RobotType type){
     previewArm.setup(type); // should be called sim or desired or something
     
     jointWeights.assign(6, 1.0f);
-    if(type == UR3 || type == UR5 || type == UR10){
-        urKinematics = URIKFast(type);
-    }
-    if(type == IRB120){
-//        abbKinematics = ABBIKFast(type);
-    }
+
+    inverseKinematics = InverseKinemactic(type);
+  
+
     
     // setup actual robot
     actualArm.setup(type);
@@ -98,7 +96,7 @@ void RobotController::setup(string ipAddress, RobotParameters & params, bool off
     jointWeights.assign(6, 1.0f);
     
     // Set up URIKFast with dynamic RobotType
-    urKinematics = URIKFast(params.get_robot_type());
+    inverseKinematics = InverseKinemactic(params.get_robot_type());
 }
 
 vector<double> RobotController::getCurrentPose(){
@@ -401,8 +399,8 @@ void RobotController::updateIKFast(){
     // update the plane that visualizes the robot flange
     tcp_plane.update(robotParams.targetTCP.position*1000, robotParams.targetTCP.rotation);
 
-    targetPoses = urKinematics.inverseKinematics(robotParams.targetTCP);
-    int selectedSolution = urKinematics.selectSolution(targetPoses, robot.getCurrentPose(), jointWeights);
+    targetPoses = inverseKinematics.inverseKinematics(robotParams.targetTCP);
+    int selectedSolution = inverseKinematics.selectSolution(targetPoses, robot.getCurrentPose(), jointWeights);
     if(selectedSolution > -1){
         targetPose = targetPoses[selectedSolution];
         for(int i = 0; i < targetPose.size(); i++){
@@ -416,8 +414,8 @@ void RobotController::updateIKFast(){
 }
 
 void RobotController::updateIKArm(){
-    targetPoses = urKinematics.inverseKinematics(robotParams.targetTCP);
-    int selectedSolution = urKinematics.selectSolution(targetPoses, robot.getCurrentPose(), jointWeights);
+    targetPoses = inverseKinematics.inverseKinematics(robotParams.targetTCP);
+    int selectedSolution = inverseKinematics.selectSolution(targetPoses, robot.getCurrentPose(), jointWeights);
     if(selectedSolution > -1){
         targetPose = targetPoses[selectedSolution];
         for(int i = 0; i < targetPose.size(); i++){
@@ -546,7 +544,7 @@ void RobotController::updateRobotData(){
     for(int i = 0; i < robotParams.currentPose.size(); i++){
         robotParams.pCurrentPose[i] = ofRadToDeg((float)robotParams.currentPose[i]);
     }
-    ofMatrix4x4 forwardIK = urKinematics.forwardKinematics(robotParams.currentPose);
+    ofMatrix4x4 forwardIK = inverseKinematics.forwardKinematics(robotParams.currentPose);
     
     movement.setCurrentJointPose(robotParams.currentPose);
 }

@@ -5,8 +5,8 @@
 #include "ofMain.h"
 #include "ofxURDriver.h"
 #include "RobotParameters.h"
-#include "URIKFast.h"
-#include "ABBIKFast.h"
+#include "InverseKinemactic.h"
+#include "InverseKinemactic.h"
 #include "RobotKinematicModel.h"
 #include "ofxIKArm.h"
 #include "RobotArmSafety.h"
@@ -84,7 +84,7 @@ namespace ofxRobotArm {
         vector<RobotKinematicModel*> previewArms;
         
         RobotKinematicModel actualArm;
-        URIKFast urKinematics;
+        InverseKinemactic inverseKinematics;
         int stopCount = 0;
         shared_ptr< ofxIKArm > mIKArm;
         shared_ptr< ofxIKArm > mIKArmInverted;
