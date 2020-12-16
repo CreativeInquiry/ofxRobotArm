@@ -7,7 +7,7 @@ void ofApp::setup(){
     setup_scene();
     
     // setup robot
-    robot.setup("192.168.1.10", robot_type);    // change IP string to your robot's IP address
+    robot.setup("192.168.1.10", ofxRobotArm::RobotType::IRB120);    // change IP string to your robot's IP address
 
     // setup gui
     setup_gui();

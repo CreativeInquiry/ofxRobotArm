@@ -22,6 +22,7 @@ namespace ofxRobotArm{
             ~RobotKinematicModel();
             void setup(RobotType type);
             void update();
+            void drawSkeleton();
             void draw(ofFloatColor color = ofFloatColor(1, 1, 1, 1), bool bDrawDebug=true);
             void setToolMesh(ofMesh mesh);
             void setPose(vector<double> pose);
@@ -50,7 +51,6 @@ namespace ofxRobotArm{
             
             Joint dtoolPoint;
             
-            ofEasyCam cam;
             ofNode tcpNode;
             vector<ofNode> nodes;
             
@@ -58,14 +58,6 @@ namespace ofxRobotArm{
             ofParameter<bool> bDrawModel;
             ofParameter<bool> bDrawTargetModel;
             ofParameter<bool> bUseShader;
-            
-            
-            //    ofxBulletWorldRigid			world;
-            //    vector <ofxBulletBox*>		bounds;
-            //    ofxBulletCustomShape*		boundsShape;
-            //
-            //    vector<ofxBulletCustomShape*>	phyMesh;
-            //    vector<ofxBulletJoint*>		phyJoints;
             
     };
 }

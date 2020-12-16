@@ -26,7 +26,6 @@ class ofApp : public ofBaseApp{
 		
         // Robot
         ofxRobotArm::RobotController robot;
-        ofxRobotArm::RobotType robot_type = ofxRobotArm::RobotType::UR10;
         void keypressed_robot(int key);
         
         // Control & Interaction
