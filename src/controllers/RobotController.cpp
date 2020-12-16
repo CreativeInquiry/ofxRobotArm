@@ -7,14 +7,7 @@ RobotController::RobotController(){
 }
 
 RobotController::~RobotController(){
-//    if(robotParams){
-//        delete robotParams;
-//        robotParams = NULL;
-//    }
-//    if(previewArm){
-//        delete previewArm;
-//        previewArm = NULL;
-//    }
+    robot.stopThread();
 }
 
 void RobotController::setup(RobotParameters & params) {
