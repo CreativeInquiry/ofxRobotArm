@@ -13,7 +13,7 @@
 //#include "UR10KinematicModel.h"
 #include "ofxTiming.h"
 #include "Synchronized.h"
-#include "Joint.h"
+#include "Pose.h"
 namespace ofxRobotArm{
     class Move {
         public:
@@ -24,7 +24,7 @@ namespace ofxRobotArm{
             void computeVelocities();
             void updatePathDebug();
             
-            void addTargetPoint(Joint target);
+            void addTargetPoint(Pose target);
             
             float getAcceleration();
             
@@ -58,7 +58,7 @@ namespace ofxRobotArm{
             ofParameter<float> avgAccel;
             
             
-            Joint targetPoint;
+            Pose targetPoint;
 
             float deltaT;
             RateTimer deltaTimer;

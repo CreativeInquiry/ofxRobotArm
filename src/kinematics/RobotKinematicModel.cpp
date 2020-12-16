@@ -18,11 +18,11 @@ RobotKinematicModel::~RobotKinematicModel(){
 // D-H Parameters for UR Robot Arms:
 // https://www.universal-robots.com/articles/ur/parameters-for-calculations-of-kinematics-and-dynamics/
 void RobotKinematicModel::setup(RobotType type){
-    
-    joints.resize(6);
+    this->type = type;
+    pose.resize(6);
     nodes.resize(6);
-    vector<Joint> foojoints;
-    foojoints.resize(6);
+    vector<Pose> foopose;
+    foopose.resize(6);
     
     if (type == RobotType::UR5){
         
@@ -34,12 +34,12 @@ void RobotKinematicModel::setup(RobotType type){
             ofLogFatalError()<<"PLEASE PLACE THE 3D FILES OF THE UR ARM IN data/models/ur5.dae"<<endl;
         }
         
-        joints[0].position.set(0, 0, 0);
-        joints[1].position.set(0, -0.072238, 0.083204);
-        joints[2].position.set(0, -0.077537,0.51141);
-        joints[3].position.set(0, -0.070608, 0.903192);
-        joints[4].position.set(0, -0.117242, 0.950973);
-        joints[5].position.set(0, -0.164751, 0.996802);
+        pose[0].position.set(0, 0, 0);
+        pose[1].position.set(0, -0.072238, 0.083204);
+        pose[2].position.set(0, -0.077537,0.51141);
+        pose[3].position.set(0, -0.070608, 0.903192);
+        pose[4].position.set(0, -0.117242, 0.950973);
+        pose[5].position.set(0, -0.164751, 0.996802);
     }
     else if (type == RobotType::UR10){
         
@@ -52,16 +52,16 @@ void RobotKinematicModel::setup(RobotType type){
             ofLogFatalError()<<"PLEASE PLACE THE 3D FILES OF THE UR ARM IN data/models/ur10.dae"<<endl;
         }
         
-        joints[0].position.set(0, 0, 0);
+        pose[0].position.set(0, 0, 0);
         
         // These are correct joint positions for the non-home D-H position.
         // Reference: https://asd.sutd.edu.sg/dfab/a-geometric-inverse-kinematics-solution-for-the-universal-robot/
         // These are correct joint positions for the HOME position (0 rotations on each joint).
-        joints[1].position.set(0, -.086, .1273);
-        joints[2].position.set(0, -.1163, .7393);
-        joints[3].position.set(0, -.1094, 1.3116);
-        joints[4].position.set(0, -0.16395, 1.3733);
-        joints[5].position.set(0, -0.22535, 1.4273);
+        pose[1].position.set(0, -.086, .1273);
+        pose[2].position.set(0, -.1163, .7393);
+        pose[3].position.set(0, -.1094, 1.3116);
+        pose[4].position.set(0, -0.16395, 1.3733);
+        pose[5].position.set(0, -0.22535, 1.4273);
     }else if(type == RobotType::IRB120){
         if(loader.loadModel(ofToDataPath("models/irb120.dae"))){
             for(int i = 0; i < loader.getNumMeshes(); i++){
@@ -70,64 +70,66 @@ void RobotKinematicModel::setup(RobotType type){
         }else{
             ofLogFatalError()<<"PLEASE PLACE THE 3D FILES OF THE UR ARM IN data/models/irb120.dae"<<endl;
         }
-        joints[0].position.set(0, 0, 0);
-        joints[1].position.set(0, 0, 0.187);
-        joints[2].position.set(0, 0, 0.290);
-        joints[3].position.set(0.134, 0, 0.560);
-        joints[4].position.set(0.302, 0, 0.560);
-        joints[5].position.set(0.374, 0, 0.560);
+        // Reference: https://library.e.abb.com/public/7139d7f4f2cb4d0da9b7fac6541e91d1/3HAC035960%20PS%20IRB%20120-en.pdf
+        
+        pose[0].position.set(0, 0, 0);
+        pose[1].position.set(0, 0, 0);
+        pose[2].position.set(0, 0.290, 0);
+        pose[3].position.set(0, 0.560, 0);
+        pose[4].position.set(0, 0.630, 0);
+        pose[5].position.set(-0.302, 0.630, 0);
     }
     
     
-    tool.position.set(joints[5].position + ofVec3f(0,-0.0308,0)); // flange position
+    tool.position.set(pose[5].position + ofVec3f(0,-0.0308,0)); // flange position
     
-    for(int i = 1; i <joints.size(); i++){
-        joints[i].offset =joints[i].position-joints[i-1].position;
-        cout<<i<<" "<<joints[i].offset<<endl;
+    for(int i = 1; i <pose.size(); i++){
+        pose[i].offset =pose[i].position-pose[i-1].position;
+        cout<<i<<" "<<pose[i].offset<<endl;
         
     }
-    tool.offset = joints[5].offset;
+    tool.offset = pose[5].offset;
     
     if(type == RobotType::UR3 || type == RobotType::UR5 || type == RobotType::UR10){
         // Setup the joint axes
-        joints[0].axis.set(0, 0, 1);
-        joints[1].axis.set(0, -1, 0);
-        joints[2].axis.set(0, -1, 0);
-        joints[3].axis.set(0, -1, 0);
-        joints[4].axis.set(0, 0, 1);
-        joints[5].axis.set(0, 1, 0);
+        pose[0].axis.set(0, 0, 1);
+        pose[1].axis.set(0, -1, 0);
+        pose[2].axis.set(0, -1, 0);
+        pose[3].axis.set(0, -1, 0);
+        pose[4].axis.set(0, 0, 1);
+        pose[5].axis.set(0, 1, 0);
         
-        tool.axis.set(joints[5].axis);
+        tool.axis.set(pose[5].axis);
         
-        joints[0].rotation.makeRotate(0,joints[0].axis);
-        joints[1].rotation.makeRotate(-90,joints[1].axis);
-        joints[2].rotation.makeRotate(0,joints[2].axis);
-        joints[3].rotation.makeRotate(-90,joints[3].axis);
-        joints[4].rotation.makeRotate(0,joints[4].axis);
-        joints[5].rotation.makeRotate(0,joints[5].axis);
+        pose[0].orientation.makeRotate(0,pose[0].axis);
+        pose[1].orientation.makeRotate(-90,pose[1].axis);
+        pose[2].orientation.makeRotate(0,pose[2].axis);
+        pose[3].orientation.makeRotate(-90,pose[3].axis);
+        pose[4].orientation.makeRotate(0,pose[4].axis);
+        pose[5].orientation.makeRotate(0,pose[5].axis);
     }else if(type == RobotType::IRB120){
-        joints[0].axis.set(0, 0, 1);
-        joints[1].axis.set(0, 1, 0);
-        joints[2].axis.set(0, 1, 0);
-        joints[3].axis.set(0, 0, 1);
-        joints[4].axis.set(0, 1, 0);
-        joints[5].axis.set(0, 0, 1);
+        pose[0].axis.set(0, 0, 1);
+        pose[1].axis.set(0, 1, 0);
+        pose[2].axis.set(0, 1, 0);
+        pose[3].axis.set(0, 0, 1);
+        pose[4].axis.set(0, 1, 0);
+        pose[5].axis.set(0, 0, 1);
         
-        joints[0].rotation.makeRotate(0,joints[0].axis);
-        joints[1].rotation.makeRotate(0,joints[1].axis);
-        joints[2].rotation.makeRotate(90,joints[2].axis);
-        joints[3].rotation.makeRotate(0,joints[3].axis);
-        joints[4].rotation.makeRotate(0,joints[4].axis);
-        joints[5].rotation.makeRotate(0,joints[5].axis);
+        pose[0].orientation.makeRotate(0,pose[0].axis);
+        pose[1].orientation.makeRotate(0,pose[1].axis);
+        pose[2].orientation.makeRotate(90,pose[2].axis);
+        pose[3].orientation.makeRotate(0,pose[3].axis);
+        pose[4].orientation.makeRotate(0,pose[4].axis);
+        pose[5].orientation.makeRotate(0,pose[5].axis);
     }
     
     // Rig Joints
-    nodes[0].setPosition(joints[0].position);
-    nodes[0].setOrientation(joints[0].rotation);
+    nodes[0].setPosition(pose[0].position);
+    nodes[0].setOrientation(pose[0].orientation);
     for(int i = 1; i <nodes.size(); i++){
         nodes[i].setParent(nodes[i-1]);
-        nodes[i].setPosition(joints[i].offset*1000);
-        nodes[i].setOrientation(joints[i].rotation);
+        nodes[i].setPosition(pose[i].offset*1000);
+        nodes[i].setOrientation(pose[i].orientation);
     }
     
     
@@ -136,7 +138,7 @@ void RobotKinematicModel::setup(RobotType type){
     tcpNode.setPosition(ofVec3f(0.0, -0.0308, 0.0)*1000);
     
     // Set Tool Rotations
-    tool.rotation =joints[5].rotation;
+    tool.rotation =pose[5].rotation;
     
     shader.load("shaders/model");
     
@@ -159,26 +161,35 @@ void RobotKinematicModel::setToolOffset(ofVec3f localOffset){
 }
 
 void RobotKinematicModel::setAngles( vector<double> aTargetRadians ){
-    for(int i = 0; i < joints.size(); i++){
+    for(int i = 0; i < pose.size(); i++){
         if(i == 1 || i == 3){
-            joints[i].rotation.makeRotate(ofRadToDeg(aTargetRadians[i])+90,joints[i].axis);
+            pose[i].orientation.makeRotate(ofRadToDeg(aTargetRadians[i])+90,pose[i].axis);
         }else{
-            joints[i].rotation.makeRotate(ofRadToDeg(aTargetRadians[i]),joints[i].axis);
+            pose[i].orientation.makeRotate(ofRadToDeg(aTargetRadians[i]),pose[i].axis);
         }
-        nodes[i].setOrientation(joints[i].rotation);
+        nodes[i].setOrientation(pose[i].orientation);
     }
 }
 
 void RobotKinematicModel::setPose(vector<double> pose){
-    for(int i = 0; i < pose.size(); i++){
-        if(i == 1 || i == 3){
-            joints[i].rotation.makeRotate(ofRadToDeg(pose[i])+90,joints[i].axis);
-        }else{
-            joints[i].rotation.makeRotate(ofRadToDeg(pose[i]),joints[i].axis);
+    if(type == RobotType::UR5 || type == RobotType::UR3 || type == RobotType::UR10){
+        for(int i = 0; i < pose.size(); i++){
+            if(i == 1 || i == 3){
+                this->pose[i].orientation.makeRotate(ofRadToDeg(pose[i])+90,this->pose[i].axis);
+                this->pose[i].rotation = ofRadToDeg(pose[i])+90;
+            }else{
+                this->pose[i].orientation.makeRotate(ofRadToDeg(pose[i]),this->pose[i].axis);
+                this->pose[i].rotation = ofRadToDeg(pose[i]);
+            }
+            nodes[i].setOrientation(this->pose[i].orientation);
         }
-        nodes[i].setOrientation(joints[i].rotation);
+    }else{
+        for(int i = 0; i < pose.size(); i++){
+            this->pose[i].orientation.makeRotate(ofRadToDeg(pose[i]),this->pose[i].axis);
+            this->pose[i].rotation = ofRadToDeg(pose[i]);
+            nodes[i].setOrientation(this->pose[i].orientation);
+        }
     }
-    
 }
 
 void RobotKinematicModel::setEndEffector(string filename){
@@ -213,42 +224,41 @@ void RobotKinematicModel::drawSkeleton() {
         {
             int i = 0;
             float dist = 0;
-            for (auto joint : joints) {
+            for (auto joint : nodes) {
                 
                 // draw each joint
                 if (i != 0) {
-                    ofDrawBox(joint.position, 10);
-                    ofDrawAxis(10);
+                    joint.draw();
                 }
-//                ofVec3f p = joint->getGlobalPosition();
-//
-//                // draw each link
-//                ofPushStyle();
-//                float t = i / float(joint_nodes.size());
-//                ofSetColor(ofColor::aqua.getLerped(ofColor::orange, t));
-//                ofSetLineWidth(5);
-//
-//                if (i != 0) {
-//                    ofDrawLine(joint_nodes[i - 1]->getGlobalPosition(), p);
-//                    dist = p.distance(joint_nodes[i - 1]->getGlobalPosition());
-//                }
-//                ofPopStyle();
-//
-//                // show length of each link
-//                ofSetColor(60, 80);
-//                //if (i == 0)
-//                //    ofDrawBitmapString(dist, p.getInterpolated(ofVec3f(), .5));
-//                //else
-//                //    ofDrawBitmapString(dist, p.getInterpolated(joint_nodes[i - 1]->getGlobalPosition(), .5));
-//
-//                // show joint id
-//                ofSetColor(60, 90);
-//                ofDrawBitmapString(ofToString(i), p.x + 5, p.y, p.z + 5);
-//
-//                // show angle at joint
-//                ofDrawBitmapString("angle: " + ofToString(ofRadToDeg(joint_angles[i])), p.x + 5, p.y, p.z - 20);
-//
-//                i++;
+                ofVec3f p = joint.getGlobalPosition();
+
+                // draw each link
+                ofPushStyle();
+                float t = i / float(nodes.size());
+                ofSetColor(ofColor::aqua.getLerped(ofColor::orange, t));
+                ofSetLineWidth(5);
+
+                if (i != 0) {
+                    ofDrawLine(nodes[i - 1].getGlobalPosition(), p);
+                    dist = p.distance(nodes[i - 1].getGlobalPosition());
+                }
+                ofPopStyle();
+
+                // show length of each link
+                ofSetColor(60, 80);
+                //if (i == 0)
+                //    ofDrawBitmapString(dist, p.getInterpolated(ofVec3f(), .5));
+                //else
+                //    ofDrawBitmapString(dist, p.getInterpolated(joint_nodes[i - 1]->getGlobalPosition(), .5));
+
+                // show joint id
+                ofSetColor(60, 90);
+                ofDrawBitmapString(ofToString(i), p.x + 5, p.y, p.z + 5);
+
+                // show angle at joint
+                ofDrawBitmapString("angle: " + ofToString(ofRadToDeg(pose[i].rotation)), p.x + 5, p.y, p.z - 20);
+
+                i++;
             }
         }
         ofPopStyle();
@@ -289,14 +299,14 @@ void RobotKinematicModel::draw(ofFloatColor color, bool bDrawDebug){
             ofPushMatrix();
             {
                 int i = 0;
-                for(auto &joint : joints)//joints.size(); i++)
+                for(auto &joint : pose)//pose.size(); i++)
                 {
                     float x;
                     ofVec3f axis;
-                    q = joint.rotation;
+                    q = joint.orientation;
                     q.getRotate(x, axis);
-                    ofTranslate(joints[i].offset*1000);
-                    gmat.translate( joints[i].offset*1000 );
+                    ofTranslate(pose[i].offset*1000);
+                    gmat.translate( pose[i].offset*1000 );
                     
                     if(bDrawDebug) {
                         ofDrawAxis(30);
@@ -305,9 +315,9 @@ void RobotKinematicModel::draw(ofFloatColor color, bool bDrawDebug){
                     if(i >= 3){
                         ofPushMatrix();
                         {
-//                            ofRotateDeg(-180, 0, 0, 1);
-//                            ofRotateDeg(-180, 1, 0, 0);
-                            ofScale(100, 100, 100);
+                            ofRotateDeg(-180, 0, 0, 1);
+                            ofRotateDeg(-180, 1, 0, 0);
+                            ofScale(1000, 1000, 1000);
                             meshs[i].draw();
                         }
                         ofPopMatrix();
@@ -316,9 +326,9 @@ void RobotKinematicModel::draw(ofFloatColor color, bool bDrawDebug){
                     if(i < 3){
                         ofPushMatrix();
                         {
-//                            ofRotateDeg(-180, 0, 0, 1);
-//                            ofRotateDeg(-180, 1, 0, 0);
-                            ofScale(100, 100, 100);
+                            ofRotateDeg(-180, 0, 0, 1);
+                            ofRotateDeg(-180, 1, 0, 0);
+                            ofScale(1000, 1000, 1000);
                             
                             meshs[i].draw();
                         } ofPopMatrix();

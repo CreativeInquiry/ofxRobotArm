@@ -3,7 +3,7 @@
 
 #pragma once
 #include "ofMain.h"
-#include "Joint.h"
+#include "Pose.h"
 #include "UrDriver.h"
 
 namespace ofxRobotArm{
@@ -113,8 +113,8 @@ namespace ofxRobotArm{
         
         string ipAddress;
         vector<double> currentPose;
-        Joint actualTCP;
-        Joint targetTCP;
+        Pose actualTCP;
+        Pose targetTCP;
         
         RobotType type;
         

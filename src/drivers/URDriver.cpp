@@ -27,11 +27,11 @@ ofxURDriver::ofxURDriver(){
 }
 
 ofxURDriver::~ofxURDriver(){
-//    if(robot){
-//        disconnect();
-//        delete robot;
-//        robot = NULL;
-//    }
+    if(robot){
+        disconnect();
+        delete robot;
+        robot = NULL;
+    }
 }
 
 void ofxURDriver::stopThread(){
@@ -109,41 +109,9 @@ void ofxURDriver::setup(string ipAddress, double minPayload, double maxPayload){
     jointsRaw.swapBack();
     toolPointRaw.swapBack();
     bStarted = false;
-
-    // @TODO: This is all incorrect (now called in RobotKinematicModel)
+    
     joints.resize(6);
     
-    joints[0].position.set(0, 0, 0);
-    joints[1].position.set(0, -0.072238, 0.083204);
-    joints[2].position.set(0,-0.077537,0.51141);
-    joints[3].position.set(0, -0.070608, 0.903192);
-    joints[4].position.set(0, -0.117242, 0.950973);
-    joints[5].position.set(0, -0.164751, 0.996802);
-    tool.position.set(joints[5].position + ofVec3f(0,-0.135,0)); // tool tip position
-    
-    for(int i = 1; i <joints.size(); i++){
-        joints[i].offset =joints[i].position-joints[i-1].position;
-        
-    }
-    tool.offset =joints[5].offset;
-    
-    
-    
-    joints[0].axis.set(0, 0, 1);
-    joints[1].axis.set(0, -1, 0);
-    joints[2].axis.set(0, -1, 0);
-    joints[3].axis.set(0, -1, 0);
-    joints[4].axis.set(0, 0, 1);
-    joints[5].axis.set(0, 1, 0);
-    tool.axis.set(joints[5].axis);
-    
-    joints[0].rotation.makeRotate(0,joints[0].axis);
-    joints[1].rotation.makeRotate(-90,joints[1].axis);
-    joints[2].rotation.makeRotate(0,joints[2].axis);
-    joints[3].rotation.makeRotate(-90,joints[3].axis);
-    joints[4].rotation.makeRotate(0,joints[4].axis);
-    joints[5].rotation.makeRotate(0,joints[5].axis);
-
     bTriedOnce = false; 
 
 }
@@ -211,7 +179,7 @@ vector<double> ofxURDriver::getJointAngles(){
 ofVec4f ofxURDriver::getCalculatedTCPOrientation(){
     ofVec4f ret;
     lock();
-    ret = ofVec4f(dtoolPoint.rotation.x(), dtoolPoint.rotation.y(), dtoolPoint.rotation.z(), dtoolPoint.rotation.w());
+    ret = ofVec4f(dtoolPoint.orientation.x(), dtoolPoint.orientation.y(), dtoolPoint.orientation.z(), dtoolPoint.orientation.w());
     unlock();
     return ret;
 }
@@ -224,8 +192,8 @@ float ofxURDriver::getThreadFPS(){
     return fps;
 }
 
-ofxRobotArm::Joint ofxURDriver::getToolPose(){
-    ofxRobotArm::Joint ret;
+ofxRobotArm::Pose ofxURDriver::getToolPose(){
+    ofxRobotArm::Pose ret;
     lock();
     ret = tool;
     unlock();
@@ -377,15 +345,15 @@ void ofxURDriver::threadedFunction(){
             
             jointsRaw.getBack() = robot->rt_interface_->robot_state_->getQActual();
             jointsProcessed.getBack() = jointsRaw.getBack();
-            dtoolPoint.rotation = ofQuaternion();
+            dtoolPoint.orientation = ofQuaternion();
             for(int i = 0; i < joints.size(); i++){
                 jointsProcessed.getBack()[i] = ofRadToDeg(jointsRaw.getBack()[i]);
                 if(i == 1 || i == 3){
                     jointsProcessed.getBack()[i]+=90;
                 }
                 
-                joints[i].rotation.makeRotate(jointsProcessed.getBack()[i], joints[i].axis);
-                dtoolPoint.rotation*=joints[i].rotation;
+                joints[i].orientation.makeRotate(jointsProcessed.getBack()[i], joints[i].axis);
+                dtoolPoint.orientation*=joints[i].orientation;
             }
             
             currentRobotPositionRadians = jointsRaw.getBack();
@@ -404,9 +372,9 @@ void ofxURDriver::threadedFunction(){
             
             float angle = fooRot.length();
             if( angle < epslion){
-                tool.rotation = ofQuaternion(0, 0, 0, 0);
+                tool.orientation = ofQuaternion(0, 0, 0, 0);
             }else{
-                tool.rotation = ofQuaternion(angle, fooRot/angle);
+                tool.orientation = ofQuaternion(angle, fooRot/angle);
             }
             
             tool.position = ofVec3f(toolPointRaw.getBack()[0], toolPointRaw.getBack()[1], toolPointRaw.getBack()[2]);

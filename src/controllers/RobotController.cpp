@@ -31,22 +31,20 @@ void RobotController::setup(string ipAddress, RobotType type){
     // setup Kinematic Model
     movement.setup();       // speed profile
     
-    previewArm.setup(type); // should be called sim or desired or something
+    desiredPose.setup(type); // should be called sim or desired or something
     
     jointWeights.assign(6, 1.0f);
 
     inverseKinematics = InverseKinemactic(type);
   
-
-    
     // setup actual robot
-    actualArm.setup(type);
+    actualPos.setup(type);
 
 }
 
 void RobotController::setEndEffector(string filename){
-    actualArm.setEndEffector(filename);
-    previewArm.setEndEffector(filename);
+    actualPos.setEndEffector(filename);
+    desiredPose.setEndEffector(filename);
 }
 
 void RobotController::start(){
@@ -83,11 +81,11 @@ void RobotController::setup(string ipAddress, RobotParameters & params, bool off
     for(int i = 0; i < 1; i++){//8; i++){
         RobotKinematicModel * foo = new RobotKinematicModel();
         foo->setup(params.get_robot_type());
-        previewArms.push_back(foo);
+        desiredPoses.push_back(foo);
     }
-//    previewArm = previewArms[0];
-    previewArm.setup(params.get_robot_type());
-    actualArm.setup(params.get_robot_type());
+//    previewArm = desiredPoses[0];
+    desiredPose.setup(params.get_robot_type());
+    actualPose.setup(params.get_robot_type());
     
 //    robotParams.safety.add(robotSafety.setup(params.get_robot_type()));
  
@@ -122,7 +120,7 @@ vector< double > RobotController::getArmIK( ofVec3f aTargetWorldPos, ofVec3f aEl
     }
     if( mIKArm->getArmLength() <= 0.0f ) {
         mIKArm->setDrawSize( 10 );
-        mIKArm->setup(actualArm.nodes[1].getGlobalPosition(), actualArm.nodes[2].getGlobalPosition(), actualArm.nodes[3].getGlobalPosition() );
+        mIKArm->setup(actualPose.nodes[1].getGlobalPosition(), actualPose.nodes[2].getGlobalPosition(), actualPose.nodes[3].getGlobalPosition() );
         mIKArm->setDrawSize( 10 );
         
         // disable the elbow target and set to constrain along axis //
@@ -133,7 +131,7 @@ vector< double > RobotController::getArmIK( ofVec3f aTargetWorldPos, ofVec3f aEl
         ofLog(OF_LOG_VERBOSE) << "Setting up the ik arm " << mIKArm->getArmLength() << " shoulder: " << mIKArm->getUpperArmLength() << " forearm len: " << mIKArm->getLowerArmLength() << " | " << ofGetFrameNum() << endl;
     }
     if( mIKArmInverted->getArmLength() <= 0.0f ) {
-        mIKArmInverted->setup( actualArm.nodes[1].getGlobalPosition(), actualArm.nodes[2].getGlobalPosition(), actualArm.nodes[3].getGlobalPosition() );
+        mIKArmInverted->setup( actualPose.nodes[1].getGlobalPosition(), actualPose.nodes[2].getGlobalPosition(), actualPose.nodes[3].getGlobalPosition() );
         mIKArmInverted->setDrawSize( 10 );
         
         // disable the elbow target and set to constrain along axis //
@@ -221,12 +219,12 @@ float RobotController::getNeckAngleAlignedWithVector( ofVec3f avec ) {
     orotate.makeRotate( ofVec3f(1,0,0), ofVec3f(0,-1,0) );
     
     ofVec3f upAxis( 1,0,0 );
-    ofVec3f diff = avec.getNormalized();//ttarget - actualArm.nodes[3].getGlobalPosition();
+    ofVec3f diff = avec.getNormalized();//ttarget - actualPose.nodes[3].getGlobalPosition();
     ofQuaternion tquat;
     ofVec3f txaxis = upAxis * orotate;
     tquat.makeRotate( txaxis, diff );
     
-    ofMatrix4x4 invParent(ofMatrix4x4::getInverseOf(actualArm.nodes[3].getParent()->getGlobalTransformMatrix()));
+    ofMatrix4x4 invParent(ofMatrix4x4::getInverseOf(actualPose.nodes[3].getParent()->getGlobalTransformMatrix()));
     ofMatrix4x4 m44(ofMatrix4x4(tquat) * invParent);
     ofQuaternion localRot = m44.getRotate();
     
@@ -277,7 +275,7 @@ vector<double> RobotController::lookAtJoints( float aDeltaTimef ) {
     
     ofVec3f ttarget = ofVec3f(1000, 500, 1000);
     
-    if( actualArm.nodes.size() >= 4 && robot.getCurrentPose().size() >= 4 ) {
+    if( actualPose.nodes.size() >= 4 && robot.getCurrentPose().size() >= 4 ) {
         
         //START THEO
         
@@ -315,13 +313,13 @@ vector<double> RobotController::lookAtJoints( float aDeltaTimef ) {
         orotate.makeRotate( 0, ofVec3f(0,0,1) );
         
         ofVec3f upAxis( 1,0,0 );
-        ofVec3f diff = ttarget - actualArm.nodes[4].getGlobalPosition();
+        ofVec3f diff = ttarget - actualPose.nodes[4].getGlobalPosition();
         diff.normalize();
         ofQuaternion tquat;
         ofVec3f txaxis = upAxis * orotate;
         tquat.makeRotate( txaxis, diff );
         
-        ofMatrix4x4 tinvParent(ofMatrix4x4::getInverseOf(actualArm.nodes[4].getParent()->getGlobalTransformMatrix()));
+        ofMatrix4x4 tinvParent(ofMatrix4x4::getInverseOf(actualPose.nodes[4].getParent()->getGlobalTransformMatrix()));
         ofMatrix4x4 tm44(ofMatrix4x4(tquat) * tinvParent);
         ofVec3f newYPR = getYawPitchRoll( tm44.getRotate() );
         ttargetAngles[ 4 ] = newYPR.x + PI/2;
@@ -331,19 +329,19 @@ vector<double> RobotController::lookAtJoints( float aDeltaTimef ) {
         
         // if the base is pointing towards a user on one side of the robot and the robot tries to look
         // at a user behind it, the head peeks upside down //
-        ofVec3f cBaseLook = -actualArm.nodes[0].getXAxis();
+        ofVec3f cBaseLook = -actualPose.nodes[0].getXAxis();
         // this is the direction that the base is pointing, it has no parent, so we should be able to use the axis as is //
         
         
         upAxis.set( 1,0,0 );
-        diff = ttarget - actualArm.nodes[3].getGlobalPosition();
+        diff = ttarget - actualPose.nodes[3].getGlobalPosition();
         diff.normalize();
         
         
         txaxis = upAxis * orotate;
         tquat.makeRotate( txaxis, diff );
         
-        ofMatrix4x4 invParent(ofMatrix4x4::getInverseOf(actualArm.nodes[3].getParent()->getGlobalTransformMatrix()));
+        ofMatrix4x4 invParent(ofMatrix4x4::getInverseOf(actualPose.nodes[3].getParent()->getGlobalTransformMatrix()));
         ofMatrix4x4 m44(ofMatrix4x4(tquat) * invParent);
         ofQuaternion localRot = m44.getRotate();
         
@@ -397,7 +395,7 @@ void RobotController::setTeachMode(){
 void RobotController::updateIKFast(){
 
     // update the plane that visualizes the robot flange
-    tcp_plane.update(robotParams.targetTCP.position*1000, robotParams.targetTCP.rotation);
+    tcp_plane.update(robotParams.targetTCP.position*1000, robotParams.targetTCP.orientation);
 
     targetPoses = inverseKinematics.inverseKinematics(robotParams.targetTCP);
     int selectedSolution = inverseKinematics.selectSolution(targetPoses, robot.getCurrentPose(), jointWeights);
@@ -428,7 +426,7 @@ void RobotController::updateIKArm(){
         
         for(int i = 0; i < targetPoses.size(); i++)
         {
-            previewArms[i]->setPose(targetPoses[i]);
+            desiredPoses[i]->setPose(targetPoses[i]);
         }
     }
     for(int i = 0; i < targetPose.size(); i++){
@@ -456,7 +454,7 @@ void RobotController::updateIKArm(){
         targetPose[i] = lookAtAngles[i];
     }
     
-    previewArm.setPose(targetPose);
+    desiredPose.setPose(targetPose);
 }
 
 #pragma mark - Update
@@ -489,7 +487,7 @@ void RobotController::update(vector<double> _pose){
 void RobotController::set_desired(ofNode target){
     // convert from mm to m
     robotParams.targetTCP.position = target.getGlobalPosition()/1000.0;
-    robotParams.targetTCP.rotation = target.getGlobalOrientation();
+    robotParams.targetTCP.orientation = target.getGlobalOrientation();
 }
 
 #pragma mark - Safety
@@ -535,10 +533,10 @@ void RobotController::updateRobotData(){
     // pass the current joints from the robot to the kinematic solver
     
     robotParams.currentPose = getCurrentPose();
-    actualArm.setPose(robotParams.currentPose);
+    actualPose.setPose(robotParams.currentPose);
     robotParams.actualTCP = robot.getToolPose();
     robotParams.tcpPosition = robotParams.actualTCP.position;
-    ofQuaternion tcpO = robotParams.actualTCP.rotation;
+    ofQuaternion tcpO = robotParams.actualTCP.orientation;
     robotParams.tcpOrientation = ofVec4f(tcpO.x(), tcpO.y(), tcpO.z(), tcpO.w());
     // update GUI params
     for(int i = 0; i < robotParams.currentPose.size(); i++){
@@ -557,13 +555,13 @@ void RobotController::close(){
 }
 
 void RobotController::draw(ofFloatColor color, bool debug){
-    actualArm.draw(color, debug);
+    actualPose.draw(color, debug);
 }
 
 //void RobotController::drawPreviews(){
-//    for(int i = 0; i < previewArms.size(); i++){
+//    for(int i = 0; i < desiredPoses.size(); i++){
 //        ofSetColor(255/(i+1), 0, 255/(i+1));
-//        previewArms[i]->draw(false);
+//        desiredPoses[i]->draw(false);
 //    }
 //}
 

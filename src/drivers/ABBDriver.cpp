@@ -133,12 +133,12 @@ void ofxABBDriver::setup(string ipAddress, int port, double minPayload, double m
     joints[5].axis.set(0, 1, 0);
     tool.axis.set(joints[5].axis);
     
-    joints[0].rotation.makeRotate(0,joints[0].axis);
-    joints[1].rotation.makeRotate(-90,joints[1].axis);
-    joints[2].rotation.makeRotate(0,joints[2].axis);
-    joints[3].rotation.makeRotate(-90,joints[3].axis);
-    joints[4].rotation.makeRotate(0,joints[4].axis);
-    joints[5].rotation.makeRotate(0,joints[5].axis);
+    joints[0].orientation.makeRotate(0,joints[0].axis);
+    joints[1].orientation.makeRotate(-90,joints[1].axis);
+    joints[2].orientation.makeRotate(0,joints[2].axis);
+    joints[3].orientation.makeRotate(-90,joints[3].axis);
+    joints[4].orientation.makeRotate(0,joints[4].axis);
+    joints[5].orientation.makeRotate(0,joints[5].axis);
 
     bTriedOnce = false;
 
@@ -209,7 +209,7 @@ vector<double> ofxABBDriver::getJointAngles(){
 ofVec4f ofxABBDriver::getCalculatedTCPOrientation(){
     ofVec4f ret;
     lock();
-    ret = ofVec4f(dtoolPoint.rotation.x(), dtoolPoint.rotation.y(), dtoolPoint.rotation.z(), dtoolPoint.rotation.w());
+    ret = ofVec4f(dtoolPoint.orientation.x(), dtoolPoint.orientation.y(), dtoolPoint.orientation.z(), dtoolPoint.orientation.w());
     unlock();
     return ret;
 }

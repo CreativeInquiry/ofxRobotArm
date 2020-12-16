@@ -81,10 +81,10 @@ namespace ofxRobotArm {
         Move movement;
 //        RobotParameters * robotParams;
         RobotParameters robotParams;
-        RobotKinematicModel previewArm;
-        vector<RobotKinematicModel*> previewArms;
+        RobotKinematicModel desiredPose;
+        vector<RobotKinematicModel*> desiredPoses;
         
-        RobotKinematicModel actualArm;
+        RobotKinematicModel actualPose;
         InverseKinemactic inverseKinematics;
         int stopCount = 0;
         shared_ptr< ofxIKArm > mIKArm;

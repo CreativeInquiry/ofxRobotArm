@@ -2,7 +2,7 @@
 #pragma once
 #include "ofMain.h"
 #include "ofxTiming.h"
-#include "Joint.h"
+#include "Pose.h"
 #include "Synchronized.h"
 #include <abb_libegm/egm_udp_server.h>
 #include <abb_libegm/egm_controller_interface.h>
@@ -39,7 +39,7 @@ class ofxABBDriver : public ofThread{
     void setSpeed(vector<double> speeds, double acceleration = 100.0);
     void setPosition(vector<double> positions);
     
-    ofxRobotArm::Joint getToolPose();
+    ofxRobotArm::Pose getToolPose();
     abb::egm::EGMControllerInterface* robot;
     boost::asio::io_service * io_service;
     boost::thread_group * thread_group;
@@ -66,9 +66,9 @@ class ofxABBDriver : public ofThread{
     Synchronized<vector<double> > jointsProcessed;
     Synchronized<vector<double> > jointsRaw;
     Synchronized<vector<double> > toolPointRaw;
-    ofxRobotArm::Joint tool;
-    ofxRobotArm::Joint dtoolPoint;
-    vector<ofxRobotArm::Joint> joints;
+    ofxRobotArm::Pose tool;
+    ofxRobotArm::Pose dtoolPoint;
+    vector<ofxRobotArm::Pose> joints;
     
     bool bTryReconnect = false;
     bool bTriedOnce = false;

@@ -154,14 +154,13 @@ vector<vector<double> > InverseKinemactic::inverseKinematics(vector<double> inpu
     return vector<vector<double>>();
 }
 
-vector<vector<double> > InverseKinemactic::inverseKinematics(ofxRobotArm::Joint pose){
+vector<vector<double> > InverseKinemactic::inverseKinematics(ofxRobotArm::Pose pose){
     ofMatrix4x4 matPose;
     ofMatrix4x4 matT, matR;
     matT.makeTranslationMatrix(pose.position);
-    matR.makeRotationMatrix(pose.rotation);
+    matR.makeRotationMatrix(pose.orientation);
     matPose = matR*matT;
     return inverseKinematics(matPose);
-    
 }
 
 vector<vector<double> > InverseKinemactic::inverseKinematics(ofMatrix4x4 pose)

@@ -10,7 +10,7 @@
 #include "ofMain.h"
 #include "ofxAssimpModelLoader.h"
 #include "Synchronized.h"
-#include "Joint.h"
+#include "Pose.h"
 #include "Utils.h"
 #include "RobotConstants.hpp"
 
@@ -38,6 +38,7 @@ namespace ofxRobotArm{
             
             void setAngles( vector<double> aTargetRadians );
             
+            RobotType type;
             ofxAssimpModelLoader loader;
             vector<ofMesh> meshs;
             ofMesh toolMesh;
@@ -45,11 +46,11 @@ namespace ofxRobotArm{
             ofShader shader;
             float elapsed_time, last_time;
             ofVec3f pt;
-            vector<ofxRobotArm::Joint> joints;
+            vector<ofxRobotArm::Pose> pose;
             
-            Joint tool;
+            Pose tool;
             
-            Joint dtoolPoint;
+            Pose dtoolPoint;
             
             ofNode tcpNode;
             vector<ofNode> nodes;

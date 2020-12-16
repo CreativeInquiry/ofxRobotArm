@@ -23,7 +23,7 @@ namespace ofxRobotArm{
         };
         
         virtual void setup(RobotParameters * parameters){};
-        virtual void update(Joint _currentTCP){};
+        virtual void update(Pose _currentTCP){};
         virtual void update(){};
         virtual void draw(){};
         virtual void draw(bool showNormals){};
@@ -33,7 +33,7 @@ namespace ofxRobotArm{
         virtual void transform(ofVec3f pos){};
         virtual void transform(ofMatrix4x4 m44){};
         
-        virtual Joint getTargetPoint(float t){};
+        virtual Pose getTargetPoint(float t){};
         virtual void addPoint(ofVec3f pt){};
         virtual void addStroke(ofPolyline stroke){};
         virtual void setCorners(vector<ofPoint> pts){};
@@ -55,8 +55,8 @@ namespace ofxRobotArm{
         ofParameter<float> feedRate;
         
         ofMesh surfaceMesh;
-        Joint currentTCP;
-        Joint targetTCP;
+        Pose currentTCP;
+        Pose targetTCP;
         
         ofQuaternion orientation;
         vector<ofPolyline> lines;
@@ -70,7 +70,7 @@ namespace ofxRobotArm{
         ofVec3f normal;
         float startTime;
         ofNode toolPoint;
-        Joint targetToolPoint;
+        Pose targetToolPoint;
         RateTimer timer;
     };
 }
