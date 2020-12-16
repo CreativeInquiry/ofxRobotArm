@@ -317,7 +317,7 @@ void RobotModel::draw(ofFloatColor color, bool bDrawDebug){
                         {
                             ofRotateDeg(-180, 0, 0, 1);
                             ofRotateDeg(-180, 1, 0, 0);
-                            ofScale(1000, 1000, 1000);
+                            ofScale(100, 100, 100);
                             meshs[i].draw();
                         }
                         ofPopMatrix();
@@ -328,7 +328,7 @@ void RobotModel::draw(ofFloatColor color, bool bDrawDebug){
                         {
                             ofRotateDeg(-180, 0, 0, 1);
                             ofRotateDeg(-180, 1, 0, 0);
-                            ofScale(1000, 1000, 1000);
+                            ofScale(100, 100, 100);
                             
                             meshs[i].draw();
                         } ofPopMatrix();
