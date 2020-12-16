@@ -106,7 +106,7 @@ void ofxABBDriver::setup(string ipAddress, int port, double minPayload, double m
     toolPointRaw.swapBack();
     bStarted = false;
 
-    // @TODO: This is all incorrect (now called in RobotKinematicModel)
+    // @TODO: This is all incorrect (now called in RobotModel)
     joints.resize(6);
     
     joints[0].position.set(0, 0, 0);
@@ -222,8 +222,8 @@ float ofxABBDriver::getThreadFPS(){
     return fps;
 }
 
-ofxRobotArm::Joint ofxABBDriver::getToolPose(){
-    ofxRobotArm::Joint ret;
+ofxRobotArm::Pose ofxABBDriver::getToolPose(){
+    ofxRobotArm::Pose ret;
     lock();
     ret = tool;
     unlock();

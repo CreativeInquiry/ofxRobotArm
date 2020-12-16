@@ -102,7 +102,7 @@ float JointRestrictor::getMaxJointAngle(int aIndex){
 //}
 
 //--------------------------------------------------------------
-void JointRestrictor::drawLimits( RobotKinematicModel* amodel ) {
+void JointRestrictor::drawLimits( RobotModel* amodel ) {
     if( amodel == NULL ) return;
     // loop through each node and show the limits //
     for( int i = 0; i < amodel->pose.size(); i++ ) {
@@ -184,7 +184,7 @@ void JointRestrictor::drawLimits( RobotKinematicModel* amodel ) {
 //}
 
 //--------------------------------------------------------------
-void JointRestrictor::drawAngles( RobotKinematicModel* amodel, vector< double > aCurrentAngles ) {
+void JointRestrictor::drawAngles( RobotModel* amodel, vector< double > aCurrentAngles ) {
     if( amodel == NULL ) return;
     // loop through each node and show the limits //
     for( int i = 0; i < amodel->pose.size(); i++ ) {
@@ -309,7 +309,7 @@ void JointRestrictor::drawAngles( RobotKinematicModel* amodel, vector< double > 
 //}
 
 //--------------------------------------------------------------
-vector< ofVec3f > JointRestrictor::getAxes( RobotKinematicModel* amodel, int aIndex ) {
+vector< ofVec3f > JointRestrictor::getAxes( RobotModel* amodel, int aIndex ) {
     vector< ofVec3f > taxes;
     taxes.push_back( ofVec3f(-1,0,0) );
     taxes.push_back( ofVec3f(0,-1,0 ) );

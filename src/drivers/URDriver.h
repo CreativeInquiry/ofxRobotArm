@@ -11,7 +11,7 @@
 #include "ur_driver.h"
 //#include "UR5KinematicModel.h"
 //#include "UR10KinematicModel.h"
-#include "RobotKinematicModel.h"
+#include "RobotModel.h"
 #include "ofxTiming.h"
 
 class ofxURDriver : public ofThread{

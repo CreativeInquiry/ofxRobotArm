@@ -90,7 +90,7 @@ void RobotArmSafety::setCurrentRobotArmAnlges( vector< double > aRobotArmAngles 
 //}
 
 //--------------------------------------------------------------
-void RobotArmSafety::update( RobotKinematicModel& previewArm ) {
+void RobotArmSafety::update( RobotModel& previewArm ) {
     m_bWithinCylinder = false;
     if( mCylinderRestrictor ) {
         if( mCylinderRestrictor->isEnabled() ) {
@@ -364,7 +364,7 @@ void RobotArmSafety::draw() {
 //}
 
 //--------------------------------------------------------------
-void RobotArmSafety::draw( RobotKinematicModel* amodel, ofCamera& acam ) {
+void RobotArmSafety::draw( RobotModel* amodel, ofCamera& acam ) {
     if( m_jointRestrictor ) {
         
         //cout << "mCurrentRobotArmAngles.size(): " << mCurrentRobotArmAngles.size() << " mTargetAngles.size(): " << mTargetAngles.size() << " mTargetRobotAngles.size(): " << mTargetRobotAngles.size() << " | " << ofGetFrameNum() << endl;

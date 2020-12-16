@@ -3,7 +3,7 @@
 #include "kin.h"
 //#include "UR5KinematicModel.h"
 //#include "UR10KinematicModel.h"
-//#include "RobotKinematicModel.h"
+//#include "RobotModel.h"
 #include "Pose.h"
 #include "ofxIKArm.h"
 #include "Utils.h"

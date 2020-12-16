@@ -7,7 +7,7 @@
 #include "RobotParameters.h"
 #include "InverseKinemactic.h"
 #include "InverseKinemactic.h"
-#include "RobotKinematicModel.h"
+#include "RobotModel.h"
 #include "ofxIKArm.h"
 #include "RobotArmSafety.h"
 #include "Utils.h"
@@ -81,10 +81,10 @@ namespace ofxRobotArm {
         Move movement;
 //        RobotParameters * robotParams;
         RobotParameters robotParams;
-        RobotKinematicModel desiredPose;
-        vector<RobotKinematicModel*> desiredPoses;
+        RobotModel desiredPose;
+        vector<RobotModel*> desiredPoses;
         
-        RobotKinematicModel actualPose;
+        RobotModel actualPose;
         InverseKinemactic inverseKinematics;
         int stopCount = 0;
         shared_ptr< ofxIKArm > mIKArm;

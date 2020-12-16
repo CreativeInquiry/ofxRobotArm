@@ -16,10 +16,10 @@
 
 //#include "ofxBullet.h"
 namespace ofxRobotArm{
-    class RobotKinematicModel{
+    class RobotModel{
         public:
-            RobotKinematicModel();
-            ~RobotKinematicModel();
+            RobotModel();
+            ~RobotModel();
             void setup(RobotType type);
             void update();
             void drawSkeleton();

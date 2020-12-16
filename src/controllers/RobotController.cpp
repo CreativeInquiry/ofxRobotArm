@@ -38,12 +38,12 @@ void RobotController::setup(string ipAddress, RobotType type){
     inverseKinematics = InverseKinemactic(type);
   
     // setup actual robot
-    actualPos.setup(type);
+    actualPose.setup(type);
 
 }
 
 void RobotController::setEndEffector(string filename){
-    actualPos.setEndEffector(filename);
+    actualPose.setEndEffector(filename);
     desiredPose.setEndEffector(filename);
 }
 
@@ -79,7 +79,7 @@ void RobotController::setup(string ipAddress, RobotParameters & params, bool off
     
     movement.setup();
     for(int i = 0; i < 1; i++){//8; i++){
-        RobotKinematicModel * foo = new RobotKinematicModel();
+        RobotModel * foo = new RobotModel();
         foo->setup(params.get_robot_type());
         desiredPoses.push_back(foo);
     }
@@ -476,7 +476,7 @@ void RobotController::update(){
         }
         robotParams.targetPose[i] = ofRadToDeg(tpose);
     }
-    previewArm.setPose(targetPose);
+    desiredPose.setPose(targetPose);
 }
 void RobotController::update(vector<double> _pose){
     targetPose = _pose;
@@ -496,7 +496,7 @@ void RobotController::safetyCheck(){
     
     robotSafety.setCurrentRobotArmAnlges(robot.getCurrentPose());
     robotSafety.setDesiredAngles(targetPose);
-    robotSafety.update(previewArm);
+    robotSafety.update(desiredPose);
     robotSafety.update(1/60);
     targetPose = robotSafety.getDesiredAngles();
     
@@ -575,7 +575,7 @@ void RobotController::drawIK(){
 }
 
 void RobotController::drawPreview(ofFloatColor color){
-    previewArm.draw(color, false);
+    desiredPose.draw(color, false);
     tcp_plane.draw();
 }
 

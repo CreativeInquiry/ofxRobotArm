@@ -6,18 +6,18 @@
 // Copyright (c) 2016, Daniel Moore, Madaline Gannon, and The Frank-Ratchye STUDIO for Creative Inquiry All rights reserved.
 //
 
-#include "RobotKinematicModel.h"
+#include "RobotModel.h"
 using namespace ofxRobotArm;
-RobotKinematicModel::RobotKinematicModel(){
+RobotModel::RobotModel(){
     
 }
-RobotKinematicModel::~RobotKinematicModel(){
+RobotModel::~RobotModel(){
     
 }
 
 // D-H Parameters for UR Robot Arms:
 // https://www.universal-robots.com/articles/ur/parameters-for-calculations-of-kinematics-and-dynamics/
-void RobotKinematicModel::setup(RobotType type){
+void RobotModel::setup(RobotType type){
     this->type = type;
     pose.resize(6);
     nodes.resize(6);
@@ -147,20 +147,20 @@ void RobotKinematicModel::setup(RobotType type){
     bUseShader.set("Use Shader", true);
 }
 
-ofQuaternion RobotKinematicModel::getToolPointQuaternion(){
+ofQuaternion RobotModel::getToolPointQuaternion(){
     return toOf(nodes[5].getGlobalTransformMatrix()).getRotate();
 }
 
 
-ofNode RobotKinematicModel::getTool(){
+ofNode RobotModel::getTool(){
     return tcpNode;
 }
 
-void RobotKinematicModel::setToolOffset(ofVec3f localOffset){
+void RobotModel::setToolOffset(ofVec3f localOffset){
     tcpNode.setPosition(localOffset);
 }
 
-void RobotKinematicModel::setAngles( vector<double> aTargetRadians ){
+void RobotModel::setAngles( vector<double> aTargetRadians ){
     for(int i = 0; i < pose.size(); i++){
         if(i == 1 || i == 3){
             pose[i].orientation.makeRotate(ofRadToDeg(aTargetRadians[i])+90,pose[i].axis);
@@ -171,7 +171,7 @@ void RobotKinematicModel::setAngles( vector<double> aTargetRadians ){
     }
 }
 
-void RobotKinematicModel::setPose(vector<double> pose){
+void RobotModel::setPose(vector<double> pose){
     if(type == RobotType::UR5 || type == RobotType::UR3 || type == RobotType::UR10){
         for(int i = 0; i < pose.size(); i++){
             if(i == 1 || i == 3){
@@ -192,7 +192,7 @@ void RobotKinematicModel::setPose(vector<double> pose){
     }
 }
 
-void RobotKinematicModel::setEndEffector(string filename){
+void RobotModel::setEndEffector(string filename){
     string path = ofToDataPath("models/"+filename);
     
     loader.clear();
@@ -205,19 +205,19 @@ void RobotKinematicModel::setEndEffector(string filename){
     }
 }
 
-void RobotKinematicModel::clearEndEffector(){
+void RobotModel::clearEndEffector(){
     toolMesh.clear();
 }
 
-void RobotKinematicModel::setToolMesh(ofMesh mesh){
+void RobotModel::setToolMesh(ofMesh mesh){
     toolMesh = mesh;
 }
-void RobotKinematicModel::update(){
+void RobotModel::update(){
     
 }
 
 // ----------------------------------------------------------
-void RobotKinematicModel::drawSkeleton() {
+void RobotModel::drawSkeleton() {
     ofEnableDepthTest();
     {
         ofPushStyle();
@@ -267,7 +267,7 @@ void RobotKinematicModel::drawSkeleton() {
 }
 
 
-void RobotKinematicModel::draw(ofFloatColor color, bool bDrawDebug){
+void RobotModel::draw(ofFloatColor color, bool bDrawDebug){
     ofPushMatrix();
     ofPushStyle();
     ofEnableDepthTest();

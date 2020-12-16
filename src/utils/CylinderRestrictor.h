@@ -9,7 +9,7 @@
 #include "ofMain.h"
 //#include "UR5KinematicModel.h"
 //#include "UR10KinematicModel.h"
-#include "RobotKinematicModel.h"
+#include "RobotModel.h"
 
 namespace ofxRobotArm {
     class CylinderRestrictor {
@@ -19,7 +19,7 @@ namespace ofxRobotArm {
         void draw();
         
         bool isEnabled();
-        bool isWithinCylinder( RobotKinematicModel* amodel );
+        bool isWithinCylinder( RobotModel* amodel );
 //        bool isWithinCylinder( UR5KinematicModel* amodel );
 //        bool isWithinCylinder( UR10KinematicModel* amodel );
 

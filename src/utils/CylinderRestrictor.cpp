@@ -53,7 +53,7 @@ bool CylinderRestrictor::isEnabled() {
 }
 
 //--------------------------------------------------------------
-bool CylinderRestrictor::isWithinCylinder( RobotKinematicModel* amodel ) {
+bool CylinderRestrictor::isWithinCylinder( RobotModel* amodel ) {
     if( !m_cylinder ) return true;
     ofVec3f cpos = m_cylinder->getPosition();
     // loop through the nodes //

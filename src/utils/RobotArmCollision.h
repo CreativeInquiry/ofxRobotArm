@@ -7,7 +7,7 @@
 
 #pragma once
 //#include "UR5KinematicModel.h"
-#include "RobotKinematicModel.h"
+#include "RobotModel.h"
 #include "URDriver.h"
 
 namespace ofxRobotArm {
@@ -55,8 +55,8 @@ namespace ofxRobotArm {
         vector< double > getDesiredAngles();
 //        void updateAppendages( shared_ptr< UR5KinematicModel > amodel, vector< Appendage >& aAppendages );
 //        void updateModel( shared_ptr< UR5KinematicModel > amodel, vector< Appendage >& aAppendages );
-        void updateAppendages( shared_ptr< RobotKinematicModel > amodel, vector< Appendage >& aAppendages );
-        void updateModel( shared_ptr< RobotKinematicModel > amodel, vector< Appendage >& aAppendages );
+        void updateAppendages( shared_ptr< RobotModel > amodel, vector< Appendage >& aAppendages );
+        void updateModel( shared_ptr< RobotModel > amodel, vector< Appendage >& aAppendages );
         float getClosestCollisionDistanceSq();
         int getNumWarningCollisions();
         
@@ -81,7 +81,7 @@ namespace ofxRobotArm {
         ofParameter< float > mCorrectStepAngle;
         ofParameter< float > mMaxCorrectiveAngle;
         ofParameter< float > mSpherePadding;
-        shared_ptr< RobotKinematicModel > mModel, mPredictiveModel;
+        shared_ptr< RobotModel > mModel, mPredictiveModel;
 //        shared_ptr< UR5KinematicModel > mModel, mPredictiveModel;
         vector< Appendage > mAppendages, mPredictiveAppendages;
         vector< double > mDesiredAngles;

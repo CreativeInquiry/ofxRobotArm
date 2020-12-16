@@ -49,10 +49,10 @@ using namespace ofxRobotArm;
 //    return params;
 //}
 ofParameterGroup &  RobotArmCollision::setup(RobotType type) {
-    mModel = shared_ptr< RobotKinematicModel >( new RobotKinematicModel() );
+    mModel = shared_ptr< RobotModel >( new RobotModel() );
     mModel->setup(type);
     
-    mPredictiveModel = shared_ptr< RobotKinematicModel >( new RobotKinematicModel() );
+    mPredictiveModel = shared_ptr< RobotModel >( new RobotModel() );
     mPredictiveModel->setup(type);
     
     params.setName( "Robot Collisions" );
@@ -373,7 +373,7 @@ vector< double > RobotArmCollision::getDesiredAngles() {
 }
 
 //--------------------------------------------------------------
-void RobotArmCollision::updateAppendages( shared_ptr< RobotKinematicModel > amodel, vector< Appendage >& aAppendages ) {
+void RobotArmCollision::updateAppendages( shared_ptr< RobotModel > amodel, vector< Appendage >& aAppendages ) {
     // calculate the positions of the sphere //
     // there is one less appendage than nodes //
     //    ofLog(OF_LOG_VERBOSE) << "mModel num nodes: " << mModel->nodes.size() << " | " << ofGetFrameNum() << endl;
@@ -493,7 +493,7 @@ void RobotArmCollision::updateAppendages( shared_ptr< RobotKinematicModel > amod
 }
 
 //--------------------------------------------------------------
-void RobotArmCollision::updateModel( shared_ptr< RobotKinematicModel > amodel, vector< Appendage >& aAppendages ) {
+void RobotArmCollision::updateModel( shared_ptr< RobotModel > amodel, vector< Appendage >& aAppendages ) {
     vector< double > tempPredictiveAngles;
     for( int i = 0; i < aAppendages.size(); i++ ) {
         tempPredictiveAngles.push_back( aAppendages[i].currentAngle );
