@@ -15,7 +15,7 @@ namespace ofxRobotArm {
             InverseKinemactic();
             InverseKinemactic(ofxRobotArm::RobotType type);
             ~InverseKinemactic();
-            
+            void setRobotType(ofxRobotArm::RobotType type);
             int selectSolution(vector<vector<double> > & inversePosition, vector<double> currentQ, vector<double> weight);
             ofMatrix4x4 forwardKinematics(vector<double> pose);
             double* forwardKinematics(double o, double t, double th, double f, double fi, double s);
@@ -23,8 +23,7 @@ namespace ofxRobotArm {
             vector<vector<double> > inverseKinematics(ofMatrix4x4 pose);
             vector<vector<double> > inverseKinematics(vector<double> input);
             vector<vector<double> > inverseKinematics(double o, double t, double th, double f, double fi, double s);
-            
-            
+            ofxRobotArm::RobotType type;
             vector<double> currentPosition;
             Kinematics kinematics;
             vector<vector<double> > preInversePosition;

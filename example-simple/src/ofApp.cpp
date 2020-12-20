@@ -7,7 +7,7 @@ void ofApp::setup(){
     setup_scene();
     
     // setup robot
-    robot.setup("192.168.1.10", ofxRobotArm::RobotType::UR10);    // change IP string to your robot's IP address
+    robot.setup("192.168.1.10", ofxRobotArm::RobotType::IRB120);    // change IP string to your robot's IP address
 
     // setup gui
     setup_gui();
@@ -145,7 +145,7 @@ void ofApp::setup_camera(){
     tgt.setGlobalPosition(0, 0, 0);
     tgt.setGlobalOrientation(ofQuaternion(0, 0, 0, 1));
     cam.setTarget(tgt);
-    cam.lookAt(ofVec3f(0, 0, -1), ofVec3f(1, 0, 0));
+    cam.lookAt(ofVec3f(0, 0, -1), ofVec3f(0, 0, 1));
 }
 
 //--------------------------------------------------------------
@@ -306,7 +306,7 @@ void ofApp::keypressed_gizmo(int key){
         case 'r':
         case 'R':
             // reset the orientation
-            tcp_target.getMatrix().setRotate(ofQuaternion(0,0,0,1));
+            tcp_target.getMatrix().setRotate(ofQuaternion(0, 0, 0, 1));
             break;
     }
     

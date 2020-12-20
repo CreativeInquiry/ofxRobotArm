@@ -39,6 +39,7 @@
 #include "ofMain.h"
 #include "Utils.h"
 #include "RobotConstants.hpp"
+#include <complex>
 // These kinematics find the tranfrom from the base link to the end effector.
 // Though the raw D-H parameters specify a transform from the 0th link to the 6th link,
 // offset transforms are specified in this formulation.
@@ -56,32 +57,70 @@
 //  1,  0,  0,  0
 //  0,  0,  0,  1
 
+typedef std::complex<float> CPX;
+namespace ofxRobotArm{
 class Kinematics {
 public:
-    Kinematics(ofxRobotArm::RobotType type);
+    Kinematics(RobotType type);
     Kinematics();
     ~Kinematics();
-  // @param q       The 6 joint values
-  // @param T       The 4x4 end effector pose in row-major ordering
-  void forward(const double* q, double* T);
-
-  // @param q       The 6 joint values 
-  // @param Ti      The 4x4 link i pose in row-major ordering. If NULL, nothing is stored.
-  void forward_all(const double* q, double* T1, double* T2, double* T3, 
-                                    double* T4, double* T5, double* T6);
-
-  // @param T       The 4x4 end effector pose in row-major ordering
-  // @param q_sols  An 8x6 array of doubles returned, all angles should be in [0,2*PI)
-  // @param q6_des  An optional parameter which designates what the q6 value should take
-  //                in case of an infinite solution on that joint.
-  // @return        Number of solutions found (maximum of 8)
-  int inverse(const double* T, double* q_sols, double q6_des=0.0);
+    //
+    //adapted from https://github.com/Jmeyer1292/opw_kinematics/blob/master/include/opw_kinematics/opw_kinematics_impl.h
+    //
+    void inverseSW(ofMatrix4x4 pose, double * sol);
+    void forwardSW(double t1, double t2, double t3, double t4, double t5, double t6, ofMatrix4x4& sol);
+    // @param q       The 6 joint values
+    // @param T       The 4x4 end effector pose in row-major ordering
+    void forwardHK(const double* q, double* T);
+    
+    // @param q       The 6 joint values
+    // @param Ti      The 4x4 link i pose in row-major ordering. If NULL, nothing is stored.
+    void forward_allHK(const double* q, double* T1, double* T2, double* T3,
+                       double* T4, double* T5, double* T6);
+    
+    // @param T       The 4x4 end effector pose in row-major ordering
+    // @param q_sols  An 8x6 array of doubles returned, all angles should be in [0,2*PI)
+    // @param q6_des  An optional parameter which designates what the q6 value should take
+    //                in case of an infinite solution on that joint.
+    // @return        Number of solutions found (maximum of 8)
+    int inverseHK(const double* T, double* q_sols, double q6_des=0.0);
+    
+    void setParams(float _a1, float _a2, float _b, float _c1, float _c2, float _c3, float _c4);
+    void setDH(float d1, float a2, float a3, float d4, float d5, float d6);
+    void harmonizeTowardZero(double* qs)
+    {
+        for (int i = 0; i < 6; i++)
+        {
+            if (qs[i] > PI)
+                qs[i] -= TWO_PI;
+            else if (qs[i] < -PI)
+                qs[i] += TWO_PI;
+        }
+    }
+    
+    bool isValid(const double* qs)
+    {
+        return std::isfinite(qs[0]) && std::isfinite(qs[1]) && std::isfinite(qs[2]) && std::isfinite(qs[3]) &&
+        std::isfinite(qs[4]) && std::isfinite(qs[5]);
+    }
 private:
+    
+
+    RobotType type;
+    // Retrive a specific value from a 4x4 matrix
+    float get(ofMatrix4x4 mat, int row, int col);
+    
+    
     double d1;
     double a2;
     double a3;
     double d4;
     double d5;
     double d6;
+    
+    double a1, b, c1, c2, c3, c4;
+    vector<double> offsets;
+    vector<double> sign_corrections;
 };
+}
 

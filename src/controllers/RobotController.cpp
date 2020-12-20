@@ -21,16 +21,15 @@ void RobotController::setup(string ipAddress, RobotType type){
     // setup robot parameters
     robotParams.setup(type);
     
-    // setup Kinematic Model
-    movement.setup();       // speed profile
-    
-    desiredPose.setup(type); // should be called sim or desired or something
+   
+    // @todo: this can go away
+    //
+    movement.setup();
     
     jointWeights.assign(6, 1.0f);
-
+    // setup Kinematic Model
     inverseKinematics = InverseKinemactic(type);
-  
-    // setup actual robot
+    desiredPose.setup(type);
     actualPose.setup(type);
 
 }
@@ -394,13 +393,6 @@ void RobotController::updateIKFast(){
     int selectedSolution = inverseKinematics.selectSolution(targetPoses, robot.getCurrentPose(), jointWeights);
     if(selectedSolution > -1){
         targetPose = targetPoses[selectedSolution];
-        for(int i = 0; i < targetPose.size(); i++){
-            float tpose = (float)targetPose[i];
-            if( isnan(tpose) ) {
-                tpose = 0.f;
-            }
-            robotParams.ikPose[i] = tpose;
-        }
     }
 }
 
@@ -455,21 +447,27 @@ void RobotController::update(){
     updateRobotData();
     if(robotParams.bUseIKFast){
         updateIKFast();
+        cout<<"after IF Fast"<<endl;
     }else if(robotParams.bUseIKArm){
         updateIKArm();
     }
-    
+    cout<<"update"<<endl;
 //    safetyCheck();
     updateMovement();
-      targetPose = movement.getTargetJointPose();
-    for(int i = 0; i < targetPose.size(); i++){
-        float tpose = (float)targetPose[i];
-        if( isnan(tpose) ) {
-            tpose = 0.f;
-        }
-        robotParams.targetPose[i] = ofRadToDeg(tpose);
-    }
-    desiredPose.setPose(targetPose);
+    targetPose = movement.getTargetJointPose();
+    if(targetPose.size() > 0)
+        cout<<"POSE: "<<targetPose[0]<<" "<<targetPose[1]<<" "<<targetPose[2]<<" "<<targetPose[3]<<" "<<targetPose[4]<<" "<<targetPose[5]<<" "<<endl;
+
+    //this is causing an error on my machine. an
+//    for(int i = 0; i < targetPose.size(); i++){
+//        float tpose = (float)targetPose[i];
+//        if( isnan(tpose) ) {
+//            tpose = 0.f;
+//        }
+//        robotParams.targetPose[i].set(tpose);
+//    }
+    if(targetPose.size() > 0)
+        desiredPose.setPose(targetPose);
 }
 void RobotController::update(vector<double> _pose){
     targetPose = _pose;
@@ -516,7 +514,6 @@ void RobotController::updateMovement(){
             stopCount--;
         }
     }
-    
 }
 
 

@@ -1,12 +1,52 @@
 #include "kin.h"
 
+
+
+
+using namespace ofxRobotArm;
+const static double ANGLE_THRESH = ofDegToRad(30);
 const double ZERO_THRESH = 0.00000001;
 int SIGN(double x) {
     return (x > 0) - (x < 0);
 }
 
+//#define UR10_PARAMS
+//#ifdef UR10_PARAMS
+//const double d1 =  0.1273;
+//const double a2 = -0.612;
+//const double a3 = -0.5723;
+//const double d4 =  0.163941;
+//const double d5 =  0.1157;
+//const double d6 =  0.0922;
+//#endif
+//
+////#define UR5_PARAMS
+//#ifdef UR5_PARAMS
+//const double d1 =  0.089159;
+//const double a2 = -0.42500;
+//const double a3 = -0.39225;
+//const double d4 =  0.10915;
+//const double d5 =  0.09465;
+//const double d6 =  0.0823;
+//#endif
+//
+////#define UR3_PARAMS
+//#ifdef UR3_PARAMS
+//const double d1 =  0.1519;
+//const double a2 = -0.24365;
+//const double a3 = -0.21325;
+//const double d4 =  0.11235;
+//const double d5 =  0.08535;
+//const double d6 =  0.0819;
+//#endif
+
 Kinematics::Kinematics(ofxRobotArm::RobotType type){
-    if (type == ofxRobotArm::RobotType::UR3){
+    
+    offsets.assign(6, 0);
+    sign_corrections.assign(6, 1);
+    
+    this->type = type;
+    if (type == UR3){
         d1 =  0.1519;
         a2 = -0.24365;
         a3 = -0.21325;
@@ -14,7 +54,7 @@ Kinematics::Kinematics(ofxRobotArm::RobotType type){
         d5 =  0.08535;
         d6 =  0.0819;
     }
-    else if (type == ofxRobotArm::RobotType::UR5){
+    else if (type == UR5){
         d1 =  0.089159;
         a2 = -0.42500;
         a3 = -0.39225;
@@ -22,13 +62,29 @@ Kinematics::Kinematics(ofxRobotArm::RobotType type){
         d5 =  0.09465;
         d6 =  0.0823;
     }
-    else if (type == ofxRobotArm::RobotType::UR10){
+    else if (type == UR10){
         d1 =  0.1273;
         a2 = -0.612;
         a3 = -0.5723;
         d4 =  0.163941;
         d5 =  0.1157;
         d6 =  0.0922;
+    }
+    else if (type == IRB120){
+        d1 =  0.290;
+        a2 =  0.270;
+        a3 =  -0.070;
+        d4 =  0.302;
+        d5 =  0.0;
+        d6 =  0.072;
+        
+        a1  = 0; //a1
+        a2 = 0.270; //a2
+        b = 0; //b
+        c1= 0.270; //c1
+        c2   = 0.290; //c2
+        c3  = 0.302; //c3
+        c4  = 0.072; //c4
     }
 }
 
@@ -39,7 +95,7 @@ Kinematics::~Kinematics(){
     
 }
 
-void Kinematics::forward(const double* q, double* T) {
+void Kinematics::forwardHK(const double* q, double* T) {
     double s1 = sin(*q), c1 = cos(*q); q++;
     double q23 = *q, q234 = *q, s2 = sin(*q), c2 = cos(*q); q++;
     double s3 = sin(*q), c3 = cos(*q); q23 += *q; q234 += *q; q++;
@@ -63,8 +119,8 @@ void Kinematics::forward(const double* q, double* T) {
     *T = 0.0; T++; *T = 0.0; T++; *T = 0.0; T++; *T = 1.0;
 }
 
-void Kinematics::forward_all(const double* q, double* T1, double* T2, double* T3,
-                             double* T4, double* T5, double* T6) {
+void Kinematics::forward_allHK(const double* q, double* T1, double* T2, double* T3,
+                               double* T4, double* T5, double* T6) {
     double s1 = sin(*q), c1 = cos(*q); q++; // q1
     double q23 = *q, q234 = *q, s2 = sin(*q), c2 = cos(*q); q++; // q2
     double s3 = sin(*q), c3 = cos(*q); q23 += *q; q234 += *q; q++; // q3
@@ -189,7 +245,7 @@ void Kinematics::forward_all(const double* q, double* T1, double* T2, double* T3
     }
 }
 
-int Kinematics::inverse(const double* T, double* q_sols, double q6_des) {
+int Kinematics::inverseHK(const double* T, double* q_sols, double q6_des) {
     int num_sols = 0;
     double T02 = -*T; T++; double T00 =  *T; T++; double T01 =  *T; T++; double T03 = -*T; T++;
     double T12 = -*T; T++; double T10 =  *T; T++; double T11 =  *T; T++; double T13 = -*T; T++;
@@ -337,4 +393,281 @@ int Kinematics::inverse(const double* T, double* q_sols, double q6_des) {
 }
 
 
+// ----------------------------------------------------------
+void Kinematics::setParams(float _a1, float _a2, float _b, float _c1, float _c2, float _c3, float _c4) {
+    
+    a1 = _a1;
+    a2 = _a2;
+    b = _b;
+    c1 = _c1;
+    c2 = _c2;
+    c3 = _c3;
+    c4 = _c4;
+}
 
+void Kinematics::setDH(float d1, float a2, float a3, float d4, float d5, float d6) {
+    
+    this->d1 = d1;
+    this->a2 = a2;
+    this->a3 = a3;
+    this->d4 = d4;
+    this->d5 = d5;
+    this->d6 = d6;
+}
+
+// ----------------------------------------------------------
+void Kinematics::forwardSW(double t1, double t2, double t3, double t4, double t5, double t6, ofMatrix4x4& sol) {
+    
+    double q[6];
+    q[0] = t1 * sign_corrections[0] - offsets[0];
+    q[1] = t2 * sign_corrections[1] - offsets[1];
+    q[2] = t3 * sign_corrections[2] - offsets[2];
+    q[3] = t4 * sign_corrections[3] - offsets[3];
+    q[4] = t4 * sign_corrections[4] - offsets[4];
+    q[5] = t5 * sign_corrections[5] - offsets[5];
+    
+    double psi3 = std::atan2(a2,c3);
+    double k = std::sqrt(a2 *a2 +c3 *c3);
+    
+    double cx1 =c2 * std::sin(q[1]) + k * std::sin(q[1] + q[2] + psi3) +a1;
+    double cy1 =b;
+    double cz1 =c2 * std::cos(q[1]) + k * std::cos(q[1] + q[2] + psi3);
+    
+    double cx0 = cx1 * std::cos(q[0]) - cy1 * std::sin(q[0]);
+    double cy0 = cx1 * std::sin(q[0]) + cy1 * std::cos(q[0]);
+    double cz0 = cz1 +c1;
+    
+    double s1 = std::sin(q[0]);
+    double s2 = std::sin(q[1]);
+    double s3 = std::sin(q[2]);
+    double s4 = std::sin(q[3]);
+    double s5 = std::sin(q[4]);
+    double s6 = std::sin(q[5]);
+    
+    double c1 = std::cos(q[0]);
+    double c2 = std::cos(q[1]);
+    double c3 = std::cos(q[2]);
+    double c4 = std::cos(q[3]);
+    double c5 = std::cos(q[4]);
+    double c6 = std::cos(q[5]);
+    
+    ofMatrix4x4 r_0c;
+    r_0c.set(c1 * c2 * c3 - c1 * s2 * s3,
+             -s1,
+             c1 * c2 * s3 + c1 * s2 * c3,
+             0,
+             s1 * c2 * c3 - s1 * s2 * s3,
+             c1,
+             s1 * c2 * s3 + s1 * s2 * c3,
+             0,
+             -s2 * c3 - c2 * s3, 0,
+             -s2 * s3 + c2 * c3, 0,
+             0, 0, 0, 0);
+    
+    
+    ofMatrix4x4 r_ce;
+    r_ce.set(c4 * c5 * c6 - s4 * s6, -c4 * c5 * s6 - s4 * c6, c4 * s5, 0,
+             s4 * c5 * c6 + c4 * s6, -s4 * c5 * s6 + c4 * c6, s4 * s5, 0,
+             -s5 * c6, s5 * s6, c5, 0, 0, 0, 0, 0);
+    
+    
+    ofMatrix4x4 r_oe = r_0c * r_ce;
+    
+    // Note: do not use auto here, leads to lazy evalutation which
+    // seems to be buggy on at least some setups and uses uninitialized data
+    ofVec3f u = ofVec3f(cx0, cy0, cz0) +c4*ofVec3f(0, 0, 1) * r_oe;
+    
+    
+    sol.makeIdentityMatrix();
+    sol.makeTranslationMatrix(u);
+    sol = sol * r_oe;
+}
+
+
+// ----------------------------------------------------------
+float Kinematics::get(ofMatrix4x4 mat, int row, int col) {
+    
+    return (mat.getPtr())[row*4+col];
+}
+
+
+void Kinematics::inverseSW(ofMatrix4x4 pose, double * sol)
+{
+    
+    // Adjust to wrist center
+    ofVec3f c = pose.getTranslation() - c4;
+    
+    double nx1 = std::sqrt(c.x * c.x + c.y * c.y - b * b) - a1;
+    
+    // Compute theta1_i, theta1_ii
+    double tmp1 = atan2(c.y, c.x);
+    double tmp2 = atan2(b, nx1 + a1);
+    double theta1_i = tmp1 - tmp2;
+    double theta1_ii = tmp1 + tmp2 - PI;
+    
+    // theta2 i through iv
+    double tmp3 = (c.z - c1);
+    double s1_2 = nx1 * nx1 + tmp3 * tmp3;
+    
+    double tmp4 = nx1 + 2.0 * a1;
+    double s2_2 = tmp4 * tmp4 + tmp3 * tmp3;
+    double kappa_2 = a2 * a2 + c3 * c3;
+    
+    double c2_2 = c2 * c2;
+    
+    double tmp5 = s1_2 + c2_2 - kappa_2;
+    
+    double s1 = std::sqrt(s1_2);
+    double s2 = std::sqrt(s2_2);
+    
+    double theta2_i = -std::acos(tmp5 / (2.0 * s1 * c2)) + std::atan2(nx1, (c.z - c1));
+    double theta2_ii = std::acos(tmp5 / (2.0 * s1 * c2)) + std::atan2(nx1, (c.z - c1));
+    
+    double tmp6 = s2_2 + c2_2 - kappa_2;
+    
+    double theta2_iii = -std::acos(tmp6 / (2.0 * s2 * c2)) - std::atan2(nx1 + 2.0 * a1, c.z - c1);
+    double theta2_iv = std::acos(tmp6 / (2.0 * s2 * c2)) - std::atan2(nx1 + 2.0 * a1, c.z - c1);
+    
+    // theta3
+    double tmp7 = s1_2 - c2_2 - kappa_2;
+    double tmp8 = s2_2 - c2_2 - kappa_2;
+    double tmp9 = 2 * c2 * std::sqrt(kappa_2);
+    double theta3_i = std::acos(tmp7 / tmp9) - atan2(a2, c3);
+    
+    double theta3_ii = -std::acos(tmp7 / tmp9) - atan2(a2, c3);
+    
+    double theta3_iii = std::acos(tmp8 / tmp9) - atan2(a2, c3);
+    double theta3_iv = -std::acos(tmp8 / tmp9) - atan2(a2, c3);
+    
+    // Now for the orientation part...
+    double s23[4];
+    double c23[4];
+    double sin1[4];
+    double cos1[4];
+    
+    sin1[0] = std::sin(theta1_i);
+    sin1[1] = std::sin(theta1_i);
+    sin1[2] = std::sin(theta1_ii);  // ???
+    sin1[3] = std::sin(theta1_ii);
+    
+    cos1[0] = std::cos(theta1_i);
+    cos1[1] = std::cos(theta1_i);
+    cos1[2] = std::cos(theta1_ii);  // ???
+    cos1[3] = std::cos(theta1_ii);
+    
+    s23[0] = std::sin(theta2_i + theta3_i);
+    s23[1] = std::sin(theta2_ii + theta3_ii);
+    s23[2] = std::sin(theta2_iii + theta3_iii);
+    s23[3] = std::sin(theta2_iv + theta3_iv);
+    
+    c23[0] = std::cos(theta2_i + theta3_i);
+    c23[1] = std::cos(theta2_ii + theta3_ii);
+    c23[2] = std::cos(theta2_iii + theta3_iii);
+    c23[3] = std::cos(theta2_iv + theta3_iv);
+    
+    double m[4];
+    m[0] = get(pose, 0, 2) * s23[0] * cos1[0] + get(pose, 1, 2) * s23[0] * sin1[0] + get(pose, 2, 2) * c23[0];
+    m[1] = get(pose, 0, 2) * s23[1] * cos1[1] + get(pose, 1, 2) * s23[1] * sin1[1] + get(pose, 2, 2) * c23[1];
+    m[2] = get(pose, 0, 2) * s23[2] * cos1[2] + get(pose, 1, 2) * s23[2] * sin1[2] + get(pose, 2, 2) * c23[2];
+    m[3] = get(pose, 0, 2) * s23[3] * cos1[3] + get(pose, 1, 2) * s23[3] * sin1[3] + get(pose, 2, 2) * c23[3];
+    
+    double theta4_i = atan2(get(pose, 1, 2) * cos1[0] - get(pose, 0, 2) * sin1[0],
+                            get(pose, 0, 2) * c23[0] * cos1[0] + get(pose, 1, 2) * c23[0] * sin1[0] - get(pose, 2, 2) * s23[0]);
+    
+    double theta4_ii = atan2(get(pose, 1, 2) * cos1[1] - get(pose, 0, 2) * sin1[1],
+                             get(pose, 0, 2) * c23[1] * cos1[1] + get(pose, 1, 2) * c23[1] * sin1[1] - get(pose, 2, 2) * s23[1]);
+    
+    double theta4_iii = atan2(get(pose, 1, 2) * cos1[2] - get(pose, 0, 2) * sin1[2],
+                              get(pose, 0, 2) * c23[2] * cos1[2] + get(pose, 1, 2) * c23[2] * sin1[2] - get(pose, 2, 2) * s23[2]);
+    
+    double theta4_iv = atan2(get(pose, 1, 2) * cos1[3] - get(pose, 0, 2) * sin1[3],
+                             get(pose, 0, 2) * c23[3] * cos1[3] + get(pose, 1, 2) * c23[3] * sin1[3] - get(pose, 2, 2) * s23[3]);
+    
+    double theta4_v = theta4_i + PI;
+    double theta4_vi = theta4_ii + PI;
+    double theta4_vii = theta4_iii + PI;
+    double theta4_viii = theta4_iv + PI;
+    
+    double theta5_i = atan2(std::sqrt(1 - m[0] * m[0]), m[0]);
+    double theta5_ii = atan2(std::sqrt(1 - m[1] * m[1]), m[1]);
+    double theta5_iii = atan2(std::sqrt(1 - m[2] * m[2]), m[2]);
+    double theta5_iv = atan2(std::sqrt(1 - m[3] * m[3]), m[3]);
+    
+    double theta5_v = -theta5_i;
+    double theta5_vi = -theta5_ii;
+    double theta5_vii = -theta5_iii;
+    double theta5_viii = -theta5_iv;
+    
+    double theta6_i = atan2(get(pose, 0, 1) * s23[0] * cos1[0] + get(pose, 1, 1) * s23[0] * sin1[0] + get(pose, 2, 1) * c23[0],
+                            -get(pose, 0, 0) * s23[0] * cos1[0] - get(pose, 1, 0) * s23[0] * sin1[0] - get(pose, 2, 0) * c23[0]);
+    
+    double theta6_ii = atan2(get(pose, 0, 1) * s23[1] * cos1[1] + get(pose, 1, 1) * s23[1] * sin1[1] + get(pose, 2, 1) * c23[1],
+                             -get(pose, 0, 0) * s23[1] * cos1[1] - get(pose, 1, 0) * s23[1] * sin1[1] - get(pose, 2, 0) * c23[1]);
+    
+    double theta6_iii = atan2(get(pose, 0, 1) * s23[2] * cos1[2] + get(pose, 1, 1) * s23[2] * sin1[2] + get(pose, 2, 1) * c23[2],
+                              -get(pose, 0, 0) * s23[2] * cos1[2] - get(pose, 1, 0) * s23[2] * sin1[2] - get(pose, 2, 0) * c23[2]);
+    
+    double theta6_iv = atan2(get(pose, 0, 1) * s23[3] * cos1[3] + get(pose, 1, 1) * s23[3] * sin1[3] + get(pose, 2, 1) * c23[3],
+                             -get(pose, 0, 0) * s23[3] * cos1[3] - get(pose, 1, 0) * s23[3] * sin1[3] - get(pose, 2, 0) * c23[3]);
+    
+    double theta6_v = theta6_i -PI;
+    double theta6_vi = theta6_ii -PI;
+    double theta6_vii = theta6_iii -PI;
+    double theta6_viii = theta6_iv -PI;
+    
+    sol[6 * 0 + 0] = (theta1_i + offsets[0]) * sign_corrections[0];
+    sol[6 * 0 + 1] = (theta2_i + offsets[1]) * sign_corrections[1];
+    sol[6 * 0 + 2] = (theta3_i + offsets[2]) * sign_corrections[2];
+    sol[6 * 0 + 3] = (theta4_i + offsets[3]) * sign_corrections[3];
+    sol[6 * 0 + 4] = (theta5_i + offsets[4]) * sign_corrections[4];
+    sol[6 * 0 + 5] = (theta6_i + offsets[5]) * sign_corrections[5];
+    
+    sol[6 * 1 + 0] = (theta1_i + offsets[0]) * sign_corrections[0];
+    sol[6 * 1 + 1] = (theta2_ii + offsets[1]) * sign_corrections[1];
+    sol[6 * 1 + 2] = (theta3_ii + offsets[2]) * sign_corrections[2];
+    sol[6 * 1 + 3] = (theta4_ii + offsets[3]) * sign_corrections[3];
+    sol[6 * 1 + 4] = (theta5_ii + offsets[4]) * sign_corrections[4];
+    sol[6 * 1 + 5] = (theta6_ii + offsets[5]) * sign_corrections[5];
+    
+    sol[6 * 2 + 0] = (theta1_ii + offsets[0]) * sign_corrections[0];
+    sol[6 * 2 + 1] = (theta2_iii + offsets[1]) * sign_corrections[1];
+    sol[6 * 2 + 2] = (theta3_iii + offsets[2]) * sign_corrections[2];
+    sol[6 * 2 + 3] = (theta4_iii + offsets[3]) * sign_corrections[3];
+    sol[6 * 2 + 4] = (theta5_iii + offsets[4]) * sign_corrections[4];
+    sol[6 * 2 + 5] = (theta6_iii + offsets[5]) * sign_corrections[5];
+    
+    sol[6 * 3 + 0] = (theta1_ii + offsets[0]) * sign_corrections[0];
+    sol[6 * 3 + 1] = (theta2_iv + offsets[1]) * sign_corrections[1];
+    sol[6 * 3 + 2] = (theta3_iv + offsets[2]) * sign_corrections[2];
+    sol[6 * 3 + 3] = (theta4_iv + offsets[3]) * sign_corrections[3];
+    sol[6 * 3 + 4] = (theta5_iv + offsets[4]) * sign_corrections[4];
+    sol[6 * 3 + 5] = (theta6_iv + offsets[5]) * sign_corrections[5];
+    
+    sol[6 * 4 + 0] = (theta1_i + offsets[0]) * sign_corrections[0];
+    sol[6 * 4 + 1] = (theta2_i + offsets[1]) * sign_corrections[1];
+    sol[6 * 4 + 2] = (theta3_i + offsets[2]) * sign_corrections[2];
+    sol[6 * 4 + 3] = (theta4_v + offsets[3]) * sign_corrections[3];
+    sol[6 * 4 + 4] = (theta5_v + offsets[4]) * sign_corrections[4];
+    sol[6 * 4 + 5] = (theta6_v + offsets[5]) * sign_corrections[5];
+    
+    sol[6 * 5 + 0] = (theta1_i + offsets[0]) * sign_corrections[0];
+    sol[6 * 5 + 1] = (theta2_ii + offsets[1]) * sign_corrections[1];
+    sol[6 * 5 + 2] = (theta3_ii + offsets[2]) * sign_corrections[2];
+    sol[6 * 5 + 3] = (theta4_vi + offsets[3]) * sign_corrections[3];
+    sol[6 * 5 + 4] = (theta5_vi + offsets[4]) * sign_corrections[4];
+    sol[6 * 5 + 5] = (theta6_vi + offsets[5]) * sign_corrections[5];
+    
+    sol[6 * 6 + 0] = (theta1_ii + offsets[0]) * sign_corrections[0];
+    sol[6 * 6 + 1] = (theta2_iii + offsets[1]) * sign_corrections[1];
+    sol[6 * 6 + 2] = (theta3_iii + offsets[2]) * sign_corrections[2];
+    sol[6 * 6 + 3] = (theta4_vii + offsets[3]) * sign_corrections[3];
+    sol[6 * 6 + 4] = (theta5_vii + offsets[4]) * sign_corrections[4];
+    sol[6 * 6 + 5] = (theta6_vii + offsets[5]) * sign_corrections[5];
+    
+    sol[6 * 7 + 0] = (theta1_ii + offsets[0]) * sign_corrections[0];
+    sol[6 * 7 + 1] = (theta2_iv + offsets[1]) * sign_corrections[1];
+    sol[6 * 7 + 2] = (theta3_iv + offsets[2]) * sign_corrections[2];
+    sol[6 * 7 + 3] = (theta4_viii + offsets[3]) * sign_corrections[3];
+    sol[6 * 7 + 4] = (theta5_viii + offsets[4]) * sign_corrections[4];
+    sol[6 * 7 + 5] = (theta6_viii + offsets[5]) * sign_corrections[5];
+}
