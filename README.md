@@ -128,16 +128,12 @@ Here are some of the references and resources that have made `ofxRobotArm` possi
 
 ## Known Issues
  There are several known issues:
- - Crashing on Exit when Not Connected to a robot
- - Intermittent Protective Stops or Sudden Stops
 
  
 
 ## Future Development
 
 * Collision Detection
-* UR3/UR10 Support
-* Support for ABB Robot Arms
 * More Robot Arms!
 
 
