@@ -1,5 +1,5 @@
 //
-//  ofxURDriver.cpp
+//  URDriver.cpp
 //  urModernDriverTest
 //
 //  Created by dantheman on 2/20/16.
@@ -7,8 +7,8 @@
 //
 
 #include "URDriver.h"
-
-ofxURDriver::ofxURDriver(){
+using namespace ofxRobotArm;
+URDriver::URDriver(){
     currentSpeed.assign(6, 0.0);
     acceleration = 0.0;
     robot       = NULL;
@@ -26,7 +26,7 @@ ofxURDriver::ofxURDriver(){
 
 }
 
-ofxURDriver::~ofxURDriver(){
+URDriver::~URDriver(){
     if(robot){
         disconnect();
         delete robot;
@@ -34,7 +34,7 @@ ofxURDriver::~ofxURDriver(){
     }
 }
 
-void ofxURDriver::stopThread(){
+void URDriver::stopThread(){
     if(isConnected()){
         disconnect();
     }
@@ -42,7 +42,7 @@ void ofxURDriver::stopThread(){
         ofThread::stopThread();
     }
 }
-void ofxURDriver::toggleTeachMode(){
+void URDriver::toggleTeachMode(){
     lock();
     if(bTeachModeEnabled){
         bTeachModeEnabled = false;
@@ -54,7 +54,7 @@ void ofxURDriver::toggleTeachMode(){
     unlock();
 }
 
-void ofxURDriver::setTeachMode(bool enabled){
+void URDriver::setTeachMode(bool enabled){
     lock();
     if(enabled){
         bTeachModeEnabled = true;
@@ -66,12 +66,12 @@ void ofxURDriver::setTeachMode(bool enabled){
     unlock();
 }
 
-void ofxURDriver::setAllowReconnect(bool bDoReconnect){
+void URDriver::setAllowReconnect(bool bDoReconnect){
     bTryReconnect = bDoReconnect;
 }
 
-void ofxURDriver::setup(string ipAddress, double minPayload, double maxPayload){
-    cout << "ofxURDriver :: setup : ipAddress: " << ipAddress << endl;
+void URDriver::setup(string ipAddress, double minPayload, double maxPayload){
+    cout << "URDriver :: setup : ipAddress: " << ipAddress << endl;
     if( ipAddress != "" && ipAddress.length() > 3 ) {
         robot = new UrDriver(rt_msg_cond_,
                          msg_cond_, ipAddress);
@@ -83,7 +83,7 @@ void ofxURDriver::setup(string ipAddress, double minPayload, double maxPayload){
 //    vector<string> foo = robot->getJointNames();
     std::string joint_prefix = "ur_";
     std::vector<std::string> joint_names;
-    joint_prefix = "ofxURDriver-";
+    joint_prefix = "URDriver-";
     joint_names.push_back(joint_prefix + "shoulder_pan_joint");
     joint_names.push_back(joint_prefix + "shoulder_lift_joint");
     joint_names.push_back(joint_prefix + "elbow_joint");
@@ -115,12 +115,12 @@ void ofxURDriver::setup(string ipAddress, double minPayload, double maxPayload){
     bTriedOnce = false; 
 
 }
-void ofxURDriver::start(){
-    ofLog(OF_LOG_NOTICE)<<"Starting ofxURDriver Controller"<<endl;
+void URDriver::start(){
+    ofLog(OF_LOG_NOTICE)<<"Starting URDriver Controller"<<endl;
     startThread();
 }
 
-bool ofxURDriver::isConnected() {
+bool URDriver::isConnected() {
     if( ofThread::isThreadRunning() ) {
         bool tConn = false;
         if(lock()) {
@@ -134,12 +134,12 @@ bool ofxURDriver::isConnected() {
 
 
 
-void ofxURDriver::disconnect(){
+void URDriver::disconnect(){
     if( robot != NULL ) robot->halt();
     
 }
 
-bool ofxURDriver::isDataReady(){
+bool URDriver::isDataReady(){
     if(bDataReady){
         bDataReady = false;
         return true;
@@ -147,7 +147,7 @@ bool ofxURDriver::isDataReady(){
         return false;
     }
 }
-vector<double> ofxURDriver::getToolPointRaw(){
+vector<double> URDriver::getToolPointRaw(){
     vector<double> ret;
     lock();
     toolPointRaw.swapFront();
@@ -156,7 +156,7 @@ vector<double> ofxURDriver::getToolPointRaw(){
     return ret;
 }
 
-vector<double> ofxURDriver::getCurrentPose(){
+vector<double> URDriver::getCurrentPose(){
     vector<double> ret;
     
     lock();
@@ -167,7 +167,7 @@ vector<double> ofxURDriver::getCurrentPose(){
     
     return ret;
 }
-vector<double> ofxURDriver::getJointAngles(){
+vector<double> URDriver::getJointAngles(){
     vector<double> ret;
     lock();
     jointsProcessed.swapFront();
@@ -176,7 +176,7 @@ vector<double> ofxURDriver::getJointAngles(){
     return ret;
 }
 
-ofVec4f ofxURDriver::getCalculatedTCPOrientation(){
+ofVec4f URDriver::getCalculatedTCPOrientation(){
     ofVec4f ret;
     lock();
     ret = ofVec4f(dtoolPoint.orientation.x(), dtoolPoint.orientation.y(), dtoolPoint.orientation.z(), dtoolPoint.orientation.w());
@@ -184,7 +184,7 @@ ofVec4f ofxURDriver::getCalculatedTCPOrientation(){
     return ret;
 }
 
-float ofxURDriver::getThreadFPS(){
+float URDriver::getThreadFPS(){
     float fps = 0;
     lock();
     fps = timer.getFrameRate();
@@ -192,7 +192,7 @@ float ofxURDriver::getThreadFPS(){
     return fps;
 }
 
-ofxRobotArm::Pose ofxURDriver::getToolPose(){
+ofxRobotArm::Pose URDriver::getToolPose(){
     ofxRobotArm::Pose ret;
     lock();
     ret = tool;
@@ -200,13 +200,13 @@ ofxRobotArm::Pose ofxURDriver::getToolPose(){
     return ret;
 }
 
-void ofxURDriver::moveJoints(vector<double> pos){
+void URDriver::moveJoints(vector<double> pos){
     lock();
     posBuffer.push_back(pos);
     unlock();
 }
 
-void ofxURDriver::setSpeed(vector<double> speeds, double accel){
+void URDriver::setSpeed(vector<double> speeds, double accel){
     lock();
     currentSpeed = speeds;
     acceleration = accel;
@@ -215,7 +215,8 @@ void ofxURDriver::setSpeed(vector<double> speeds, double accel){
     unlock();
 }
 
-void ofxURDriver::setPosition(vector<double> positions){
+
+void URDriver::setPose(vector<double> positions){
     lock();
     currentPosition = positions; 
     bMove = true;
@@ -225,7 +226,7 @@ void ofxURDriver::setPosition(vector<double> positions){
     unlock();
 }
 
-ofQuaternion ofxURDriver::convertAxisAngle(double rx, double ry, double rz) {
+ofQuaternion URDriver::convertAxisAngle(double rx, double ry, double rz) {
     float angle = ofVec3f(rx, ry, rz).normalize().length();
     double s = sin(angle/2);
     float x = (rx) * s;
@@ -237,7 +238,7 @@ ofQuaternion ofxURDriver::convertAxisAngle(double rx, double ry, double rz) {
 
 
 
-vector <double> ofxURDriver::getAchievablePosition(vector <double> position){
+vector <double> URDriver::getAchievablePosition(vector <double> position){
     
     float maxAccelDeg = 500.0;
     float maxSpeedPct = 1.0;
@@ -309,7 +310,7 @@ vector <double> ofxURDriver::getAchievablePosition(vector <double> position){
     return position;
 }
 
-void ofxURDriver::threadedFunction(){
+void URDriver::threadedFunction(){
     while(isThreadRunning()){
         timer.tick();
         if(!bStarted && !bTriedOnce) {

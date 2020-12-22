@@ -1,5 +1,5 @@
 //
-//  ofxABBDriver.cpp
+//  ABBDriver.cpp
 //  urModernDriverTest
 //
 //  Created by dantheman on 2/20/16.
@@ -8,8 +8,8 @@
 
 
 #include "ABBDriver.h"
-
-ofxABBDriver::ofxABBDriver(){
+using namespace ofxRobotArm;
+ABBDriver::ABBDriver(){
     currentSpeed.assign(6, 0.0);
     acceleration = 0.0;
     robot       = NULL;
@@ -19,17 +19,17 @@ ofxABBDriver::ofxABBDriver(){
 
     vector<double> foo;
     foo.assign(6, 0.0);
-    jointsRaw.setup(foo);
-    toolPointRaw.setup(foo);
-    jointsProcessed.setup(foo);
-    jointsRaw.getBack().assign(6, 0.0);
-    jointsProcessed.getBack().assign(6, 0.0);
-    toolPointRaw.getBack().assign(6, 0.0);
+    poseRaw.setup(foo);
+    toolPoseRaw.setup(foo);
+    poseProcessed.setup(foo);
+    poseRaw.getBack().assign(6, 0.0);
+    poseProcessed.getBack().assign(6, 0.0);
+    toolPoseRaw.getBack().assign(6, 0.0);
     numDeccelSteps = 120;
 
 }
 
-ofxABBDriver::~ofxABBDriver(){
+ABBDriver::~ABBDriver(){
     if(robot){
         disconnect();
         delete robot;
@@ -37,7 +37,7 @@ ofxABBDriver::~ofxABBDriver(){
     }
 }
 
-void ofxABBDriver::stopThread(){
+void ABBDriver::stopThread(){
     if(isConnected()){
         disconnect();
     }
@@ -45,7 +45,7 @@ void ofxABBDriver::stopThread(){
         ofThread::stopThread();
     }
 }
-void ofxABBDriver::toggleTeachMode(){
+void ABBDriver::toggleTeachMode(){
     lock();
     if(bTeachModeEnabled){
         bTeachModeEnabled = false;
@@ -57,7 +57,7 @@ void ofxABBDriver::toggleTeachMode(){
     unlock();
 }
 
-void ofxABBDriver::setTeachMode(bool enabled){
+void ABBDriver::setTeachMode(bool enabled){
     lock();
     if(enabled){
         bTeachModeEnabled = true;
@@ -69,13 +69,13 @@ void ofxABBDriver::setTeachMode(bool enabled){
     unlock();
 }
 
-void ofxABBDriver::setAllowReconnect(bool bDoReconnect){
+void ABBDriver::setAllowReconnect(bool bDoReconnect){
     bTryReconnect = bDoReconnect;
 }
 
-void ofxABBDriver::setup(string ipAddress, int port, double minPayload, double maxPayload){
-    cout << "ofxABBDriver :: setup : ipAddress: " << ipAddress << endl;
-    if( ipAddress != "" && ipAddress.length() > 3 ) {
+void ABBDriver::setup(string port, double minPayload, double maxPayload){
+    cout << "ABBDriver :: setup : ipAddress: " << port << endl;
+    if( port != "" && port.length() > 3 ) {
 
     } else {
         ofLogError( "ipAddress parameter is empty. Not initializing robot." );
@@ -85,7 +85,7 @@ void ofxABBDriver::setup(string ipAddress, int port, double minPayload, double m
 //    vector<string> foo = robot->getJointNames();
     std::string joint_prefix = "ur_";
     std::vector<std::string> joint_names;
-    joint_prefix = "ofxABBDriver-";
+    joint_prefix = "ABBDriver-";
     joint_names.push_back(joint_prefix + "joint_1");
     joint_names.push_back(joint_prefix + "joint_2");
     joint_names.push_back(joint_prefix + "joint_3");
@@ -101,54 +101,20 @@ void ofxABBDriver::setup(string ipAddress, int port, double minPayload, double m
     sprintf(buf, "Bounds for set_payload service calls: [%f, %f]",
             min_payload, max_payload);
     ofLog(OF_LOG_NOTICE)<<buf;
-    jointsProcessed.swapBack();
-    jointsRaw.swapBack();
-    toolPointRaw.swapBack();
+    poseProcessed.swapBack();
+    poseRaw.swapBack();
+    toolPoseRaw.swapBack();
     bStarted = false;
-
-    // @TODO: This is all incorrect (now called in RobotModel)
-    joints.resize(6);
-    
-    joints[0].position.set(0, 0, 0);
-    joints[1].position.set(0, 0, 0);
-    joints[2].position.set(0, 0, 0);
-    joints[3].position.set(0, 0, 0);
-    joints[4].position.set(0, 0, 0);
-    joints[5].position.set(0, 0, 0);
-    tool.position.set(joints[5].position + ofVec3f(0,0,0)); // tool tip position
-    
-    for(int i = 1; i <joints.size(); i++){
-        joints[i].offset =joints[i].position-joints[i-1].position;
-        
-    }
-    tool.offset =joints[5].offset;
-    
-    
-    
-    joints[0].axis.set(0, 0, 1);
-    joints[1].axis.set(0, -1, 0);
-    joints[2].axis.set(0, -1, 0);
-    joints[3].axis.set(0, -1, 0);
-    joints[4].axis.set(0, 0, 1);
-    joints[5].axis.set(0, 1, 0);
-    tool.axis.set(joints[5].axis);
-    
-    joints[0].orientation.makeRotate(0,joints[0].axis);
-    joints[1].orientation.makeRotate(-90,joints[1].axis);
-    joints[2].orientation.makeRotate(0,joints[2].axis);
-    joints[3].orientation.makeRotate(-90,joints[3].axis);
-    joints[4].orientation.makeRotate(0,joints[4].axis);
-    joints[5].orientation.makeRotate(0,joints[5].axis);
 
     bTriedOnce = false;
 
 }
-void ofxABBDriver::start(){
-    ofLog(OF_LOG_NOTICE)<<"Starting ofxABBDriver Controller"<<endl;
+void ABBDriver::start(){
+    ofLog(OF_LOG_NOTICE)<<"Starting ABBDriver Controller"<<endl;
     startThread();
 }
 
-bool ofxABBDriver::isConnected() {
+bool ABBDriver::isConnected() {
     if( ofThread::isThreadRunning() ) {
         bool tConn = false;
         if(lock()) {
@@ -162,14 +128,14 @@ bool ofxABBDriver::isConnected() {
 
 
 
-void ofxABBDriver::disconnect(){
+void ABBDriver::disconnect(){
     if( robot != NULL ){
         robot = NULL;
         delete robot;
     }
 }
 
-bool ofxABBDriver::isDataReady(){
+bool ABBDriver::isDataReady(){
     if(bDataReady){
         bDataReady = false;
         return true;
@@ -177,36 +143,36 @@ bool ofxABBDriver::isDataReady(){
         return false;
     }
 }
-vector<double> ofxABBDriver::getToolPointRaw(){
+vector<double> ABBDriver::getToolPointRaw(){
     vector<double> ret;
     lock();
-    toolPointRaw.swapFront();
-    ret = toolPointRaw.getFront();
+    toolPoseRaw.swapFront();
+    ret = toolPoseRaw.getFront();
     unlock();
     return ret;
 }
 
-vector<double> ofxABBDriver::getCurrentPose(){
+vector<double> ABBDriver::getCurrentPose(){
     vector<double> ret;
     
     lock();
-    jointsRaw.swapFront();
-    ret = jointsRaw.getFront();
+    poseRaw.swapFront();
+    ret = poseRaw.getFront();
     unlock();
     
     
     return ret;
 }
-vector<double> ofxABBDriver::getJointAngles(){
+vector<double> ABBDriver::getJointAngles(){
     vector<double> ret;
     lock();
-    jointsProcessed.swapFront();
-    ret = jointsProcessed.getFront();
+    poseProcessed.swapFront();
+    ret = poseProcessed.getFront();
     unlock();
     return ret;
 }
 
-ofVec4f ofxABBDriver::getCalculatedTCPOrientation(){
+ofVec4f ABBDriver::getCalculatedTCPOrientation(){
     ofVec4f ret;
     lock();
     ret = ofVec4f(dtoolPoint.orientation.x(), dtoolPoint.orientation.y(), dtoolPoint.orientation.z(), dtoolPoint.orientation.w());
@@ -214,7 +180,7 @@ ofVec4f ofxABBDriver::getCalculatedTCPOrientation(){
     return ret;
 }
 
-float ofxABBDriver::getThreadFPS(){
+float ABBDriver::getThreadFPS(){
     float fps = 0;
     lock();
     fps = timer.getFrameRate();
@@ -222,7 +188,7 @@ float ofxABBDriver::getThreadFPS(){
     return fps;
 }
 
-ofxRobotArm::Pose ofxABBDriver::getToolPose(){
+ofxRobotArm::Pose ABBDriver::getToolPose(){
     ofxRobotArm::Pose ret;
     lock();
     ret = tool;
@@ -230,13 +196,13 @@ ofxRobotArm::Pose ofxABBDriver::getToolPose(){
     return ret;
 }
 
-void ofxABBDriver::moveJoints(vector<double> pos){
+void ABBDriver::moveJoints(vector<double> pos){
     lock();
-    posBuffer.push_back(pos);
+    poseBuffers.push_back(pos);
     unlock();
 }
 
-void ofxABBDriver::setSpeed(vector<double> speeds, double accel){
+void ABBDriver::setSpeed(vector<double> speeds, double accel){
     lock();
     currentSpeed = speeds;
     acceleration = accel;
@@ -245,9 +211,9 @@ void ofxABBDriver::setSpeed(vector<double> speeds, double accel){
     unlock();
 }
 
-void ofxABBDriver::setPosition(vector<double> positions){
+void ABBDriver::setPose(vector<double> pose){
     lock();
-    currentPosition = positions;
+    currentPose = pose;
     bMove = true;
     bMoveWithPos = true;
     deccelCount = numDeccelSteps+4;
@@ -255,7 +221,7 @@ void ofxABBDriver::setPosition(vector<double> positions){
     unlock();
 }
 
-ofQuaternion ofxABBDriver::convertAxisAngle(double rx, double ry, double rz) {
+ofQuaternion ABBDriver::convertAxisAngle(double rx, double ry, double rz) {
     float angle = ofVec3f(rx, ry, rz).normalize().length();
     double s = sin(angle/2);
     float x = (rx) * s;
@@ -265,8 +231,16 @@ ofQuaternion ofxABBDriver::convertAxisAngle(double rx, double ry, double rz) {
     return ofQuaternion(x, y, z, w);
 }
 
+void ABBDriver::setToolOffset(ofVec3f localPos){
+    
+}
 
-void ofxABBDriver::threadedFunction(){
+vector <double> ABBDriver::getAchievablePosition(vector<double> position){
+    
+}
+
+
+void ABBDriver::threadedFunction(){
     while(isThreadRunning()){
         timer.tick();
         if(!bStarted && !bTriedOnce) {

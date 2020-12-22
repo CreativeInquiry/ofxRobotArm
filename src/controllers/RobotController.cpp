@@ -7,31 +7,35 @@ RobotController::RobotController(){
 }
 
 RobotController::~RobotController(){
-    robot.stopThread();
+     robot->stopThread();
 }
 
 void RobotController::setup(RobotParameters & params) {
     setup(params.ipAddress, params, false);
 }
 
-void RobotController::setup(string ipAddress, RobotType type){
+void RobotController::setup(string ipAddress, RobotParameters & params, bool offline){
+    if(params.get_robot_type() == UR3 || params.get_robot_type() == UR5 || params.get_robot_type()  == UR10){
+        robot = new URDriver();
+    }else if(params.get_robot_type() == IRB120){
+        robot = new ABBDriver();
+    }
+    if(!offline){
+         robot->setAllowReconnect(params.bDoReconnect);
+         robot->setup(ipAddress,0, 1);
+         robot->start();
+    }
+    robotParams = params;
     
-    this->type = type;
     
-    // setup robot parameters
-    robotParams.setup(type);
-    
-   
-    // @todo: this can go away
-    //
     movement.setup();
-    
+//    previewArm = desiredPoses[0];
+    desiredPose.setup(params.get_robot_type());
+    actualPose.setup(params.get_robot_type());
+ 
     jointWeights.assign(6, 1.0f);
-    // setup Kinematic Model
-    inverseKinematics = InverseKinematics(type, &robotParams);
-    desiredPose.setup(type);
-    actualPose.setup(type);
-
+    
+    inverseKinematics = InverseKinematics(params.get_robot_type(), &robotParams);
 }
 
 void RobotController::setEndEffector(string filename){
@@ -41,53 +45,25 @@ void RobotController::setEndEffector(string filename){
 
 void RobotController::start(){
     // Start the connection to the actual robot over TCP/IP
-    robot.start();
+     robot->start();
 }
 
-void RobotController::setup(string ipAddress, RobotParameters & params, bool offline){
-    if(offline){
-        robot.setAllowReconnect(params.bDoReconnect);
-        robot.setup(ipAddress,0, 1);
-        robot.start();
-    }
-    robotParams = params;
-    
-    
-    movement.setup();
-    for(int i = 0; i < 1; i++){//8; i++){
-        RobotModel * foo = new RobotModel();
-        foo->setup(params.get_robot_type());
-        desiredPoses.push_back(foo);
-    }
-//    previewArm = desiredPoses[0];
-    desiredPose.setup(params.get_robot_type());
-    actualPose.setup(params.get_robot_type());
-    
-//    robotParams.safety.add(robotSafety.setup(params.get_robot_type()));
- 
-    
-    
-    jointWeights.assign(6, 1.0f);
-    
-    // Set up URIKFast with dynamic RobotType
-    inverseKinematics = InverseKinematics(params.get_robot_type(), &robotParams);
-}
 
 vector<double> RobotController::getCurrentPose(){
-    return robot.getCurrentPose();
+    return  robot->getCurrentPose();
 }
 
 //------------------------------------------------------------------
 
 
 void RobotController::toggleTeachMode(){
-    robot.toggleTeachMode();
+     robot->toggleTeachMode();
 }
 
 void RobotController::setTeachMode(){
     if(isTeachModeEnabled != robotParams.bTeachMode){
         isTeachModeEnabled = robotParams.bTeachMode;
-        robot.setTeachMode(isTeachModeEnabled);
+         robot->setTeachMode(isTeachModeEnabled);
     }
 }
 
@@ -95,7 +71,7 @@ void RobotController::updateIKFast(){
 
 
     targetPoses = inverseKinematics.inverseKinematics(robotParams.targetTCP);
-    int selectedSolution = inverseKinematics.selectSolution(targetPoses, robot.getCurrentPose(), jointWeights);
+    int selectedSolution = inverseKinematics.selectSolution(targetPoses,  robot->getCurrentPose(), jointWeights);
     if(selectedSolution > -1){
         targetPose = targetPoses[selectedSolution];
     }
@@ -111,7 +87,7 @@ void RobotController::updateIKFast(){
 
 void RobotController::updateIKArm(){
     targetPoses = inverseKinematics.inverseKinematics(robotParams.targetTCP);
-    int selectedSolution = inverseKinematics.selectSolution(targetPoses, robot.getCurrentPose(), jointWeights);
+    int selectedSolution = inverseKinematics.selectSolution(targetPoses,  robot->getCurrentPose(), jointWeights);
     if(selectedSolution > -1){
         targetPose = targetPoses[selectedSolution];
         for(int i = 0; i < targetPose.size(); i++){
@@ -129,14 +105,14 @@ void RobotController::updateIKArm(){
         }
         robotParams.targetPose[i] = ofRadToDeg(tpose);
     }
-//    targetPose = inverseKinematics.getArmIK(&actualPose, robotParams.targetTCP, targetPose, 1.0/60.0f);
-//    for(int i = 0; i < targetPose.size(); i++){
-//        float tpose = (float)targetPose[i];
-//        if( isnan(tpose) ) {
-//            tpose = 0.f;
-//        }
-//        robotParams.targetPose[i] = ofRadToDeg(tpose);
-//    }
+    targetPose = inverseKinematics.getArmIK(&actualPose, robotParams.targetTCP, targetPose, 1.0/60.0f);
+    for(int i = 0; i < targetPose.size(); i++){
+        float tpose = (float)targetPose[i];
+        if( isnan(tpose) ) {
+            tpose = 0.f;
+        }
+        robotParams.targetPose[i] = ofRadToDeg(tpose);
+    }
     
     // update the look at angles after the IK has been applied //
     // overrides the angles and sets them directly //
@@ -155,7 +131,7 @@ void RobotController::update(){
     updateRobotData();
     // update the plane that visualizes the robot flange
     tcp_plane.update(robotParams.targetTCP.position*1000, robotParams.targetTCP.orientation);
-    updateIKArm();
+    updateIKFast();
     updateMovement();
     targetPose = movement.getTargetJointPose();
 
@@ -188,7 +164,7 @@ void RobotController::set_desired(ofNode target, ofNode lookTarget){
 void RobotController::safetyCheck(){
 
     
-    robotSafety.setCurrentRobotArmAnlges(robot.getCurrentPose());
+    robotSafety.setCurrentRobotArmAnlges( robot->getCurrentPose());
     robotSafety.setDesiredAngles(targetPose);
     robotSafety.update(desiredPose);
     robotSafety.update(1/60);
@@ -202,8 +178,8 @@ void RobotController::updateMovement(){
     movement.update();
     // move the robot to the target TCP
     if(robotParams.bMove){
-        //        robot.setSpeed(tempSpeeds, movement.getAcceleration());
-        robot.setPosition(movement.getTargetJointPose());
+        //         robot->setSpeed(tempSpeeds, movement.getAcceleration());
+         robot->setPose(movement.getTargetJointPose());
         stopPosition = movement.getTargetJointPose();
         stopCount = 30;
     }
@@ -212,7 +188,7 @@ void RobotController::updateMovement(){
             for(int d = 0; d < stopPosition.size(); d++){
                 stopPosition[d] *= 0.9998;
             }
-            robot.setPosition(stopPosition);
+             robot->setPose(stopPosition);
             cout << " Doing stop count " << stopCount << endl;
             stopCount--;
         }
@@ -227,7 +203,7 @@ void RobotController::updateRobotData(){
     
     robotParams.currentPose = getCurrentPose();
     actualPose.setPose(robotParams.currentPose);
-    robotParams.actualTCP = robot.getToolPose();
+    robotParams.actualTCP =  robot->getToolPose();
     robotParams.tcpPosition = robotParams.actualTCP.position;
     ofQuaternion tcpO = robotParams.actualTCP.orientation;
     robotParams.tcpOrientation = ofVec4f(tcpO.x(), tcpO.y(), tcpO.z(), tcpO.w());
@@ -241,8 +217,8 @@ void RobotController::updateRobotData(){
 
 #pragma mark - drawing
 void RobotController::close(){
-    if(robot.isThreadRunning()){
-        robot.stopThread();
+    if( robot->isThreadRunning()){
+         robot->stopThread();
     }
 }
 

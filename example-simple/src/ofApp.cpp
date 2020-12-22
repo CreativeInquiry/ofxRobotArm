@@ -1,13 +1,14 @@
 #include "ofApp.h"
 
+using namespace ofxRobotArm;
 //--------------------------------------------------------------
 void ofApp::setup(){
     
     // setup scene
     setup_scene();
-    
+    robotParams.setup(RobotType::IRB120);
     // setup robot
-    robot.setup("192.168.1.10", ofxRobotArm::RobotType::IRB120);    // change IP string to your robot's IP address
+    robot.setup(robotParams);    // change IP string to your robot's IP address
 
     // setup gui
     setup_gui();

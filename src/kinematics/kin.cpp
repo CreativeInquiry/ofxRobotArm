@@ -86,14 +86,9 @@ Kinematics::Kinematics(ofxRobotArm::RobotType type){
         c2 = 0.290; //c2
         c3 = 0.302; //c3
         c4 = 0.072; //c4
-//        offsets[1] = PI/2;
+
         offsets[2] = -PI/2;
-//        offsets[3] = -PI/2;
-//        offsets[4] = PI;
-//        offsets[5] = PI;
-//        sign_corrections[2] = 1;
-//        sign_corrections[3] = -1;
-//        sign_corrections[4] = 1;
+        sign_corrections[3] = -1;
         
         joint_limit_min[0] = -165;
         joint_limit_min[1] = -110;

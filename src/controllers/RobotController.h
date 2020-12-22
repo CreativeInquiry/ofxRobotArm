@@ -3,7 +3,9 @@
 //
 #pragma once
 #include "ofMain.h"
+#include "RobotDriver.h"
 #include "URDriver.h"
+#include "ABBDriver.h"
 #include "RobotParameters.h"
 #include "InverseKinematics.h"
 #include "RobotModel.h"
@@ -24,14 +26,14 @@ namespace ofxRobotArm {
         /// \brief creates and connects to a new robot using a default IP Address
         /// \params params default parameters for the robot & GUI
         void setup(RobotParameters & params);
+        void setup(string ipAddress, RobotParameters & params, bool offline);
         
-        void setup(string ipAddress, RobotType type);
         void start();
         
         /// \brief creates and connects to a new robot
         /// \params ipAddress ipAddress of the robot
         /// \params params default parameters for the robot & GUI
-        void setup(string ipAddress, RobotParameters & params, bool offline);
+        
         vector< double > updateJoints(float deltatime);
 
 
@@ -67,7 +69,7 @@ namespace ofxRobotArm {
         
         void close();
         vector<double> getCurrentPose();
-        ofxURDriver robot;
+        RobotDriver * robot;
         Move movement;
 //        RobotParameters * robotParams;
         RobotParameters robotParams;
@@ -95,7 +97,6 @@ namespace ofxRobotArm {
     private:
         void setup_parameters();
         ofNode target, lookTarget;
-        RobotType type;
     };
 }
 
