@@ -14,6 +14,10 @@ RobotModel::RobotModel(){
 RobotModel::~RobotModel(){
     
 }
+void RobotModel::setForwardPose(ofNode pose){
+    forwardPose.setGlobalPosition(pose.getGlobalPosition()*1000);
+    forwardPose.setGlobalOrientation(pose.getGlobalOrientation());
+}
 
 // D-H Parameters for UR Robot Arms:
 // https://www.universal-robots.com/articles/ur/parameters-for-calculations-of-kinematics-and-dynamics/
@@ -91,7 +95,7 @@ void RobotModel::setup(RobotType type){
         pose[4].axis.set(0, 0, 1);
         pose[5].axis.set(0, 1, 0);
         
-        tool.axis.set(pose[5].axis);
+  
         
         pose[0].orientation.makeRotate(0,pose[0].axis);
         pose[1].orientation.makeRotate(-90,pose[1].axis);
@@ -123,13 +127,13 @@ void RobotModel::setup(RobotType type){
         pose[0].axis.set(0, 0, 1);
         pose[1].axis.set(0, 1, 0);
         pose[2].axis.set(0, 1, 0);
-        pose[3].axis.set(-1, 0, 0);
+        pose[3].axis.set(1, 0, 0);
         pose[4].axis.set(0, 1, 0);
         pose[5].axis.set(1, 0, 0);
         
         pose[0].orientation.makeRotate(0,pose[0].axis);
         pose[1].orientation.makeRotate(0,pose[1].axis);
-        pose[2].orientation.makeRotate(90,pose[2].axis);
+        pose[2].orientation.makeRotate(0,pose[2].axis);
         pose[3].orientation.makeRotate(0,pose[3].axis);
         pose[4].orientation.makeRotate(0,pose[4].axis);
         pose[5].orientation.makeRotate(0,pose[5].axis);
@@ -143,11 +147,11 @@ void RobotModel::setup(RobotType type){
     }
     
     
-    tool.position.set(pose[5].position + ofVec3f(0,-0.0308,0)); // flange position
+    tool.position.set(pose[5].position + ofVec3f(0.0,0.0,0.0)); // flange position
     
     for(int i = 1; i <pose.size(); i++){
         pose[i].offset =pose[i].position-pose[i-1].position;
-        ofLog(OF_LOG_NOTICE)<<"JOINT: "<<i<<" OFFSETS XYZ"<<pose[i].offset<<endl;
+        ofLog(OF_LOG_NOTICE)<<"JOINT: "<<i<<" OFFSETS XYZ "<<pose[i].offset<<endl;
     }
     tool.offset = pose[5].offset;
     
@@ -163,11 +167,13 @@ void RobotModel::setup(RobotType type){
     
     
     // Set Tool Center Point Node
-    tcpNode.setParent(nodes[5]);
-    tcpNode.setPosition(ofVec3f(0.0, -0.0308, 0.0)*1000);
+//    tcpNode.setParent(nodes[5]);
+//    tcpNode.setPosition(ofVec3f(0.0, 0.0, 0.0)*1000);
     
     // Set Tool Rotations
-    tool.rotation =pose[5].rotation;
+    tool.position.set(pose[5].position);
+    tool.rotation = pose[5].rotation;
+    tool.axis.set(pose[5].axis);
     
     shader.load("shaders/model");
     
@@ -189,6 +195,12 @@ void RobotModel::setToolOffset(ofVec3f localOffset){
     tcpNode.setPosition(localOffset);
 }
 
+void RobotModel::setTCPPose(Pose pose){
+    tcpNode.setGlobalPosition(pose.position*1000);
+    tcpNode.setGlobalOrientation(pose.orientation);
+    
+}
+
 void RobotModel::setAngles( vector<double> aTargetRadians ){
     if(type == RobotType::UR5 || type == RobotType::UR3 || type == RobotType::UR10){
         for(int i = 0; i < pose.size(); i++){
@@ -203,7 +215,6 @@ void RobotModel::setAngles( vector<double> aTargetRadians ){
         for(int i = 0; i < pose.size(); i++){
             pose[i].orientation.makeRotate(ofRadToDeg(aTargetRadians[i]),pose[i].axis);
             pose[i].rotation = ofRadToDeg(aTargetRadians[1]);
-            ofLog()<<"axis "<<pose[i].axis<<" angle"<<pose[i].rotation<<endl;
             nodes[i].setOrientation(pose[i].orientation);
         }
     }
@@ -224,7 +235,6 @@ void RobotModel::setPose(vector<double> pose){
     }else{
         for(int i = 0; i < pose.size(); i++){
             this->pose[i].rotation = (ofRadToDeg(pose[i]));
-            ofLog()<<this->pose[i].axis<<endl;
             this->pose[i].orientation.makeRotate(this->pose[i].rotation,this->pose[i].axis);
             nodes[i].setOrientation(this->pose[i].orientation);
         }
@@ -286,19 +296,47 @@ void RobotModel::drawSkeleton() {
                 ofPopStyle();
                 
                 // show length of each link
-                ofSetColor(60, 80);
+                ofSetColor(255, 80);
                 if (i == 0)
                     ofDrawBitmapString(dist, p.getInterpolated(ofVec3f(), .5));
                 else
                     ofDrawBitmapString(dist, p.getInterpolated(nodes[i - 1].getGlobalPosition(), .5));
                 
                 // show joint id
-                ofSetColor(60, 90);
+                ofSetColor(255, 90);
                 ofDrawBitmapString(ofToString(i), p.x + 5, p.y, p.z + 5);
                 
                 // show angle at joint
                 ofDrawBitmapString("angle: " + ofToString(pose[i].rotation), p.x + 5, p.y, p.z - 20);
+                if(ofGetKeyPressed(OF_KEY_CONTROL) && i == 5){
+                    ofSetColor(255, 0, 255);
+                    ofDrawBitmapString("pos: " + ofToString(p), p.x + 5, p.y, p.z - 40);
+                }
                 
+                if (i == 5) {
+                    ofSetColor(255, 0, 255);
+                    tcpNode.draw();
+                    ofVec3f tcp = tcpNode.getGlobalPosition();
+                    ofVec3f endJoint = nodes[i].getGlobalPosition();
+                    dist = tcp.distance(nodes[i].getGlobalPosition());
+                    ofSetColor(255, 0, 255, 100);
+                    ofDrawLine(nodes[i].getGlobalPosition(), tcp);
+                    ofDrawBitmapString("TCP Desired Pose", tcp.x + 5, tcp.y, tcp.z - 40);
+                    ofDrawBitmapString("dist: " + ofToString(dist), tcp.x + 5, tcp.y, tcp.z - 60);
+                    ofDrawBitmapString("pos:  " +ofToString(tcp), tcp.x + 5, tcp.y, tcp.z - 80);
+                
+                    ofVec3f fwp = forwardPose.getGlobalPosition();
+                    dist = fwp.distance(nodes[i].getGlobalPosition());
+                    ofSetColor(255, 255, 0);
+                    forwardPose.draw();
+                    if(fwp.distance(tcp) > 20){
+                        ofSetColor(255, 255, 0, 100);
+                        ofDrawBitmapString("Forward Pose", fwp.x + 5, fwp.y, fwp.z - 40);
+                        ofDrawBitmapString("dist: " + ofToString(dist), fwp.x + 5, fwp.y, fwp.z - 60);
+                        ofDrawBitmapString("pos: "+ofToString(fwp), fwp.x + 5, fwp.y, fwp.z - 80);
+                        ofDrawLine(nodes[i].getGlobalPosition(), fwp);
+                    }
+                }
                 i++;
             }
         }

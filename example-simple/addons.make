@@ -1,5 +1,6 @@
 ofxAssimpModelLoader
 ofxEasing
+ofxEigen
 ofxGizmo
 ofxGui
 ofxIKArm

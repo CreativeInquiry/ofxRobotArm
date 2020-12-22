@@ -26,7 +26,8 @@ void ToolHead::draw(){
     ofVec3f axis;
     rot.getRotate().getRotate(angle, axis);
 //to-do: change to ofRotateDeg or ofRotateRad
-    ofRotate(angle, axis.x, axis.y, axis.z);
+//    ofRotate(angle, axis.x, axis.y, axis.z);
+    ofRotateDeg(angle, axis.x, axis.y, axis.z);
     ofDrawAxis(100);
     ofPopMatrix();
 }

@@ -26,7 +26,8 @@ namespace ofxRobotArm{
             void draw(ofFloatColor color = ofFloatColor(1, 1, 1, 1), bool bDrawDebug=true);
             void setToolMesh(ofMesh mesh);
             void setPose(vector<double> pose);
-            
+            void setTCPPose(Pose pose);
+            void setForwardPose(ofNode pose);
             void setEndEffector(string filename);
             void clearEndEffector();
             
@@ -51,7 +52,7 @@ namespace ofxRobotArm{
             Pose tool;
             
             Pose dtoolPoint;
-            
+            ofNode forwardPose;
             ofNode tcpNode;
             vector<ofNode> nodes;
             

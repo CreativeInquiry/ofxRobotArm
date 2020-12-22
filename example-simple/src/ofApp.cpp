@@ -14,13 +14,19 @@ void ofApp::setup(){
     
     // start robot
     robot.start();
+    
+    tcp.setPosition(250, 250, 250);
+    ofQuaternion q;
+    q.makeRotate(90, 0, 1, 0);
+    tcp.setOrientation(q);
+    
+    tcp_target.setNode(tcp);
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
     
     // do movements
-    ofNode tcp;
     tcp.setGlobalPosition(tcp_target.getTranslation());
     tcp.setGlobalOrientation(tcp_target.getRotation());
     robot.set_desired(tcp);
@@ -31,7 +37,7 @@ void ofApp::update(){
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-    ofBackgroundGradient(background_inner, background_outer, OF_GRADIENT_CIRCULAR);
+    ofBackground(ofColor::gray);
     
     // Draw 3D Scene
     draw_scene();
@@ -55,14 +61,15 @@ void ofApp::setup_scene(){
 
 //--------------------------------------------------------------
 void ofApp::draw_scene(){
+    ofVec3f p = tcp.getGlobalPosition();
     cam.begin();
     ofDrawAxis(1500);
     
     // Draw Desired Robot
-    robot.drawPreview();
+    robot.drawDesired();
     
     // Draw Actual Robot
-    robot.draw();
+//    robot.draw();
     
     tcp_target.draw(cam);
     
@@ -270,25 +277,25 @@ void ofApp::keypressed_robot(int key){
 
 //--------------------------------------------------------------
 void ofApp::keypressed_camera(int key){
-    bool val = true;
-    switch (key) {
-        case 'h':
-        case 'H':
-            show_gui.set(!show_gui);
-            break;
-        case '1':
-            listener_show_top(val);
-            break;
-        case '2':
-            listener_show_front(val);
-            break;
-        case '3':
-            listener_show_side(val);
-            break;
-        case '4':
-            listener_show_perspective(val);
-            break;
-    }
+//    bool val = true;
+//    switch (key) {
+//        case 'h':
+//        case 'H':
+//            show_gui.set(!show_gui);
+//            break;
+//        case '1':
+//            listener_show_top(val);
+//            break;
+//        case '2':
+//            listener_show_front(val);
+//            break;
+//        case '3':
+//            listener_show_side(val);
+//            break;
+//        case '4':
+//            listener_show_perspective(val);
+//            break;
+//    }
 }
 
 //--------------------------------------------------------------
@@ -305,8 +312,16 @@ void ofApp::keypressed_gizmo(int key){
             break;
         case 'r':
         case 'R':
-            // reset the orientation
             tcp_target.getMatrix().setRotate(ofQuaternion(0, 0, 0, 1));
+            break;
+        case '1':
+            tcp_target.getMatrix().setRotate(ofQuaternion(1, 0, 0, 1));
+            break;
+        case '2':
+            tcp_target.getMatrix().setRotate(ofQuaternion(0, 1, 0, 1));
+            break;
+        case '3':
+            tcp_target.getMatrix().setRotate(ofQuaternion(0, 0, 1, 1));
             break;
     }
     

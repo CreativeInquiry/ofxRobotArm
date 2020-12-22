@@ -189,7 +189,6 @@ void Path3D::parsePts(string filename, ofPolyline &polyline){
         
         ofStringReplace(line, "{", "");
         ofStringReplace(line, "}", "");
-        cout<<line<<endl;
         vector<string> coords = ofSplitString(line, ", ");  // get x y z coordinates
         
         ofVec3f p = ofVec3f(ofToFloat(coords[0])*scalar,ofToFloat(coords[1])*scalar,ofToFloat(coords[2])*scalar);

@@ -37,6 +37,7 @@
  *********************************************************************/
 #pragma once
 #include "ofMain.h"
+#include <Eigen/Dense>
 #include "Utils.h"
 #include "RobotConstants.hpp"
 #include <complex>
@@ -58,6 +59,7 @@
 //  0,  0,  0,  1
 
 typedef std::complex<float> CPX;
+
 namespace ofxRobotArm{
 class Kinematics {
 public:
@@ -103,9 +105,11 @@ public:
         return std::isfinite(qs[0]) && std::isfinite(qs[1]) && std::isfinite(qs[2]) && std::isfinite(qs[3]) &&
         std::isfinite(qs[4]) && std::isfinite(qs[5]);
     }
+    
+    void inverse(ofMatrix4x4* target, vector< vector <double> >& sol);
 private:
     
-
+    
     RobotType type;
     // Retrive a specific value from a 4x4 matrix
     float get(ofMatrix4x4 mat, int row, int col);
@@ -118,9 +122,11 @@ private:
     double d5;
     double d6;
     
-    double a1, b, c1, c2, c3, c4;
+    double a1, a2_2, b, c1, c2, c3, c4;
     vector<double> offsets;
     vector<double> sign_corrections;
+    vector<double> joint_limit_min;
+    vector<double> joint_limit_max;
 };
 }
 
