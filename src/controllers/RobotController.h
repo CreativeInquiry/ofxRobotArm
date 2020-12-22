@@ -5,7 +5,7 @@
 #include "ofMain.h"
 #include "URDriver.h"
 #include "RobotParameters.h"
-#include "InveseKinematics.h"
+#include "InverseKinematics.h"
 #include "RobotModel.h"
 #include "ofxIKArm.h"
 #include "RobotArmSafety.h"
