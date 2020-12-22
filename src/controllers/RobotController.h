@@ -5,7 +5,7 @@
 #include "ofMain.h"
 #include "URDriver.h"
 #include "RobotParameters.h"
-#include "InverseKinematics.h"
+#include "InveseKinematics.h"
 #include "RobotModel.h"
 #include "ofxIKArm.h"
 #include "RobotArmSafety.h"
@@ -74,7 +74,7 @@ namespace ofxRobotArm {
         vector<RobotModel*> desiredPoses;
         ofNode forwardNode;
         RobotModel actualPose;
-        InverseKinematics inverseKinematics;
+        InverseKinemactic inverseKinematics;
         int stopCount = 0;
 
         RobotArmSafety robotSafety;

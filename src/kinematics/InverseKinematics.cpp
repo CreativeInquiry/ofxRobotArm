@@ -2,17 +2,17 @@
 // Copyright (c) 2016, Daniel Moore, Madeline Gannon, and The Frank-Ratchye STUDIO for Creative Inquiry All rights reserved.
 //
 using namespace ofxRobotArm;
-InverseKinematics::InverseKinematics(ofxRobotArm::RobotType type){
+InverseKinematics::InverseKinematics(ofxRobotArm::RobotType type, RobotParameters * params){
     setRobotType(type);
-}
-InverseKinematics::InverseKinematics(){
-    
+    setupParams(params);
+
 }
 InverseKinematics::~InverseKinematics(){
-    setRobotType(ofxRobotArm::RobotType::UR10);
+    
 }
 
-void InverseKinematic::setup(){
+void InverseKinematics::setupParams(RobotParameters * params){
+    robotParams = params;
     this->params.setName("IKArm Commands");
     this->params.add( bControlIkWithMouse.set("ControlIkWithMouse", false ));
     this->params.add( bOnlyUseInverseIk.set("OnlyUseInverseIK", false ));
@@ -28,6 +28,7 @@ void InverseKinematic::setup(){
     this->params.add( mIKRampStartPct.set("IKRampStartPct", 0.3, 0.0, 1.0 ));
     this->params.add( mIKRampEndPct.set("IKRampEndPct", 1.5, 1.0, 2.0 ));
     this->params.add( mIKRampHeightPct.set("IKRampHeightPct", 0.3, 0.0, 1.0 ));
+    robotParams->jointsIK.add(this->params);
 }
 
 void InverseKinematics::setRobotType(ofxRobotArm::RobotType type){
@@ -274,14 +275,14 @@ double* InverseKinematics::forwardKinematics(double o, double t, double th, doub
 }
 
 
-vector< double > InverseKinematics::getArmIK(Pose targetTCP,  float aDeltaTimef ) {
-    vector <double> armFrom = getArmIK(targetTCP.position*1000.0f, ofVec3f(), false, aDeltaTimef );
+vector< double > InverseKinematics::getArmIK(RobotModel * actualPose, Pose targetTCP,  vector<double> targetPose, float aDeltaTimef ) {
+    vector <double> armFrom = getArmIK(actualPose, targetPose, targetTCP.position*1000.0f, ofVec3f(), false, aDeltaTimef );
     return armFrom;
 }
 
 
 //------------------------------------------------------------------
-vector< double > InverseKinematics::getArmIK(RobotModel * actualPose, ofVec3f aTargetWorldPos, ofVec3f aElbowWorldPos, bool aBInvertElbow, float aDeltaTimef ) {
+vector< double > InverseKinematics::getArmIK(RobotModel * actualPose, vector<double> targetPose, ofVec3f aTargetWorldPos, ofVec3f aElbowWorldPos, bool aBInvertElbow, float aDeltaTimef ) {
     // ok, now let's address the ik //
     if( !mIKArm ) {
         mIKArm = shared_ptr< ofxIKArm >( new ofxIKArm() );
@@ -385,7 +386,7 @@ ofVec3f InverseKinematics::getYawPitchRoll( ofQuaternion aquat ) {
 }
 
 //------------------------------------------------------------------
-float InverseKinematics::getNeckAngleAlignedWithVector( ofVec3f avec ) {
+float InverseKinematics::getNeckAngleAlignedWithVector(RobotModel * actualPose, ofVec3f avec ) {
     // let's figure out the head position //
     ofQuaternion orotate;
     orotate.makeRotate( ofVec3f(1,0,0), ofVec3f(0,-1,0) );

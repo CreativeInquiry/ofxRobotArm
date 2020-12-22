@@ -28,7 +28,7 @@ void RobotController::setup(string ipAddress, RobotType type){
     
     jointWeights.assign(6, 1.0f);
     // setup Kinematic Model
-    inverseKinematics = InverseKinematics(type);
+    inverseKinematics = InverseKinemactic(type);
     desiredPose.setup(type);
     actualPose.setup(type);
 
@@ -52,8 +52,6 @@ void RobotController::setup(string ipAddress, RobotParameters & params, bool off
     }
     robotParams = params;
     
-
-    
     
     movement.setup();
     for(int i = 0; i < 1; i++){//8; i++){
@@ -67,12 +65,12 @@ void RobotController::setup(string ipAddress, RobotParameters & params, bool off
     
 //    robotParams.safety.add(robotSafety.setup(params.get_robot_type()));
  
-    robotParams.jointsIK.add(this->params);
+    
     
     jointWeights.assign(6, 1.0f);
     
     // Set up URIKFast with dynamic RobotType
-    inverseKinematics = InverseKinematics(params.get_robot_type());
+    inverseKinematics = InverseKinemactic(params.get_robot_type());
 }
 
 vector<double> RobotController::getCurrentPose(){
