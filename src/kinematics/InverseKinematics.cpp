@@ -7,6 +7,11 @@ InverseKinematics::InverseKinematics(ofxRobotArm::RobotType type, RobotParameter
     setupParams(params);
 
 }
+InverseKinematics::InverseKinematics(){
+    setRobotType(IRB120);
+    setupParams(new RobotParameters());
+}
+
 InverseKinematics::~InverseKinematics(){
     
 }
@@ -15,7 +20,7 @@ void InverseKinematics::setupParams(RobotParameters * params){
     robotParams = params;
     this->params.setName("IKArm Commands");
     this->params.add( bControlIkWithMouse.set("ControlIkWithMouse", false ));
-    this->params.add( bOnlyUseInverseIk.set("OnlyUseInverseIK", false ));
+    this->params.add( bOnlyUseInverseIk.set("OnlyUseInverseIK", true ));
     
     this->params.add( ikRobotMinY.set( "IkRobotMinY", -725, -2000, 2000 ));
     this->params.add( ikRobotMaxY.set( "IkRobotMaxY", 0, -2000, 2000 ));
@@ -440,13 +445,13 @@ ofVec3f InverseKinematics::getIKRobotTargetForWorldPos( ofVec3f aWorldTarget, bo
 }
 
 //------------------------------------------------------------------
-vector<double> InverseKinematics::lookAtJoints(RobotModel * actualPose,  vector<double> targetPose, float aDeltaTimef ) {
+vector<double> InverseKinematics::lookAtJoints(RobotModel * actualPose,  vector<double> targetPose, float aDeltaTimef, ofVec3f targetPos ) {
     // figure out the global orientation of the models //
     // look at person //
     
     vector< double > ttargetAngles = targetPose;
     
-    ofVec3f ttarget = ofVec3f(1000, 500, 1000);
+    ofVec3f ttarget = targetPos;
     
     if( actualPose->nodes.size() >= 4 && targetPose.size() >= 4 ) {
         
@@ -552,4 +557,10 @@ float InverseKinematics::getZValueForIkRobotLocalY( float aLocalY, float aWorldZ
     
     
     return retZ;
+}
+
+
+void InverseKinematics::draw(){
+    if(mIKArm) mIKArm->draw();
+    if(mIKArmInverted)mIKArmInverted->draw();
 }

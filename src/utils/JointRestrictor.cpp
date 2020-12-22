@@ -81,26 +81,6 @@ float JointRestrictor::getMaxJointAngle(int aIndex){
     return angle;
 }
 
-////--------------------------------------------------------------
-//void JointRestrictor::drawLimits( UR10KinematicModel* amodel ) {
-//    if( amodel == NULL ) return;
-//    // loop through each node and show the limits //
-//    for( int i = 0; i < amodel->joints.size(); i++ ) {
-//        if( !m_bApplyLimits[i] ) continue;
-//        
-//        vector< ofVec3f > taxes = getAxes( amodel, i );
-//        
-//        if( i < m_angleMinLimits.size() && i < m_angleMaxLimits.size() ) {
-//            ofPushMatrix(); {
-//                ofTranslate( taxes[2] );
-//                ofScale( 100, 100, 100 );
-//                //                ofSetColor( 200 );
-//                drawArc(getMinJointAngle(i), getMaxJointAngle(i), taxes[0], taxes[1] );
-//            } ofPopMatrix();
-//        }
-//    }
-//}
-
 //--------------------------------------------------------------
 void JointRestrictor::drawLimits( RobotModel* amodel ) {
     if( amodel == NULL ) return;
@@ -120,68 +100,6 @@ void JointRestrictor::drawLimits( RobotModel* amodel ) {
         }
     }
 }
-
-////--------------------------------------------------------------
-//void JointRestrictor::drawLimits( UR5KinematicModel* amodel ) {
-//    if( amodel == NULL ) return;
-//    // loop through each node and show the limits //
-//    for( int i = 0; i < amodel->joints.size(); i++ ) {
-//        if( !m_bApplyLimits[i] ) continue;
-//
-//        vector< ofVec3f > taxes = getAxes( amodel, i );
-//
-//        if( i < m_angleMinLimits.size() && i < m_angleMaxLimits.size() ) {
-//            ofPushMatrix(); {
-//                ofTranslate( taxes[2] );
-//                ofScale( 100, 100, 100 );
-//                //                ofSetColor( 200 );
-//                drawArc(getMinJointAngle(i), getMaxJointAngle(i), taxes[0], taxes[1] );
-//            } ofPopMatrix();
-//        }
-//    }
-//}
-////--------------------------------------------------------------
-//void JointRestrictor::drawAngles( UR10KinematicModel* amodel, vector< double > aCurrentAngles ) {
-//    if( amodel == NULL ) return;
-//    // loop through each node and show the limits //
-//    for( int i = 0; i < amodel->joints.size(); i++ ) {
-//        if( i >= aCurrentAngles.size() ) return;
-//        if( !m_bApplyLimits[i] ) continue;
-//
-//        vector< ofVec3f > taxes = getAxes( amodel, i );
-//
-//        ofPushMatrix(); {
-//            ofTranslate( taxes[2] );
-//            ofScale( 100, 100, 100 );
-//            //            ofSetColor( 220, 240, 20 );
-//            ofVec3f cvec = taxes[0];
-//            cvec.rotate( aCurrentAngles[i] * RAD_TO_DEG, taxes[1] );
-//            ofDrawLine( ofVec3f(), cvec );
-//
-//        } ofPopMatrix();
-//    }
-//}
-////--------------------------------------------------------------
-//void JointRestrictor::drawAngles( UR5KinematicModel* amodel, vector< double > aCurrentAngles ) {
-//    if( amodel == NULL ) return;
-//    // loop through each node and show the limits //
-//    for( int i = 0; i < amodel->joints.size(); i++ ) {
-//        if( i >= aCurrentAngles.size() ) return;
-//        if( !m_bApplyLimits[i] ) continue;
-//
-//        vector< ofVec3f > taxes = getAxes( amodel, i );
-//
-//        ofPushMatrix(); {
-//            ofTranslate( taxes[2] );
-//            ofScale( 100, 100, 100 );
-//            //            ofSetColor( 220, 240, 20 );
-//            ofVec3f cvec = taxes[0];
-//            cvec.rotate( aCurrentAngles[i] * RAD_TO_DEG, taxes[1] );
-//            ofDrawLine( ofVec3f(), cvec );
-//
-//        } ofPopMatrix();
-//    }
-//}
 
 //--------------------------------------------------------------
 void JointRestrictor::drawAngles( RobotModel* amodel, vector< double > aCurrentAngles ) {
@@ -204,109 +122,6 @@ void JointRestrictor::drawAngles( RobotModel* amodel, vector< double > aCurrentA
         } ofPopMatrix();
     }
 }
-//
-////--------------------------------------------------------------
-//vector< ofVec3f > JointRestrictor::getAxes( UR10KinematicModel* amodel, int aIndex ) {
-//    vector< ofVec3f > taxes;
-//    taxes.push_back( ofVec3f(-1,0,0) );
-//    taxes.push_back( ofVec3f(0,-1,0 ) );
-//    taxes.push_back( ofVec3f( ) ); // position //
-//    if( amodel == NULL ) return taxes;
-//    if( aIndex >= m_bApplyLimits.size() ) return taxes;
-//    if( aIndex >= amodel->nodes.size() ) return taxes;
-//    if( aIndex >= amodel->joints.size() ) return taxes;
-//    
-//    ofNode& cnode   = amodel->nodes[ aIndex ];
-//    
-//    ofVec3f tpos    = cnode.getGlobalPosition();
-//    
-//    ofVec3f tfwd    = ofVec3f(0,1,0);//cnode.getLookAtDir();
-//    ofVec3f tup     = ofVec3f(0,0,1);//cnode.getUpDir();
-//    //        ofVec3f tside   = cnode.getSideDir();
-//    
-//    ofVec3f taxis   = amodel->joints[ aIndex ].axis;
-//    
-//    if( cnode.getParent() != nullptr ) {
-//        ofNode* pnode = amodel->nodes[ aIndex ].getParent();
-//        ofQuaternion tGParentQ = pnode->getGlobalOrientation();
-//        if( aIndex == 0 ) {
-//            
-//        } else if( aIndex == 1 ) {
-//            tfwd    = tGParentQ * ofVec3f( -1, 0, 0 );
-//            tup     = tGParentQ * ofVec3f( 0, -1, 0 );
-//        } else if( aIndex == 2 ) {
-//            tfwd    = tGParentQ * ofVec3f( 0, 0, 1 );
-//            tup     = tGParentQ * ofVec3f( 0, -1, 0 );
-//        } else if( aIndex == 3  ) {
-//            tfwd    = tGParentQ * ofVec3f( -1, 0, 0 );
-//            tup     = tGParentQ * ofVec3f( 0, -1, 0 );
-//        } else if( aIndex == 4 ) {
-//            tfwd    = tGParentQ * ofVec3f( 0, -1, 0 );
-//            tup     = tGParentQ * ofVec3f( 0, 0, 1 );
-//        } else if( aIndex == 5 ) {
-//            tfwd    = tGParentQ * ofVec3f( 1, 0, 0 );
-//            tup     = tGParentQ * ofVec3f( 0, 1, 0 );
-//        }
-//    }
-//    
-//    taxes[0] = tfwd;
-//    taxes[1] = tup;
-//    taxes[2] = tpos;
-//    
-//    return taxes;
-//}
-//
-//
-////--------------------------------------------------------------
-//vector< ofVec3f > JointRestrictor::getAxes( UR5KinematicModel* amodel, int aIndex ) {
-//    vector< ofVec3f > taxes;
-//    taxes.push_back( ofVec3f(-1,0,0) );
-//    taxes.push_back( ofVec3f(0,-1,0 ) );
-//    taxes.push_back( ofVec3f( ) ); // position //
-//    if( amodel == NULL ) return taxes;
-//    if( aIndex >= m_bApplyLimits.size() ) return taxes;
-//    if( aIndex >= amodel->nodes.size() ) return taxes;
-//    if( aIndex >= amodel->joints.size() ) return taxes;
-//    
-//    ofNode& cnode   = amodel->nodes[ aIndex ];
-//    
-//    ofVec3f tpos    = cnode.getGlobalPosition();
-//    
-//    ofVec3f tfwd    = ofVec3f(0,1,0);//cnode.getLookAtDir();
-//    ofVec3f tup     = ofVec3f(0,0,1);//cnode.getUpDir();
-//    //        ofVec3f tside   = cnode.getSideDir();
-//    
-//    ofVec3f taxis   = amodel->joints[ aIndex ].axis;
-//    
-//    if( cnode.getParent() != nullptr ) {
-//        ofNode* pnode = amodel->nodes[ aIndex ].getParent();
-//        ofQuaternion tGParentQ = pnode->getGlobalOrientation();
-//        if( aIndex == 0 ) {
-//            
-//        } else if( aIndex == 1 ) {
-//            tfwd    = tGParentQ * ofVec3f( -1, 0, 0 );
-//            tup     = tGParentQ * ofVec3f( 0, -1, 0 );
-//        } else if( aIndex == 2 ) {
-//            tfwd    = tGParentQ * ofVec3f( 0, 0, 1 );
-//            tup     = tGParentQ * ofVec3f( 0, -1, 0 );
-//        } else if( aIndex == 3  ) {
-//            tfwd    = tGParentQ * ofVec3f( -1, 0, 0 );
-//            tup     = tGParentQ * ofVec3f( 0, -1, 0 );
-//        } else if( aIndex == 4 ) {
-//            tfwd    = tGParentQ * ofVec3f( 0, -1, 0 );
-//            tup     = tGParentQ * ofVec3f( 0, 0, 1 );
-//        } else if( aIndex == 5 ) {
-//            tfwd    = tGParentQ * ofVec3f( 1, 0, 0 );
-//            tup     = tGParentQ * ofVec3f( 0, 1, 0 );
-//        }
-//    }
-//    
-//    taxes[0] = tfwd;
-//    taxes[1] = tup;
-//    taxes[2] = tpos;
-//    
-//    return taxes;
-//}
 
 //--------------------------------------------------------------
 vector< ofVec3f > JointRestrictor::getAxes( RobotModel* amodel, int aIndex ) {

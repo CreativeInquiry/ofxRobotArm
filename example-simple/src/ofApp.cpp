@@ -16,11 +16,13 @@ void ofApp::setup(){
     robot.start();
     
     tcp.setPosition(250, 250, 250);
+    lookAtNode.setPosition(-255, -255, -255);
     ofQuaternion q;
     q.makeRotate(90, 0, 1, 0);
     tcp.setOrientation(q);
-    
+    lookAtNode.setOrientation(q);
     tcp_target.setNode(tcp);
+    look_target.setNode(lookAtNode);
 }
 
 //--------------------------------------------------------------
@@ -29,8 +31,10 @@ void ofApp::update(){
     // do movements
     tcp.setGlobalPosition(tcp_target.getTranslation());
     tcp.setGlobalOrientation(tcp_target.getRotation());
-    robot.set_desired(tcp);
+    robot.set_desired(tcp, lookAtNode);
     
+    lookAtNode.setGlobalPosition(look_target.getTranslation());
+    lookAtNode.setGlobalOrientation(look_target.getRotation());
     // update robot
     robot.update();
 }
@@ -72,6 +76,7 @@ void ofApp::draw_scene(){
 //    robot.draw();
     
     tcp_target.draw(cam);
+    look_target.draw(cam);
     
     cam.end();
 }
@@ -79,7 +84,7 @@ void ofApp::draw_scene(){
 //--------------------------------------------------------------
 bool ofApp::disable_camera(){
 
-    if (tcp_target.isInteracting())
+    if (tcp_target.isInteracting() || look_target.isInteracting())
         return true;
     
     ofRectangle gui_rect;

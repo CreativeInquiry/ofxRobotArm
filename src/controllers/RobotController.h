@@ -13,6 +13,7 @@
 #include "RobotConstants.hpp"
 #include "Plane.h"
 #include "Move.h"
+#include "RobotConstants.hpp"
 namespace ofxRobotArm {
     
     class RobotController {
@@ -48,7 +49,7 @@ namespace ofxRobotArm {
         void updateIKFast();
         void updateIKArm();
         
-        void set_desired(ofNode target);
+        void set_desired(ofNode target, ofNode lookTarget);
         Plane tcp_plane;
         
         void moveArm();
@@ -74,7 +75,7 @@ namespace ofxRobotArm {
         vector<RobotModel*> desiredPoses;
         ofNode forwardNode;
         RobotModel actualPose;
-        InverseKinemactic inverseKinematics;
+        InverseKinematics inverseKinematics;
         int stopCount = 0;
 
         RobotArmSafety robotSafety;
@@ -93,7 +94,7 @@ namespace ofxRobotArm {
 
     private:
         void setup_parameters();
-        
+        ofNode target, lookTarget;
         RobotType type;
     };
 }

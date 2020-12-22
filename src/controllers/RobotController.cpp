@@ -3,7 +3,7 @@
 //
 using namespace ofxRobotArm;
 RobotController::RobotController(){
-    
+   
 }
 
 RobotController::~RobotController(){
@@ -28,7 +28,7 @@ void RobotController::setup(string ipAddress, RobotType type){
     
     jointWeights.assign(6, 1.0f);
     // setup Kinematic Model
-    inverseKinematics = InverseKinemactic(type);
+    inverseKinematics = InverseKinematics(type, &robotParams);
     desiredPose.setup(type);
     actualPose.setup(type);
 
@@ -70,7 +70,7 @@ void RobotController::setup(string ipAddress, RobotParameters & params, bool off
     jointWeights.assign(6, 1.0f);
     
     // Set up URIKFast with dynamic RobotType
-    inverseKinematics = InverseKinemactic(params.get_robot_type());
+    inverseKinematics = InverseKinematics(params.get_robot_type(), &robotParams);
 }
 
 vector<double> RobotController::getCurrentPose(){
@@ -93,13 +93,19 @@ void RobotController::setTeachMode(){
 
 void RobotController::updateIKFast(){
 
-    // update the plane that visualizes the robot flange
-    tcp_plane.update(robotParams.targetTCP.position*1000, robotParams.targetTCP.orientation);
 
     targetPoses = inverseKinematics.inverseKinematics(robotParams.targetTCP);
     int selectedSolution = inverseKinematics.selectSolution(targetPoses, robot.getCurrentPose(), jointWeights);
     if(selectedSolution > -1){
         targetPose = targetPoses[selectedSolution];
+    }
+    
+    for(int i = 0; i < targetPose.size(); i++){
+        float tpose = (float)targetPose[i];
+        if( isnan(tpose) ) {
+            tpose = 0.f;
+        }
+        robotParams.targetPose[i].set(tpose);
     }
 }
 
@@ -123,26 +129,23 @@ void RobotController::updateIKArm(){
         }
         robotParams.targetPose[i] = ofRadToDeg(tpose);
     }
-    targetPose = inverseKinematics.getArmIK(1.0/60.0f);
-    for(int i = 0; i < targetPose.size(); i++){
-        float tpose = (float)targetPose[i];
-        if( isnan(tpose) ) {
-            tpose = 0.f;
-        }
-        robotParams.targetPose[i] = ofRadToDeg(tpose);
-    }
+//    targetPose = inverseKinematics.getArmIK(&actualPose, robotParams.targetTCP, targetPose, 1.0/60.0f);
+//    for(int i = 0; i < targetPose.size(); i++){
+//        float tpose = (float)targetPose[i];
+//        if( isnan(tpose) ) {
+//            tpose = 0.f;
+//        }
+//        robotParams.targetPose[i] = ofRadToDeg(tpose);
+//    }
     
     // update the look at angles after the IK has been applied //
     // overrides the angles and sets them directly //
     // alters joint[3] && joint[4]
-    vector< double > lookAtAngles = inverseKinematics.lookAtJoints(1.0/60.0f);
+    vector< double > lookAtAngles = inverseKinematics.lookAtJoints(&actualPose, targetPose, 1.0/60.0f, lookTarget.getGlobalPosition());
     // determine if these angles should be added or not //
     for( int i = 0; i < targetPose.size(); i++ ) {
-        if(i > 2){
-            targetPose[i] = lookAtAngles[i];
-        }
+        targetPose[i] = lookAtAngles[i];
     }
-    
     
     desiredPose.setPose(targetPose);
 }
@@ -150,24 +153,13 @@ void RobotController::updateIKArm(){
 #pragma mark - Update
 void RobotController::update(){
     updateRobotData();
+    // update the plane that visualizes the robot flange
+    tcp_plane.update(robotParams.targetTCP.position*1000, robotParams.targetTCP.orientation);
     updateIKArm();
-//    if(robotParams.bUseIKFast){
-//        updateIKFast();
-//    }else if(robotParams.bUseIKArm){
-//        updateIKArm();
-//    }
-//    safetyCheck();
     updateMovement();
     targetPose = movement.getTargetJointPose();
 
-    //this is causing an error on my machine. an
-//    for(int i = 0; i < targetPose.size(); i++){
-//        float tpose = (float)targetPose[i];
-//        if( isnan(tpose) ) {
-//            tpose = 0.f;
-//        }
-//        robotParams.targetPose[i].set(tpose);
-//    }
+
     if(targetPose.size() > 0){
         desiredPose.setPose(targetPose);
         ofMatrix4x4 forwardIK = inverseKinematics.forwardKinematics(targetPose);
@@ -183,11 +175,13 @@ void RobotController::update(vector<double> _pose){
     
 }
 
-void RobotController::set_desired(ofNode target){
+void RobotController::set_desired(ofNode target, ofNode lookTarget){
     // convert from mm to m
     robotParams.targetTCP.position = target.getGlobalPosition()/1000.0;
     robotParams.targetTCP.orientation = target.getGlobalOrientation();
     desiredPose.setTCPPose(robotParams.targetTCP);
+    this->lookTarget = lookTarget;
+    this->target = target;
 }
 
 #pragma mark - Safety
@@ -268,8 +262,7 @@ void RobotController::drawSafety(ofCamera & cam){
 }
 
 void RobotController::drawIK(){
-    if(mIKArm) mIKArm->draw();
-    if(mIKArmInverted)mIKArmInverted->draw();
+    inverseKinematics.draw();
 }
 
 void RobotController::drawDesired(ofFloatColor color){

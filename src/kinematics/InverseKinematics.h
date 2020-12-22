@@ -13,6 +13,7 @@ class InverseKinematics{
 public:
     InverseKinematics(ofxRobotArm::RobotType type, RobotParameters * params);
     ~InverseKinematics();
+    InverseKinematics();
     void setup();
     void setupParams(RobotParameters * params);
     void setRobotType(ofxRobotArm::RobotType type);
@@ -27,8 +28,9 @@ public:
     Kinematics kinematics;
     vector<vector<double> > preInversePosition;
     
+    void draw();
     
-    vector< double > lookAtJoints(RobotModel * actualPose,  vector<double> targetPose, float aDeltaTimef );
+    vector< double > lookAtJoints(RobotModel * actualPose,  vector<double> targetPose, float aDeltaTimef, ofVec3f targetPos);
     vector< double > getArmIK(  RobotModel * actualPose, Pose targetTCP,  vector<double> targetPose, float aDeltaTimef );
     vector< double > getArmIK(RobotModel * actualPose, vector<double> targetPose, ofVec3f aTargetWorldPos, ofVec3f aElbowWorldPos, bool aBInvertElbow, float aDeltaTimef);
     

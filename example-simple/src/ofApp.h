@@ -25,12 +25,14 @@ class ofApp : public ofBaseApp{
 		void gotMessage(ofMessage msg);
 		
         ofNode tcp;
+        ofNode lookAtNode;
         // Robot
         ofxRobotArm::RobotController robot;
         void keypressed_robot(int key);
         
         // Control & Interaction
         ofxGizmo tcp_target;
+        ofxGizmo look_target;
         void keypressed_gizmo(int key);
         
         // Scene
