@@ -17,7 +17,7 @@ void ofApp::setup(){
     robot.start();
     
     tcp.setPosition(250, 250, 250);
-    lookAtNode.setPosition(500, 500, 500);
+    lookAtNode.setPosition(0, 0, 0);
     ofQuaternion q;
     q.makeRotate(90, 0, 1, 0);
     tcp.setOrientation(q);
@@ -31,33 +31,33 @@ void ofApp::update(){
     
     // do movements
     if(ofGetKeyPressed('P')){
-        lookAtNode.setPosition(tcp.getPosition());
+        lookAtNode.setPosition(tcp.getPosition()+ofVec3f(0, 0, -100));
         look_target.setNode(lookAtNode);
     }else if(ofGetKeyPressed('p')){
-        lookAtNode.setPosition(ofVec3f(250, 250, 250));
+        lookAtNode.setPosition(tcp.getPosition()+ofVec3f(0, 100, 0));
         look_target.setNode(lookAtNode);
     }
     
     lookAtNode.setGlobalPosition(look_target.getTranslation());
     lookAtNode.setGlobalOrientation(look_target.getRotation());
     tcp.setGlobalPosition(tcp_target.getTranslation());
-    // update robot
-    robot.update();
-   
-
- 
+    tcp.setGlobalOrientation(tcp_target.getRotation());
     ofMatrix4x4 mat;
-    mat.makeLookAtMatrix(lookAtNode.getPosition(), tcp.getPosition(), ofVec3f(0, 0, 1));
+    ofVec3f p1 = lookAtNode.getPosition();
+    ofVec3f p2 = tcp.getPosition();
+    mat.makeLookAtMatrix(p1, p2, ofVec3f(0, 0, 1));
     ofMatrix4x4 invMat;
     invMat = mat.getInverse();
     tcp.setGlobalOrientation(invMat.getRotate());
     robot.setDesired(tcp);
     
+    robot.update();
+    
 }
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-    ofBackground(ofColor::gray);
+    ofBackground(70, 20);
     
     // Draw 3D Scene
     draw_scene();
@@ -84,9 +84,11 @@ void ofApp::draw_scene(){
     ofVec3f p = tcp.getGlobalPosition();
     cam.begin();
     ofDrawAxis(1500);
+    ofDrawGrid();
     
     // Draw Desired Robot
     robot.drawDesired();
+    robot.draw();
     
     // Draw Actual Robot
 //    robot.draw();
@@ -325,10 +327,12 @@ void ofApp::keypressed_gizmo(int key){
     switch (key) {
         case 'e':
         case 'E':
+            look_target.setType(ofxGizmo::OFX_GIZMO_ROTATE);
             tcp_target.setType(ofxGizmo::OFX_GIZMO_ROTATE);
             break;
         case 'w':
         case 'W':
+            look_target.setType(ofxGizmo::OFX_GIZMO_MOVE);
             tcp_target.setType(ofxGizmo::OFX_GIZMO_MOVE);
             break;
         case 'r':

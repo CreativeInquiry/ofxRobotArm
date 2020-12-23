@@ -20,11 +20,7 @@ void RobotController::setup(string ipAddress, RobotParameters & params, bool off
     }else if(params.get_robot_type() == IRB120){
         robot = new ABBDriver();
     }
-    if(!offline){
-         robot->setAllowReconnect(params.bDoReconnect);
-         robot->setup(ipAddress,0, 1);
-         robot->start();
-    }
+
     robotParams = params;
     
     
@@ -36,6 +32,11 @@ void RobotController::setup(string ipAddress, RobotParameters & params, bool off
     jointWeights.assign(6, 1.0f);
     
     inverseKinematics = InverseKinematics(params.get_robot_type(), &robotParams);
+    
+    if(!offline){
+         robot->setAllowReconnect(params.bDoReconnect);
+         robot->setup(ipAddress,0, 1);
+    }
 }
 
 void RobotController::setEndEffector(string filename){
@@ -131,7 +132,7 @@ void RobotController::updateIKArm(){
 void RobotController::update(){
     updateRobotData();
     // update the plane that visualizes the robot flange
-    tcp_plane.update(robotParams.targetTCP.position*1000, robotParams.targetTCP.orientation);
+    tcp_plane.update(target);
     updateIKFast();
     updateMovement();
     targetPose = movement.getTargetJointPose();

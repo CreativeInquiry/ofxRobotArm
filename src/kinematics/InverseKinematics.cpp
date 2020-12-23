@@ -256,9 +256,7 @@ ofMatrix4x4 InverseKinematics::forwardKinematics(vector<double> pose)
     }
     if(type == IRB120){
         ofMatrix4x4 mat;
-        kinematics.forwardSW(pose[0], pose[1], pose[2], pose[3], pose[4], pose[5], mat);
-        ofMatrix4x4 mat2 = toOF(forwardKinematics(pose[0], pose[1], pose[2], pose[3], pose[4], pose[5]));
-        
+        kinematics.forwardSW(pose[0], pose[1], pose[2], pose[3], pose[4], pose[5], mat);        
         return mat;
     }
 }

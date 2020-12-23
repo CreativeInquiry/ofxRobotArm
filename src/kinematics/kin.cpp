@@ -88,10 +88,10 @@ Kinematics::Kinematics(ofxRobotArm::RobotType type){
         c4 = 0.072; //c4
         
         offsets[2] = -PI/2;
-//        offsets[3] = -PI;
-//        offsets[4] = PI;
-
-//        sign_corrections[4] = -1;
+        //        offsets[3] = -PI;
+        //        offsets[4] = -PI;
+        
+        //        sign_corrections[2] = -1;
         
         
         joint_limit_min[0] = -165;
@@ -161,11 +161,11 @@ void Kinematics::forward_allHK(const double* q, double* T1, double* T2, double* 
         *T1 = 0; T1++;
         *T1 = -c1; T1++;
         *T1 = 0; T1++;
-        *T1 =       0; T1++;
+        *T1 = 0; T1++;
         *T1 = 1; T1++;
         *T1 = 0; T1++;
         *T1 =d1; T1++;
-        *T1 =       0; T1++;
+        *T1 = 0; T1++;
         *T1 = 0; T1++;
         *T1 = 0; T1++;
         *T1 = 1; T1++;
@@ -175,19 +175,19 @@ void Kinematics::forward_allHK(const double* q, double* T1, double* T2, double* 
         *T2 = c1*c2; T2++;
         *T2 = -c1*s2; T2++;
         *T2 = s1; T2++;
-        *T2 =a2*c1*c2; T2++;
+        *T2 = a2*c1*c2; T2++;
         *T2 = c2*s1; T2++;
         *T2 = -s1*s2; T2++;
         *T2 = -c1; T2++;
-        *T2 =a2*c2*s1; T2++;
-        *T2 =         s2; T2++;
+        *T2 = a2*c2*s1; T2++;
+        *T2 = s2; T2++;
         *T2 = c2; T2++;
         *T2 = 0; T2++;
-        *T2 =   d1 + a2*s2; T2++;
-        *T2 =               0; T2++;
+        *T2 = d1 + a2*s2; T2++;
         *T2 = 0; T2++;
         *T2 = 0; T2++;
-        *T2 =                 1; T2++;
+        *T2 = 0; T2++;
+        *T2 = 1; T2++;
     }
     
     if(T3 != NULL) {
@@ -199,14 +199,14 @@ void Kinematics::forward_allHK(const double* q, double* T1, double* T2, double* 
         *T3 = -s23*s1; T3++;
         *T3 = -c1; T3++;
         *T3 =s1*(a3*c23 + a2*c2); T3++;
-        *T3 =         s23; T3++;
+        *T3 = s23; T3++;
         *T3 = c23; T3++;
         *T3 = 0; T3++;
-        *T3 =     d1 + a3*s23 + a2*s2; T3++;
-        *T3 =                    0; T3++;
+        *T3 = d1 + a3*s23 + a2*s2; T3++;
         *T3 = 0; T3++;
         *T3 = 0; T3++;
-        *T3 =                                     1; T3++;
+        *T3 = 0; T3++;
+        *T3 = 1; T3++;
     }
     
     if(T4 != NULL) {
@@ -218,33 +218,33 @@ void Kinematics::forward_allHK(const double* q, double* T1, double* T2, double* 
         *T4 = -c1; T4++;
         *T4 = s234*s1; T4++;
         *T4 =s1*(a3*c23 + a2*c2) - d4*c1; T4++;
-        *T4 =         s234; T4++;
+        *T4 = s234; T4++;
         *T4 = 0; T4++;
         *T4 = -c234; T4++;
-        *T4 =                  d1 + a3*s23 + a2*s2; T4++;
-        *T4 =                         0; T4++;
+        *T4 = d1 + a3*s23 + a2*s2; T4++;
         *T4 = 0; T4++;
         *T4 = 0; T4++;
-        *T4 =                                                  1; T4++;
+        *T4 = 0; T4++;
+        *T4 = 1; T4++;
     }
     
     if(T5 != NULL) {
         *T5 = s1*s5 + c234*c1*c5; T5++;
         *T5 = -s234*c1; T5++;
         *T5 = c5*s1 - c234*c1*s5; T5++;
-        *T5 =c1*(a3*c23 + a2*c2) + d4*s1 + d5*s234*c1; T5++;
+        *T5 = c1*(a3*c23 + a2*c2) + d4*s1 + d5*s234*c1; T5++;
         *T5 = c234*c5*s1 - c1*s5; T5++;
         *T5 = -s234*s1; T5++;
         *T5 = - c1*c5 - c234*s1*s5; T5++;
-        *T5 =s1*(a3*c23 + a2*c2) - d4*c1 + d5*s234*s1; T5++;
-        *T5 =                           s234*c5; T5++;
+        *T5 = s1*(a3*c23 + a2*c2) - d4*c1 + d5*s234*s1; T5++;
+        *T5 = s234*c5; T5++;
         *T5 = c234; T5++;
         *T5 = -s234*s5; T5++;
-        *T5 =                          d1 + a3*s23 + a2*s2 - d5*c234; T5++;
-        *T5 =                                                   0; T5++;
+        *T5 = d1 + a3*s23 + a2*s2 - d5*c234; T5++;
         *T5 = 0; T5++;
         *T5 = 0; T5++;
-        *T5 =                                                                                 1; T5++;
+        *T5 = 0; T5++;
+        *T5 = 1; T5++;
     }
     
     if(T6 != NULL) {
@@ -256,14 +256,14 @@ void Kinematics::forward_allHK(const double* q, double* T1, double* T2, double* 
         *T6 = s6*(c1*s5 - c234*c5*s1) - s234*c6*s1; T6++;
         *T6 = - c1*c5 - c234*s1*s5; T6++;
         *T6 =s1*(a3*c23 + a2*c2) - d4*c1 - d6*(c1*c5 + c234*s1*s5) + d5*s234*s1; T6++;
-        *T6 =                                       c234*s6 + s234*c5*c6; T6++;
+        *T6 = c234*s6 + s234*c5*c6; T6++;
         *T6 = c234*c6 - s234*c5*s6; T6++;
         *T6 = -s234*s5; T6++;
-        *T6 =                                                      d1 + a3*s23 + a2*s2 - d5*c234 - d6*s234*s5; T6++;
-        *T6 =                                                                                                   0; T6++;
+        *T6 = d1 + a3*s23 + a2*s2 - d5*c234 - d6*s234*s5; T6++;
         *T6 = 0; T6++;
         *T6 = 0; T6++;
-        *T6 =                                                                                                                                            1; T6++;
+        *T6 = 0; T6++;
+        *T6 = 1; T6++;
     }
 }
 
@@ -445,19 +445,19 @@ void Kinematics::forwardSW(double t1, double t2, double t3, double t4, double t5
     q[1] = t2 * sign_corrections[1] - offsets[1];
     q[2] = t3 * sign_corrections[2] - offsets[2];
     q[3] = t4 * sign_corrections[3] - offsets[3];
-    q[4] = t4 * sign_corrections[4] - offsets[4];
-    q[5] = t5 * sign_corrections[5] - offsets[5];
+    q[4] = t5 * sign_corrections[4] - offsets[4];
+    q[5] = t6 * sign_corrections[5] - offsets[5];
     
     double psi3 = std::atan2(a2_2,c3);
     double k = std::sqrt(pow(a2_2, 2) +pow(c3,2));
     
-    double cx1 =c2 * std::sin(q[1]) + k * std::sin(q[1] + q[2] + psi3) +a1;
-    double cy1 =b;
-    double cz1 =c2 * std::cos(q[1]) + k * std::cos(q[1] + q[2] + psi3);
+    double cx1 = c2 * std::sin(q[1]) + k * std::sin(q[1] + q[2] + psi3) +a1;
+    double cy1 = b;
+    double cz1 = c2 * std::cos(q[1]) + k * std::cos(q[1] + q[2] + psi3);
     
     double cx0 = cx1 * std::cos(q[0]) - cy1 * std::sin(q[0]);
     double cy0 = cx1 * std::sin(q[0]) + cy1 * std::cos(q[0]);
-    double cz0 = cz1 +c1;
+    double cz0 = cz1 + c1;
     
     double s1 = std::sin(q[0]);
     double s2 = std::sin(q[1]);
@@ -474,35 +474,33 @@ void Kinematics::forwardSW(double t1, double t2, double t3, double t4, double t5
     double c6_2 = std::cos(q[5]);
     
     ofMatrix4x4 r_0c;
-    r_0c.set(c1_2 * c2_2 * c3_2 - c1_2 * s2 * s3, -s1, c1_2 * c2_2 * s3 + c1_2 * s2 * c3_2, 0,
-             s1 * c2_2 * c3_2 - s1 * s2 * s3, c1_2,  s1 * c2_2 * s3 + s1 * s2 * c3_2, 0,
-             -s2 * c3_2 - c2_2 * s3, 0,  -s2 * s3 + c2_2 * c3_2, 0,
-             0, 0, 0, 1);
+    r_0c.set(c1_2 * c2_2 * c3_2 - c1_2 * s2 * s3,       -s1,        c1_2 * c2_2 * s3 + c1_2 * s2 * c3_2,    0,
+             s1 * c2_2 * c3_2 - s1 * s2 * s3,           c1_2,       s1 * c2_2 * s3 + s1 * s2 * c3_2,        0,
+             -s2 * c3_2 - c2_2 * s3,                    0,          -s2 * s3 + c2_2 * c3_2,                 0,
+             0,                                         0,          0,                                      1);
     
     
     ofMatrix4x4 r_ce;
-    r_ce.set(c4_2 * c5_2 * c6_2 - s4 * s6, -c4_2 * c5_2 * s6 - s4 * c6_2, c4_2 * s5, 0,
-             s4 * c5_2 * c6_2 + c4_2 * s6, -s4 * c5_2 * s6 + c4_2 * c6_2, s4 * s5, 0,
-             -s5 * c6_2, s5 * s6, c5_2, 0,
-             0, 0, 0, 1);
+    r_ce.set(c4_2 * c5_2 * c6_2 - s4 * s6,        -c4_2 * c5_2 * s6 - s4 * c6_2,      c4_2 * s5,      0,
+             s4 * c5_2 * c6_2 + c4_2 * s6,        -s4 * c5_2 * s6 + c4_2 * c6_2,      s4 * s5,        0,
+             -s5 * c6_2,                          s5 * s6,                            c5_2,           0,
+             0,                                   0,                                  0,              1);
     
     
     ofMatrix4x4 r_oe = r_0c * r_ce;
     
-
-    ofVec3f u = ofVec3f(cx0, cy0, cz0)+ofMatrix4x4::transform3x3(r_oe, ofVec3f(0, 0, c4));
+    
+    ofVec3f u = ofVec3f(cx0, cy0, cz0) + r_oe*ofVec3f(0, 0, 1)*c4;
     ofMatrix4x4 mat;
     mat.makeTranslationMatrix(u);
-    ofMatrix4x4 rot;
-    rot.makeRotationMatrix(r_oe.getRotate());
-    sol = mat;
+    sol = r_oe*mat;
 }
 
 
 
 void Kinematics::inverseSW(ofMatrix4x4 pose, double * sol)
 {
-    ofVec3f c = pose.getTranslation()-ofMatrix4x4::transform3x3(pose, ofVec3f(0, 0, c4));
+    ofVec3f c = pose.getTranslation() - ofMatrix4x4::transform3x3(pose, ofVec3f(0, 0, 1))*c4;
     double nx1 = std::sqrt(pow(c.x, 2) + pow(c.y, 2) - pow(b, 2)) - a1;
     
     // Compute theta1_i, theta1_ii
@@ -697,16 +695,16 @@ float Kinematics::get(ofMatrix4x4 mat, int row, int col) {
 /// <#Description#>
 /// @param thetas <#thetas description#>
 vector<double> Kinematics::bound_solution(vector<double> thetas){
-//    """
-//    # Bound each axis value between +/- pi
-//    # This makes the solution more predicatable for things like IK-FK switching
-//    """
+    //    """
+    //    # Bound each axis value between +/- pi
+    //    # This makes the solution more predicatable for things like IK-FK switching
+    //    """
     for(auto theta : thetas){
         if(abs(theta) > PI){
             double sign = abs(theta)/theta;
             theta = theta -(sign * TWO_PI);
         }
     }
-        
+    
     return thetas;
 }
