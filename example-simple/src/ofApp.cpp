@@ -17,7 +17,7 @@ void ofApp::setup(){
     robot.start();
     
     tcp.setPosition(250, 250, 250);
-    lookAtNode.setPosition(-255, -255, -255);
+    lookAtNode.setPosition(500, 500, 500);
     ofQuaternion q;
     q.makeRotate(90, 0, 1, 0);
     tcp.setOrientation(q);
@@ -30,14 +30,29 @@ void ofApp::setup(){
 void ofApp::update(){
     
     // do movements
-    tcp.setGlobalPosition(tcp_target.getTranslation());
-    tcp.setGlobalOrientation(tcp_target.getRotation());
-    robot.set_desired(tcp, lookAtNode);
+    if(ofGetKeyPressed('P')){
+        lookAtNode.setPosition(tcp.getPosition());
+        look_target.setNode(lookAtNode);
+    }else if(ofGetKeyPressed('p')){
+        lookAtNode.setPosition(ofVec3f(250, 250, 250));
+        look_target.setNode(lookAtNode);
+    }
     
     lookAtNode.setGlobalPosition(look_target.getTranslation());
     lookAtNode.setGlobalOrientation(look_target.getRotation());
+    tcp.setGlobalPosition(tcp_target.getTranslation());
     // update robot
     robot.update();
+   
+
+ 
+    ofMatrix4x4 mat;
+    mat.makeLookAtMatrix(lookAtNode.getPosition(), tcp.getPosition(), ofVec3f(0, 0, 1));
+    ofMatrix4x4 invMat;
+    invMat = mat.getInverse();
+    tcp.setGlobalOrientation(invMat.getRotate());
+    robot.setDesired(tcp);
+    
 }
 
 //--------------------------------------------------------------

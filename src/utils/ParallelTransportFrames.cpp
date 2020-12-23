@@ -31,7 +31,7 @@
  */
 #include "ParallelTransportFrames.h"
 
-namespace itg
+namespace ofxRobotArm
 {
     ParallelTransportFrames::ParallelTransportFrames() :
         maxPoints(4), maxFrames(numeric_limits<unsigned>::max())

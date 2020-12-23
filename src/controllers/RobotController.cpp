@@ -86,44 +86,45 @@ void RobotController::updateIKFast(){
 }
 
 void RobotController::updateIKArm(){
-    targetPoses = inverseKinematics.inverseKinematics(robotParams.targetTCP);
-    int selectedSolution = inverseKinematics.selectSolution(targetPoses,  robot->getCurrentPose(), jointWeights);
-    if(selectedSolution > -1){
-        targetPose = targetPoses[selectedSolution];
-        for(int i = 0; i < targetPose.size(); i++){
-            float tpose = (float)targetPose[i];
-            if( isnan(tpose) ) {
-                tpose = 0.f;
-            }
-            robotParams.ikPose[i] = tpose;
-        }
-    }
-    for(int i = 0; i < targetPose.size(); i++){
-        float tpose = (float)targetPose[i];
-        if( isnan(tpose) ) {
-            tpose = 0.f;
-        }
-        robotParams.targetPose[i] = ofRadToDeg(tpose);
-    }
-    targetPose = inverseKinematics.getArmIK(&actualPose, robotParams.targetTCP, targetPose, 1.0/60.0f);
-    for(int i = 0; i < targetPose.size(); i++){
-        float tpose = (float)targetPose[i];
-        if( isnan(tpose) ) {
-            tpose = 0.f;
-        }
-        robotParams.targetPose[i] = ofRadToDeg(tpose);
-    }
     
-    // update the look at angles after the IK has been applied //
-    // overrides the angles and sets them directly //
-    // alters joint[3] && joint[4]
-    vector< double > lookAtAngles = inverseKinematics.lookAtJoints(&actualPose, targetPose, 1.0/60.0f, lookTarget.getGlobalPosition());
-    // determine if these angles should be added or not //
-    for( int i = 0; i < targetPose.size(); i++ ) {
-        targetPose[i] = lookAtAngles[i];
-    }
-    
-    desiredPose.setPose(targetPose);
+//    targetPoses = inverseKinematics.inverseKinematics(robotParams.targetTCP);
+//    int selectedSolution = inverseKinematics.selectSolution(targetPoses,  robot->getCurrentPose(), jointWeights);
+//    if(selectedSolution > -1){
+//        targetPose = targetPoses[selectedSolution];
+//        for(int i = 0; i < targetPose.size(); i++){
+//            float tpose = (float)targetPose[i];
+//            if( isnan(tpose) ) {
+//                tpose = 0.f;
+//            }
+//            robotParams.ikPose[i] = tpose;
+//        }
+//    }
+//    for(int i = 0; i < targetPose.size(); i++){
+//        float tpose = (float)targetPose[i];
+//        if( isnan(tpose) ) {
+//            tpose = 0.f;
+//        }
+//        robotParams.targetPose[i] = ofRadToDeg(tpose);
+//    }
+//    targetPose = inverseKinematics.getArmIK(&actualPose, robotParams.targetTCP, targetPose, 1.0/60.0f);
+//    for(int i = 0; i < targetPose.size(); i++){
+//        float tpose = (float)targetPose[i];
+//        if( isnan(tpose) ) {
+//            tpose = 0.f;
+//        }
+//        robotParams.targetPose[i] = ofRadToDeg(tpose);
+//    }
+//
+//    // update the look at angles after the IK has been applied //
+//    // overrides the angles and sets them directly //
+//    // alters joint[3] && joint[4]
+////    vector< double > lookAtAngles = inverseKinematics.lookAtJoints(&actualPose, targetPose, 1.0/60.0f)
+//    // determine if these angles should be added or not //
+////    for( int i = 0; i < targetPose.size(); i++ ) {
+////        targetPose[i] = lookAtAngles[i];
+////    }
+//
+//    desiredPose.setPose(targetPose);
 }
 
 #pragma mark - Update
@@ -151,12 +152,11 @@ void RobotController::update(vector<double> _pose){
     
 }
 
-void RobotController::set_desired(ofNode target, ofNode lookTarget){
+void RobotController::setDesired(ofNode target){
     // convert from mm to m
     robotParams.targetTCP.position = target.getGlobalPosition()/1000.0;
     robotParams.targetTCP.orientation = target.getGlobalOrientation();
     desiredPose.setTCPPose(robotParams.targetTCP);
-    this->lookTarget = lookTarget;
     this->target = target;
 }
 

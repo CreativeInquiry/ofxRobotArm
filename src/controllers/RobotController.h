@@ -51,7 +51,7 @@ namespace ofxRobotArm {
         void updateIKFast();
         void updateIKArm();
         
-        void set_desired(ofNode target, ofNode lookTarget);
+        void setDesired(ofNode target);
         Plane tcp_plane;
         
         void moveArm();
@@ -96,7 +96,7 @@ namespace ofxRobotArm {
 
     private:
         void setup_parameters();
-        ofNode target, lookTarget;
+        ofNode target;
     };
 }
 

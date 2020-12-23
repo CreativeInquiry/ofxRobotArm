@@ -29,7 +29,6 @@ public:
     vector<vector<double> > preInversePosition;
     
     void draw();
-    
     vector< double > lookAtJoints(RobotModel * actualPose,  vector<double> targetPose, float aDeltaTimef, ofVec3f targetPos);
     vector< double > getArmIK(  RobotModel * actualPose, Pose targetTCP,  vector<double> targetPose, float aDeltaTimef );
     vector< double > getArmIK(RobotModel * actualPose, vector<double> targetPose, ofVec3f aTargetWorldPos, ofVec3f aElbowWorldPos, bool aBInvertElbow, float aDeltaTimef);

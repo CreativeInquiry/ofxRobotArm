@@ -36,6 +36,7 @@ void InverseKinematics::setupParams(RobotParameters * params){
     robotParams->jointsIK.add(this->params);
 }
 
+
 void InverseKinematics::setRobotType(ofxRobotArm::RobotType type){
     this->type = type;
     kinematics = Kinematics(type);

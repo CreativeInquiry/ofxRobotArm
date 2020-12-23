@@ -1,13 +1,11 @@
 ofxAssimpModelLoader
 ofxEasing
-ofxEigen
 ofxGizmo
 ofxGui
 ofxIKArm
 ofxOsc
 ofxPoco
 ofxProtobuf
-ofxPtf
 ofxRobotArm
 ofxTiming
 ofxXmlSettings

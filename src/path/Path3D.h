@@ -2,7 +2,7 @@
 //
 #pragma once
 #include "ofMain.h"
-#include "ofxPtf.h"
+#include "ParallelTransportFrames.h"
 #include "Path.h"
 namespace ofxRobotArm {
     class Path3D : public Path{
@@ -38,7 +38,7 @@ namespace ofxRobotArm {
         ofPolyline path;
         
         /// \brief Perpendicular Frame Generator
-        ofxPtf ptf;
+        ParallelTransportFrames ptf;
         
         /// \brief Make the z-axis of the perp frame the forward-facing axis
         ///
