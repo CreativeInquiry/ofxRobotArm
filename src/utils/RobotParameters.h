@@ -110,7 +110,7 @@ namespace ofxRobotArm{
         ofParameter<bool> bDoReconnect;
         ofParameter<bool> bUseIKFast;
         ofParameter<bool> bUseIKArm;
-        
+        ofParameter<bool> bSettingPoseExternally;
         string ipAddress;
         vector<double> currentPose;
         Pose actualTCP;

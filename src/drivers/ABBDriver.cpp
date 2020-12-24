@@ -236,7 +236,74 @@ void ABBDriver::setToolOffset(ofVec3f localPos){
 }
 
 vector <double> ABBDriver::getAchievablePosition(vector<double> position){
+    float maxAccelDeg = 500.0;
+    float maxSpeedPct = 1.0;
     
+    if( !bMove && deccelCount > 0 ){
+        maxSpeedPct = ofMap(deccelCount, 1, numDeccelSteps-1, 0.0, 1.0, true);
+        if( maxSpeedPct < 0.9 ){
+            acceleratePct = 0;
+        }
+        //cout << " deccelCount " << deccelCount << " maxSpeedPct " << maxSpeedPct << endl;
+    }
+    if( bMove ){
+        acceleratePct += 0.02;
+        if( acceleratePct > 1.0 ){
+            acceleratePct = 1.0;
+        }
+    }
+    
+    maxSpeedPct *= acceleratePct;
+    
+    //this seeems to do much better with a hardcoded timedelta
+    float timeDiff = 1.0/120.0;//timeNow-lastTimeSentMove;
+
+    if( currentPoseRadian.size() && position.size() ){
+        
+        bool bHasSpeed = true;
+        vector <double> lastSpeed = calculatedSpeed;
+        
+        if( calculatedSpeed.size() != position.size() ){
+            calculatedSpeed.assign(position.size(), 0);
+            lastSpeed = calculatedSpeed;
+            bHasSpeed = false;
+        }
+        
+        for(int d= 0; d < position.size(); d++){
+            calculatedSpeed[d] = (position[d]-currentPoseRadian[d])/timeDiff;
+        }
+        
+        vector <double> acceleration;
+        acceleration.assign(calculatedSpeed.size(), 0);
+        
+        for(int d = 0; d < acceleration.size(); d++){
+            acceleration[d] = (calculatedSpeed[d]-lastSpeed[d])/timeDiff;
+            
+            float accelDegPerSec = ofRadToDeg(acceleration[d]);
+            
+            //this is the max accel reccomended.
+            //if we are over it we limit the new position to being the old position plus the current speed, plus the max acceleration
+            //this seems to actually work - fuck yes!
+            if( fabs( accelDegPerSec ) > maxAccelDeg ){
+                
+                //cout << d << " currentRobotPositionRadians is " << ofRadToDeg( currentRobotPositionRadians[d] ) << " request is " << ofRadToDeg(position[d]) <<  " speed is " << ofRadToDeg( calculatedSpeed[d] ) << " prev Speed is " << ofRadToDeg(lastSpeed[d])  << " accel is "  << accelDegPerSec << endl;
+
+                float newAccel = ofDegToRad( maxAccelDeg ) * (float)ofSign(accelDegPerSec);
+                float speedDiff = newAccel * timeDiff;
+                float targetSpeed = lastSpeed[d] + speedDiff;
+                
+                position[d] = currentPoseRadian[d] + ( targetSpeed * timeDiff * maxSpeedPct );
+                
+                //cout << "---- hit limit: accel is " << ofRadToDeg(newAccel) << " targetSpeed is now " << ofRadToDeg(targetSpeed) << " pos is now " << position[d] << endl;
+            }else if( maxSpeedPct < 1.0 ){
+                position[d] = currentPoseRadian[d] + ( currentSpeed[d] * timeDiff * maxSpeedPct );
+            }
+            
+        }
+        
+    }
+    
+    return position;
 }
 
 
@@ -257,6 +324,9 @@ void ABBDriver::threadedFunction(){
                             wait = robot->getStatus().rapid_execution_state() != abb::egm::wrapper::Status_RAPIDExecutionState_RAPID_RUNNING;
                         }
                     }
+                }else{
+                    bStarted = true;
+                    bTriedOnce = true;
                 }
             }
         }else{
@@ -265,36 +335,49 @@ void ABBDriver::threadedFunction(){
                 // Read the message received from the EGM client.
                 robot->read(&input);
                 sequence_number = input.header().sequence_number();
-                
+                actualPose.CopyFrom(input.feedback().robot().joints().position());
+                for(int i = 0 ; i < actualPose.values_size(); i++){
+                    poseRaw.getBack()[i] = actualPose.values(i);
+                }
+                currentPoseRadian = poseRaw.getBack();
+                poseProcessed.getBack() = poseRaw.getBack();
                 if(sequence_number == 0)
                 {
-                    // Reset all references, if it is the first message.
                     output.Clear();
-                    initial_pose.CopyFrom(input.feedback().robot().cartesian().pose());
-                    output.mutable_robot()->mutable_cartesian()->mutable_pose()->CopyFrom(initial_pose);
                 }
                 else
                 {
                     time = sequence_number/((double) egm_rate);
-                    
-                    // Compute references for position (along X-axis), and orientation (around Y-axis).
-                    position_reference = initial_pose.position().x() + position_amplitude*(1.0 + std::sin(2.0*M_PI*frequency*time - 0.5*M_PI));
-                    orientation_reference = initial_pose.euler().y() + orientation_amplitude*(1.0 + std::sin(2.0*M_PI*frequency*time - 0.5*M_PI));
-                    
-                    // Set references.
-                    // Note: The references are relative to the frames specified by the EGMActPose RAPID instruction.
-                    output.mutable_robot()->mutable_cartesian()->mutable_pose()->mutable_position()->set_x(position_reference);
-                    output.mutable_robot()->mutable_cartesian()->mutable_pose()->mutable_euler()->set_y(orientation_reference);
-                    
-                    if(sequence_number%egm_rate == 0)
-                    {
-                        ofLog()<<"References: " <<
-                        "X position = " << position_reference << " [mm] | " <<
-                        "Y orientation (Euler) = " << orientation_reference << " [degrees]"<<endl;
+                    if(bMoveWithPos){
+                        //if we aren't moving but deccelCount isn't 0 lets deccelerate
+                        if( (bMove && currentPose.size()>0)|| (currentPose.size()>0 && deccelCount>0) ){
+                            timeNow = ofGetElapsedTimef();
+                            if( bMove || timeNow-lastTimeSentMove >= 1.0/60.0){
+                                currentPose = getAchievablePosition(currentPose);
+                                output.mutable_robot()->mutable_joints()->mutable_position()->set_values(0, currentPose[0]);
+                                output.mutable_robot()->mutable_joints()->mutable_position()->set_values(1, currentPose[1]);
+                                output.mutable_robot()->mutable_joints()->mutable_position()->set_values(2, currentPose[2]);
+                                output.mutable_robot()->mutable_joints()->mutable_position()->set_values(3, currentPose[3]);
+                                output.mutable_robot()->mutable_joints()->mutable_position()->set_values(4, currentPose[4]);
+                                output.mutable_robot()->mutable_joints()->mutable_position()->set_values(5, currentPose[5]);
+                                if(!bMove){
+                                    deccelCount--;
+                                    if( deccelCount < 0){
+                                        deccelCount = 0;
+                                    }
+                                }
+                                lastTimeSentMove = timeNow;
+                            }
+                            bMove = false;
+                        }
                     }
                 }
                 // Write references back to the EGM client.
                 robot->write(output);
+                
+                toolPoseRaw.swapBack();
+                poseRaw.swapBack();
+                poseProcessed.swapBack();
             }
         }
     }

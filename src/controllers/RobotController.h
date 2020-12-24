@@ -48,8 +48,8 @@ namespace ofxRobotArm {
         
         void update();
         void update(vector<double> pose);
-        void updateIKFast();
-        void updateIKArm();
+        void updateIK();
+//        void updateIKArm();
         
         void setDesired(ofNode target);
         Plane tcp_plane;
@@ -61,11 +61,8 @@ namespace ofxRobotArm {
         void drawIK();
         void drawSafety(ofCamera & cam);
         
-   
-        
-        void enableControlJointsExternally();
-        void disableControlJointsExternally();
-        bool areJointsControlledExternally();
+
+        bool arePoseControlledExternally();
         
         void close();
         vector<double> getCurrentPose();
@@ -81,6 +78,8 @@ namespace ofxRobotArm {
         int stopCount = 0;
 
         RobotArmSafety robotSafety;
+        
+        void setToolOffset(ofVec3f local);
         
         void setEndEffector(string filename);
 

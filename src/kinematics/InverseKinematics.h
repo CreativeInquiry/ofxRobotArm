@@ -9,6 +9,7 @@
 // Copyright (c) 2016, Daniel Moore, Madeline Gannon, and The Frank-Ratchye STUDIO for Creative Inquiry All rights reserved.
 //
 namespace ofxRobotArm {
+
 class InverseKinematics{
 public:
     InverseKinematics(ofxRobotArm::RobotType type, RobotParameters * params);
@@ -56,6 +57,7 @@ public:
     
     shared_ptr< ofxIKArm > mIKArm;
     shared_ptr< ofxIKArm > mIKArmInverted;
+    vector<vector<double> > preSol;
 };
 }
 

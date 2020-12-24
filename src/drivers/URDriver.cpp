@@ -358,10 +358,6 @@ void URDriver::threadedFunction(){
             }
             
             currentRobotPositionRadians = jointsRaw.getBack();
-//            for(int d = 0; d < currentRobotPositionRadians.size(); d++){
-//                currentRobotPositionRadians[d] = ofDegToRad(currentRobotPositionRadians[d]);
-//            }
-            
             
             //this is returning weird shit that doesn't return the same values.
             

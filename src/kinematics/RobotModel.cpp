@@ -95,7 +95,7 @@ void RobotModel::setup(RobotType type){
         pose[4].axis.set(0, 0, 1);
         pose[5].axis.set(0, 1, 0);
         
-  
+        
         
         pose[0].orientation.makeRotate(0,pose[0].axis);
         pose[1].orientation.makeRotate(-90,pose[1].axis);
@@ -156,6 +156,10 @@ void RobotModel::setup(RobotType type){
     tool.offset = pose[5].offset;
     
     
+    tool.position.set(pose[5].position);
+    tool.orientation = pose[5].orientation;
+    tool.rotation = pose[5].rotation;
+    tool.axis.set(pose[5].axis);
     // Rig Joints
     nodes[0].setPosition(pose[0].position);
     nodes[0].setOrientation(pose[0].orientation);
@@ -163,17 +167,14 @@ void RobotModel::setup(RobotType type){
         nodes[i].setParent(nodes[i-1]);
         nodes[i].setPosition(pose[i].offset*1000);
         nodes[i].setOrientation(pose[i].orientation);
+        
     }
-    
-    
-    // Set Tool Center Point Node
-//    tcpNode.setParent(nodes[5]);
-//    tcpNode.setPosition(ofVec3f(0.0, 0.0, 0.0)*1000);
-    
     // Set Tool Rotations
-    tool.position.set(pose[5].position);
-    tool.rotation = pose[5].rotation;
-    tool.axis.set(pose[5].axis);
+    toolNode.setParent(nodes[5]);
+    toolNode.setPosition(ofVec3f(0, 0, 0));
+    toolNode.setOrientation(nodes[5].getGlobalOrientation());
+    
+    
     
     shader.load("shaders/model");
     
@@ -188,17 +189,27 @@ ofQuaternion RobotModel::getToolPointQuaternion(){
 
 
 ofNode RobotModel::getTool(){
-    return tcpNode;
+    return toolNode;
 }
 
 void RobotModel::setToolOffset(ofVec3f localOffset){
-    tcpNode.setPosition(localOffset);
+    this->localOffset = localOffset;
+    toolNode.setPosition(this->localOffset);
 }
 
 void RobotModel::setTCPPose(Pose pose){
+    tool = pose;
+    ofMatrix4x4 mat;
+    mat.makeRotationMatrix(toolNode.getGlobalOrientation());
+    ofVec3f pos = toolNode.getPosition()/1000.0;
+    tool.position = tool.position - pos*mat;
     tcpNode.setGlobalPosition(pose.position*1000);
     tcpNode.setGlobalOrientation(pose.orientation);
-    
+}
+
+Pose RobotModel::getModifiedTCPPose(){
+    tool.position = tool.position;
+    return tool;
 }
 
 void RobotModel::setAngles( vector<double> aTargetRadians ){
@@ -261,9 +272,6 @@ void RobotModel::clearEndEffector(){
 void RobotModel::setToolMesh(ofMesh mesh){
     toolMesh = mesh;
 }
-void RobotModel::update(){
-    
-}
 
 // ----------------------------------------------------------
 void RobotModel::drawSkeleton() {
@@ -314,6 +322,9 @@ void RobotModel::drawSkeleton() {
                 }
                 
                 if (i == 5) {
+                    ofSetColor(0, 255, 255);
+                    toolNode.draw();
+                    
                     ofSetColor(255, 0, 255);
                     tcpNode.draw();
                     ofVec3f tcp = tcpNode.getGlobalPosition();
@@ -324,7 +335,7 @@ void RobotModel::drawSkeleton() {
                     ofDrawBitmapString("TCP Desired Pose", tcp.x + 5, tcp.y, tcp.z - 40);
                     ofDrawBitmapString("dist: " + ofToString(dist), tcp.x + 5, tcp.y, tcp.z - 60);
                     ofDrawBitmapString("pos:  " +ofToString(tcp), tcp.x + 5, tcp.y, tcp.z - 80);
-                
+                    
                     ofVec3f fwp = forwardPose.getGlobalPosition();
                     dist = fwp.distance(nodes[i].getGlobalPosition());
                     ofSetColor(255, 255, 0);
@@ -345,106 +356,108 @@ void RobotModel::drawSkeleton() {
     ofEnableDepthTest();
 }
 
+void RobotModel::drawMesh(ofFloatColor color, bool bDrawDebug){
+    if(bDrawModel){
+        ofEnableDepthTest();
+        ofQuaternion q;
+        ofVec3f offset;
+        
+        ofMatrix4x4 gmat;
+        gmat.makeIdentityMatrix();
+        gmat.makeScaleMatrix( 1, 1, 1 );
+        
+        if(bUseShader){
+            shader.begin();
+            shader.setUniform4f("color", color);
+        }
+        ofPushMatrix();
+        {
+            ofPushMatrix();
+            {
+                int i = 0;
+                for(auto &joint : pose)//pose.size(); i++)
+                {
+                    float x;
+                    ofVec3f axis;
+                    q = joint.orientation;
+                    q.getRotate(x, axis);
+                    ofTranslate(pose[i].offset*1000);
+                    gmat.translate( pose[i].offset*1000 );
+                    
+                    if(bDrawDebug) {
+                        ofDrawAxis(30);
+                    }
+                    ofMatrix4x4 tmat;
+                    if(i >= 3){
+                        ofPushMatrix();
+                        {
+                            ofRotateDeg(90, 0, 0, 1);
+                            ofRotateDeg(90, 1, 0, 0);
+                            ofScale(100, 100, 100);
+                            meshs[i].draw();
+                        }
+                        ofPopMatrix();
+                    }
+                    ofRotateDeg(x, axis.x, axis.y, axis.z);
+                    if(i < 3){
+                        ofPushMatrix();
+                        {
+                            ofRotateDeg(90, 0, 0, 1);
+                            ofRotateDeg(90, 1, 0, 0);
+                            ofScale(100, 100, 100);
+                            
+                            meshs[i].draw();
+                        } ofPopMatrix();
+                    }
+                    if (i==5){
+                        // include flange offset
+                        ofTranslate(0, -0.0308 * 1000, 0);
+                        // the x-axis was rotating backwards,
+                        // so I'm doing some funny business here
+                        ofRotateDeg(180, 0, 0, 1);
+                        ofRotateDeg(-180, nodes[5].getXAxis().x,
+                                    nodes[5].getXAxis().y,
+                                    nodes[5].getXAxis().z);
+                        toolMesh.drawWireframe();
+                    }
+                    i++;
+                }
+            }
+            ofPopMatrix();
+        }
+        ofPopMatrix();
+        ofDisableDepthTest();
+        
+        if(bUseShader) shader.end();
+    }
+}
 
 void RobotModel::draw(ofFloatColor color, bool bDrawDebug){
     ofPushMatrix();
-    ofPushStyle();
-    
-    ofSetColor(255, 255, 255);
-    if(bDrawDebug) {
-        ofPushStyle(); {
-            ofDrawAxis(1000);
-            ofSetColor(255, 255, 0);
-            ofDrawSphere(tool.position*ofVec3f(1000, 1000, 1000), 40);
-            ofSetColor(225, 225, 225);
-        } ofPopStyle();
-    }
-    
-//        if(bDrawModel){
-//            ofEnableDepthTest();
-//            ofQuaternion q;
-//            ofVec3f offset;
-//    
-//            ofMatrix4x4 gmat;
-//            gmat.makeIdentityMatrix();
-//            gmat.makeScaleMatrix( 1, 1, 1 );
-//    
-//            if(bUseShader){
-//    
-//                shader.begin();
-//                shader.setUniform4f("color", color);
-//            }
-//                    ofPushMatrix();
-//                    {
-//                        ofPushMatrix();
-//                        {
-//                            int i = 0;
-//                            for(auto &joint : pose)//pose.size(); i++)
-//                            {
-//                                float x;
-//                                ofVec3f axis;
-//                                q = joint.orientation;
-//                                q.getRotate(x, axis);
-//                                ofTranslate(pose[i].offset*1000);
-//                                gmat.translate( pose[i].offset*1000 );
-//    
-//                                if(bDrawDebug) {
-//                                    ofDrawAxis(30);
-//                                }
-//                                ofMatrix4x4 tmat;
-//                                if(i >= 3){
-//                                    ofPushMatrix();
-//                                    {
-//                                        ofRotateDeg(90, 0, 0, 1);
-//                                        ofRotateDeg(90, 1, 0, 0);
-//                                        ofScale(100, 100, 100);
-//                                        meshs[i].draw();
-//                                    }
-//                                    ofPopMatrix();
-//                                }
-//                                ofRotateDeg(x, axis.x, axis.y, axis.z);
-//                                if(i < 3){
-//                                    ofPushMatrix();
-//                                    {
-//                                        ofRotateDeg(90, 0, 0, 1);
-//                                        ofRotateDeg(90, 1, 0, 0);
-//                                        ofScale(100, 100, 100);
-//    
-//                                        meshs[i].draw();
-//                                    } ofPopMatrix();
-//                                }
-//                                if (i==5){
-//                                    // include flange offset
-//                                    ofTranslate(0, -0.0308 * 1000, 0);
-//                                    // the x-axis was rotating backwards,
-//                                    // so I'm doing some funny business here
-//            //                        ofRotateDeg(180, 0, 0, 1);
-//                                    ofRotateDeg(-180, nodes[5].getXAxis().x,
-//                                                nodes[5].getXAxis().y,
-//                                                nodes[5].getXAxis().z);
-//                                    toolMesh.drawWireframe();
-//                                }
-//                                i++;
-//                            }
-//                        }
-//                        ofPopMatrix();
-//                    }
-//                    ofPopMatrix();
-//            ofDisableDepthTest();
-//    
-//            if(bUseShader) shader.end();
-//        }
-//    
-    
-    ofPushMatrix();
     {
-        drawSkeleton();
+        ofPushStyle();
+        {
+            
+            ofSetColor(255, 255, 255);
+            if(bDrawDebug) {
+                ofPushStyle();
+                {
+                    ofDrawAxis(1000);
+                    ofSetColor(255, 255, 0);
+                    ofDrawSphere(tool.position*ofVec3f(1000, 1000, 1000), 40);
+                    ofSetColor(225, 225, 225);
+                }
+                ofPopStyle();
+            }
+        
+            ofPushMatrix();
+            {
+                drawSkeleton();
+            }
+            ofPopMatrix();
+            
+        }
+        ofPopStyle();
     }
-    ofPopMatrix();
-    
-    
-    
-    
-    ofPopStyle();
     ofPopMatrix();
 }

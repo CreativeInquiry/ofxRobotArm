@@ -17,12 +17,14 @@ void ofApp::setup(){
     robot.start();
     
     tcp.setPosition(250, 250, 250);
-    lookAtNode.setPosition(0, 0, 0);
+    lookAtNode.setPosition(500, 500, 500);
     ofQuaternion q;
     q.makeRotate(90, 0, 1, 0);
     tcp.setOrientation(q);
     lookAtNode.setOrientation(q);
     tcp_target.setNode(tcp);
+//    lookAtNode.setParent(tcp);
+//    lookAtNode.setPosition(0, 0, -1000);
     look_target.setNode(lookAtNode);
 }
 
@@ -30,13 +32,7 @@ void ofApp::setup(){
 void ofApp::update(){
     
     // do movements
-    if(ofGetKeyPressed('P')){
-        lookAtNode.setPosition(tcp.getPosition()+ofVec3f(0, 0, -100));
-        look_target.setNode(lookAtNode);
-    }else if(ofGetKeyPressed('p')){
-        lookAtNode.setPosition(tcp.getPosition()+ofVec3f(0, 100, 0));
-        look_target.setNode(lookAtNode);
-    }
+
     
     lookAtNode.setGlobalPosition(look_target.getTranslation());
     lookAtNode.setGlobalOrientation(look_target.getRotation());
@@ -84,14 +80,12 @@ void ofApp::draw_scene(){
     ofVec3f p = tcp.getGlobalPosition();
     cam.begin();
     ofDrawAxis(1500);
-    ofDrawGrid();
+
     
     // Draw Desired Robot
     robot.drawDesired();
     robot.draw();
     
-    // Draw Actual Robot
-//    robot.draw();
     
     tcp_target.draw(cam);
     look_target.draw(cam);
@@ -295,58 +289,63 @@ void ofApp::keypressed_robot(int key){
         case 'M':
             robot_live = !robot_live;
             break;
+        case OF_KEY_LEFT:
+            robot.setToolOffset(ofVec3f(0, 0, 0));
+            break;
+        case OF_KEY_RIGHT:
+            robot.setToolOffset(ofVec3f(100, 0, 0));
+            break;
+        case OF_KEY_UP:
+            robot.setToolOffset(ofVec3f(50, 0, 0));
+            break;
+        case OF_KEY_DOWN:
+            robot.setToolOffset(ofVec3f(25, 0, 0));
+            break;
     }
 }
 
 //--------------------------------------------------------------
 void ofApp::keypressed_camera(int key){
-//    bool val = true;
-//    switch (key) {
-//        case 'h':
-//        case 'H':
-//            show_gui.set(!show_gui);
-//            break;
-//        case '1':
-//            listener_show_top(val);
-//            break;
-//        case '2':
-//            listener_show_front(val);
-//            break;
-//        case '3':
-//            listener_show_side(val);
-//            break;
-//        case '4':
-//            listener_show_perspective(val);
-//            break;
-//    }
+    bool val = true;
+    switch (key) {
+        case 'h':
+        case 'H':
+            show_gui.set(!show_gui);
+            break;
+        case 'q':
+        case 'Q':
+            listener_show_top(val);
+            break;
+        case 'w':
+        case 'W':
+            listener_show_front(val);
+            break;
+        case 'e':
+        case 'E':
+            listener_show_side(val);
+            break;
+        case 'r':
+        case 'R':
+            listener_show_perspective(val);
+            break;
+    }
 }
 
 //--------------------------------------------------------------
 void ofApp::keypressed_gizmo(int key){
     bool val = true;
     switch (key) {
-        case 'e':
-        case 'E':
-            look_target.setType(ofxGizmo::OFX_GIZMO_ROTATE);
-            tcp_target.setType(ofxGizmo::OFX_GIZMO_ROTATE);
-            break;
-        case 'w':
-        case 'W':
-            look_target.setType(ofxGizmo::OFX_GIZMO_MOVE);
-            tcp_target.setType(ofxGizmo::OFX_GIZMO_MOVE);
-            break;
-        case 'r':
-        case 'R':
-            tcp_target.getMatrix().setRotate(ofQuaternion(0, 0, 0, 1));
-            break;
         case '1':
-            tcp_target.getMatrix().setRotate(ofQuaternion(1, 0, 0, 1));
+            look_target.getMatrix().setTranslation(tcp.getGlobalPosition()+ofVec3f(100, 0, 0));
             break;
         case '2':
-            tcp_target.getMatrix().setRotate(ofQuaternion(0, 1, 0, 1));
+            look_target.getMatrix().setTranslation(tcp.getGlobalPosition()+ofVec3f(0, 100, 0));
             break;
         case '3':
-            tcp_target.getMatrix().setRotate(ofQuaternion(0, 0, 1, 1));
+            look_target.getMatrix().setTranslation(tcp.getGlobalPosition()+ofVec3f(1, 1, -100));
+            break;
+        case '4':
+            look_target.getMatrix().setTranslation(tcp.getGlobalPosition()+ofVec3f(0, 0, 100));
             break;
     }
     
