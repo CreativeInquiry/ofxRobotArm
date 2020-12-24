@@ -33,28 +33,22 @@ namespace ofxRobotArm {
         /// \brief creates and connects to a new robot
         /// \params ipAddress ipAddress of the robot
         /// \params params default parameters for the robot & GUI
-        
-        vector< double > updateJoints(float deltatime);
 
-
+        void updateJoints(float deltatime);
         void toggleTeachMode();
         void setTeachMode();
-        bool isTeachModeEnabled;
-        
-        
         void safetyCheck();
         void updateMovement(vector<double> targetPose);
         void updateRobotData();
         
         void update();
         void update(vector<double> pose);
-        void updateIK();
+        void updateIK(Pose pose);
 //        void updateIKArm();
         
         void setDesired(ofNode target);
-        Plane tcp_plane;
+      
         
-        void moveArm();
         void draw(ofFloatColor color = ofFloatColor(1,1,1,1), bool debug = false);
         void drawDesired(ofFloatColor color = ofFloatColor(1,1,1,1));
 //        void drawPreviews();
@@ -83,19 +77,21 @@ namespace ofxRobotArm {
         
         void setEndEffector(string filename);
 
+  
     protected:
         vector <double> stopPosition;
-        bool m_bSettingJointsExternally = false;
         vector<double> targetPose;
         vector<vector<double> > targetPoses;
         
         // smooth angles //
         vector< float > mSmoothAdditions;
         vector<double> jointWeights;
-
     private:
+        
+        bool isTeachModeEnabled;
         void setup_parameters();
         ofNode target;
+        Plane tcp_plane;
     };
 }
 

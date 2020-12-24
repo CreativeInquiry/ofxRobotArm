@@ -56,7 +56,7 @@ void ofApp::update(){
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-    ofBackground(70, 20);
+    ofBackground(20);
     
     // Draw 3D Scene
     draw_scene();
@@ -83,7 +83,7 @@ void ofApp::draw_scene(){
     ofVec3f p = tcp.getGlobalPosition();
     cam.begin();
     ofDrawAxis(1500);
-
+    ofDrawGrid(100, 10, false, false, false, true);
     
     // Draw Desired Robot
     robot.drawDesired();

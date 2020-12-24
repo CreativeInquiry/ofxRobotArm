@@ -81,30 +81,29 @@ void RobotController::setTeachMode(){
 }
 
 #pragma mark - IK
-void RobotController::updateIK(){
-    targetPoses = inverseKinematics.inverseKinematics(desiredPose.getModifiedTCPPose());
+void RobotController::updateIK(Pose pose){
+    targetPoses = inverseKinematics.inverseKinematics(pose);
     int selectedSolution = inverseKinematics.selectSolution(targetPoses,  robot->getCurrentPose(), jointWeights);
     if(selectedSolution > -1){
         targetPose = targetPoses[selectedSolution];
     }
-    
+
     for(int i = 0; i < targetPose.size(); i++){
         float tpose = (float)targetPose[i];
         if( isnan(tpose) ) {
             tpose = 0.f;
         }
+        targetPose[i] = tpose;
         robotParams.targetPose[i].set(tpose);
     }
 }
-
-
 
 #pragma mark - Update
 void RobotController::update(){
     updateRobotData();
     // update the plane that visualizes the robot flange
     tcp_plane.update(target);
-    updateIK();
+    updateIK(desiredPose.getModifiedTCPPose());
     updateMovement(targetPose);
     targetPose = movement.getTargetJointPose();
 
@@ -122,20 +121,22 @@ void RobotController::update(){
 void RobotController::update(vector<double> _pose){
     targetPose = _pose;
     updateMovement(targetPose);
+    targetPose = movement.getTargetJointPose();
+    if(targetPose.size() > 0){
+        ofMatrix4x4 forwardIK = inverseKinematics.forwardKinematics(targetPose);
+        ofVec3f translation = forwardIK.getTranslation();
+        ofNode forwardNode;
+        forwardNode.setGlobalPosition(translation);
+        forwardNode.setGlobalOrientation(forwardIK.getRotate());
+        desiredPose.setPose(targetPose);
+        desiredPose.setForwardPose(forwardNode);
+    }
 }
 
-void RobotController::setDesired(ofNode target){
-    // convert from mm to m
-    robotParams.targetTCP.position = target.getGlobalPosition()/1000.0;
-    robotParams.targetTCP.orientation = target.getGlobalOrientation();
-    desiredPose.setTCPPose(robotParams.targetTCP);
-    this->target = target;
-}
 
 #pragma mark - Safety
 void RobotController::safetyCheck(){
 
-    
     robotSafety.setCurrentRobotArmAnlges( robot->getCurrentPose());
     robotSafety.setDesiredAngles(targetPose);
     robotSafety.update(desiredPose);
@@ -165,6 +166,14 @@ void RobotController::updateMovement(vector<double> targetPose){
             stopCount--;
         }
     }
+}
+
+void RobotController::setDesired(ofNode target){
+    // convert from mm to m
+    robotParams.targetTCP.position = target.getGlobalPosition()/1000.0;
+    robotParams.targetTCP.orientation = target.getGlobalOrientation();
+    desiredPose.setTCPPose(robotParams.targetTCP);
+    this->target = target;
 }
 
 

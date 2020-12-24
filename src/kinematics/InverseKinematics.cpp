@@ -243,7 +243,7 @@ vector<vector<double> > InverseKinematics::inverseKinematics(ofMatrix4x4 pose)
             fooSol.push_back(q_sols[i*6+4]);
             fooSol.push_back(q_sols[i*6+5]);
             if(kinematics.isValid(&fooSol[0])){
-                kinematics.harmonizeTowardZero(&fooSol[0]);
+//                kinematics.harmonizeTowardZero(&fooSol[0]);
                 sols.push_back(fooSol);
             }
         }

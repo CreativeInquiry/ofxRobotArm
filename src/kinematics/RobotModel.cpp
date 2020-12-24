@@ -292,9 +292,9 @@ void RobotModel::drawSkeleton() {
                 // draw each link
                 ofPushStyle();
                 float t = i / float(nodes.size());
-                ofColor mag = ofColor(255, 0, 255);
-                ofColor yellow = ofColor(255, 255, 0);
-                ofSetColor(mag.getLerped(yellow, t));
+                ofColor mag = ofColor(ofColor::darkCyan);
+                ofColor yellow = ofColor(ofColor::darkMagenta);
+                ofSetColor(yellow.getLerped(mag, t));
                 ofSetLineWidth(5);
                 
                 if (i != 0) {
@@ -317,20 +317,20 @@ void RobotModel::drawSkeleton() {
                 // show angle at joint
                 ofDrawBitmapString("angle: " + ofToString(pose[i].rotation), p.x + 5, p.y, p.z - 20);
                 if(ofGetKeyPressed(OF_KEY_CONTROL) && i == 5){
-                    ofSetColor(255, 0, 255);
+                    ofSetColor(mag);
                     ofDrawBitmapString("pos: " + ofToString(p), p.x + 5, p.y, p.z - 40);
                 }
                 
                 if (i == 5) {
-                    ofSetColor(0, 255, 255);
+                    ofSetColor(mag);
                     toolNode.draw();
                     
-                    ofSetColor(255, 0, 255);
+                    ofSetColor(mag);
                     tcpNode.draw();
                     ofVec3f tcp = tcpNode.getGlobalPosition();
                     ofVec3f endJoint = nodes[i].getGlobalPosition();
                     dist = tcp.distance(nodes[i].getGlobalPosition());
-                    ofSetColor(255, 0, 255, 100);
+                    ofSetColor(mag, 100);
                     ofDrawLine(nodes[i].getGlobalPosition(), tcp);
                     ofDrawBitmapString("TCP Desired Pose", tcp.x + 5, tcp.y, tcp.z - 40);
                     ofDrawBitmapString("dist: " + ofToString(dist), tcp.x + 5, tcp.y, tcp.z - 60);
@@ -338,10 +338,10 @@ void RobotModel::drawSkeleton() {
                     
                     ofVec3f fwp = forwardPose.getGlobalPosition();
                     dist = fwp.distance(nodes[i].getGlobalPosition());
-                    ofSetColor(255, 255, 0);
+                    ofSetColor(yellow);
                     forwardPose.draw();
                     if(fwp.distance(tcp) > 20){
-                        ofSetColor(255, 255, 0, 100);
+                        ofSetColor(yellow, 100);
                         ofDrawBitmapString("Forward Pose", fwp.x + 5, fwp.y, fwp.z - 40);
                         ofDrawBitmapString("dist: " + ofToString(dist), fwp.x + 5, fwp.y, fwp.z - 60);
                         ofDrawBitmapString("pos: "+ofToString(fwp), fwp.x + 5, fwp.y, fwp.z - 80);
