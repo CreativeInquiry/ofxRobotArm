@@ -43,7 +43,7 @@ namespace ofxRobotArm {
         
         
         void safetyCheck();
-        void updateMovement();
+        void updateMovement(vector<double> targetPose);
         void updateRobotData();
         
         void update();

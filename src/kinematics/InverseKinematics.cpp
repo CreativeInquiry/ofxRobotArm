@@ -3,7 +3,6 @@
 //
 using namespace ofxRobotArm;
 
-const static double ANGLE_THRESHOLD = ofDegToRad(30);
 
 InverseKinematics::InverseKinematics(ofxRobotArm::RobotType type, RobotParameters * params){
     setRobotType(type);
@@ -248,18 +247,18 @@ vector<vector<double> > InverseKinematics::inverseKinematics(ofMatrix4x4 pose)
                 sols.push_back(fooSol);
             }
         }
-        if(preSol.size() > 0){
-            int j = 0;
-            for(auto sol : sols){
-                for(int i = 0; i < sol.size(); i++){
-                    if((abs(sol[i]) - preSol[j][i]) > ANGLE_THRESHOLD){
-                        sol[i] = preSol[j][i];
-                    }
-                }
-                j++;
-            }
-        }
-        preSol = sols;
+//        if(preSol.size() > 0){
+//            int j = 0;
+//            for(auto sol : sols){
+//                for(int i = 0; i < sol.size(); i++){
+//                    if((abs(sol[i]) - preSol[j][i]) > ANGLE_THRESHOLD){
+//                        sol[i] = preSol[j][i];
+//                    }
+//                }
+//                j++;
+//            }
+//        }
+//        preSol = sols;
         return sols;
     }
 }

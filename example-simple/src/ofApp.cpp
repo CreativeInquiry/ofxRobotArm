@@ -26,6 +26,9 @@ void ofApp::setup(){
 //    lookAtNode.setParent(tcp);
 //    lookAtNode.setPosition(0, 0, -1000);
     look_target.setNode(lookAtNode);
+//
+    offset.set(50, 0, 0);
+    robot.setToolOffset(offset);
 }
 
 //--------------------------------------------------------------
@@ -290,16 +293,20 @@ void ofApp::keypressed_robot(int key){
             robot_live = !robot_live;
             break;
         case OF_KEY_LEFT:
-            robot.setToolOffset(ofVec3f(0, 0, 0));
+            offset-=ofVec3f(10, 0, 0);
+            robot.setToolOffset(offset);
             break;
         case OF_KEY_RIGHT:
-            robot.setToolOffset(ofVec3f(100, 0, 0));
+            offset+=ofVec3f(10, 0, 0);
+            robot.setToolOffset(offset);
             break;
         case OF_KEY_UP:
-            robot.setToolOffset(ofVec3f(50, 0, 0));
+            offset+=ofVec3f(100, 0, 0);
+            robot.setToolOffset(offset);
             break;
         case OF_KEY_DOWN:
-            robot.setToolOffset(ofVec3f(25, 0, 0));
+            offset-=ofVec3f(100, 0, 0);
+            robot.setToolOffset(offset);
             break;
     }
 }

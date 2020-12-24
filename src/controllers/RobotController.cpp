@@ -105,7 +105,7 @@ void RobotController::update(){
     // update the plane that visualizes the robot flange
     tcp_plane.update(target);
     updateIK();
-    updateMovement();
+    updateMovement(targetPose);
     targetPose = movement.getTargetJointPose();
 
 
@@ -121,8 +121,7 @@ void RobotController::update(){
 }
 void RobotController::update(vector<double> _pose){
     targetPose = _pose;
-    update();
-    
+    updateMovement(targetPose);
 }
 
 void RobotController::setDesired(ofNode target){
@@ -146,7 +145,7 @@ void RobotController::safetyCheck(){
 }
 
 #pragma mark - Movements
-void RobotController::updateMovement(){
+void RobotController::updateMovement(vector<double> targetPose){
     movement.addTargetJointPose(targetPose);
     movement.update();
     // move the robot to the target TCP

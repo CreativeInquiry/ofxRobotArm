@@ -62,5 +62,6 @@ class ofApp : public ofBaseApp{
         ofxPanel panel_robot;
         ofParameter<bool> robot_live;
         void draw_live_robot_warning();
-
+    
+        ofVec3f offset;
 };
