@@ -1,15 +1,20 @@
 //
-//  JointRestrictor.cpp
+//  PoseRestrictor.cpp
 //  RobotRecordKinect
 //
 //  Created by Nick Hardeman on 11/21/16.
 //
 
-#include "JointRestrictor.h"
+#include "PoseRestrictor.h"
 using namespace ofxRobotArm;
-
+PoseRestrictor::PoseRestrictor(){
+    
+}
+PoseRestrictor::~PoseRestrictor(){
+    
+}
 //--------------------------------------------------------------
-ofParameterGroup & JointRestrictor::setup() {
+ofParameterGroup & PoseRestrictor::setup() {
     params.setName( "Joint_Restrictions" );
     
     params.add( mMinGlobalAngle.set("MinGlobalAngle", -360, -360, 360 ));
@@ -40,17 +45,17 @@ ofParameterGroup & JointRestrictor::setup() {
 }
 
 //--------------------------------------------------------------
-void JointRestrictor::update( float aDeltaTimef ) {
+void PoseRestrictor::update( float aDeltaTimef ) {
     
 }
 
 //--------------------------------------------------------------
-void JointRestrictor::setShoulderAngle(float angle){
+void PoseRestrictor::setShoulderAngle(float angle){
     shoulderAngle = angle * RAD_TO_DEG;
 }
 
 //--------------------------------------------------------------
-float JointRestrictor::getMinJointAngle(int aIndex){
+float PoseRestrictor::getMinJointAngle(int aIndex){
     float angle = 0;
     if(aIndex >= 0 && aIndex < m_angleMinLimits.size() ){
         angle = m_angleMinLimits[aIndex];
@@ -67,7 +72,7 @@ float JointRestrictor::getMinJointAngle(int aIndex){
 }
 
 //--------------------------------------------------------------
-float JointRestrictor::getMaxJointAngle(int aIndex){
+float PoseRestrictor::getMaxJointAngle(int aIndex){
     float angle = 0;
     if(aIndex >= 0 && aIndex < m_angleMaxLimits.size() ){
         angle = m_angleMaxLimits[aIndex];
@@ -82,7 +87,7 @@ float JointRestrictor::getMaxJointAngle(int aIndex){
 }
 
 //--------------------------------------------------------------
-void JointRestrictor::drawLimits( RobotModel* amodel ) {
+void PoseRestrictor::drawLimits( RobotModel* amodel ) {
     if( amodel == NULL ) return;
     // loop through each node and show the limits //
     for( int i = 0; i < amodel->pose.size(); i++ ) {
@@ -102,7 +107,7 @@ void JointRestrictor::drawLimits( RobotModel* amodel ) {
 }
 
 //--------------------------------------------------------------
-void JointRestrictor::drawAngles( RobotModel* amodel, vector< double > aCurrentAngles ) {
+void PoseRestrictor::drawAngles( RobotModel* amodel, vector< double > aCurrentAngles ) {
     if( amodel == NULL ) return;
     // loop through each node and show the limits //
     for( int i = 0; i < amodel->pose.size(); i++ ) {
@@ -124,7 +129,7 @@ void JointRestrictor::drawAngles( RobotModel* amodel, vector< double > aCurrentA
 }
 
 //--------------------------------------------------------------
-vector< ofVec3f > JointRestrictor::getAxes( RobotModel* amodel, int aIndex ) {
+vector< ofVec3f > PoseRestrictor::getAxes( RobotModel* amodel, int aIndex ) {
     vector< ofVec3f > taxes;
     taxes.push_back( ofVec3f(-1,0,0) );
     taxes.push_back( ofVec3f(0,-1,0 ) );
@@ -175,7 +180,7 @@ vector< ofVec3f > JointRestrictor::getAxes( RobotModel* amodel, int aIndex ) {
 }
 
 //--------------------------------------------------------------
-void JointRestrictor::drawArc( float aStartAngleDegrees, float aEndAngleDegrees, ofVec3f aForwardAxis, ofVec3f aSideAxis ) {
+void PoseRestrictor::drawArc( float aStartAngleDegrees, float aEndAngleDegrees, ofVec3f aForwardAxis, ofVec3f aSideAxis ) {
     float startDegrees = aStartAngleDegrees;//aStartAngleRadians * RAD_TO_DEG;
     float endDegrees = aEndAngleDegrees;//aEndAngleRadians * RAD_TO_DEG;
     float tangleDiff = endDegrees - startDegrees;//ofAngleDifferenceDegrees( startDegrees, endDegrees );
@@ -207,9 +212,9 @@ void JointRestrictor::drawArc( float aStartAngleDegrees, float aEndAngleDegrees,
 }
 
 //--------------------------------------------------------------
-float JointRestrictor::getRestricted( int aIndex, float aInAngleRadians ) {
+float PoseRestrictor::getRestricted( int aIndex, float aInAngleRadians ) {
     if( aIndex >= m_bApplyLimits.size() ) {
-        //        ofLog(OF_LOG_VERBOSE) << "JointRestrictor :: getRestricted : aindex " << aIndex << " is too high!! " << endl;
+        //        ofLog(OF_LOG_VERBOSE) << "PoseRestrictor :: getRestricted : aindex " << aIndex << " is too high!! " << endl;
         return aInAngleRadians;
     }
     
@@ -230,9 +235,9 @@ float JointRestrictor::getRestricted( int aIndex, float aInAngleRadians ) {
 }
 
 //--------------------------------------------------------------
-bool JointRestrictor::canReachTarget( int aIndex, float aCurrentAngleInRadians, float aTargetInRadians, float aEpsilonRadians, bool bUseClosest ) {
+bool PoseRestrictor::canReachTarget( int aIndex, float aCurrentAngleInRadians, float aTargetInRadians, float aEpsilonRadians, bool bUseClosest ) {
     if( aIndex >= m_bApplyLimits.size() ) {
-        //        ofLog(OF_LOG_VERBOSE) << "JointRestrictor :: canReachTarget : aindex " << aIndex << " is too high!! " << endl;
+        //        ofLog(OF_LOG_VERBOSE) << "PoseRestrictor :: canReachTarget : aindex " << aIndex << " is too high!! " << endl;
         return true;
     }
     
@@ -278,7 +283,7 @@ bool JointRestrictor::canReachTarget( int aIndex, float aCurrentAngleInRadians, 
 }
 
 //--------------------------------------------------------------
-float JointRestrictor::getAngleToTargetDifference( int aIndex, float aCurrentAngleInRadians, float aTargetInRadians, bool bUseClosest ) {
+float PoseRestrictor::getAngleToTargetDifference( int aIndex, float aCurrentAngleInRadians, float aTargetInRadians, bool bUseClosest ) {
     float tangleRadians = aCurrentAngleInRadians;
     if( !bUseClosest ) {
         tangleRadians = TWO_PI - aCurrentAngleInRadians;
@@ -289,7 +294,7 @@ float JointRestrictor::getAngleToTargetDifference( int aIndex, float aCurrentAng
 }
 
 //--------------------------------------------------------------
-float JointRestrictor::getCloserLimit( int aIndex, float aTargetInRadians ) {
+float PoseRestrictor::getCloserLimit( int aIndex, float aTargetInRadians ) {
     float tMinRadians = getMinJointAngle( aIndex ) * DEG_TO_RAD;
     float tMaxRadians = getMaxJointAngle( aIndex ) * DEG_TO_RAD;
     

@@ -50,10 +50,10 @@ using namespace ofxRobotArm;
 //}
 ofParameterGroup &  RobotArmCollision::setup(RobotType type) {
     mModel = shared_ptr< RobotModel >( new RobotModel() );
-    mModel->setup(type);
+//    mModel->setup(type);
     
     mPredictiveModel = shared_ptr< RobotModel >( new RobotModel() );
-    mPredictiveModel->setup(type);
+//    mPredictiveModel->setup(type);
     
     params.setName( "Robot Collisions" );
     params.add( bApply.set("ApplyCollisionDetection", true ));
@@ -90,7 +90,7 @@ ofParameterGroup &  RobotArmCollision::setup(RobotType type) {
 
 //--------------------------------------------------------------
 void RobotArmCollision::setRobotAngles( vector< double > aAcutalRobotAngles ) {
-    mModel->setAngles( aAcutalRobotAngles );
+    mModel->setPose( aAcutalRobotAngles );
     
     if( mAppendages.size() ) {
         for( int i = 0; i < mAppendages.size(); i++ ) {
@@ -499,7 +499,7 @@ void RobotArmCollision::updateModel( shared_ptr< RobotModel > amodel, vector< Ap
         tempPredictiveAngles.push_back( aAppendages[i].currentAngle );
     }
     if( amodel ) {
-        amodel->setAngles( tempPredictiveAngles );
+        amodel->setPose( tempPredictiveAngles );
         updateAppendages( amodel, aAppendages );
     }
 }

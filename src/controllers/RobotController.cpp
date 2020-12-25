@@ -24,8 +24,7 @@ void RobotController::setup(string ipAddress, RobotParameters & params, bool off
     robotParams = params;
     
     
-    movement.setup();
-//    previewArm = desiredPoses[0];
+   
     desiredPose.setup(params.get_robot_type());
     actualPose.setup(params.get_robot_type());
  
@@ -104,8 +103,7 @@ void RobotController::update(){
     // update the plane that visualizes the robot flange
     tcp_plane.update(target);
     updateIK(desiredPose.getModifiedTCPPose());
-    updateMovement(targetPose);
-    targetPose = movement.getTargetJointPose();
+    updateMovement();
 
 
     if(targetPose.size() > 0){
@@ -120,8 +118,7 @@ void RobotController::update(){
 }
 void RobotController::update(vector<double> _pose){
     targetPose = _pose;
-    updateMovement(targetPose);
-    targetPose = movement.getTargetJointPose();
+    updateMovement();
     if(targetPose.size() > 0){
         ofMatrix4x4 forwardIK = inverseKinematics.forwardKinematics(targetPose);
         ofVec3f translation = forwardIK.getTranslation();
@@ -146,18 +143,14 @@ void RobotController::safetyCheck(){
 }
 
 #pragma mark - Movements
-void RobotController::updateMovement(vector<double> targetPose){
-    movement.addTargetJointPose(targetPose);
-    movement.update();
-    // move the robot to the target TCP
+void RobotController::updateMovement(){
     if(robotParams.bMove){
-        //         robot->setSpeed(tempSpeeds, movement.getAcceleration());
-        robot->setPose(movement.getTargetJointPose());
-        stopPosition = movement.getTargetJointPose();
+        robot->setPose(targetPose);
+        stopPosition = targetPose;
         stopCount = 30;
     }
     else{
-        if( stopCount > 0 && stopPosition.size() == movement.targetPose.size() && stopPosition.size() > 0 ){
+        if( stopCount > 0 && stopPosition.size() == targetPose.size() && stopPosition.size() > 0 ){
             for(int d = 0; d < stopPosition.size(); d++){
                 stopPosition[d] *= 0.9998;
             }
@@ -197,7 +190,6 @@ void RobotController::updateRobotData(){
     forwardNode.setGlobalPosition(translation);
     forwardNode.setGlobalOrientation(forwardIK.getRotate());
     actualPose.setForwardPose(forwardNode);
-    movement.setCurrentJointPose(robotParams.currentPose);
 }
 
 

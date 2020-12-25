@@ -19,7 +19,7 @@ ofParameterGroup &  RobotArmSafety::setup(RobotType type) {
     params.add( m_minDegreesPerSecToSpeedLerp.set("MinDegPerSecToLerpDown", 70, 10, 300));
     params.add( m_maxDegreesPerSecToSpeedLerp.set("MaxDegPerSecToLerpDown", 150, 90, 1000));
     
-    m_jointRestrictor = shared_ptr< JointRestrictor >( new JointRestrictor() );
+    m_jointRestrictor = shared_ptr< PoseRestrictor >( new PoseRestrictor() );
     params.add(m_jointRestrictor->setup());
     
     mCylinderRestrictor = shared_ptr< CylinderRestrictor >( new CylinderRestrictor() );
@@ -41,7 +41,7 @@ ofParameterGroup &  RobotArmSafety::setup() {
     params.add( m_minDegreesPerSecToSpeedLerp.set("MinDegPerSecToLerpDown", 70, 10, 300));
     params.add( m_maxDegreesPerSecToSpeedLerp.set("MaxDegPerSecToLerpDown", 150, 90, 1000));
     
-    m_jointRestrictor = shared_ptr< JointRestrictor >( new JointRestrictor() );
+    m_jointRestrictor = shared_ptr< PoseRestrictor >( new PoseRestrictor() );
     params.add(m_jointRestrictor->setup());
     
     mCylinderRestrictor = shared_ptr< CylinderRestrictor >( new CylinderRestrictor() );

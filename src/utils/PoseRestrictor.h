@@ -6,29 +6,26 @@
 //
 
 #pragma once
-//#include "UR5KinematicModel.h"
-//#include "UR10KinematicModel.h"
+#include "ofMain.h"
 #include "RobotModel.h"
 
 namespace ofxRobotArm {
-    class JointRestrictor {
+    class PoseRestrictor {
     public:
+        PoseRestrictor();
+        ~PoseRestrictor();
         ofParameterGroup & setup();
         void update( float aDeltaTimef );
-//        void drawLimits( UR10KinematicModel* amodel );
-//        void drawAngles( UR10KinematicModel* amodel, vector< double > aCurrentAngles );
-//        void drawLimits( UR5KinematicModel* amodel );
-//        void drawAngles( UR5KinematicModel* amodel, vector< double > aCurrentAngles );
+
        
-        void drawAngles( RobotModel* amodel, vector< double > aCurrentAngles );
-        void drawLimits( RobotModel* amodel );
+        void drawAngles( RobotModel * amodel, vector< double > aCurrentAngles );
+        void drawLimits( RobotModel * amodel );
         
         void setShoulderAngle(float angle);
         float getMinJointAngle(int aIndex);
         float getMaxJointAngle(int aIndex);
-//        vector< ofVec3f > getAxes( UR10KinematicModel* amodel, int aIndex );
-//        vector< ofVec3f > getAxes( UR5KinematicModel* amodel, int aIndex );
-        vector< ofVec3f > getAxes( RobotModel* amodel, int aIndex );
+        
+        vector< ofVec3f > getAxes( RobotModel * amodel, int aIndex );
         void drawArc( float aStartAngleDegrees, float aEndAngleDegrees, ofVec3f aForwardAxis, ofVec3f aSideAxis );
         
         float getRestricted( int aIndex, float aInAngleRadians );

@@ -36,8 +36,6 @@ public:
     ofQuaternion getToolPointQuaternion();
     Pose getModifiedTCPPose();
     
-    void setAngles( vector<double> aTargetRadians );
-    
     RobotType type;
     ofxAssimpModelLoader loader;
     vector<ofMesh> meshs;
@@ -47,7 +45,7 @@ public:
     float elapsed_time, last_time;
     ofVec3f pt;
     vector<ofxRobotArm::Pose> pose;
-    
+    vector<double> poseRadians;
     Pose tool;
     
     Pose dtoolPoint;
@@ -61,6 +59,5 @@ public:
     ofParameter<bool> bDrawModel;
     ofParameter<bool> bDrawTargetModel;
     ofParameter<bool> bUseShader;
-    
 };
 }

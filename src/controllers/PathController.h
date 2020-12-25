@@ -10,7 +10,6 @@
 #pragma once
 #include "ofMain.h"
 #include "Path.h"
-#include "GMLPath.h"
 #include "Path3D.h"
 namespace ofxRobotArm{
     class PathController{

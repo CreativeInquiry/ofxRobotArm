@@ -212,26 +212,8 @@ Pose RobotModel::getModifiedTCPPose(){
     return tool;
 }
 
-void RobotModel::setAngles( vector<double> aTargetRadians ){
-    if(type == RobotType::UR5 || type == RobotType::UR3 || type == RobotType::UR10){
-        for(int i = 0; i < pose.size(); i++){
-            if(i == 1 || i == 3){
-                pose[i].orientation.makeRotate(ofRadToDeg(aTargetRadians[i])+90,pose[i].axis);
-            }else{
-                pose[i].orientation.makeRotate(ofRadToDeg(aTargetRadians[i]),pose[i].axis);
-            }
-            nodes[i].setOrientation(pose[i].orientation);
-        }
-    }else{
-        for(int i = 0; i < pose.size(); i++){
-            pose[i].orientation.makeRotate(ofRadToDeg(aTargetRadians[i]),pose[i].axis);
-            pose[i].rotation = ofRadToDeg(aTargetRadians[1]);
-            nodes[i].setOrientation(pose[i].orientation);
-        }
-    }
-}
-
 void RobotModel::setPose(vector<double> pose){
+    poseRadians = pose;
     if(type == RobotType::UR5 || type == RobotType::UR3 || type == RobotType::UR10){
         for(int i = 0; i < pose.size(); i++){
             if(i == 1 || i == 3){
@@ -283,18 +265,19 @@ void RobotModel::drawSkeleton() {
             float dist = 0;
             for (auto joint : nodes) {
                 
-                // draw each joint
-                if (i != 0) {
-                    joint.draw();
-                }
+            
                 ofVec3f p = joint.getGlobalPosition();
-                
+    
                 // draw each link
                 ofPushStyle();
                 float t = i / float(nodes.size());
-                ofColor mag = ofColor(ofColor::darkCyan);
-                ofColor yellow = ofColor(ofColor::darkMagenta);
-                ofSetColor(yellow.getLerped(mag, t));
+                ofColor colorOne = ofColor(ofColor::aqua);
+                ofColor colorTwo = ofColor(ofColor::magenta);
+                ofSetColor(colorOne.getLerped(colorTwo, t));
+                if (i != 0) {
+                    // draw each joint
+                    joint.draw();
+                }
                 ofSetLineWidth(5);
                 
                 if (i != 0) {
@@ -317,20 +300,20 @@ void RobotModel::drawSkeleton() {
                 // show angle at joint
                 ofDrawBitmapString("angle: " + ofToString(pose[i].rotation), p.x + 5, p.y, p.z - 20);
                 if(ofGetKeyPressed(OF_KEY_CONTROL) && i == 5){
-                    ofSetColor(mag);
+                    ofSetColor(colorOne);
                     ofDrawBitmapString("pos: " + ofToString(p), p.x + 5, p.y, p.z - 40);
                 }
                 
                 if (i == 5) {
-                    ofSetColor(mag);
+                    ofSetColor(colorOne);
                     toolNode.draw();
                     
-                    ofSetColor(mag);
+                    ofSetColor(colorOne);
                     tcpNode.draw();
                     ofVec3f tcp = tcpNode.getGlobalPosition();
                     ofVec3f endJoint = nodes[i].getGlobalPosition();
                     dist = tcp.distance(nodes[i].getGlobalPosition());
-                    ofSetColor(mag, 100);
+                    ofSetColor(colorOne);
                     ofDrawLine(nodes[i].getGlobalPosition(), tcp);
                     ofDrawBitmapString("TCP Desired Pose", tcp.x + 5, tcp.y, tcp.z - 40);
                     ofDrawBitmapString("dist: " + ofToString(dist), tcp.x + 5, tcp.y, tcp.z - 60);
@@ -338,10 +321,10 @@ void RobotModel::drawSkeleton() {
                     
                     ofVec3f fwp = forwardPose.getGlobalPosition();
                     dist = fwp.distance(nodes[i].getGlobalPosition());
-                    ofSetColor(yellow);
+                    ofSetColor(colorTwo);
                     forwardPose.draw();
                     if(fwp.distance(tcp) > 20){
-                        ofSetColor(yellow, 100);
+                        ofSetColor(colorTwo);
                         ofDrawBitmapString("Forward Pose", fwp.x + 5, fwp.y, fwp.z - 40);
                         ofDrawBitmapString("dist: " + ofToString(dist), fwp.x + 5, fwp.y, fwp.z - 60);
                         ofDrawBitmapString("pos: "+ofToString(fwp), fwp.x + 5, fwp.y, fwp.z - 80);

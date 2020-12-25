@@ -15,6 +15,7 @@ namespace ofxRobotArm {
                 FOLLOW_TARGET_PATH = 0, //Following a Polyline Path
                 FOLLOW_TARGET_RIGID_BODY, //Follow a Rigid Body
                 FREE_DRIVE, //Toggle Robit into Free Drive
+                RUNNING,
                 HALT
             };
             

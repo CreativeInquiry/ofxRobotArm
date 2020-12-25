@@ -14,7 +14,6 @@
 #include "Utils.h"
 #include "RobotConstants.hpp"
 #include "Plane.h"
-#include "Move.h"
 #include "RobotConstants.hpp"
 namespace ofxRobotArm {
     
@@ -38,7 +37,7 @@ namespace ofxRobotArm {
         void toggleTeachMode();
         void setTeachMode();
         void safetyCheck();
-        void updateMovement(vector<double> targetPose);
+        void updateMovement();
         void updateRobotData();
         
         void update();
@@ -61,7 +60,6 @@ namespace ofxRobotArm {
         void close();
         vector<double> getCurrentPose();
         RobotDriver * robot;
-        Move movement;
 //        RobotParameters * robotParams;
         RobotParameters robotParams;
         RobotModel desiredPose;
@@ -77,7 +75,7 @@ namespace ofxRobotArm {
         
         void setEndEffector(string filename);
 
-  
+        
     protected:
         vector <double> stopPosition;
         vector<double> targetPose;
