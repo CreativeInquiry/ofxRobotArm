@@ -3,6 +3,7 @@
 #include "ofMain.h"
 #include "ofxGui.h"
 #include "ofxGizmo.h"
+#include "ofxManipulator.h"
 #include "RobotController.h"
 #include "RobotParameters.h"
 class ofApp : public ofBaseApp{
@@ -50,6 +51,8 @@ class ofApp : public ofBaseApp{
         void draw_gui();
         
     
+    
+        ofxManipulator manipulator;
         ofxRobotArm::RobotParameters robotParams;
         ofxPanel panel;
         ofParameterGroup params;

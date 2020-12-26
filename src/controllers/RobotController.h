@@ -39,7 +39,7 @@ namespace ofxRobotArm {
         void safetyCheck();
         void updateMovement();
         void updateRobotData();
-        
+        void setHomePose(vector<double> pose);
         void update();
         void update(vector<double> pose);
         void updateIK(Pose pose);
@@ -75,14 +75,17 @@ namespace ofxRobotArm {
         
         void setEndEffector(string filename);
 
-        
+        bool bSmoothPose;
+        float smoothness;
     protected:
+        vector <double> homePose;
         vector <double> stopPosition;
         vector<double> targetPose;
         vector<vector<double> > targetPoses;
         
         // smooth angles //
-        vector< float > mSmoothAdditions;
+        vector< double > prePose;
+        vector< double > smoothedPose;
         vector<double> jointWeights;
     private:
         

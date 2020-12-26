@@ -3,6 +3,7 @@ ofxEasing
 ofxGizmo
 ofxGui
 ofxIKArm
+ofxManipulator
 ofxOsc
 ofxPoco
 ofxProtobuf

@@ -257,8 +257,6 @@ void RobotModel::setToolMesh(ofMesh mesh){
 
 // ----------------------------------------------------------
 void RobotModel::drawSkeleton() {
-    ofEnableDepthTest();
-    {
         ofPushStyle();
         {
             int i = 0;
@@ -335,8 +333,6 @@ void RobotModel::drawSkeleton() {
             }
         }
         ofPopStyle();
-    }
-    ofEnableDepthTest();
 }
 
 void RobotModel::drawMesh(ofFloatColor color, bool bDrawDebug){
@@ -374,8 +370,8 @@ void RobotModel::drawMesh(ofFloatColor color, bool bDrawDebug){
                     if(i >= 3){
                         ofPushMatrix();
                         {
-                            ofRotateDeg(90, 0, 0, 1);
-                            ofRotateDeg(90, 1, 0, 0);
+                            ofRotateDeg(-180, 0, 0, 1);
+                            ofRotateDeg(-180, 1, 0, 0);
                             ofScale(100, 100, 100);
                             meshs[i].draw();
                         }
@@ -385,10 +381,9 @@ void RobotModel::drawMesh(ofFloatColor color, bool bDrawDebug){
                     if(i < 3){
                         ofPushMatrix();
                         {
-                            ofRotateDeg(90, 0, 0, 1);
-                            ofRotateDeg(90, 1, 0, 0);
+                            ofRotateDeg(-180, 0, 0, 1);
+                            ofRotateDeg(-180, 1, 0, 0);
                             ofScale(100, 100, 100);
-                            
                             meshs[i].draw();
                         } ofPopMatrix();
                     }

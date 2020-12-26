@@ -6,7 +6,7 @@ void ofApp::setup(){
     
     // setup scene
     setup_scene();
-    robotParams.setup(RobotType::IRB120);
+    robotParams.setup(RobotType::UR10);
     // setup robot
     robot.setup(robotParams);    // change IP string to your robot's IP address
 
@@ -17,14 +17,13 @@ void ofApp::setup(){
     robot.start();
     
     tcp.setPosition(250, 250, 250);
-    lookAtNode.setPosition(500, 500, 500);
+    lookAtNode.setPosition(10, 0, 0);
     ofQuaternion q;
     q.makeRotate(90, 0, 1, 0);
     tcp.setOrientation(q);
     lookAtNode.setOrientation(q);
     tcp_target.setNode(tcp);
 //    lookAtNode.setParent(tcp);
-//    lookAtNode.setPosition(0, 0, -1000);
     look_target.setNode(lookAtNode);
 //
     offset.set(50, 0, 0);
@@ -35,10 +34,9 @@ void ofApp::setup(){
 void ofApp::update(){
     
     // do movements
+//    look_target.setNode(lookAtNode);
+    lookAtNode.setPosition(look_target.getTranslation());
 
-    
-    lookAtNode.setGlobalPosition(look_target.getTranslation());
-    lookAtNode.setGlobalOrientation(look_target.getRotation());
     tcp.setGlobalPosition(tcp_target.getTranslation());
     tcp.setGlobalOrientation(tcp_target.getRotation());
     ofMatrix4x4 mat;
@@ -167,7 +165,7 @@ void ofApp::draw_live_robot_warning(){
 //--------------------------------------------------------------
 void ofApp::setup_camera(){
     cam.setFarClip(9999999);
-    cam.setDistance(5000);
+    cam.setDistance(1500);
     ofNode tgt;
     tgt.setGlobalPosition(0, 0, 0);
     tgt.setGlobalOrientation(ofQuaternion(0, 0, 0, 1));
@@ -288,6 +286,14 @@ void ofApp::keyPressed(int key){
 void ofApp::keypressed_robot(int key){
     switch (key) {
         // 'm' for MOVE!
+        case 't':
+        case 'T':
+            tcp_target.setType(ofxGizmo::OFX_GIZMO_MOVE);
+            break;
+        case 'g':
+        case 'G':
+            tcp_target.setType(ofxGizmo::OFX_GIZMO_ROTATE);
+            break;
         case 'm':
         case 'M':
             robot_live = !robot_live;

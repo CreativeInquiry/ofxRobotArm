@@ -87,13 +87,13 @@ Kinematics::Kinematics(ofxRobotArm::RobotType type){
         c3 = 0.302; //c3
         c4 = 0.072; //c4
         
-
         offsets[2] = -PI/2;
-        //        offsets[4] = -PI;
-        
+//        offsets[3] = PI;
+//        offsets[4] = PI;
+
+//        sign_corrections[2] = -1;
 //        sign_corrections[3] = -1;
 //        sign_corrections[4] = -1;
-        
         
         joint_limit_min[0] = -165;
         joint_limit_min[1] = -110;
@@ -680,9 +680,9 @@ void Kinematics::inverseSW(ofMatrix4x4 pose, double * sol)
         sol[6*i+0]  = ofClamp(sol[6*i+0], ofDegToRad(joint_limit_min[0])* sign_corrections[0]-offsets[0], ofDegToRad(joint_limit_max[0])* sign_corrections[0]-offsets[0]);
         sol[6*i+1]  = ofClamp(sol[6*i+1], ofDegToRad(joint_limit_min[1])* sign_corrections[1]-offsets[1], ofDegToRad(joint_limit_max[1])* sign_corrections[1]-offsets[1]);
         sol[6*i+2]  = ofClamp(sol[6*i+2], ofDegToRad(joint_limit_min[2])*sign_corrections[2]-offsets[2], ofDegToRad(joint_limit_max[2])* sign_corrections[2]-offsets[2]);
-        sol[6*i+3]  = ofClamp(sol[6*i+3], ofDegToRad(joint_limit_min[3])* sign_corrections[3]-offsets[3], ofDegToRad(joint_limit_max[3])* sign_corrections[3]-offsets[3]);
-        sol[6*i+4]  = ofClamp(sol[6*i+4], ofDegToRad(joint_limit_min[4])* sign_corrections[4]-offsets[4], ofDegToRad(joint_limit_max[4])* sign_corrections[4]-offsets[4]);
-        sol[6*i+5]  = ofClamp(sol[6*i+5], ofDegToRad(joint_limit_min[5])* sign_corrections[5]-offsets[5], ofDegToRad(joint_limit_max[5])* sign_corrections[5]-offsets[5]);
+        sol[6*i+3]  = ofClamp(sol[6*i+3], ofDegToRad(joint_limit_min[3])*sign_corrections[3]-offsets[3], ofDegToRad(joint_limit_max[3])* sign_corrections[3]-offsets[3]);
+        sol[6*i+4]  = ofClamp(sol[6*i+4], ofDegToRad(joint_limit_min[4])*sign_corrections[4]-offsets[4], ofDegToRad(joint_limit_max[4])* sign_corrections[4]-offsets[4]);
+        sol[6*i+5]  = ofClamp(sol[6*i+5], ofDegToRad(joint_limit_min[5])*sign_corrections[5]-offsets[5], ofDegToRad(joint_limit_max[5])* sign_corrections[5]-offsets[5]);
     }
 }
 

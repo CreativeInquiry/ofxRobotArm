@@ -23,12 +23,11 @@ void RobotController::setup(string ipAddress, RobotParameters & params, bool off
 
     robotParams = params;
     
-    
-   
     desiredPose.setup(params.get_robot_type());
     actualPose.setup(params.get_robot_type());
  
     jointWeights.assign(6, 1.0f);
+    smoothedPose.assign(6, 0.0f);
     
     inverseKinematics = InverseKinematics(params.get_robot_type(), &robotParams);
     
@@ -36,7 +35,9 @@ void RobotController::setup(string ipAddress, RobotParameters & params, bool off
          robot->setAllowReconnect(params.bDoReconnect);
          robot->setup(ipAddress,0, 1);
     }
-    
+    smoothness = 0.01;
+    bSmoothPose = true;
+
 }
 
 
@@ -48,6 +49,10 @@ bool RobotController::arePoseControlledExternally() {
 void RobotController::setEndEffector(string filename){
     actualPose.setEndEffector(filename);
     desiredPose.setEndEffector(filename);
+}
+
+void RobotController::setHomePose(vector<double> pose){
+    homePose = pose;
 }
 
 void RobotController::setToolOffset(ofVec3f local){
@@ -82,18 +87,25 @@ void RobotController::setTeachMode(){
 #pragma mark - IK
 void RobotController::updateIK(Pose pose){
     targetPoses = inverseKinematics.inverseKinematics(pose);
+//    int i = 0;
+//    for(auto d : targetPoses){
+//        desiredPoses[i]->setPose(d);
+//        i++;
+//    }
     int selectedSolution = inverseKinematics.selectSolution(targetPoses,  robot->getCurrentPose(), jointWeights);
     if(selectedSolution > -1){
         targetPose = targetPoses[selectedSolution];
     }
 
-    for(int i = 0; i < targetPose.size(); i++){
-        float tpose = (float)targetPose[i];
+    int i = 0;
+    for(auto p : targetPose){
+        float tpose = (float)p;
         if( isnan(tpose) ) {
             tpose = 0.f;
         }
-        targetPose[i] = tpose;
-        robotParams.targetPose[i].set(tpose);
+        p = tpose;
+        robotParams.targetPose[i].set(p);
+        i++;
     }
 }
 
@@ -107,12 +119,12 @@ void RobotController::update(){
 
 
     if(targetPose.size() > 0){
-        ofMatrix4x4 forwardIK = inverseKinematics.forwardKinematics(targetPose);
+        ofMatrix4x4 forwardIK = inverseKinematics.forwardKinematics(bSmoothPose?smoothedPose:targetPose);
         ofVec3f translation = forwardIK.getTranslation();
         ofNode forwardNode;
         forwardNode.setGlobalPosition(translation);
         forwardNode.setGlobalOrientation(forwardIK.getRotate());
-        desiredPose.setPose(targetPose);
+        desiredPose.setPose(bSmoothPose?smoothedPose:targetPose);
         desiredPose.setForwardPose(forwardNode);
     }
 }
@@ -144,8 +156,28 @@ void RobotController::safetyCheck(){
 
 #pragma mark - Movements
 void RobotController::updateMovement(){
+    
+    int i = 0;
+    for(auto p : prePose){
+        if(abs(targetPose[i])-p >= TWO_PI || abs(targetPose[i])-p == 0){
+            targetPose[i] = p;
+        }
+    }
+    prePose = targetPose;
+    
+    if(bSmoothPose){
+        int i = 0;
+        vector<double> currentPose = getCurrentPose();
+        for(auto p : targetPose){
+            smoothedPose[i] = ofLerp(smoothedPose[i], p, smoothness);
+            i++;
+        }
+    }
+    
+
     if(robotParams.bMove){
-        robot->setPose(targetPose);
+
+        robot->setPose(bSmoothPose?smoothedPose:targetPose);
         stopPosition = targetPose;
         stopCount = 30;
     }
@@ -179,6 +211,7 @@ void RobotController::updateRobotData(){
     actualPose.setPose(robotParams.currentPose);
     robotParams.actualTCP =  robot->getToolPose();
     robotParams.tcpPosition = robotParams.actualTCP.position;
+    actualPose.setTCPPose(robotParams.actualTCP);
     ofQuaternion tcpO = robotParams.actualTCP.orientation;
     robotParams.tcpOrientation = ofVec4f(tcpO.x(), tcpO.y(), tcpO.z(), tcpO.w());
     // update GUI params
@@ -213,7 +246,12 @@ void RobotController::drawIK(){
 }
 
 void RobotController::drawDesired(ofFloatColor color){
+    desiredPose.drawMesh(color, false);
     desiredPose.draw(color, false);
+
+//    for(auto d : desiredPoses){
+//        d->draw(color, false);
+//    }
     tcp_plane.draw();
 }
 

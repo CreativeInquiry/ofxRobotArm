@@ -93,9 +93,9 @@ public:
     {
         for (int i = 0; i < 6; i++)
         {
-            if (qs[i] > PI)
+            if (qs[i] >= PI)
                 qs[i] -= TWO_PI;
-            else if (qs[i] < -PI)
+            else if (qs[i] <= -PI)
                 qs[i] += TWO_PI;
         }
     }
