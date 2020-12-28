@@ -38,7 +38,7 @@ public:
     
     RobotType type;
     ofxAssimpModelLoader loader;
-    vector<ofMesh> meshs;
+    vector<ofMesh> meshes;
     ofMesh toolMesh;
     
     ofShader shader;

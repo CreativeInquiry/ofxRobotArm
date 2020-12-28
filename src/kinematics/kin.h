@@ -69,6 +69,7 @@ public:
     //adapted from https://github.com/Jmeyer1292/opw_kinematics/blob/master/include/opw_kinematics/opw_kinematics_impl.h
     //
     vector<double> solveSphere(ofMatrix4x4 pose);
+    void inverseRelaxed(ofMatrix4x4 pose, double * sol);
     void inverseSW(ofMatrix4x4 pose, double * sol);
     void forwardSW(double t1, double t2, double t3, double t4, double t5, double t6, ofMatrix4x4& sol);
     // @param q       The 6 joint values

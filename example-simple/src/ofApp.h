@@ -50,6 +50,7 @@ class ofApp : public ofBaseApp{
         void setup_gui();
         void draw_gui();
         
+        ofVec3f home;
     
     
         ofxManipulator manipulator;

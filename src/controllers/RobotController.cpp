@@ -35,9 +35,8 @@ void RobotController::setup(string ipAddress, RobotParameters & params, bool off
          robot->setAllowReconnect(params.bDoReconnect);
          robot->setup(ipAddress,0, 1);
     }
-    smoothness = 0.01;
+    smoothness = 0.005;
     bSmoothPose = true;
-
 }
 
 
@@ -87,17 +86,13 @@ void RobotController::setTeachMode(){
 #pragma mark - IK
 void RobotController::updateIK(Pose pose){
     targetPoses = inverseKinematics.inverseKinematics(pose);
-//    int i = 0;
-//    for(auto d : targetPoses){
-//        desiredPoses[i]->setPose(d);
-//        i++;
-//    }
+    int i = 0;
     int selectedSolution = inverseKinematics.selectSolution(targetPoses,  robot->getCurrentPose(), jointWeights);
     if(selectedSolution > -1){
         targetPose = targetPoses[selectedSolution];
     }
-
-    int i = 0;
+    
+    i = 0;
     for(auto p : targetPose){
         float tpose = (float)p;
         if( isnan(tpose) ) {
@@ -234,6 +229,7 @@ void RobotController::close(){
 
 #pragma mark - drawing
 void RobotController::draw(ofFloatColor color, bool debug){
+    actualPose.drawMesh(color, debug);
     actualPose.draw(color, debug);
 }
 
@@ -248,11 +244,8 @@ void RobotController::drawIK(){
 void RobotController::drawDesired(ofFloatColor color){
     desiredPose.drawMesh(color, false);
     desiredPose.draw(color, false);
-
-//    for(auto d : desiredPoses){
-//        d->draw(color, false);
-//    }
     tcp_plane.draw();
+    
 }
 
 

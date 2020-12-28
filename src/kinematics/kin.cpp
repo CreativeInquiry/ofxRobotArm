@@ -1,44 +1,10 @@
 #include "kin.h"
-
-
-
-
 using namespace ofxRobotArm;
 const static double ANGLE_THRESH = ofDegToRad(30);
 const double ZERO_THRESH = 0.00000001;
 int SIGN(double x) {
     return (x > 0) - (x < 0);
 }
-
-//#define UR10_PARAMS
-//#ifdef UR10_PARAMS
-//const double d1 =  0.1273;
-//const double a2_2 = -0.612;
-//const double a3 = -0.5723;
-//const double d4 =  0.163941;
-//const double d5 =  0.1157;
-//const double d6 =  0.0922;
-//#endif
-//
-////#define UR5_PARAMS
-//#ifdef UR5_PARAMS
-//const double d1 =  0.089159;
-//const double a2_2 = -0.42500;
-//const double a3 = -0.39225;
-//const double d4 =  0.10915;
-//const double d5 =  0.09465;
-//const double d6 =  0.0823;
-//#endif
-//
-////#define UR3_PARAMS
-//#ifdef UR3_PARAMS
-//const double d1 =  0.1519;
-//const double a2_2 = -0.24365;
-//const double a3 = -0.21325;
-//const double d4 =  0.11235;
-//const double d5 =  0.08535;
-//const double d6 =  0.0819;
-//#endif
 
 Kinematics::Kinematics(ofxRobotArm::RobotType type){
     
@@ -54,6 +20,22 @@ Kinematics::Kinematics(ofxRobotArm::RobotType type){
         d4 =  0.11235;
         d5 =  0.08535;
         d6 =  0.0819;
+        
+        offsets[0] = PI;
+        
+        joint_limit_min[0] = -360;
+        joint_limit_min[1] = -360;
+        joint_limit_min[2] = -360;
+        joint_limit_min[3] = -360;
+        joint_limit_min[4] = -360;
+        joint_limit_min[5] = -360;
+        
+        joint_limit_max[0] = 360;
+        joint_limit_max[1] = 360;
+        joint_limit_max[2] = 360;
+        joint_limit_max[3] = 360;
+        joint_limit_max[4] = 360;
+        joint_limit_max[5] = 360;
     }
     else if (type == UR5){
         d1 =  0.089159;
@@ -62,6 +44,22 @@ Kinematics::Kinematics(ofxRobotArm::RobotType type){
         d4 =  0.10915;
         d5 =  0.09465;
         d6 =  0.0823;
+        
+        offsets[0] = PI;
+        
+        joint_limit_min[0] = -360;
+        joint_limit_min[1] = -360;
+        joint_limit_min[2] = -360;
+        joint_limit_min[3] = -360;
+        joint_limit_min[4] = -360;
+        joint_limit_min[5] = -360;
+        
+        joint_limit_max[0] = 360;
+        joint_limit_max[1] = 360;
+        joint_limit_max[2] = 360;
+        joint_limit_max[3] = 360;
+        joint_limit_max[4] = 360;
+        joint_limit_max[5] = 360;
     }
     else if (type == UR10){
         d1 =  0.1273;
@@ -70,6 +68,22 @@ Kinematics::Kinematics(ofxRobotArm::RobotType type){
         d4 =  0.163941;
         d5 =  0.1157;
         d6 =  0.0922;
+        
+        offsets[0] = PI;
+        
+        joint_limit_min[0] = -360;
+        joint_limit_min[1] = -360;
+        joint_limit_min[2] = -360;
+        joint_limit_min[3] = -360;
+        joint_limit_min[4] = -360;
+        joint_limit_min[5] = -360;
+        
+        joint_limit_max[0] = 360;
+        joint_limit_max[1] = 360;
+        joint_limit_max[2] = 360;
+        joint_limit_max[3] = 360;
+        joint_limit_max[4] = 360;
+        joint_limit_max[5] = 360;
     }
     else if (type == IRB120){
         d1 =  0.290;
@@ -88,16 +102,12 @@ Kinematics::Kinematics(ofxRobotArm::RobotType type){
         c4 = 0.072; //c4
         
         offsets[2] = -PI/2;
-//        offsets[3] = PI;
-//        offsets[4] = PI;
-
-//        sign_corrections[2] = -1;
 //        sign_corrections[3] = -1;
 //        sign_corrections[4] = -1;
         
         joint_limit_min[0] = -165;
         joint_limit_min[1] = -110;
-        joint_limit_min[2] = -110;
+        joint_limit_min[2] = -90;
         joint_limit_min[3] = -160;
         joint_limit_min[4] = -120;
         joint_limit_min[5] = -400;
@@ -412,6 +422,14 @@ int Kinematics::inverseHK(const double* T, double* q_sols, double q6_des) {
             }
         }
     }
+    
+    for(int i = 0; i < num_sols; i++){
+        for(int j = 0; j < 6; j++){
+            q_sols[6*i+j]  =q_sols[6*i+j]*sign_corrections[j]+offsets[j];
+        }
+    }
+    
+    
     return num_sols;
 }
 
@@ -498,7 +516,6 @@ void Kinematics::forwardSW(double t1, double t2, double t3, double t4, double t5
 }
 
 
-
 void Kinematics::inverseSW(ofMatrix4x4 pose, double * sol)
 {
     ofVec3f c = pose.getTranslation() - ofMatrix4x4::transform3x3(pose, ofVec3f(0, 0, 1))*c4;
@@ -509,14 +526,12 @@ void Kinematics::inverseSW(ofMatrix4x4 pose, double * sol)
     double tmp2 = std::atan2(b, nx1 + a1);
     double theta1_i = tmp1 - tmp2;
     double theta1_ii = tmp1 + tmp2 - PI;
-    
-    // theta2 i through iv
     double tmp3 = (c.z - c1);
     double s1_2 = pow(nx1, 2) + pow(tmp3, 2);
     
-    double tmp4 = nx1 + 2.0 * a1;
+    double tmp4 = nx1 + 2 * a1;
     double s2_2 = pow(tmp4, 2) + pow(tmp3, 2);
-    double kappa_2 = a2_2 * a2_2 + c3 * c3;
+    double kappa_2 = pow(a2_2, 2) + pow(c3, 2);
     
     double c2_2 = c2 * c2;
     
@@ -531,7 +546,7 @@ void Kinematics::inverseSW(ofMatrix4x4 pose, double * sol)
     
     double theta2_iii = -std::acos(tmp6 / (2.0 * s2 * c2)) - std::atan2(nx1 + 2.0 * a1, c.z - c1);
     double theta2_iv = std::acos(tmp6 / (2.0 * s2 * c2)) - std::atan2(nx1 + 2.0 * a1, c.z - c1);
-    
+        
     // theta3
     double tmp7 = s1_2 - c2_2 - kappa_2;
     double tmp8 = s2_2 - c2_2 - kappa_2;
@@ -677,8 +692,8 @@ void Kinematics::inverseSW(ofMatrix4x4 pose, double * sol)
     
     
     for(int i = 0; i < 8; i++){
-        sol[6*i+0]  = ofClamp(sol[6*i+0], ofDegToRad(joint_limit_min[0])* sign_corrections[0]-offsets[0], ofDegToRad(joint_limit_max[0])* sign_corrections[0]-offsets[0]);
-        sol[6*i+1]  = ofClamp(sol[6*i+1], ofDegToRad(joint_limit_min[1])* sign_corrections[1]-offsets[1], ofDegToRad(joint_limit_max[1])* sign_corrections[1]-offsets[1]);
+        sol[6*i+0]  = ofClamp(sol[6*i+0], ofDegToRad(joint_limit_min[0])*sign_corrections[0]-offsets[0], ofDegToRad(joint_limit_max[0])* sign_corrections[0]-offsets[0]);
+        sol[6*i+1]  = ofClamp(sol[6*i+1], ofDegToRad(joint_limit_min[1])*sign_corrections[1]-offsets[1], ofDegToRad(joint_limit_max[1])* sign_corrections[1]-offsets[1]);
         sol[6*i+2]  = ofClamp(sol[6*i+2], ofDegToRad(joint_limit_min[2])*sign_corrections[2]-offsets[2], ofDegToRad(joint_limit_max[2])* sign_corrections[2]-offsets[2]);
         sol[6*i+3]  = ofClamp(sol[6*i+3], ofDegToRad(joint_limit_min[3])*sign_corrections[3]-offsets[3], ofDegToRad(joint_limit_max[3])* sign_corrections[3]-offsets[3]);
         sol[6*i+4]  = ofClamp(sol[6*i+4], ofDegToRad(joint_limit_min[4])*sign_corrections[4]-offsets[4], ofDegToRad(joint_limit_max[4])* sign_corrections[4]-offsets[4]);
@@ -708,4 +723,7 @@ vector<double> Kinematics::bound_solution(vector<double> thetas){
     }
     
     return thetas;
+}
+void Kinematics::inverseRelaxed(ofMatrix4x4 pose, double * sol){
+    
 }

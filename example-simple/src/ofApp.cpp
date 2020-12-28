@@ -6,7 +6,7 @@ void ofApp::setup(){
     
     // setup scene
     setup_scene();
-    robotParams.setup(RobotType::UR10);
+    robotParams.setup(RobotType::IRB120);
     // setup robot
     robot.setup(robotParams);    // change IP string to your robot's IP address
 
@@ -26,8 +26,26 @@ void ofApp::setup(){
 //    lookAtNode.setParent(tcp);
     look_target.setNode(lookAtNode);
 //
-    offset.set(50, 0, 0);
+    offset.set(0, 0, 0);
     robot.setToolOffset(offset);
+    
+    int x = 500;
+    int y = -1000;
+    int z = 500;
+    
+    ofVec3f pos = ofVec3f(x, y, z);
+    ofVec3f tgt = ofVec3f(0, 800 / 2, 0);
+    cam.setGlobalPosition(pos);
+    cam.setTarget(tgt);
+    cam.lookAt(tgt, ofVec3f(0, 0, 1));
+    cam.setGlobalPosition(pos);
+    
+    show_top = false;
+    show_front = false;
+    show_side = false;
+    show_perspective = true;
+    
+    home = ofVec3f(300, 0, 555);
 }
 
 //--------------------------------------------------------------
@@ -307,11 +325,11 @@ void ofApp::keypressed_robot(int key){
             robot.setToolOffset(offset);
             break;
         case OF_KEY_UP:
-            offset+=ofVec3f(100, 0, 0);
+            offset+=ofVec3f(10, 0, 0);
             robot.setToolOffset(offset);
             break;
         case OF_KEY_DOWN:
-            offset-=ofVec3f(100, 0, 0);
+            offset-=ofVec3f(10, 0, 0);
             robot.setToolOffset(offset);
             break;
     }
@@ -358,7 +376,30 @@ void ofApp::keypressed_gizmo(int key){
             look_target.getMatrix().setTranslation(tcp.getGlobalPosition()+ofVec3f(1, 1, -100));
             break;
         case '4':
-            look_target.getMatrix().setTranslation(tcp.getGlobalPosition()+ofVec3f(0, 0, 100));
+            look_target.getMatrix().setTranslation(tcp.getGlobalPosition()+ofVec3f(1, 1, 100));
+            break;
+        case '5':
+            look_target.getMatrix().setTranslation(tcp.getGlobalPosition()+ofVec3f(-100, 0, 0));
+            break;
+        case '6':
+            look_target.getMatrix().setTranslation(tcp.getGlobalPosition()+ofVec3f(0, -100, 0));
+            break;
+        case '7':
+            look_target.getMatrix().setTranslation(tcp.getGlobalPosition()+ofVec3f(100, 0, 100));
+            break;
+        case '8':
+            look_target.getMatrix().setTranslation(tcp.getGlobalPosition()+ofVec3f(100, 100, 100));
+            break;
+        case '9':
+            look_target.getMatrix().setTranslation(tcp.getGlobalPosition()+ofVec3f(-100, 0, -100));
+            break;
+        case '0':
+            look_target.getMatrix().setTranslation(tcp.getGlobalPosition()+ofVec3f(100, 0, -100));
+            break;
+        case ' ':
+            tcp.setGlobalPosition(home);
+            tcp_target.getMatrix().setTranslation(home);
+            look_target.getMatrix().setTranslation(tcp.getGlobalPosition()+ofVec3f(100, 0, 0));
             break;
     }
     

@@ -33,7 +33,7 @@ void RobotModel::setup(RobotType type){
             ofLog(OF_LOG_NOTICE)<<"LOADING ROBOTYPE UR3"<<endl;
             if(loader.loadModel(ofToDataPath("models/ur3.dae"))){
                 for(int i = 0; i < loader.getNumMeshes(); i++){
-                    meshs.push_back(loader.getMesh(i));
+                    meshes.push_back(loader.getMesh(i));
                 }
             }else{
                 ofLogFatalError()<<"PLEASE PLACE THE 3D FILES OF THE UR ARM IN data/models/ur3.dae"<<endl;
@@ -50,7 +50,7 @@ void RobotModel::setup(RobotType type){
             ofLog(OF_LOG_NOTICE)<<"LOADING ROBOTYPE UR5"<<endl;
             if(loader.loadModel(ofToDataPath("models/ur5.dae"))){
                 for(int i = 0; i < loader.getNumMeshes(); i++){
-                    meshs.push_back(loader.getMesh(i));
+                    meshes.push_back(loader.getMesh(i));
                 }
             }else{
                 ofLogFatalError()<<"PLEASE PLACE THE 3D FILES OF THE UR ARM IN data/models/ur5.dae"<<endl;
@@ -68,7 +68,7 @@ void RobotModel::setup(RobotType type){
             // should load model from addon data path, not app
             if(loader.loadModel(ofToDataPath("models/ur10.dae"))){
                 for(int i = 0; i < loader.getNumMeshes(); i++){
-                    meshs.push_back(loader.getMesh(i));
+                    meshes.push_back(loader.getMesh(i));
                 }
             }else{
                 ofLogFatalError()<<"PLEASE PLACE THE 3D FILES OF THE UR ARM IN data/models/ur10.dae"<<endl;
@@ -109,7 +109,7 @@ void RobotModel::setup(RobotType type){
         ofLog(OF_LOG_NOTICE)<<"LOADING ROBOTYPE IRB120"<<endl;
         if(loader.loadModel(ofToDataPath("models/irb120.dae"))){
             for(int i = 0; i < loader.getNumMeshes(); i++){
-                meshs.push_back(loader.getMesh(i));
+                meshes.push_back(loader.getMesh(i));
             }
         }else{
             ofLogFatalError()<<"PLEASE PLACE THE 3D FILES OF THE UR ARM IN data/models/irb120.dae"<<endl;
@@ -257,82 +257,82 @@ void RobotModel::setToolMesh(ofMesh mesh){
 
 // ----------------------------------------------------------
 void RobotModel::drawSkeleton() {
-        ofPushStyle();
-        {
-            int i = 0;
-            float dist = 0;
-            for (auto joint : nodes) {
-                
+    ofPushStyle();
+    {
+        int i = 0;
+        float dist = 0;
+        for (auto joint : nodes) {
             
-                ofVec3f p = joint.getGlobalPosition();
-    
-                // draw each link
-                ofPushStyle();
-                float t = i / float(nodes.size());
-                ofColor colorOne = ofColor(ofColor::aqua);
-                ofColor colorTwo = ofColor(ofColor::magenta);
-                ofSetColor(colorOne.getLerped(colorTwo, t));
-                if (i != 0) {
-                    // draw each joint
-                    joint.draw();
-                }
-                ofSetLineWidth(5);
-                
-                if (i != 0) {
-                    ofDrawLine(nodes[i - 1].getGlobalPosition(), p);
-                    dist = p.distance(nodes[i - 1].getGlobalPosition());
-                }
-                ofPopStyle();
-                
-                // show length of each link
-                ofSetColor(255, 80);
-                if (i == 0)
-                    ofDrawBitmapString(dist, p.getInterpolated(ofVec3f(), .5));
-                else
-                    ofDrawBitmapString(dist, p.getInterpolated(nodes[i - 1].getGlobalPosition(), .5));
-                
-                // show joint id
-                ofSetColor(255, 90);
-                ofDrawBitmapString(ofToString(i), p.x + 5, p.y, p.z + 5);
-                
-                // show angle at joint
-                ofDrawBitmapString("angle: " + ofToString(pose[i].rotation), p.x + 5, p.y, p.z - 20);
-                if(ofGetKeyPressed(OF_KEY_CONTROL) && i == 5){
-                    ofSetColor(colorOne);
-                    ofDrawBitmapString("pos: " + ofToString(p), p.x + 5, p.y, p.z - 40);
-                }
-                
-                if (i == 5) {
-                    ofSetColor(colorOne);
-                    toolNode.draw();
-                    
-                    ofSetColor(colorOne);
-                    tcpNode.draw();
-                    ofVec3f tcp = tcpNode.getGlobalPosition();
-                    ofVec3f endJoint = nodes[i].getGlobalPosition();
-                    dist = tcp.distance(nodes[i].getGlobalPosition());
-                    ofSetColor(colorOne);
-                    ofDrawLine(nodes[i].getGlobalPosition(), tcp);
-                    ofDrawBitmapString("TCP Desired Pose", tcp.x + 5, tcp.y, tcp.z - 40);
-                    ofDrawBitmapString("dist: " + ofToString(dist), tcp.x + 5, tcp.y, tcp.z - 60);
-                    ofDrawBitmapString("pos:  " +ofToString(tcp), tcp.x + 5, tcp.y, tcp.z - 80);
-                    
-                    ofVec3f fwp = forwardPose.getGlobalPosition();
-                    dist = fwp.distance(nodes[i].getGlobalPosition());
-                    ofSetColor(colorTwo);
-                    forwardPose.draw();
-                    if(fwp.distance(tcp) > 20){
-                        ofSetColor(colorTwo);
-                        ofDrawBitmapString("Forward Pose", fwp.x + 5, fwp.y, fwp.z - 40);
-                        ofDrawBitmapString("dist: " + ofToString(dist), fwp.x + 5, fwp.y, fwp.z - 60);
-                        ofDrawBitmapString("pos: "+ofToString(fwp), fwp.x + 5, fwp.y, fwp.z - 80);
-                        ofDrawLine(nodes[i].getGlobalPosition(), fwp);
-                    }
-                }
-                i++;
+            
+            ofVec3f p = joint.getGlobalPosition();
+            
+            // draw each link
+            ofPushStyle();
+            float t = i / float(nodes.size());
+            ofColor colorOne = ofColor(ofColor::aqua);
+            ofColor colorTwo = ofColor(ofColor::magenta);
+            ofSetColor(colorOne.getLerped(colorTwo, t));
+            if (i != 0) {
+                // draw each joint
+                joint.draw();
             }
+            ofSetLineWidth(5);
+            
+            if (i != 0) {
+                ofDrawLine(nodes[i - 1].getGlobalPosition(), p);
+                dist = p.distance(nodes[i - 1].getGlobalPosition());
+            }
+            ofPopStyle();
+            
+            // show length of each link
+            ofSetColor(255, 80);
+            if (i == 0)
+                ofDrawBitmapString(dist, p.getInterpolated(ofVec3f(), .5));
+            else
+                ofDrawBitmapString(dist, p.getInterpolated(nodes[i - 1].getGlobalPosition(), .5));
+            
+            // show joint id
+            ofSetColor(255, 90);
+            ofDrawBitmapString(ofToString(i), p.x + 5, p.y, p.z + 5);
+            
+            // show angle at joint
+            ofDrawBitmapString("angle: " + ofToString(pose[i].rotation), p.x + 5, p.y, p.z - 20);
+            if(ofGetKeyPressed(OF_KEY_CONTROL) && i == 5){
+                ofSetColor(colorOne);
+                ofDrawBitmapString("pos: " + ofToString(p), p.x + 5, p.y, p.z - 40);
+            }
+            
+            if (i == 5) {
+                ofSetColor(colorOne);
+                toolNode.draw();
+                
+                ofSetColor(colorOne);
+                tcpNode.draw();
+                ofVec3f tcp = tcpNode.getGlobalPosition();
+                ofVec3f endJoint = nodes[i].getGlobalPosition();
+                dist = tcp.distance(nodes[i].getGlobalPosition());
+                ofSetColor(colorOne);
+                ofDrawLine(nodes[i].getGlobalPosition(), tcp);
+                ofDrawBitmapString("TCP Desired Pose", tcp.x + 5, tcp.y, tcp.z - 40);
+                ofDrawBitmapString("dist: " + ofToString(dist), tcp.x + 5, tcp.y, tcp.z - 60);
+                ofDrawBitmapString("pos:  " +ofToString(tcp), tcp.x + 5, tcp.y, tcp.z - 80);
+                
+                ofVec3f fwp = forwardPose.getGlobalPosition();
+                dist = fwp.distance(nodes[i].getGlobalPosition());
+                ofSetColor(colorTwo);
+                forwardPose.draw();
+                if(fwp.distance(tcp) > 20){
+                    ofSetColor(colorTwo);
+                    ofDrawBitmapString("Forward Pose", fwp.x + 5, fwp.y, fwp.z - 40);
+                    ofDrawBitmapString("dist: " + ofToString(dist), fwp.x + 5, fwp.y, fwp.z - 60);
+                    ofDrawBitmapString("pos: "+ofToString(fwp), fwp.x + 5, fwp.y, fwp.z - 80);
+                    ofDrawLine(nodes[i].getGlobalPosition(), fwp);
+                }
+            }
+            i++;
         }
-        ofPopStyle();
+    }
+    ofPopStyle();
 }
 
 void RobotModel::drawMesh(ofFloatColor color, bool bDrawDebug){
@@ -341,72 +341,165 @@ void RobotModel::drawMesh(ofFloatColor color, bool bDrawDebug){
         ofQuaternion q;
         ofVec3f offset;
         
+        ofColor face = ofColor(ofColor::lightGrey);
+        ofColor wireframe = ofColor(ofColor::black);
+        
         ofMatrix4x4 gmat;
         gmat.makeIdentityMatrix();
         gmat.makeScaleMatrix( 1, 1, 1 );
         
-        if(bUseShader){
-            shader.begin();
-            shader.setUniform4f("color", color);
-        }
-        ofPushMatrix();
-        {
+        if(type == UR3 || type ==UR5 || type == UR10){
             ofPushMatrix();
             {
-                int i = 0;
-                for(auto &joint : pose)//pose.size(); i++)
+                ofPushMatrix();
                 {
-                    float x;
-                    ofVec3f axis;
-                    q = joint.orientation;
-                    q.getRotate(x, axis);
-                    ofTranslate(pose[i].offset*1000);
-                    gmat.translate( pose[i].offset*1000 );
-                    
-                    if(bDrawDebug) {
-                        ofDrawAxis(30);
-                    }
-                    ofMatrix4x4 tmat;
-                    if(i >= 3){
-                        ofPushMatrix();
-                        {
-                            ofRotateDeg(-180, 0, 0, 1);
-                            ofRotateDeg(-180, 1, 0, 0);
-                            ofScale(100, 100, 100);
-                            meshs[i].draw();
+                    int i = 0;
+                    for(auto &joint : pose)//pose.size(); i++)
+                    {
+                        float x;
+                        ofVec3f axis;
+                        q = joint.orientation;
+                        q.getRotate(x, axis);
+                        ofTranslate(pose[i].offset*1000);
+                        gmat.translate( pose[i].offset*1000 );
+                        
+                        if(bDrawDebug) {
+                            ofDrawAxis(30);
                         }
-                        ofPopMatrix();
+                        ofMatrix4x4 tmat;
+                        if(i >= 3){
+                            ofPushMatrix();
+                            {
+                                ofRotateDeg(-180, 0, 0, 1);
+                                ofRotateDeg(-180, 1, 0, 0);
+                                ofScale(100, 100, 100);
+                                ofSetColor(face);
+                                meshes[i].draw();
+                                ofSetColor(wireframe, 100);
+                                meshes[i].drawWireframe();
+                            }
+                            ofPopMatrix();
+                        }
+                        ofRotateDeg(x, axis.x, axis.y, axis.z);
+                        if(i < 3){
+                            ofPushMatrix();
+                            {
+                                ofRotateDeg(-180, 0, 0, 1);
+                                ofRotateDeg(-180, 1, 0, 0);
+                                ofScale(100, 100, 100);
+                                ofSetColor(face);
+                                meshes[i].draw();
+                                ofSetColor(wireframe, 100);
+                                meshes[i].drawWireframe();
+                            } ofPopMatrix();
+                        }
+                        if (i==5){
+                            // include flange offset
+                            ofTranslate(0, -0.0308 * 1000, 0);
+                            // the x-axis was rotating backwards,
+                            // so I'm doing some funny business here
+                            ofRotateDeg(180, 0, 0, 1);
+                            ofRotateDeg(-180, nodes[5].getXAxis().x,
+                                        nodes[5].getXAxis().y,
+                                        nodes[5].getXAxis().z);
+                            toolMesh.drawWireframe();
+                        }
+                        i++;
                     }
-                    ofRotateDeg(x, axis.x, axis.y, axis.z);
-                    if(i < 3){
-                        ofPushMatrix();
-                        {
-                            ofRotateDeg(-180, 0, 0, 1);
-                            ofRotateDeg(-180, 1, 0, 0);
-                            ofScale(100, 100, 100);
-                            meshs[i].draw();
-                        } ofPopMatrix();
-                    }
-                    if (i==5){
-                        // include flange offset
-                        ofTranslate(0, -0.0308 * 1000, 0);
-                        // the x-axis was rotating backwards,
-                        // so I'm doing some funny business here
-                        ofRotateDeg(180, 0, 0, 1);
-                        ofRotateDeg(-180, nodes[5].getXAxis().x,
-                                    nodes[5].getXAxis().y,
-                                    nodes[5].getXAxis().z);
-                        toolMesh.drawWireframe();
-                    }
-                    i++;
                 }
+                ofPopMatrix();
             }
             ofPopMatrix();
         }
-        ofPopMatrix();
-        ofDisableDepthTest();
+ 
         
-        if(bUseShader) shader.end();
+        if(type == IRB120){
+            
+            
+            // Base
+            ofPushMatrix();
+            ofTranslate(nodes[0].getPosition());
+            ofSetColor(face);
+            ofScale(1000, 1000, 1000);
+            ofRotateDeg(90, 1, 0, 0);
+            meshes[0].drawFaces();
+            ofSetColor(wireframe, 100);
+            meshes[0].drawWireframe();
+            ofPopMatrix();
+            
+            // link 1
+            ofPushMatrix();
+            ofMultMatrix(nodes[0].getGlobalTransformMatrix());
+            ofSetColor(face);
+            ofScale(1000, 1000, 1000);
+            ofRotateDeg(90, 1, 0, 0);
+            meshes[1].drawFaces();
+            ofSetColor(wireframe, 100);
+            meshes[1].drawWireframe();
+            ofPopMatrix();
+            
+            // link 2
+            ofPushMatrix();
+            ofMultMatrix(nodes[1].getGlobalTransformMatrix());
+            ofSetColor(face);
+            ofScale(1000, 1000, 1000);
+            ofRotateDeg(90, 1, 0, 0);
+            meshes[2].drawFaces();
+            ofSetColor(wireframe, 100);
+            meshes[2].drawWireframe();
+            ofPopMatrix();
+            
+            // link 3
+            ofPushMatrix();
+            ofMultMatrix(nodes[2].getGlobalTransformMatrix());
+            ofMatrix4x4 mat;
+            ofMultMatrix(mat);
+            ofSetColor(face);
+            ofScale(1000, 1000, 1000);
+            ofRotateDeg(90, 1, 0, 0);
+            meshes[3].drawFaces();
+            ofSetColor(wireframe, 100);
+            meshes[3].drawWireframe();
+            ofPopMatrix();
+            
+            // link 4
+            ofPushMatrix();
+            ofMultMatrix(nodes[3].getGlobalTransformMatrix());
+            mat.makeTranslationMatrix(ofVec3f(-134, 0, 0));
+            ofMultMatrix(mat);
+            ofSetColor(face);
+            ofScale(1000, 1000, 1000);
+            ofRotateDeg(90, 1, 0, 0);
+            meshes[4].drawFaces();
+            ofSetColor(wireframe, 100);
+            meshes[4].drawWireframe();
+            ofPopMatrix();
+            
+            // link 5
+            ofPushMatrix();
+            ofMultMatrix(nodes[4].getGlobalTransformMatrix());
+            ofSetColor(face);
+            ofScale(1000, 1000, 1000);
+            ofRotateDeg(90, 1, 0, 0);
+            meshes[5].drawFaces();
+            ofSetColor(wireframe, 100);
+            meshes[5].drawWireframe();
+            ofPopMatrix();
+            
+            // link 6
+            ofPushMatrix();
+            ofMultMatrix(nodes[5].getGlobalTransformMatrix());
+            ofSetColor(face);
+            ofScale(1000, 1000, 1000);
+            ofRotateDeg(90, 1, 0, 0);
+            meshes[6].drawFaces();
+            ofSetColor(wireframe, 100);
+            meshes[6].drawWireframe();
+            ofPopMatrix();
+            
+            ofPopStyle();
+        }
+        ofDisableDepthTest();
     }
 }
 
@@ -427,7 +520,7 @@ void RobotModel::draw(ofFloatColor color, bool bDrawDebug){
                 }
                 ofPopStyle();
             }
-        
+            
             ofPushMatrix();
             {
                 drawSkeleton();
