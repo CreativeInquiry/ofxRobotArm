@@ -93,6 +93,7 @@ namespace ofxRobotArm{
         ofParameter<bool> bUseTimeline;
         
         ofParameter<float> followLerp;
+        ofParameter<float> poseLerp;
         
         vector<ofParameter<float> > ikPose;
         vector<ofParameter<float> > pCurrentPose;
