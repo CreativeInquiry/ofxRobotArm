@@ -72,10 +72,11 @@ namespace ofxRobotArm {
         RobotArmSafety robotSafety;
         
         void setToolOffset(ofVec3f local);
-        
+        ofNode getActualTCPNode();
         void setEndEffector(string filename);
 
         bool bSmoothPose;
+        float smoothness;
     protected:
         vector <double> homePose;
         vector <double> stopPosition;
@@ -87,7 +88,7 @@ namespace ofxRobotArm {
         vector< double > smoothedPose;
         vector<double> jointWeights;
     private:
-        
+        Pose forwardPose;
         bool isTeachModeEnabled;
         void setup_parameters();
         ofNode target;

@@ -38,6 +38,7 @@
 #pragma once
 #include "ofMain.h"
 #include "Utils.h"
+#include "Pose.h"
 #include "RobotConstants.hpp"
 #include <complex>
 // These kinematics find the tranfrom from the base link to the end effector.
@@ -69,7 +70,7 @@ public:
     //adapted from https://github.com/Jmeyer1292/opw_kinematics/blob/master/include/opw_kinematics/opw_kinematics_impl.h
     //
     vector<double> solveSphere(ofMatrix4x4 pose);
-    void inverseRelaxed(ofMatrix4x4 pose, double * sol);
+
     void inverseSW(ofMatrix4x4 pose, double * sol);
     void forwardSW(double t1, double t2, double t3, double t4, double t5, double t6, ofMatrix4x4& sol);
     // @param q       The 6 joint values
@@ -88,6 +89,9 @@ public:
     // @return        Number of solutions found (maximum of 8)
     int inverseHK(const double* T, double* q_sols, double q6_des=0.0);
     
+    void setRelaxedPose(vector<double> pose);
+    vector<double> inverseRelaxed(Pose desiredPose, Pose currentPose);
+    
     void setParams(float _a1, float _a2, float _b, float _c1, float _c2, float _c3, float _c4);
     void setDH(float d1, float a2, float a3, float d4, float d5, float d6);
     void harmonizeTowardZero(double* qs)
@@ -99,16 +103,25 @@ public:
             else if (qs[i] <= -PI)
                 qs[i] += TWO_PI;
         }
-    }
+    };
     
     bool isValid(const double* qs)
     {
         return std::isfinite(qs[0]) && std::isfinite(qs[1]) && std::isfinite(qs[2]) && std::isfinite(qs[3]) &&
         std::isfinite(qs[4]) && std::isfinite(qs[5]);
-    }
+    };
     
     void inverse(ofMatrix4x4* target, vector< vector <double> >& sol);
-    vector<double>bound_solution(vector<double> thetas);
+    
+    vector<double> boundSolution(vector<double> thetas){
+        for(auto theta : thetas){
+            if(abs(theta) > PI){
+                double sign = abs(theta)/theta;
+                theta = theta -(sign * TWO_PI);
+            }
+        }
+        return thetas;
+    };
 private:
     
     

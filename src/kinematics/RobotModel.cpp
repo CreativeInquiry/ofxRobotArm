@@ -103,6 +103,13 @@ void RobotModel::setup(RobotType type){
         pose[3].orientation.makeRotate(-90,pose[3].axis);
         pose[4].orientation.makeRotate(0,pose[4].axis);
         pose[5].orientation.makeRotate(0,pose[5].axis);
+        
+        pose[0].rotation = 0;
+        pose[1].rotation = 0;
+        pose[2].rotation = 0;
+        pose[3].rotation = 0;
+        pose[4].rotation = 0;
+        pose[5].rotation = 0;
     }
     
     if(type == RobotType::IRB120){
@@ -208,7 +215,6 @@ void RobotModel::setTCPPose(Pose pose){
 }
 
 Pose RobotModel::getModifiedTCPPose(){
-    tool.position = tool.position;
     return tool;
 }
 
@@ -285,21 +291,21 @@ void RobotModel::drawSkeleton() {
             ofPopStyle();
             
             // show length of each link
-            ofSetColor(255, 80);
+            ofSetColor(255, 200);
             if (i == 0)
                 ofDrawBitmapString(dist, p.getInterpolated(ofVec3f(), .5));
             else
                 ofDrawBitmapString(dist, p.getInterpolated(nodes[i - 1].getGlobalPosition(), .5));
             
             // show joint id
-            ofSetColor(255, 90);
+            ofSetColor(255,200);
             ofDrawBitmapString(ofToString(i), p.x + 5, p.y, p.z + 5);
             
             // show angle at joint
-            ofDrawBitmapString("angle: " + ofToString(pose[i].rotation), p.x + 5, p.y, p.z - 20);
+            ofDrawBitmapString("angle: " + ofToString(pose[i].rotation), p + ofVec3f(0, 0, 20));
             if(ofGetKeyPressed(OF_KEY_CONTROL) && i == 5){
                 ofSetColor(colorOne);
-                ofDrawBitmapString("pos: " + ofToString(p), p.x + 5, p.y, p.z - 40);
+                ofDrawBitmapString("pos: " + ofToString(p),  p + ofVec3f(0, 0, 40));
             }
             
             if (i == 5) {
@@ -310,23 +316,25 @@ void RobotModel::drawSkeleton() {
                 tcpNode.draw();
                 ofVec3f tcp = tcpNode.getGlobalPosition();
                 ofVec3f endJoint = nodes[i].getGlobalPosition();
-                dist = tcp.distance(nodes[i].getGlobalPosition());
+                p = tcp - endJoint;
+                dist = p.length();
                 ofSetColor(colorOne);
-                ofDrawLine(nodes[i].getGlobalPosition(), tcp);
-                ofDrawBitmapString("TCP Desired Pose", tcp.x + 5, tcp.y, tcp.z - 40);
-                ofDrawBitmapString("dist: " + ofToString(dist), tcp.x + 5, tcp.y, tcp.z - 60);
-                ofDrawBitmapString("pos:  " +ofToString(tcp), tcp.x + 5, tcp.y, tcp.z - 80);
+                ofDrawLine(endJoint, tcp);
+                ofDrawBitmapString("TCP Desired Pose", tcp+ ofVec3f(0, 0, 20));
+                ofDrawBitmapString("dist: " + ofToString(dist), endJoint+ p.normalize()*dist/2 + ofVec3f(0, 0, -40));
+                ofDrawBitmapString("pos:  " +ofToString(tcp), tcp+ ofVec3f(0, 0, 80));
                 
                 ofVec3f fwp = forwardPose.getGlobalPosition();
-                dist = fwp.distance(nodes[i].getGlobalPosition());
+                p = fwp - endJoint;
+                dist = p.length();
                 ofSetColor(colorTwo);
                 forwardPose.draw();
                 if(fwp.distance(tcp) > 20){
                     ofSetColor(colorTwo);
-                    ofDrawBitmapString("Forward Pose", fwp.x + 5, fwp.y, fwp.z - 40);
-                    ofDrawBitmapString("dist: " + ofToString(dist), fwp.x + 5, fwp.y, fwp.z - 60);
-                    ofDrawBitmapString("pos: "+ofToString(fwp), fwp.x + 5, fwp.y, fwp.z - 80);
-                    ofDrawLine(nodes[i].getGlobalPosition(), fwp);
+                    ofDrawLine(endJoint, fwp);
+                    ofDrawBitmapString("Forward Pose", fwp + ofVec3f(0, 0, 20));
+                    ofDrawBitmapString("dist: " + ofToString(dist), endJoint+p.normalize()*dist/2 + ofVec3f(0, 0, -40));
+                    ofDrawBitmapString("pos:  " +ofToString(tcp), fwp + ofVec3f(0, 0, 80));
                 }
             }
             i++;

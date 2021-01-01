@@ -27,6 +27,7 @@ class ofApp : public ofBaseApp{
 		
         ofNode tcp;
         ofNode lookAtNode;
+        ofQuaternion initialRot;
         // Robot
         ofxRobotArm::RobotController robot;
         void keypressed_robot(int key);

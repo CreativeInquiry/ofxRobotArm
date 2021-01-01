@@ -3,10 +3,10 @@
 using namespace ofxRobotArm;
 //--------------------------------------------------------------
 void ofApp::setup(){
-    
+    cout<<ofToDataPath("")<<endl;
     // setup scene
     setup_scene();
-    robotParams.setup(RobotType::IRB120);
+    robotParams.setup(RobotType::UR5);
     // setup robot
     robot.setup(robotParams);    // change IP string to your robot's IP address
 
@@ -16,19 +16,29 @@ void ofApp::setup(){
     // start robot
     robot.start();
     
-    tcp.setPosition(250, 250, 250);
-    lookAtNode.setPosition(10, 0, 0);
-    ofQuaternion q;
-    q.makeRotate(90, 0, 1, 0);
-    tcp.setOrientation(q);
-    lookAtNode.setOrientation(q);
-    tcp_target.setNode(tcp);
-//    lookAtNode.setParent(tcp);
-    look_target.setNode(lookAtNode);
+//    tcp.setPosition(0, 0, 0);
+//    tcp.setOrientation(ofQuaternion(0, 0, 0, 1));
+//    tcp.setPosition(250, 250, 250);
+//    lookAtNode.setPosition(10, 0, 0);
+//    ofQuaternion q;
+////    q.makeRotate(90, 0, 1, 0);
+////    tcp.setOrientation(q);
+////    lookAtNode.setOrientation(q);
+////    tcp_target.setNode(tcp);
+////    lookAtNode.setParent(tcp);
+//    look_target.setNode(lookAtNode);
 //
     offset.set(0, 0, 0);
     robot.setToolOffset(offset);
     
+    tcp = robot.getActualTCPNode();
+    tcp.setPosition(-500, -500, 500);
+    tcp_target.setNode(tcp);
+    
+//    lookAtNode.setPosition(-510, -510, 500);
+//    look_target.setNode(lookAtNode);
+    
+    initialRot = tcp.getOrientationQuat();
     int x = 500;
     int y = -1000;
     int z = 500;
@@ -45,7 +55,7 @@ void ofApp::setup(){
     show_side = false;
     show_perspective = true;
     
-    home = ofVec3f(300, 0, 555);
+    home.set(300, 0, 555);
 }
 
 //--------------------------------------------------------------
@@ -53,19 +63,17 @@ void ofApp::update(){
     
     // do movements
 //    look_target.setNode(lookAtNode);
-    lookAtNode.setPosition(look_target.getTranslation());
-
+//    lookAtNode.setPosition(look_target.getTranslation());
     tcp.setGlobalPosition(tcp_target.getTranslation());
     tcp.setGlobalOrientation(tcp_target.getRotation());
-    ofMatrix4x4 mat;
-    ofVec3f p1 = lookAtNode.getPosition();
-    ofVec3f p2 = tcp.getPosition();
-    mat.makeLookAtMatrix(p1, p2, ofVec3f(0, 0, 1));
-    ofMatrix4x4 invMat;
-    invMat = mat.getInverse();
-    tcp.setGlobalOrientation(invMat.getRotate());
+//    ofMatrix4x4 mat;
+//    ofVec3f p1 = lookAtNode.getPosition();
+//    ofVec3f p2 = tcp.getPosition();
+//    mat.makeLookAtMatrix(p1, p2, ofVec3f(0, 0, 1));
+//    ofMatrix4x4 invMat;
+//    invMat = mat.getInverse();
+//    tcp.setGlobalOrientation(invMat.getRotate());
     robot.setDesired(tcp);
-    
     robot.update();
     
 }
@@ -96,19 +104,17 @@ void ofApp::setup_scene(){
 
 //--------------------------------------------------------------
 void ofApp::draw_scene(){
-    ofVec3f p = tcp.getGlobalPosition();
     cam.begin();
     ofDrawAxis(1500);
     ofDrawGrid(100, 10, false, false, false, true);
-    
+    // Draw Real Robot
+    robot.draw();
     // Draw Desired Robot
     robot.drawDesired();
-    robot.draw();
-    
+
     
     tcp_target.draw(cam);
     look_target.draw(cam);
-    
     cam.end();
 }
 
@@ -317,19 +323,19 @@ void ofApp::keypressed_robot(int key){
             robot_live = !robot_live;
             break;
         case OF_KEY_LEFT:
-            offset-=ofVec3f(10, 0, 0);
+            offset-=ofVec3f(0, 10, 0);
             robot.setToolOffset(offset);
             break;
         case OF_KEY_RIGHT:
-            offset+=ofVec3f(10, 0, 0);
+            offset+=ofVec3f(0, 10, 0);
             robot.setToolOffset(offset);
             break;
         case OF_KEY_UP:
-            offset+=ofVec3f(10, 0, 0);
+            offset+=ofVec3f(0, 10, 0);
             robot.setToolOffset(offset);
             break;
         case OF_KEY_DOWN:
-            offset-=ofVec3f(10, 0, 0);
+            offset-=ofVec3f(0, 10, 0);
             robot.setToolOffset(offset);
             break;
     }
@@ -367,40 +373,60 @@ void ofApp::keypressed_gizmo(int key){
     bool val = true;
     switch (key) {
         case '1':
-            look_target.getMatrix().setTranslation(tcp.getGlobalPosition()+ofVec3f(100, 0, 0));
+            tcp_target.getMatrix().setRotate(initialRot);
             break;
         case '2':
-            look_target.getMatrix().setTranslation(tcp.getGlobalPosition()+ofVec3f(0, 100, 0));
+            tcp_target.getMatrix().setRotate(ofQuaternion(1, 0, 0, 0));
             break;
         case '3':
-            look_target.getMatrix().setTranslation(tcp.getGlobalPosition()+ofVec3f(1, 1, -100));
+            tcp_target.getMatrix().setRotate(ofQuaternion(0, 0, 1, 1));
             break;
         case '4':
-            look_target.getMatrix().setTranslation(tcp.getGlobalPosition()+ofVec3f(1, 1, 100));
+            tcp_target.getMatrix().setRotate(ofQuaternion(0, 1, 0, 1));
             break;
         case '5':
-            look_target.getMatrix().setTranslation(tcp.getGlobalPosition()+ofVec3f(-100, 0, 0));
+            tcp_target.getMatrix().setRotate(ofQuaternion(1, 1, 1, 1));
             break;
         case '6':
-            look_target.getMatrix().setTranslation(tcp.getGlobalPosition()+ofVec3f(0, -100, 0));
+            tcp_target.getMatrix().setRotate(ofQuaternion(0, 1, 1, 1));
             break;
         case '7':
-            look_target.getMatrix().setTranslation(tcp.getGlobalPosition()+ofVec3f(100, 0, 100));
+            tcp_target.getMatrix().setRotate(ofQuaternion(1, 0, 1, 1));
             break;
         case '8':
-            look_target.getMatrix().setTranslation(tcp.getGlobalPosition()+ofVec3f(100, 100, 100));
+            tcp_target.getMatrix().setRotate(ofQuaternion(1, 0, 0, 0));
             break;
         case '9':
-            look_target.getMatrix().setTranslation(tcp.getGlobalPosition()+ofVec3f(-100, 0, -100));
+            tcp_target.getMatrix().setRotate(ofQuaternion(1, 1, 0, 0));
             break;
         case '0':
-            look_target.getMatrix().setTranslation(tcp.getGlobalPosition()+ofVec3f(100, 0, -100));
+            tcp_target.getMatrix().setRotate(ofQuaternion(1, 1, 1, 0));
             break;
         case ' ':
-            tcp.setGlobalPosition(home);
-            tcp_target.getMatrix().setTranslation(home);
-            look_target.getMatrix().setTranslation(tcp.getGlobalPosition()+ofVec3f(100, 0, 0));
+            tcp.setGlobalPosition(robot.getActualTCPNode().getPosition()*1000);
+            tcp_target.getMatrix().setTranslation(tcp.getPosition());
             break;
+        case '!':
+            tcp.setGlobalPosition(robot.getActualTCPNode().getPosition()*1000*ofVec3f(0.5, 0.5, 0.5));
+            tcp_target.getMatrix().setTranslation(tcp.getPosition());
+            break;
+        case '@':
+            tcp.setGlobalPosition(robot.getActualTCPNode().getPosition()*1000*ofVec3f(1, -1, 1));
+            tcp_target.getMatrix().setTranslation(tcp.getPosition());
+            break;
+        case '#':
+            tcp.setGlobalPosition(robot.getActualTCPNode().getPosition()*1000*ofVec3f(-1, 1, 1));
+            tcp_target.getMatrix().setTranslation(tcp.getPosition());
+            break;
+        case '$':
+            tcp.setGlobalPosition(robot.getActualTCPNode().getPosition()*1000*ofVec3f(-1, 1, -1));
+            tcp_target.getMatrix().setTranslation(tcp.getPosition());
+            break;
+        case '%':
+            tcp.setGlobalPosition(robot.getActualTCPNode().getPosition()*1000*ofVec3f(1, 1, -1));
+            tcp_target.getMatrix().setTranslation(tcp.getPosition());
+            break;
+            
     }
     
 }

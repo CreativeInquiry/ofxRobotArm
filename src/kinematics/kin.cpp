@@ -1,4 +1,5 @@
 #include "kin.h"
+#include "RelaxedIK.hpp"
 using namespace ofxRobotArm;
 const static double ANGLE_THRESH = ofDegToRad(30);
 const double ZERO_THRESH = 0.00000001;
@@ -102,8 +103,8 @@ Kinematics::Kinematics(ofxRobotArm::RobotType type){
         c4 = 0.072; //c4
         
         offsets[2] = -PI/2;
-//        sign_corrections[3] = -1;
-//        sign_corrections[4] = -1;
+        //        sign_corrections[3] = -1;
+        //        sign_corrections[4] = -1;
         
         joint_limit_min[0] = -165;
         joint_limit_min[1] = -110;
@@ -119,6 +120,8 @@ Kinematics::Kinematics(ofxRobotArm::RobotType type){
         joint_limit_max[4] = 120;
         joint_limit_max[5] = 400;
     }
+    vector<double> pose(6.0, 0);
+ 
 }
 
 Kinematics::Kinematics(){
@@ -129,6 +132,7 @@ Kinematics::~Kinematics(){
 }
 
 void Kinematics::forwardHK(const double* q, double* T) {
+    
     double s1 = sin(*q), c1 = cos(*q); q++;
     double q23 = *q, q234 = *q, s2 = sin(*q), c2 = cos(*q); q++;
     double s3 = sin(*q), c3 = cos(*q); q23 += *q; q234 += *q; q++;
@@ -140,7 +144,7 @@ void Kinematics::forwardHK(const double* q, double* T) {
     *T = c234*c1*s5 - c5*s1; T++;
     *T = c6*(s1*s5 + c234*c1*c5) - s234*c1*s6; T++;
     *T = -s6*(s1*s5 + c234*c1*c5) - s234*c1*c6; T++;
-    *T = d6*c234*c1*s5 - a3*c23*c1 - a2_2*c1*c2 - d6*c5*s1 - d5*s234*c1 - d4*s1; T++;
+    *T = d6*c234*c1*s5 - a3*c23*c1 - a2*c1*c2 - d6*c5*s1 - d5*s234*c1 - d4*s1; T++;
     *T = c1*c5 + c234*s1*s5; T++;
     *T = -c6*(c1*s5 - c234*c5*s1) - s234*s1*s6; T++;
     *T = s6*(c1*s5 - c234*c5*s1) - s234*c6*s1; T++;
@@ -546,7 +550,7 @@ void Kinematics::inverseSW(ofMatrix4x4 pose, double * sol)
     
     double theta2_iii = -std::acos(tmp6 / (2.0 * s2 * c2)) - std::atan2(nx1 + 2.0 * a1, c.z - c1);
     double theta2_iv = std::acos(tmp6 / (2.0 * s2 * c2)) - std::atan2(nx1 + 2.0 * a1, c.z - c1);
-        
+    
     // theta3
     double tmp7 = s1_2 - c2_2 - kappa_2;
     double tmp8 = s2_2 - c2_2 - kappa_2;
@@ -707,23 +711,46 @@ float Kinematics::get(ofMatrix4x4 mat, int row, int col) {
 }
 
 
+void Kinematics::setRelaxedPose(vector<double> pose){
+//    set_starting_config(pose.data(), pose.size());
+}
 
-/// <#Description#>
-/// @param thetas <#thetas description#>
-vector<double> Kinematics::bound_solution(vector<double> thetas){
-    //    """
-    //    # Bound each axis value between +/- pi
-    //    # This makes the solution more predicatable for things like IK-FK switching
-    //    """
-    for(auto theta : thetas){
-        if(abs(theta) > PI){
-            double sign = abs(theta)/theta;
-            theta = theta -(sign * TWO_PI);
-        }
+vector<double> Kinematics::inverseRelaxed(Pose desiredPose, Pose currentPose){
+    
+
+    ofVec3f difPos = (desiredPose.position - currentPose.position) * ofMatrix4x4(1,  0, 0, 0,
+                                                                                 0,  0, -1, 0,
+                                                                                 0, -1, 0, 0,
+                                                                                 0,  0, 0, -1);
+    ofQuaternion rot = (desiredPose.orientation - currentPose.orientation);
+
+    ofMatrix4x4 mat, matT, matR;
+    matT.makeTranslationMatrix(difPos);
+    matR.makeRotationMatrix(rot);
+    mat = matR*matT;
+    difPos = mat.getTranslation();
+    rot = mat.getRotate();
+ 
+    std::vector<double> pos(3, 0.0);
+    pos[0] = difPos.x;
+    pos[1] = difPos.y;
+    pos[2] = difPos.z;
+    std::vector<double> quat(4, 0.0);
+    quat[0] = rot.y();
+    quat[1] = rot.z();
+    quat[2] = rot.w();
+    quat[3] = rot.x();
+    ofLog()<<"====================="<<endl;
+    ofLog()<<"difPos "<<difPos<<endl;
+    ofLog()<<"rot "<<rot<<endl;
+    ofLog()<<quat[0]<<" "<<quat[1]<<" "<<quat[2]<<" "<<quat[3]<<endl;
+    Opt x = solve(pos.data(), (int) pos.size(), quat.data(), (int) quat.size());
+    std::vector<double> sol(x.length, 0.0);
+    for (int i = 0; i < x.length; i++) {
+        sol[i] = x.data[i];
     }
-    
-    return thetas;
+ 
+    ofLog()<<sol[0]<<" "<<sol[1]<<" "<<sol[2]<<" "<<sol[3]<<" "<<sol[4]<<" "<<sol[5]<<endl;
+    return sol;
 }
-void Kinematics::inverseRelaxed(ofMatrix4x4 pose, double * sol){
-    
-}
+

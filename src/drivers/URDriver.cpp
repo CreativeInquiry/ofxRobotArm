@@ -15,15 +15,14 @@ URDriver::URDriver(){
     bStarted    =false;
 
     vector<double> foo;
-    foo.assign(6, 0.0);
+    foo.assign(6, -PI/2.0);
     jointsRaw.setup(foo);
     toolPointRaw.setup(foo);
     jointsProcessed.setup(foo);
-    jointsRaw.getBack().assign(6, 0.0);
-    jointsProcessed.getBack().assign(6, 0.0);
-    toolPointRaw.getBack().assign(6, 0.0);
+    jointsRaw.getBack().assign(6, -PI/2.0);
+    jointsProcessed.getBack().assign(6, -PI/2.0);
+    toolPointRaw.getBack().assign(6, -PI/2.0);
     numDeccelSteps = 120;
-
 }
 
 URDriver::~URDriver(){

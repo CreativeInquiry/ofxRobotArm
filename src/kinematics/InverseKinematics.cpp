@@ -96,7 +96,7 @@ int InverseKinematics::selectSolution(vector<vector<double> > & inversePosition,
             }
         }
     }
-    
+
     for(int i = 0; i < inversePosition.size(); i++){
         for(int j = 0; j < inversePosition[i].size(); j++){
             if(preInversePosition.size() > 0){
@@ -108,7 +108,7 @@ int InverseKinematics::selectSolution(vector<vector<double> > & inversePosition,
             }
         }
     }
-    
+
     vector<double> test_sol;
     vector<vector<double> > valid_sols;
     test_sol.assign(6, 9999.);
@@ -132,10 +132,10 @@ int InverseKinematics::selectSolution(vector<vector<double> > & inversePosition,
         }
         if(testValid){
             valid_sols.push_back(test_sol);
-            
+
         }
     }
-    
+
     vector<double> sumsValid;
     sumsValid.assign(valid_sols.size(), 0);
     for(int i = 0; i < valid_sols.size(); i++){
@@ -185,15 +185,21 @@ vector<vector<double> > InverseKinematics::inverseKinematics(vector<double> inpu
     return vector<vector<double>>();
 }
 
-vector<vector<double> > InverseKinematics::inverseKinematics(ofxRobotArm::Pose pose){
+vector<vector<double> > InverseKinematics::inverseKinematics(ofxRobotArm::Pose targetPose, ofxRobotArm::Pose currentPose){
     ofMatrix4x4 matPose;
     ofMatrix4x4 matT;
     ofMatrix4x4 matR;
     matPose.makeIdentityMatrix();
-    matT.makeTranslationMatrix(pose.position);
-    matR.makeRotationMatrix(pose.orientation);
-    matPose = matR*matT;
+    matT.makeTranslationMatrix(targetPose.position);
+    matR.makeRotationMatrix(targetPose.orientation);
+    matPose = matT*matR;
+    
     return inverseKinematics(matPose);
+    
+//    vector<double> sol = kinematics.inverseRelaxed(targetPose, currentPose);
+//    vector<vector<double> > sols;
+//    sols.push_back(sol);
+//    return sols;
 }
 
 vector<vector<double> > InverseKinematics::inverseKinematics(ofMatrix4x4 pose)
@@ -242,8 +248,12 @@ vector<vector<double> > InverseKinematics::inverseKinematics(ofMatrix4x4 pose)
     }
 }
 
+
 ofMatrix4x4 InverseKinematics::forwardKinematics(vector<double> pose)
 {
+    
+    ofLog()<<"++++++++++++++++++"<<endl;
+    ofLog()<<pose[0]<<" "<<pose[1]<<" "<<pose[2]<<" "<<pose[3]<<" "<<pose[4]<<" "<<pose[5]<<endl;
     if(type == UR3 || type == UR5 || type == UR10){
         return toOF(forwardKinematics(pose[0], pose[1], pose[2], pose[3], pose[4], pose[5]));
     }
@@ -252,6 +262,11 @@ ofMatrix4x4 InverseKinematics::forwardKinematics(vector<double> pose)
         kinematics.forwardSW(pose[0], pose[1], pose[2], pose[3], pose[4], pose[5], mat);        
         return mat;
     }
+}
+
+
+void InverseKinematics::setRelaxedPose(vector<double> pose){
+    kinematics.setRelaxedPose(pose);
 }
 
 
