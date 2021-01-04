@@ -3,40 +3,40 @@
 using namespace ofxRobotArm;
 //--------------------------------------------------------------
 void ofApp::setup(){
-    cout<<ofToDataPath("")<<endl;
+    ofSetFrameRate(120);
     // setup scene
     setup_scene();
     robotParams.setup(RobotType::UR5);
     // setup robot
     robot.setup(robotParams);    // change IP string to your robot's IP address
-
+    
     // setup gui
     setup_gui();
     
     // start robot
     robot.start();
     
-//    tcp.setPosition(0, 0, 0);
-//    tcp.setOrientation(ofQuaternion(0, 0, 0, 1));
-//    tcp.setPosition(250, 250, 250);
-//    lookAtNode.setPosition(10, 0, 0);
-//    ofQuaternion q;
-////    q.makeRotate(90, 0, 1, 0);
-////    tcp.setOrientation(q);
-////    lookAtNode.setOrientation(q);
-////    tcp_target.setNode(tcp);
-////    lookAtNode.setParent(tcp);
-//    look_target.setNode(lookAtNode);
-//
+    //    tcp.setPosition(0, 0, 0);
+    //    tcp.setOrientation(ofQuaternion(0, 0, 0, 1));
+    //    tcp.setPosition(250, 250, 250);
+    //    lookAtNode.setPosition(10, 0, 0);
+    //    ofQuaternion q;
+    //    q.makeRotate(90, 0, 1, 0);
+    //    tcp.setOrientation(q);
+    //    lookAtNode.setOrientation(q);
+    //    tcp_target.setNode(tcp);
+    //    lookAtNode.setParent(tcp);
+    //    look_target.setNode(lookAtNode);
+    //
     offset.set(0, 0, 0);
     robot.setToolOffset(offset);
     
     tcp = robot.getActualTCPNode();
-    tcp.setPosition(-500, -500, 500);
+    tcp.setPosition(tcp.getPosition()*1000);
     tcp_target.setNode(tcp);
     
-//    lookAtNode.setPosition(-510, -510, 500);
-//    look_target.setNode(lookAtNode);
+    //    lookAtNode.setPosition(-510, -510, 500);
+    //    look_target.setNode(lookAtNode);
     
     initialRot = tcp.getOrientationQuat();
     int x = 500;
@@ -61,18 +61,27 @@ void ofApp::setup(){
 //--------------------------------------------------------------
 void ofApp::update(){
     
-    // do movements
-//    look_target.setNode(lookAtNode);
-//    lookAtNode.setPosition(look_target.getTranslation());
-    tcp.setGlobalPosition(tcp_target.getTranslation());
-    tcp.setGlobalOrientation(tcp_target.getRotation());
-//    ofMatrix4x4 mat;
-//    ofVec3f p1 = lookAtNode.getPosition();
-//    ofVec3f p2 = tcp.getPosition();
-//    mat.makeLookAtMatrix(p1, p2, ofVec3f(0, 0, 1));
-//    ofMatrix4x4 invMat;
-//    invMat = mat.getInverse();
-//    tcp.setGlobalOrientation(invMat.getRotate());
+    
+    robot.inverseKinematics.relaxedIK.setAngle(angleX, angleY, angleZ);
+    
+    ofVec3f u = ofVec3f(ux, uy, uz);
+    ofVec3f v = ofVec3f(vx, vy, vz);
+    ofVec3f w = ofVec3f(wx, wy, wz);
+    robot.inverseKinematics.relaxedIK.setMatrix(u, v, w);
+    
+    
+    ofVec3f p = tcp_target.getTranslation();
+    ofVec3f p2 = look_target.getTranslation();
+    
+//    ofMatrix4x4 mat, matR, matRR, matRRR;
+//    mat.makeLookAtMatrix(p2, p, ofVec3f(0, 1, 0));
+//    matR.makeRotationMatrix(90, ofVec3f(1, 0, 0));
+////    matRRR.makeRotationMatrix(90, ofVec3f(0, 0, 1));
+//    mat = mat*matR*matRRR;
+
+    tcp.setPosition(tcp_target.getTranslation());
+    tcp.setOrientation(tcp_target.getRotation());
+    
     robot.setDesired(tcp);
     robot.update();
     
@@ -93,6 +102,7 @@ void ofApp::draw(){
     if (robot_live){
         draw_live_robot_warning();
     }
+
 }
 
 #pragma mark - Scene
@@ -108,10 +118,16 @@ void ofApp::draw_scene(){
     ofDrawAxis(1500);
     ofDrawGrid(100, 10, false, false, false, true);
     // Draw Real Robot
-    robot.draw();
+    robot.draw(ofColor::red);
     // Draw Desired Robot
-    robot.drawDesired();
-
+    robot.drawDesired(ofColor::whiteSmoke);
+    
+    if(ofGetKeyPressed('l')){
+        robot.desiredPose.drawSkeleton();
+    }
+    if(ofGetKeyPressed('k')){
+        robot.actualPose.drawSkeleton();
+    }
     
     tcp_target.draw(cam);
     look_target.draw(cam);
@@ -120,15 +136,15 @@ void ofApp::draw_scene(){
 
 //--------------------------------------------------------------
 bool ofApp::disable_camera(){
-
+    
     if (tcp_target.isInteracting() || look_target.isInteracting())
         return true;
     
     ofRectangle gui_rect;
     gui_rect.setX(panel.getPosition().x);
     gui_rect.setY(panel.getPosition().y);
-    gui_rect.setWidth(panel.getWidth());
-    gui_rect.setHeight(panel.getHeight() + panel_robot.getHeight() + 5);
+    gui_rect.setWidth(panel.getWidth() + 20);
+    gui_rect.setHeight(panel.getHeight() + panel_robot.getHeight() + 20);
     if (gui_rect.inside(mouseX, mouseY))
         return true;
     
@@ -146,6 +162,19 @@ void ofApp::setup_gui(){
     params.add(show_side.set("SIDE", false));
     params.add(show_perspective.set("PERSP", false));
     
+    params.add(angleX.set("X", 0, -360, 360));
+    params.add(angleY.set("Y", 0, -360, 360));
+    params.add(angleZ.set("Z", 0, -360, 360));
+    params.add(ux.set("UX", 0, -1, 1));
+    params.add(uy.set("UY", 0, -1, 1));
+    params.add(uz.set("UZ", 1, -1, 1));
+    params.add(vx.set("VX", 0, -1, 1));
+    params.add(vy.set("VY", -1, -1, 1));
+    params.add(vz.set("VZ", 0, -1, 1));
+    params.add(wx.set("WX", 1, -1, 1));
+    params.add(wy.set("WY", 0, -1, 1));
+    params.add(wz.set("WZ", 0, -1, 1));
+    
     show_top.addListener(this, &ofApp::listener_show_top);
     show_front.addListener(this, &ofApp::listener_show_front);
     show_side.addListener(this, &ofApp::listener_show_side);
@@ -157,6 +186,8 @@ void ofApp::setup_gui(){
     panel_robot.setup("Robot_Controller");
     panel_robot.add(robot_live.set("Robot_LIVE", false));
     panel_robot.setPosition(panel.getPosition().x, panel.getPosition().y + panel.getHeight() + 5);
+    panel_robot.add(robotParams.joints);
+    panel_robot.add(robotParams.targetJoints);
     
     ofSetCircleResolution(60);
 }
@@ -167,6 +198,7 @@ void ofApp::draw_gui(){
     panel_robot.draw();
     
     ofDrawBitmapStringHighlight("FPS: "+ofToString(ofGetFrameRate()), ofGetWidth()-100, 10);
+//    ofDrawBitmapStringHighlight("SFF: "+ofToString(robot.inverseKinematics.relaxedIK.getFrame()), ofGetWidth()-100, 40);
 }
 
 //--------------------------------------------------------------
@@ -204,8 +236,8 @@ void ofApp::listener_show_top(bool & val)
         
         int x = 0;
         int y = 0;
-        int z = 4000;
-
+        int z = 2000;
+        
         
         ofVec3f pos = ofVec3f(x, y, z);
         ofVec3f tgt = ofVec3f(pos.x, pos.y, 0);
@@ -225,8 +257,8 @@ void ofApp::listener_show_front(bool & val)
 {
     if (val) {
         
-        int x = 2000;
-        int y = 400;
+        int x = 2500;
+        int y = 0;
         int z = 600;
         
         ofVec3f pos = ofVec3f(x, y, z);
@@ -247,8 +279,8 @@ void ofApp::listener_show_side(bool & val)
 {
     if (val) {
         
-        int x = 900;
-        int y = -2000;
+        int x = 0;
+        int y = -2500;
         int z = 600;
         
         ofVec3f pos = ofVec3f(x, y, z);
@@ -269,12 +301,12 @@ void ofApp::listener_show_perspective(bool & val)
 {
     if (val) {
         
-        int x = 3000;
-        int y = -2000;
-        int z = 2000;
+        int x = 1500;
+        int y = -1500;
+        int z = 1500;
         
         ofVec3f pos = ofVec3f(x, y, z);
-        ofVec3f tgt = ofVec3f(0, 800 / 2, 0);
+        ofVec3f tgt = ofVec3f(0, 0, 0);
         cam.setGlobalPosition(pos);
         cam.setTarget(tgt);
         cam.lookAt(tgt, ofVec3f(0, 0, 1));
@@ -309,7 +341,7 @@ void ofApp::keyPressed(int key){
 //--------------------------------------------------------------
 void ofApp::keypressed_robot(int key){
     switch (key) {
-        // 'm' for MOVE!
+            // 'm' for MOVE!
         case 't':
         case 'T':
             tcp_target.setType(ofxGizmo::OFX_GIZMO_MOVE);
@@ -323,20 +355,24 @@ void ofApp::keypressed_robot(int key){
             robot_live = !robot_live;
             break;
         case OF_KEY_LEFT:
-            offset-=ofVec3f(0, 10, 0);
-            robot.setToolOffset(offset);
+            angleY+=1;
             break;
         case OF_KEY_RIGHT:
-            offset+=ofVec3f(0, 10, 0);
-            robot.setToolOffset(offset);
+            angleX+=1;
+
             break;
         case OF_KEY_UP:
-            offset+=ofVec3f(0, 10, 0);
-            robot.setToolOffset(offset);
+            angleX-=1;
+
             break;
         case OF_KEY_DOWN:
-            offset-=ofVec3f(0, 10, 0);
-            robot.setToolOffset(offset);
+            angleY-=1;
+            break;
+        case '-':
+            angleZ-=1;
+            break;
+        case '=':
+            angleZ+=1;
             break;
     }
 }
@@ -402,29 +438,49 @@ void ofApp::keypressed_gizmo(int key){
         case '0':
             tcp_target.getMatrix().setRotate(ofQuaternion(1, 1, 1, 0));
             break;
+        case OF_KEY_RETURN:
+            tcp.setGlobalPosition(robot.desiredPose.forwardPose.getPosition());
+            tcp_target.getMatrix().setTranslation(tcp.getPosition());
+            break;
         case ' ':
             tcp.setGlobalPosition(robot.getActualTCPNode().getPosition()*1000);
             tcp_target.getMatrix().setTranslation(tcp.getPosition());
             break;
         case '!':
-            tcp.setGlobalPosition(robot.getActualTCPNode().getPosition()*1000*ofVec3f(0.5, 0.5, 0.5));
+            tcp.setGlobalPosition(robot.getActualTCPNode().getPosition()*1000+ofVec3f(0, 0, 200));
             tcp_target.getMatrix().setTranslation(tcp.getPosition());
             break;
         case '@':
-            tcp.setGlobalPosition(robot.getActualTCPNode().getPosition()*1000*ofVec3f(1, -1, 1));
+            tcp.setGlobalPosition(robot.getActualTCPNode().getPosition()*1000+ofVec3f(100, 0, 100));
             tcp_target.getMatrix().setTranslation(tcp.getPosition());
             break;
         case '#':
-            tcp.setGlobalPosition(robot.getActualTCPNode().getPosition()*1000*ofVec3f(-1, 1, 1));
+            tcp.setGlobalPosition(ofVec3f(400, 100, 400));
             tcp_target.getMatrix().setTranslation(tcp.getPosition());
             break;
         case '$':
-            tcp.setGlobalPosition(robot.getActualTCPNode().getPosition()*1000*ofVec3f(-1, 1, -1));
+            tcp.setGlobalPosition(ofVec3f(200, 200, 200));
             tcp_target.getMatrix().setTranslation(tcp.getPosition());
             break;
         case '%':
-            tcp.setGlobalPosition(robot.getActualTCPNode().getPosition()*1000*ofVec3f(1, 1, -1));
+            tcp.setGlobalPosition(robot.getActualTCPNode().getPosition()*1000+ofVec3f(100, 0, 0));
             tcp_target.getMatrix().setTranslation(tcp.getPosition());
+            break;
+        case '^':
+            tcp.setGlobalPosition(ofVec3f(600, 300, 600));
+            tcp_target.getMatrix().setTranslation(tcp.getPosition());
+            break;
+        case '&':
+            look_target.getMatrix().setTranslation(0, 0, 1000);
+            break;
+        case '*':
+            look_target.getMatrix().setTranslation(1000, 0, 0);
+            break;
+        case '(':
+            look_target.getMatrix().setTranslation(1000, 1000, 0);
+            break;
+        case ')':
+            look_target.getMatrix().setTranslation(tcp.getPosition()+ofVec3f(10, 0, 0));
             break;
             
     }
@@ -433,7 +489,7 @@ void ofApp::keypressed_gizmo(int key){
 
 //--------------------------------------------------------------
 void ofApp::keyReleased(int key){
-
+    
 }
 
 
@@ -445,7 +501,7 @@ void ofApp::mouseMoved(int x, int y ){
     else{
         cam.enableMouseInput();
     }
-
+    
 }
 
 //--------------------------------------------------------------
@@ -465,18 +521,29 @@ void ofApp::mousePressed(int x, int y, int button){
 
 //--------------------------------------------------------------
 void ofApp::mouseReleased(int x, int y, int button){
-//    if (!cam.getMouseInputEnabled())
-        cam.enableMouseInput();
+    //    if (!cam.getMouseInputEnabled())
+    cam.enableMouseInput();
+    
 }
 
 //--------------------------------------------------------------
 void ofApp::mouseEntered(int x, int y){
-
+    if (disable_camera()){
+        cam.disableMouseInput();
+    }
+    else{
+        cam.enableMouseInput();
+    }
 }
 
 //--------------------------------------------------------------
 void ofApp::mouseExited(int x, int y){
-
+    if (disable_camera()){
+        cam.disableMouseInput();
+    }
+    else{
+        cam.enableMouseInput();
+    }
 }
 
 //--------------------------------------------------------------
@@ -486,10 +553,10 @@ void ofApp::windowResized(int w, int h){
 
 //--------------------------------------------------------------
 void ofApp::gotMessage(ofMessage msg){
-
+    
 }
 
 //--------------------------------------------------------------
 void ofApp::dragEvent(ofDragInfo dragInfo){ 
-
+    
 }

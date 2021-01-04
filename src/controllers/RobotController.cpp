@@ -7,7 +7,7 @@ RobotController::RobotController(){
 }
 
 RobotController::~RobotController(){
-    robot->stopThread();
+   
 }
 
 void RobotController::setup(RobotParameters & params) {
@@ -29,19 +29,24 @@ void RobotController::setup(string ipAddress, RobotParameters & params, bool off
     jointWeights.assign(6, 1.0f);
     smoothedPose.assign(6, 0.0f);
     
-    inverseKinematics = InverseKinematics(params.get_robot_type(), &robotParams);
+    inverseKinematics.setRobotType(params.get_robot_type());
+    inverseKinematics.setupParams(&robotParams);
+    
+    
     
     if(!offline){
         robot->setAllowReconnect(params.bDoReconnect);
         robot->setup(ipAddress,0, 1);
     }
-    smoothness = 0.01;
+    smoothness = 0.1;
     bSmoothPose = true;
     
     ofMatrix4x4 forwardIK = inverseKinematics.forwardKinematics(robot->getCurrentPose());
     ofVec3f translation = forwardIK.getTranslation();
     forwardNode.setGlobalPosition(translation);
     forwardNode.setGlobalOrientation(forwardIK.getRotate());
+    
+    inverseKinematics.setRelaxedPose(getCurrentPose());
 }
 
 
@@ -103,7 +108,6 @@ void RobotController::updateIK(Pose pose){
             tpose = 0.f;
         }
         p = tpose;
-        robotParams.targetPose[i].set(p);
         i++;
     }
 }
@@ -115,31 +119,18 @@ void RobotController::update(){
     tcp_plane.update(target);
     updateIK(desiredPose.getModifiedTCPPose());
     updateMovement();
-    
-    
-    if(targetPose.size() > 0 && smoothedPose.size() > 0){
-        ofLog()<<"------------------"<<endl;
-        ofLog()<<smoothedPose[0]<<" "<<smoothedPose[1]<<" "<<smoothedPose[2]<<" "<<smoothedPose[3]<<" "<<smoothedPose[4]<<" "<<smoothedPose[5]<<endl;
-        ofMatrix4x4 forwardIK = inverseKinematics.forwardKinematics(bSmoothPose?smoothedPose:targetPose);
-        ofNode forwardNode;
-        forwardNode.setGlobalPosition(forwardIK.getTranslation());
-        forwardNode.setGlobalOrientation(forwardIK.getRotate());
-        desiredPose.setPose(bSmoothPose?smoothedPose:targetPose);
-        desiredPose.setForwardPose(forwardNode);
-    }
 }
 void RobotController::update(vector<double> _pose){
     updateRobotData();
     targetPose = _pose;
     updateMovement();
     if(targetPose.size() > 0){
-        ofMatrix4x4 forwardIK = inverseKinematics.forwardKinematics(targetPose);
-        ofVec3f translation = forwardIK.getTranslation();
-        ofNode forwardNode;
-        forwardNode.setGlobalPosition(translation);
-        forwardNode.setGlobalOrientation(forwardIK.getRotate());
+        ofMatrix4x4 forwardIK = inverseKinematics.forwardKinematics(bSmoothPose?smoothedPose:targetPose);
+        ofNode fN;
+        fN.setGlobalPosition(forwardIK.getTranslation());
+        fN.setGlobalOrientation(forwardIK.getRotate());
         desiredPose.setPose(targetPose);
-        desiredPose.setForwardPose(forwardNode);
+        desiredPose.setForwardPose(fN);
     }
 }
 
@@ -158,26 +149,35 @@ void RobotController::safetyCheck(){
 #pragma mark - Movements
 void RobotController::updateMovement(){
     
-    int i = 0;
-    for(auto p : prePose){
-        if(abs(targetPose[i])-p >= TWO_PI || abs(targetPose[i])-p == 0){
-            targetPose[i] = p;
-        }
-    }
-    prePose = targetPose;
+//    int i = 0;
+//    for(auto p : prePose){
+//        if(abs(targetPose[i])-p >= TWO_PI || abs(targetPose[i])-p == 0){
+//            targetPose[i] = p;
+//        }
+//        i++;
+//    }
+//    prePose = targetPose;
     
     if(bSmoothPose){
         int i = 0;
         vector<double> currentPose = getCurrentPose();
         for(auto p : targetPose){
             smoothedPose[i] = ofLerp(smoothedPose[i], p, smoothness);
+            robotParams.targetPose[i].set(ofRadToDeg(smoothedPose[i]));
             i++;
         }
     }
     
+    if(targetPose.size() > 0 && smoothedPose.size() > 0){
+        ofMatrix4x4 forwardIK = inverseKinematics.forwardKinematics(bSmoothPose?smoothedPose:targetPose);
+        ofNode fN;
+        fN.setGlobalPosition(forwardIK.getTranslation());
+        fN.setGlobalOrientation(forwardIK.getRotate());
+        desiredPose.setPose(bSmoothPose?smoothedPose:targetPose);
+        desiredPose.setForwardPose(fN);
+    }
     
     if(robotParams.bMove){
-        
         robot->setPose(bSmoothPose?smoothedPose:targetPose);
         stopPosition = targetPose;
         stopCount = 30;
@@ -213,7 +213,7 @@ void RobotController::updateRobotData(){
     
     robotParams.currentPose = getCurrentPose();
     actualPose.setPose(robotParams.currentPose);
-    inverseKinematics.setRelaxedPose(getCurrentPose());
+
     ofMatrix4x4 forwardIK = inverseKinematics.forwardKinematics(robotParams.currentPose);
     ofVec3f translation = forwardIK.getTranslation();
     forwardNode.setGlobalPosition(translation);

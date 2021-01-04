@@ -6,17 +6,20 @@
 #include "ofxIKArm.h"
 #include "Utils.h"
 #include "RobotParameters.h"
+#include "Solver.h"
 // Copyright (c) 2016, Daniel Moore, Madeline Gannon, and The Frank-Ratchye STUDIO for Creative Inquiry All rights reserved.
 //
 namespace ofxRobotArm {
 
 class InverseKinematics{
 public:
-    InverseKinematics(ofxRobotArm::RobotType type, RobotParameters * params);
     ~InverseKinematics();
     InverseKinematics();
     void setup();
     void setupParams(RobotParameters * params);
+    
+    vector<double> inverseRelaxed(Pose targetPose, Pose currentPose);
+    
     void setRobotType(ofxRobotArm::RobotType type);
     int selectSolution(vector<vector<double> > & inversePosition, vector<double> currentQ, vector<double> weight);
     ofMatrix4x4 forwardKinematics(vector<double> pose);
@@ -51,13 +54,15 @@ public:
     ofParameter< float > ikRobotMinY, ikRobotMaxY;
     ofParameter< float > ikRobotMinZ, ikRobotMaxZ;
     
-    
+    ofParameter< bool > bUseRelaxedIK;
     ofParameter< bool > bControlIkWithMouse;
     ofParameter< bool > bOnlyUseInverseIk;
     
     shared_ptr< ofxIKArm > mIKArm;
     shared_ptr< ofxIKArm > mIKArmInverted;
     vector<vector<double> > preSol;
+    
+    Solver relaxedIK;
 };
 }
 

@@ -63,14 +63,13 @@ typedef std::complex<float> CPX;
 namespace ofxRobotArm{
 class Kinematics {
 public:
-    Kinematics(RobotType type);
     Kinematics();
     ~Kinematics();
     //
     //adapted from https://github.com/Jmeyer1292/opw_kinematics/blob/master/include/opw_kinematics/opw_kinematics_impl.h
     //
     vector<double> solveSphere(ofMatrix4x4 pose);
-
+    void setType(RobotType type);
     void inverseSW(ofMatrix4x4 pose, double * sol);
     void forwardSW(double t1, double t2, double t3, double t4, double t5, double t6, ofMatrix4x4& sol);
     // @param q       The 6 joint values
@@ -89,8 +88,7 @@ public:
     // @return        Number of solutions found (maximum of 8)
     int inverseHK(const double* T, double* q_sols, double q6_des=0.0);
     
-    void setRelaxedPose(vector<double> pose);
-    vector<double> inverseRelaxed(Pose desiredPose, Pose currentPose);
+
     
     void setParams(float _a1, float _a2, float _b, float _c1, float _c2, float _c3, float _c4);
     void setDH(float d1, float a2, float a3, float d4, float d5, float d6);
@@ -122,13 +120,12 @@ public:
         }
         return thetas;
     };
+    
+  
 private:
-    
-    
     RobotType type;
     // Retrive a specific value from a 4x4 matrix
     float get(ofMatrix4x4 mat, int row, int col);
-    
     
     double d1;
     double a2;

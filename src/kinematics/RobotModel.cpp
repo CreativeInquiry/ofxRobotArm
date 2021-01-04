@@ -98,11 +98,13 @@ void RobotModel::setup(RobotType type){
         
         
         pose[0].orientation.makeRotate(0,pose[0].axis);
-        pose[1].orientation.makeRotate(-90,pose[1].axis);
+        pose[1].orientation.makeRotate(0,pose[1].axis);
         pose[2].orientation.makeRotate(0,pose[2].axis);
-        pose[3].orientation.makeRotate(-90,pose[3].axis);
+        pose[3].orientation.makeRotate(0,pose[3].axis);
         pose[4].orientation.makeRotate(0,pose[4].axis);
         pose[5].orientation.makeRotate(0,pose[5].axis);
+        
+
         
         pose[0].rotation = 0;
         pose[1].rotation = 0;
@@ -223,11 +225,11 @@ void RobotModel::setPose(vector<double> pose){
     if(type == RobotType::UR5 || type == RobotType::UR3 || type == RobotType::UR10){
         for(int i = 0; i < pose.size(); i++){
             if(i == 1 || i == 3){
-                this->pose[i].orientation.makeRotate(ofRadToDeg(pose[i])+90,this->pose[i].axis);
                 this->pose[i].rotation = ofRadToDeg(pose[i])+90;
+                this->pose[i].orientation.makeRotate(this->pose[i].rotation,this->pose[i].axis);
             }else{
-                this->pose[i].orientation.makeRotate(ofRadToDeg(pose[i]),this->pose[i].axis);
                 this->pose[i].rotation = ofRadToDeg(pose[i]);
+                this->pose[i].orientation.makeRotate(this->pose[i].rotation,this->pose[i].axis);
             }
             nodes[i].setOrientation(this->pose[i].orientation);
         }
@@ -309,16 +311,16 @@ void RobotModel::drawSkeleton() {
             }
             
             if (i == 5) {
-                ofSetColor(colorOne);
+                ofSetColor(colorOne, 100);
                 toolNode.draw();
                 
-                ofSetColor(colorOne);
+                ofSetColor(colorOne, 100);
                 tcpNode.draw();
                 ofVec3f tcp = tcpNode.getGlobalPosition();
                 ofVec3f endJoint = nodes[i].getGlobalPosition();
                 p = tcp - endJoint;
                 dist = p.length();
-                ofSetColor(colorOne);
+                ofSetColor(colorOne, 100);
                 ofDrawLine(endJoint, tcp);
                 ofDrawBitmapString("TCP Desired Pose", tcp+ ofVec3f(0, 0, 20));
                 ofDrawBitmapString("dist: " + ofToString(dist), endJoint+ p.normalize()*dist/2 + ofVec3f(0, 0, -40));
@@ -327,14 +329,14 @@ void RobotModel::drawSkeleton() {
                 ofVec3f fwp = forwardPose.getGlobalPosition();
                 p = fwp - endJoint;
                 dist = p.length();
-                ofSetColor(colorTwo);
+                ofSetColor(colorTwo, 100);
                 forwardPose.draw();
                 if(fwp.distance(tcp) > 20){
-                    ofSetColor(colorTwo);
+                    ofSetColor(colorTwo, 100);
                     ofDrawLine(endJoint, fwp);
                     ofDrawBitmapString("Forward Pose", fwp + ofVec3f(0, 0, 20));
                     ofDrawBitmapString("dist: " + ofToString(dist), endJoint+p.normalize()*dist/2 + ofVec3f(0, 0, -40));
-                    ofDrawBitmapString("pos:  " +ofToString(tcp), fwp + ofVec3f(0, 0, 80));
+                    ofDrawBitmapString("pos:  " + ofToString(fwp), fwp + ofVec3f(0, 0, 80));
                 }
             }
             i++;
@@ -381,7 +383,7 @@ void RobotModel::drawMesh(ofFloatColor color, bool bDrawDebug){
                                 ofRotateDeg(-180, 0, 0, 1);
                                 ofRotateDeg(-180, 1, 0, 0);
                                 ofScale(100, 100, 100);
-                                ofSetColor(face);
+                                ofSetColor(color);
                                 meshes[i].draw();
                                 ofSetColor(wireframe, 100);
                                 meshes[i].drawWireframe();
@@ -395,7 +397,7 @@ void RobotModel::drawMesh(ofFloatColor color, bool bDrawDebug){
                                 ofRotateDeg(-180, 0, 0, 1);
                                 ofRotateDeg(-180, 1, 0, 0);
                                 ofScale(100, 100, 100);
-                                ofSetColor(face);
+                                ofSetColor(color);
                                 meshes[i].draw();
                                 ofSetColor(wireframe, 100);
                                 meshes[i].drawWireframe();
@@ -528,12 +530,6 @@ void RobotModel::draw(ofFloatColor color, bool bDrawDebug){
                 }
                 ofPopStyle();
             }
-            
-            ofPushMatrix();
-            {
-                drawSkeleton();
-            }
-            ofPopMatrix();
             
         }
         ofPopStyle();

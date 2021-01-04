@@ -8,8 +8,6 @@
 #pragma once
 #include "ofMain.h"
 
-std::vector<double> solveIK(std::vector<double> pos, std::vector<double> quat);
-
 #ifdef __cplusplus
 extern "C" {
 #endif

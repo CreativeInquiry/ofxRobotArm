@@ -4,18 +4,13 @@
 using namespace ofxRobotArm;
 
 
-InverseKinematics::InverseKinematics(ofxRobotArm::RobotType type, RobotParameters * params){
-    setRobotType(type);
-    setupParams(params);
 
-}
 InverseKinematics::InverseKinematics(){
-    setRobotType(IRB120);
-    setupParams(new RobotParameters());
+
 }
 
 InverseKinematics::~InverseKinematics(){
-    
+
 }
 
 void InverseKinematics::setupParams(RobotParameters * params){
@@ -30,18 +25,17 @@ void InverseKinematics::setupParams(RobotParameters * params){
     this->params.add( ikRobotMinZ.set( "IkRobotMinZ", 300, -500, 3000 ));
     this->params.add( ikRobotMaxZ.set( "IkRobotMaxZ", 700, -500, 3000 ));
     
-    
-    
     this->params.add( mIKRampStartPct.set("IKRampStartPct", 0.3, 0.0, 1.0 ));
     this->params.add( mIKRampEndPct.set("IKRampEndPct", 1.5, 1.0, 2.0 ));
     this->params.add( mIKRampHeightPct.set("IKRampHeightPct", 0.3, 0.0, 1.0 ));
+    this->params.add( bUseRelaxedIK.set("Use RelaxedIK ", true));
     robotParams->jointsIK.add(this->params);
 }
 
 
 void InverseKinematics::setRobotType(ofxRobotArm::RobotType type){
     this->type = type;
-    kinematics = Kinematics(type);
+    kinematics.setType(this->type);
 }
 /// \brief Converts a 4x4 matrix to a 1D array
 /// \param input ofMatrix4x4 to convert
@@ -84,65 +78,65 @@ int argMin(std::vector<double> vec)
 
 int InverseKinematics::selectSolution(vector<vector<double> > & inversePosition, vector<double> currentQ, vector<double> weight)
 {
-    int selectedSolution = 0;
-    if(type == ofxRobotArm::UR3 || type == ofxRobotArm::UR5 || type == ofxRobotArm::UR10){
-        for(int i = 0; i < inversePosition.size(); i++){
-            for(int j = 0; j < inversePosition[i].size(); j++){
-                if(j == 1 || j == 3){
-                    if(inversePosition[i][j] > PI){
-                        inversePosition[i][j]  = ofMap(inversePosition[i][j], PI, TWO_PI, -PI, 0, true);
-                    }
-                }
-            }
-        }
-    }
-
-    for(int i = 0; i < inversePosition.size(); i++){
-        for(int j = 0; j < inversePosition[i].size(); j++){
-            if(preInversePosition.size() > 0){
-                if(i == selectedSolution){
-                    if(preInversePosition[i][j]-inversePosition[i][j] >= TWO_PI){
-                        ofLog(OF_LOG_WARNING)<<"JOINT WRAPS SOL "<<ofToString(i)<<" Joint "<<ofToString(j)<<endl;
-                    }
-                }
-            }
-        }
-    }
-
-    vector<double> test_sol;
-    vector<vector<double> > valid_sols;
-    test_sol.assign(6, 9999.);
-    vector<double> addAngle = {-1*TWO_PI, 0, TWO_PI};
-    for(int i = 0; i < inversePosition.size(); i++){
-        for(int j = 0; j < inversePosition[i].size(); j++){
-            for(int k = 0; k < addAngle.size(); k++){
-                float test_ang = inversePosition[i][j]+addAngle[k];
-                if(fabs(test_ang - currentQ[j])  < fabs(test_sol[j] -  currentQ[j]) && abs(test_ang) <= TWO_PI){
-                    test_sol[j] = test_ang;
-                }
-            }
-        }
-        bool testValid = false;
-        for(int l = 0; l < test_sol.size(); l++){
-            if(test_sol[l] != 9999){
-                testValid = true;
-            }else{
-                testValid = false;
-            }
-        }
-        if(testValid){
-            valid_sols.push_back(test_sol);
-
-        }
-    }
-
-    vector<double> sumsValid;
-    sumsValid.assign(valid_sols.size(), 0);
-    for(int i = 0; i < valid_sols.size(); i++){
-        for(int j = 0; j < valid_sols[i].size(); j++){
-            sumsValid[i] = pow(weight[j]*(valid_sols[i][j] - currentQ[j]), 2);
-        }
-    }
+//    int selectedSolution = 0;
+//    if(type == ofxRobotArm::UR3 || type == ofxRobotArm::UR5 || type == ofxRobotArm::UR10){
+//        for(int i = 0; i < inversePosition.size(); i++){
+//            for(int j = 0; j < inversePosition[i].size(); j++){
+////                if(j == 1 || j == 3){
+////                    if(inversePosition[i][j] > PI){
+////                        inversePosition[i][j]  = ofMap(inversePosition[i][j], PI, TWO_PI, -PI, 0, true);
+////                    }
+////                }
+//            }
+//        }
+//    }
+//
+//    for(int i = 0; i < inversePosition.size(); i++){
+//        for(int j = 0; j < inversePosition[i].size(); j++){
+//            if(preInversePosition.size() > 0){
+//                if(i == selectedSolution){
+//                    if(preInversePosition[i][j]-inversePosition[i][j] >= TWO_PI){
+//                        ofLog(OF_LOG_WARNING)<<"JOINT WRAPS SOL "<<ofToString(i)<<" Joint "<<ofToString(j)<<endl;
+//                    }
+//                }
+//            }
+//        }
+//    }
+//
+//    vector<double> test_sol;
+//    vector<vector<double> > valid_sols;
+//    test_sol.assign(6, 9999.);
+//    vector<double> addAngle = {-1*TWO_PI, 0, TWO_PI};
+//    for(int i = 0; i < inversePosition.size(); i++){
+//        for(int j = 0; j < inversePosition[i].size(); j++){
+//            for(int k = 0; k < addAngle.size(); k++){
+//                float test_ang = inversePosition[i][j]+addAngle[k];
+//                if(fabs(test_ang - currentQ[j])  < fabs(test_sol[j] -  currentQ[j]) && abs(test_ang) <= TWO_PI){
+//                    test_sol[j] = test_ang;
+//                }
+//            }
+//        }
+//        bool testValid = false;
+//        for(int l = 0; l < test_sol.size(); l++){
+//            if(test_sol[l] != 9999){
+//                testValid = true;
+//            }else{
+//                testValid = false;
+//            }
+//        }
+//        if(testValid){
+//            valid_sols.push_back(test_sol);
+//
+//        }
+//    }
+//
+//    vector<double> sumsValid;
+//    sumsValid.assign(valid_sols.size(), 0);
+//    for(int i = 0; i < valid_sols.size(); i++){
+//        for(int j = 0; j < valid_sols[i].size(); j++){
+//            sumsValid[i] = pow(weight[j]*(valid_sols[i][j] - currentQ[j]), 2);
+//        }
+//    }
     
     preInversePosition = inversePosition;
     
@@ -186,20 +180,33 @@ vector<vector<double> > InverseKinematics::inverseKinematics(vector<double> inpu
 }
 
 vector<vector<double> > InverseKinematics::inverseKinematics(ofxRobotArm::Pose targetPose, ofxRobotArm::Pose currentPose){
-    ofMatrix4x4 matPose;
-    ofMatrix4x4 matT;
-    ofMatrix4x4 matR;
-    matPose.makeIdentityMatrix();
-    matT.makeTranslationMatrix(targetPose.position);
-    matR.makeRotationMatrix(targetPose.orientation);
-    matPose = matT*matR;
     
-    return inverseKinematics(matPose);
+    if(bUseRelaxedIK){
+        vector<double> sol = inverseRelaxed(targetPose, currentPose);
+        vector<vector<double> > sols;
+        sols.push_back(sol);
+        return sols;
+    }else{
     
-//    vector<double> sol = kinematics.inverseRelaxed(targetPose, currentPose);
-//    vector<vector<double> > sols;
-//    sols.push_back(sol);
-//    return sols;
+        ofMatrix4x4 matPose;
+        ofMatrix4x4 matT;
+        ofMatrix4x4 matR;
+        matPose.makeIdentityMatrix();
+        matT.makeTranslationMatrix(targetPose.position);
+        matR.makeRotationMatrix(targetPose.orientation);
+        matPose = matR*matT;
+        
+        return inverseKinematics(matPose);
+    }
+}
+
+
+vector<double> InverseKinematics::inverseRelaxed(Pose targetPose, Pose currentPose){
+    if(!relaxedIK.isThreadRunning()){
+        relaxedIK.start();
+    }
+    relaxedIK.setPose(targetPose, currentPose);
+    return relaxedIK.getCurrentPose();
 }
 
 vector<vector<double> > InverseKinematics::inverseKinematics(ofMatrix4x4 pose)
@@ -251,9 +258,6 @@ vector<vector<double> > InverseKinematics::inverseKinematics(ofMatrix4x4 pose)
 
 ofMatrix4x4 InverseKinematics::forwardKinematics(vector<double> pose)
 {
-    
-    ofLog()<<"++++++++++++++++++"<<endl;
-    ofLog()<<pose[0]<<" "<<pose[1]<<" "<<pose[2]<<" "<<pose[3]<<" "<<pose[4]<<" "<<pose[5]<<endl;
     if(type == UR3 || type == UR5 || type == UR10){
         return toOF(forwardKinematics(pose[0], pose[1], pose[2], pose[3], pose[4], pose[5]));
     }
@@ -266,7 +270,7 @@ ofMatrix4x4 InverseKinematics::forwardKinematics(vector<double> pose)
 
 
 void InverseKinematics::setRelaxedPose(vector<double> pose){
-    kinematics.setRelaxedPose(pose);
+    relaxedIK.setInitialPose(pose);
 }
 
 

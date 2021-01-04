@@ -15,13 +15,39 @@ URDriver::URDriver(){
     bStarted    =false;
 
     vector<double> foo;
-    foo.assign(6, -PI/2.0);
+    foo.assign(6, 0);
+    foo[0] = 3.14;
+    foo[1] = -0.38;
+    foo[2] = -1.2;
+    foo[3] = -1.57;
+    foo[4] = -1.57;
+    foo[5] = -1.57;
+    
     jointsRaw.setup(foo);
     toolPointRaw.setup(foo);
     jointsProcessed.setup(foo);
-    jointsRaw.getBack().assign(6, -PI/2.0);
-    jointsProcessed.getBack().assign(6, -PI/2.0);
-    toolPointRaw.getBack().assign(6, -PI/2.0);
+    jointsRaw.getBack().assign(6, 0);
+    jointsRaw.getBack()[0] = 3.14;
+    jointsRaw.getBack()[1] = -0.38;
+    jointsRaw.getBack()[2] = -1.2;
+    jointsRaw.getBack()[3] = -1.57;
+    jointsRaw.getBack()[4] = -1.57;
+    jointsRaw.getBack()[5] = -1.57;
+    jointsProcessed.getBack().assign(6, 0);
+    jointsProcessed.getBack()[0] = 3.14;
+    jointsProcessed.getBack()[1] = -0.38;
+    jointsProcessed.getBack()[2] = -1.2;
+    jointsProcessed.getBack()[3] = -1.57;
+    jointsProcessed.getBack()[4] = -1.57;
+    jointsProcessed.getBack()[5] = -1.57;
+    toolPointRaw.getBack().assign(6, 0);
+    toolPointRaw.getBack()[0] = 3.14;
+    toolPointRaw.getBack()[1] = -0.38;
+    toolPointRaw.getBack()[2] = -1.2;
+    toolPointRaw.getBack()[3] = -1.57;
+    toolPointRaw.getBack()[4] = -1.57;
+    toolPointRaw.getBack()[5] = -1.57;
+    
     numDeccelSteps = 120;
 }
 
@@ -31,6 +57,8 @@ URDriver::~URDriver(){
         delete robot;
         robot = NULL;
     }
+    stopThread();
+    waitForThread(false);
 }
 
 void URDriver::stopThread(){

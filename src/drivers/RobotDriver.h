@@ -10,7 +10,6 @@
 #include "ofxTiming.h"
 #include "Pose.h"
 #include "Synchronized.h"
-#include "ofMain.h"
 namespace ofxRobotArm{
 class RobotDriver : public ofThread{
 public:
