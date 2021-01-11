@@ -17,36 +17,38 @@ URDriver::URDriver(){
     vector<double> foo;
     foo.assign(6, 0);
     foo[0] = 3.14;
-    foo[1] = -0.38;
-    foo[2] = -1.2;
-    foo[3] = -1.57;
-    foo[4] = -1.57;
-    foo[5] = -1.57;
+    foo[1] = -0.3987385;
+    foo[2] = -2.07729916;
+    foo[3] = -1.03981438;
+    foo[4] = -1.58652782;
+    foo[5] = -1.5710159;
+    
+//    3.12769839, -0.3987385, -2.07729916, -1.03981438, -1.58652782, -1.5710159
     
     jointsRaw.setup(foo);
     toolPointRaw.setup(foo);
     jointsProcessed.setup(foo);
     jointsRaw.getBack().assign(6, 0);
-    jointsRaw.getBack()[0] = 3.14;
-    jointsRaw.getBack()[1] = -0.38;
-    jointsRaw.getBack()[2] = -1.2;
-    jointsRaw.getBack()[3] = -1.57;
-    jointsRaw.getBack()[4] = -1.57;
-    jointsRaw.getBack()[5] = -1.57;
+    jointsRaw.getBack()[0] = foo[0];
+    jointsRaw.getBack()[1] = foo[1];
+    jointsRaw.getBack()[2] = foo[2];
+    jointsRaw.getBack()[3] = foo[3];
+    jointsRaw.getBack()[4] = foo[4];
+    jointsRaw.getBack()[5] = foo[5];
     jointsProcessed.getBack().assign(6, 0);
-    jointsProcessed.getBack()[0] = 3.14;
-    jointsProcessed.getBack()[1] = -0.38;
-    jointsProcessed.getBack()[2] = -1.2;
-    jointsProcessed.getBack()[3] = -1.57;
-    jointsProcessed.getBack()[4] = -1.57;
-    jointsProcessed.getBack()[5] = -1.57;
+    jointsProcessed.getBack()[0] = foo[0];
+    jointsProcessed.getBack()[1] = foo[1];
+    jointsProcessed.getBack()[2] = foo[2];
+    jointsProcessed.getBack()[3] = foo[3];
+    jointsProcessed.getBack()[4] = foo[4];
+    jointsProcessed.getBack()[5] = foo[5];
     toolPointRaw.getBack().assign(6, 0);
-    toolPointRaw.getBack()[0] = 3.14;
-    toolPointRaw.getBack()[1] = -0.38;
-    toolPointRaw.getBack()[2] = -1.2;
-    toolPointRaw.getBack()[3] = -1.57;
-    toolPointRaw.getBack()[4] = -1.57;
-    toolPointRaw.getBack()[5] = -1.57;
+    toolPointRaw.getBack()[0] = foo[0];
+    toolPointRaw.getBack()[1] = foo[1];
+    toolPointRaw.getBack()[2] = foo[2];
+    toolPointRaw.getBack()[3] = foo[3];
+    toolPointRaw.getBack()[4] = foo[4];
+    toolPointRaw.getBack()[5] = foo[5];
     
     numDeccelSteps = 120;
 }

@@ -17,15 +17,46 @@ ABBDriver::ABBDriver(){
     thread_group = NULL;
     bStarted    =false;
 
+    
+//    -0.25, 0.25, 0.13, 2.5, 0.45, -2.59
     vector<double> foo;
-    foo.assign(6, 0.0);
+    foo.assign(6, 0.0001);
+//    foo[0] = -0.25;
+//    foo[1] = 0.25;
+//    foo[2] = 0.13;
+//    foo[3] = 2.5;
+//    foo[4] = 0.45;
+//    foo[5] = 2.59;
+    
     poseRaw.setup(foo);
     toolPoseRaw.setup(foo);
     poseProcessed.setup(foo);
-    poseRaw.getBack().assign(6, 0.0);
-    poseProcessed.getBack().assign(6, 0.0);
-    toolPoseRaw.getBack().assign(6, 0.0);
+    poseRaw.getBack().assign(6, 0.0001);
+//    poseRaw.getBack()[0] = -0.25;
+//    poseRaw.getBack()[1] = 0.25;
+//    poseRaw.getBack()[2] = 0.13;
+//    poseRaw.getBack()[3] = 2.5;
+//    poseRaw.getBack()[4] = 0.45;
+//    poseRaw.getBack()[5] = 2.59;
+    poseProcessed.getBack().assign(6, 0.0000001);
+//    poseProcessed.getBack()[0] = -0.25;
+//    poseProcessed.getBack()[1] = 0.25;
+//    poseProcessed.getBack()[2] = 0.13;
+//    poseProcessed.getBack()[3] = 2.5;
+//    poseProcessed.getBack()[4] = 0.45;
+//    poseProcessed.getBack()[5] = 2.59;
+    toolPoseRaw.getBack().assign(6, 0.0000001);
+//    toolPoseRaw.getBack()[0] = -0.25;
+//    toolPoseRaw.getBack()[1] = 0.25;
+//    toolPoseRaw.getBack()[2] = 0.13;
+//    toolPoseRaw.getBack()[3] = 2.5;
+//    toolPoseRaw.getBack()[4] = 0.45;
+//    toolPoseRaw.getBack()[5] = 2.59;
+    
     numDeccelSteps = 120;
+    
+    
+    
 
 }
 

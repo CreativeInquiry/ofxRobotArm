@@ -6,7 +6,7 @@ void ofApp::setup(){
     ofSetFrameRate(120);
     // setup scene
     setup_scene();
-    robotParams.setup(RobotType::UR5);
+    robotParams.setup(RobotType::IRB120);
     // setup robot
     robot.setup(robotParams);    // change IP string to your robot's IP address
     
@@ -28,11 +28,12 @@ void ofApp::setup(){
     //    lookAtNode.setParent(tcp);
     //    look_target.setNode(lookAtNode);
     //
-    offset.set(0, 0, 0);
+
     robot.setToolOffset(offset);
     
     tcp = robot.getActualTCPNode();
     tcp.setPosition(tcp.getPosition()*1000);
+    tcp.setOrientation(ofQuaternion(0, 1, 0, 1));
     tcp_target.setNode(tcp);
     
     //    lookAtNode.setPosition(-510, -510, 500);
@@ -63,27 +64,31 @@ void ofApp::update(){
     
     
     robot.inverseKinematics.relaxedIK.setAngle(angleX, angleY, angleZ);
-    
+
     ofVec3f u = ofVec3f(ux, uy, uz);
     ofVec3f v = ofVec3f(vx, vy, vz);
     ofVec3f w = ofVec3f(wx, wy, wz);
     robot.inverseKinematics.relaxedIK.setMatrix(u, v, w);
-    
-    
-    ofVec3f p = tcp_target.getTranslation();
-    ofVec3f p2 = look_target.getTranslation();
-    
+
+//
+//    ofVec3f p = tcp_target.getTranslation();
+//    ofVec3f p2 = look_target.getTranslation();
+//
 //    ofMatrix4x4 mat, matR, matRR, matRRR;
-//    mat.makeLookAtMatrix(p2, p, ofVec3f(0, 1, 0));
-//    matR.makeRotationMatrix(90, ofVec3f(1, 0, 0));
+//    mat.makeLookAtMatrix(p2, p, ofVec3f(0, 0, 1));
+////    mat = mat.getInverse();
+////    matR.makeRotationMatrix(90, ofVec3f(1, 0, 0));
 ////    matRRR.makeRotationMatrix(90, ofVec3f(0, 0, 1));
-//    mat = mat*matR*matRRR;
+////    mat = mat*matR*matRRR;
 
     tcp.setPosition(tcp_target.getTranslation());
     tcp.setOrientation(tcp_target.getRotation());
-    
+
+    robot.setToolOffset(offset);
     robot.setDesired(tcp);
     robot.update();
+//    vector<double> zero(6, 0.0);
+//    robot.update(zero);
     
 }
 
@@ -118,16 +123,11 @@ void ofApp::draw_scene(){
     ofDrawAxis(1500);
     ofDrawGrid(100, 10, false, false, false, true);
     // Draw Real Robot
-    robot.draw(ofColor::red);
+//    robot.draw(ofColor::red);
     // Draw Desired Robot
     robot.drawDesired(ofColor::whiteSmoke);
+
     
-    if(ofGetKeyPressed('l')){
-        robot.desiredPose.drawSkeleton();
-    }
-    if(ofGetKeyPressed('k')){
-        robot.actualPose.drawSkeleton();
-    }
     
     tcp_target.draw(cam);
     look_target.draw(cam);
@@ -162,18 +162,16 @@ void ofApp::setup_gui(){
     params.add(show_side.set("SIDE", false));
     params.add(show_perspective.set("PERSP", false));
     
-    params.add(angleX.set("X", 0, -360, 360));
-    params.add(angleY.set("Y", 0, -360, 360));
-    params.add(angleZ.set("Z", 0, -360, 360));
-    params.add(ux.set("UX", 0, -1, 1));
+    params.add(offset.set("offset", ofVec3f(0, 0, 0), ofVec3f(-100, -100, -100), ofVec3f(100, 100, 100)));
+    params.add(ux.set("UX", 1, -1, 1));
     params.add(uy.set("UY", 0, -1, 1));
-    params.add(uz.set("UZ", 1, -1, 1));
+    params.add(uz.set("UZ", 0, -1, 1));
     params.add(vx.set("VX", 0, -1, 1));
-    params.add(vy.set("VY", -1, -1, 1));
+    params.add(vy.set("VY", 1, -1, 1));
     params.add(vz.set("VZ", 0, -1, 1));
-    params.add(wx.set("WX", 1, -1, 1));
+    params.add(wx.set("WX", 0, -1, 1));
     params.add(wy.set("WY", 0, -1, 1));
-    params.add(wz.set("WZ", 0, -1, 1));
+    params.add(wz.set("WZ", 1, -1, 1));
     
     show_top.addListener(this, &ofApp::listener_show_top);
     show_front.addListener(this, &ofApp::listener_show_front);
@@ -355,24 +353,26 @@ void ofApp::keypressed_robot(int key){
             robot_live = !robot_live;
             break;
         case OF_KEY_LEFT:
-            angleY+=1;
+            offset+=ofVec3f(0, 1, 0);
+            robot.setToolOffset(offset);
             break;
         case OF_KEY_RIGHT:
-            angleX+=1;
-
+            offset-=ofVec3f(0, 1, 0);
+            robot.setToolOffset(offset);
             break;
         case OF_KEY_UP:
-            angleX-=1;
-
+            offset+=ofVec3f(1, 0, 0);
+            robot.setToolOffset(offset);
             break;
         case OF_KEY_DOWN:
-            angleY-=1;
+            offset-=ofVec3f(1, 0, 0);
+            robot.setToolOffset(offset);
             break;
         case '-':
-            angleZ-=1;
+            
             break;
         case '=':
-            angleZ+=1;
+
             break;
     }
 }

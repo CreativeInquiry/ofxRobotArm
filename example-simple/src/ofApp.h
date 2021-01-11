@@ -68,7 +68,7 @@ public:
     
     ofxPanel panel_robot;
     ofParameter<bool> robot_live;
+    ofParameter<ofVec3f> offset;
     void draw_live_robot_warning();
     float minY, maxY;
-    ofVec3f offset;
 };

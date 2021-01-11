@@ -149,21 +149,12 @@ void RobotController::safetyCheck(){
 #pragma mark - Movements
 void RobotController::updateMovement(){
     
-//    int i = 0;
-//    for(auto p : prePose){
-//        if(abs(targetPose[i])-p >= TWO_PI || abs(targetPose[i])-p == 0){
-//            targetPose[i] = p;
-//        }
-//        i++;
-//    }
-//    prePose = targetPose;
-    
     if(bSmoothPose){
         int i = 0;
         vector<double> currentPose = getCurrentPose();
         for(auto p : targetPose){
             smoothedPose[i] = ofLerp(smoothedPose[i], p, smoothness);
-            robotParams.targetPose[i].set(ofRadToDeg(smoothedPose[i]));
+            robotParams.targetPose[i].set((smoothedPose[i]));
             i++;
         }
     }
@@ -258,6 +249,7 @@ void RobotController::drawIK(){
 void RobotController::drawDesired(ofFloatColor color){
     desiredPose.drawMesh(color, false);
     desiredPose.draw(color, false);
+    desiredPose.drawSkeleton();
     tcp_plane.draw();
     
     ofPushStyle();
@@ -275,6 +267,8 @@ void RobotController::drawDesired(ofFloatColor color){
         ofDrawLine(desiredPose.tcpNode.getPosition(), actualPose.forwardPose.getPosition());
     }
     ofPopStyle();
+    
+
 }
 
 

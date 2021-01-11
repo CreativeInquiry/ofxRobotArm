@@ -82,8 +82,10 @@ void Solver::threadedFunction(){
         RZ.makeRotationMatrix(angleZ, ofVec3f(0, 0, 1));
         R *= RX*RY*RZ;
         
-        ofVec3f difPos = (desiredPose.position - actualPose.position)*R;
-
+        ofVec3f difPos = (desiredPose.position - actualPose.position) * R;
+        
+    
+    
         ofQuaternion rot  = (desiredPose.orientation * actualPose.orientation);
    
         std::vector<double> pos(3, 0.0);
@@ -105,6 +107,8 @@ void Solver::threadedFunction(){
             frameNum = 0;
         currentPose.swapBack();
         unlock();
+        
+        ofSleepMillis(1);
     }
 }
 

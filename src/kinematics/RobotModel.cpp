@@ -156,7 +156,7 @@ void RobotModel::setup(RobotType type){
     }
     
     
-    tool.position.set(pose[5].position + ofVec3f(0.0,0.0,0.0)); // flange position
+    tool.position.set(pose[5].position + ofVec3f(0.0,-0.0308,0.0)); // flange position
     
     for(int i = 1; i <pose.size(); i++){
         pose[i].offset =pose[i].position-pose[i-1].position;
@@ -180,7 +180,7 @@ void RobotModel::setup(RobotType type){
     }
     // Set Tool Rotations
     toolNode.setParent(nodes[5]);
-    toolNode.setPosition(ofVec3f(0, 0, 0));
+    toolNode.setPosition(tool.position);
     toolNode.setOrientation(nodes[5].getGlobalOrientation());
     
     
