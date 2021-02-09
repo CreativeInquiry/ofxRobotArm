@@ -211,12 +211,12 @@ vector<double> InverseKinematics::inverseRelaxed(Pose targetPose, Pose currentPo
 
 vector<vector<double> > InverseKinematics::inverseKinematics(ofMatrix4x4 pose)
 {
+    double q_sols[8*6];
+    vector<vector<double> > sols;
     if(type == UR3 || type == UR5 || type == UR10){
-        double q_sols[8*6];
         double* T = new double[16];
         T = toIK(pose);
         int num_sols = kinematics.inverseHK(T, q_sols);
-        vector<vector<double> > sols;
         for(int i=0;i<num_sols;i++){
             vector<double> fooSol;
             fooSol.push_back(q_sols[i*6]);
@@ -230,14 +230,9 @@ vector<vector<double> > InverseKinematics::inverseKinematics(ofMatrix4x4 pose)
                 sols.push_back(fooSol);
             }
         }
-        return sols;
     }
     if(type == IRB120){
-        double q_sols[8*6];
-//        double* T = new double[16];
-//        T = toIK(pose);
         kinematics.inverseSW(pose, q_sols);
-        vector<vector<double> > sols;
         for(int i=0;i<8;i++){
             vector<double> fooSol;
             fooSol.push_back(q_sols[i*6]);
@@ -251,8 +246,8 @@ vector<vector<double> > InverseKinematics::inverseKinematics(ofMatrix4x4 pose)
                 sols.push_back(fooSol);
             }
         }
-        return sols;
     }
+    return sols;
 }
 
 
@@ -266,6 +261,7 @@ ofMatrix4x4 InverseKinematics::forwardKinematics(vector<double> pose)
         kinematics.forwardSW(pose[0], pose[1], pose[2], pose[3], pose[4], pose[5], mat);        
         return mat;
     }
+    return ofMatrix4x4();
 }
 
 

@@ -20,23 +20,23 @@ namespace ofxRobotArm{
             LR
         };
         
-        virtual void setup(RobotParameters * parameters){};
-        virtual void update(Pose _currentTCP){};
-        virtual void update(){};
-        virtual void draw(){};
-        virtual void draw(bool showNormals){};
-        virtual void keyPressed(int key){};
-        virtual vector<Path *> getPaths(){};
+        virtual void setup(RobotParameters * parameters)=0;
+        virtual void update(Pose _currentTCP)=0;
+        virtual void update()=0;
+        virtual void draw()=0;
+        virtual void draw(bool showNormals)=0;
+        virtual void keyPressed(int key)=0;
+        virtual vector<Path *> getPaths() = 0;
         
-        virtual void transform(ofVec3f pos){};
-        virtual void transform(ofMatrix4x4 m44){};
+        virtual void transform(ofVec3f pos)=0;
+        virtual void transform(ofMatrix4x4 m44)=0;
         
-        virtual Pose getTargetPoint(float t){};
-        virtual void addPoint(ofVec3f pt){};
-        virtual void addStroke(ofPolyline stroke){};
-        virtual void setCorners(vector<ofPoint> pts){};
-        virtual void setCorner(CORNER i, ofPoint pt){};
-        virtual void addStrokes(vector<ofPolyline> strokes, float retractDist = 1){};
+        virtual Pose getTargetPoint(float t)=0;
+        virtual void addPoint(ofVec3f pt)=0;
+        virtual void addStroke(ofPolyline stroke)=0;
+        virtual void setCorners(vector<ofPoint> pts)=0;
+        virtual void setCorner(CORNER i, ofPoint pt)=0;
+        virtual void addStrokes(vector<ofPolyline> strokes, float retractDist = 1)=0;
         ofParameterGroup workSurfaceParams;
         
         vector<Path> paths;

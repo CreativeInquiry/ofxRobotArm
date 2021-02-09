@@ -171,6 +171,7 @@ linux64:
 	# linux only, any library that should be included in the project using
 	# pkg-config
 	# ADDON_PKG_CONFIG_LIBRARIES =
+	ADDON_LDFLAGS += -lrelaxed_ik_lib -lboost_thread -lboost_regex 
 vs:
 	# After compiling copy the following dynamic libraries to the executable directory
 	# only windows visual studio
@@ -185,6 +186,6 @@ osx:
 	# ADDON_FRAMEWORKS =
 	ADDON_LIBS += ../../../libs/boost/lib/osx/libboost_thread.a 
 	ADDON_LIBS += ../../../libs/boost/lib/osx/libboost_regex.a 
+
 ios:
 tvos:
-

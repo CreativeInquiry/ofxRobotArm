@@ -35,5 +35,5 @@ void ToolHead::setTool(Tool t){
     
 }
 Tool ToolHead::getCurrentTool(){
-    
+    return currentTool;
 }
