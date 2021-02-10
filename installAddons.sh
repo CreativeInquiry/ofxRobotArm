@@ -7,8 +7,8 @@ cd ../../addons
 
 PREFIX="git clone http://github.com/"
 ${PREFIX}CreativeInquiry/ofxTiming
-${PREFIX}Creativeinquiry/ofxprotobuf
-${PREFIX}kylemcdonald/ofxCV
+${PREFIX}Creativeinquiry/ofxProtobuf
+${PREFIX}kylemcdonald/ofxCv
 ${PREFIX}CreativeInquiry/ofxNatNet
 ${PREFIX}NickHardeman/ofxGizmo
 ${PREFIX}CreativeInquiry/ofxTimeline
