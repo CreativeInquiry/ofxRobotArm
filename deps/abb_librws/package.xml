@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>abb_librws</name>
+  <version>1.2.0</version>
+  <description>Package for easing the use of ABB's Robot Web Services (RWS) feature</description>
+  <maintainer email="jon.tjerngren@se.abb.com">Jon Tjerngren</maintainer>
+  <license>BSD 3-Clause</license>
+  <url type="repository">https://github.com/ros-industrial/abb_librws</url>
+  <author>Jon Tjerngren</author>
+
+  <buildtool_depend>cmake</buildtool_depend>
+
+  <depend version_gte="1.4.3">libpoco-dev</depend>
+
+  <export>
+    <build_type>cmake</build_type>
+  </export>
+</package>

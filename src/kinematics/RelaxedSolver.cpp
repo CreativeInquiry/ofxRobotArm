@@ -100,6 +100,8 @@ void RelaxedSolver::threadedFunction(){
             frameNum = 0;
         currentPose.swapBack();
         
+        usleep(1);
+
         unlock();
     }
 }
