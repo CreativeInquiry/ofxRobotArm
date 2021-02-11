@@ -63,6 +63,18 @@ URDriver::~URDriver(){
     waitForThread(false);
 }
 
+vector<double> URDriver::getInitPose(){
+    vector<double> foo;
+    foo.assign(6, 0);
+    foo[0] = 3.14;
+    foo[1] = -0.3987385;
+    foo[2] = -2.07729916;
+    foo[3] = -1.03981438;
+    foo[4] = -1.58652782;
+    foo[5] = -1.5710159;
+    return foo;
+}
+
 void URDriver::stopThread(){
     if(isConnected()){
         disconnect();

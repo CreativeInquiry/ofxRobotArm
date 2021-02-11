@@ -12,24 +12,23 @@
 
 
 namespace ofxRobotArm{
-class RelaxedSolver : public ofThread {
+class Solver : public ofThread {
 public:
-    RelaxedSolver();
-    ~RelaxedSolver();
+    Solver();
+    ~Solver();
     void start();
     void stop();
     void startThread();
     void stopThread();
-    void setConfigurationPose(vector<double> pose);
-    void setInitialPose(Pose pose);
-    void setPose(Pose desiredPose);
+    void setInitialPose(vector<double> pose);
+    void setPose(Pose desiredPose, Pose actualPose);
    
     vector<double> getCurrentPose();
     void threadedFunction();
     bool isThreadRunning();
     bool bThreadStarted;
     Pose desiredPose;
-    Pose initialPose;
+    Pose actualPose;
     Synchronized<vector<double>> currentPose;
     
     void setAngle(double angleX, double angleY, double angleZ);
@@ -38,7 +37,7 @@ public:
 
     ofVec3f u, v, w;
     void setMatrix(ofVec3f u, ofVec3f v, ofVec3f w);
-    ofMatrix4x4 mat;
+    
     uint64_t getFrame();
     uint64_t frameNum;
     uint64_t frameAvg;

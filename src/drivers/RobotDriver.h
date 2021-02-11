@@ -40,6 +40,7 @@ public:
     virtual void setSpeed(vector<double> speeds, double acceleration = 100.0)=0;
     virtual void setPose(vector<double> positions)=0;
     virtual ofxRobotArm::Pose getToolPose()=0;
+    virtual vector<double>  getInitPose()=0;
     // Robot Arm
 
     bool bTeachModeEnabled;

@@ -31,7 +31,7 @@ public:
     vector<double> getToolPointRaw();
     vector<double> getCurrentPose();
     vector<double> getJointAngles();
-    
+    vector<double>  getInitPose();
     vector <double> getAchievablePosition(vector<double> position);
     
     bool isDataReady();

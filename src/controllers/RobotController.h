@@ -76,9 +76,7 @@ namespace ofxRobotArm {
         void setEndEffector(string filename);
 
         bool bSmoothPose;
-        ofParameter<double> smoothness;
-        vector<ofParameter<double> > smoothingVector;
-        
+        ofParameter<float> smoothness;
     protected:
         vector <double> homePose;
         vector <double> stopPosition;
@@ -90,6 +88,7 @@ namespace ofxRobotArm {
         vector< double > smoothedPose;
         vector<double> jointWeights;
     private:
+        Pose initPose;
         Pose forwardPose;
         bool isTeachModeEnabled;
         void setup_parameters();

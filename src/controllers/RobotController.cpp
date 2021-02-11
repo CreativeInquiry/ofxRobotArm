@@ -38,19 +38,16 @@ void RobotController::setup(string ipAddress, RobotParameters & params, bool off
         robot->setAllowReconnect(params.bDoReconnect);
         robot->setup(ipAddress,0, 1);
     }
-    smoothness = 0.01;
-    smoothingVector.assign(6, smoothness);
+    smoothness = 0.1;
     bSmoothPose = true;
     
-    ofMatrix4x4 forwardIK = inverseKinematics.forwardKinematics(robot->getCurrentPose());
+    ofMatrix4x4 forwardIK = inverseKinematics.forwardKinematics(robot->getInitPose());
     forwardNode.setGlobalPosition(forwardIK.getTranslation());
     forwardNode.setGlobalOrientation(forwardIK.getRotate());
-    
-    inverseKinematics.setRelaxedConfiguationPose(getCurrentPose());
-    Pose initPose;
     initPose.position = forwardIK.getTranslation();
     initPose.orientation = forwardIK.getRotate();
-    inverseKinematics.setRelaxedInitPose(initPose);
+    
+    inverseKinematics.setRelaxedPose(robot->getInitPose());
 }
 
 
@@ -99,7 +96,7 @@ void RobotController::setTeachMode(){
 
 #pragma mark - IK
 void RobotController::updateIK(Pose pose){
-    targetPoses = inverseKinematics.inverseKinematics(pose);
+    targetPoses = inverseKinematics.inverseKinematics(pose, initPose);
     int selectedSolution = inverseKinematics.selectSolution(targetPoses,  robot->getCurrentPose(), jointWeights);
     if(selectedSolution > -1){
         targetPose = targetPoses[selectedSolution];
@@ -157,7 +154,7 @@ void RobotController::updateMovement(){
         int i = 0;
         vector<double> currentPose = getCurrentPose();
         for(auto p : targetPose){
-            smoothedPose[i] = ofLerp(smoothedPose[i], p, smoothingVector[i]);
+            smoothedPose[i] = ofLerp(smoothedPose[i], p, smoothness);
             robotParams.targetPose[i].set((smoothedPose[i]));
             i++;
         }

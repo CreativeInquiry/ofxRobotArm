@@ -6,7 +6,7 @@ void ofApp::setup(){
     ofSetFrameRate(120);
     // setup scene
     setup_scene();
-    robotParams.setup(RobotType::IRB120);
+    robotParams.setup(RobotType::UR10);
     // setup robot
     robot.setup(robotParams);    // change IP string to your robot's IP address
     

@@ -34,13 +34,13 @@ void InverseKinematics::setupParams(RobotParameters * params){
 
 
 void InverseKinematics::setRobotType(ofxRobotArm::RobotType type){
+    cout<<"setRobotType"<<endl;
     this->type = type;
     kinematics.setType(this->type);
-    
-    if(this->type == UR3 || this->type == UR5 || this->type == UR10){
+    if(this->type == UR3 || this->type == UR5 || this->type  == UR10){
+        cout<<"setRobotType"<<endl;
         relaxedIK.setMatrix(ofVec3f(-1, 0, 0), ofVec3f(0, -1, 0), ofVec3f(0, 0, 1));
-    }
-    if(this->type == IRB120){
+    }else{
         relaxedIK.setMatrix(ofVec3f(1, 0, 0), ofVec3f(0, 1, 0), ofVec3f(0, 0, 1));
     }
 }
@@ -186,10 +186,10 @@ vector<vector<double> > InverseKinematics::inverseKinematics(vector<double> inpu
     return vector<vector<double>>();
 }
 
-vector<vector<double> > InverseKinematics::inverseKinematics(ofxRobotArm::Pose targetPose){
+vector<vector<double> > InverseKinematics::inverseKinematics(ofxRobotArm::Pose targetPose, ofxRobotArm::Pose currentPose){
     
     if(bUseRelaxedIK){
-        vector<double> sol = inverseRelaxed(targetPose);
+        vector<double> sol = inverseRelaxed(targetPose, currentPose);
         vector<vector<double> > sols;
         sols.push_back(sol);
         return sols;
@@ -207,18 +207,12 @@ vector<vector<double> > InverseKinematics::inverseKinematics(ofxRobotArm::Pose t
     }
 }
 
-void InverseKinematics::setRelaxedConfiguationPose(vector<double> pose){
-    relaxedIK.setConfigurationPose(pose);
-}
-void InverseKinematics::setRelaxedInitPose(Pose pose){
-    relaxedIK.setInitialPose(pose);
-}
 
-vector<double> InverseKinematics::inverseRelaxed(Pose targetPose){
+vector<double> InverseKinematics::inverseRelaxed(Pose targetPose, Pose currentPose){
     if(!relaxedIK.isThreadRunning()){
         relaxedIK.start();
     }
-    relaxedIK.setPose(targetPose);
+    relaxedIK.setPose(targetPose, currentPose);
     return relaxedIK.getCurrentPose();
 }
 
@@ -277,6 +271,10 @@ ofMatrix4x4 InverseKinematics::forwardKinematics(vector<double> pose)
     return ofMatrix4x4();
 }
 
+
+void InverseKinematics::setRelaxedPose(vector<double> pose){
+    relaxedIK.setInitialPose(pose);
+}
 
 
 

@@ -182,8 +182,14 @@ void RobotModel::setup(RobotType type){
     toolNode.setParent(nodes[5]);
     toolNode.setPosition(tool.position);
     toolNode.setOrientation(nodes[5].getGlobalOrientation());
-
+    
+    
+    
+    shader.load("shaders/model");
+    
     bDrawModel.set("Draw Model", true);
+    bDrawTargetModel.set("Draw Target Model", true);
+    bUseShader.set("Use Shader", true);
 }
 
 ofQuaternion RobotModel::getToolPointQuaternion(){
@@ -345,7 +351,7 @@ void RobotModel::drawMesh(ofFloatColor color, bool bDrawDebug){
         ofQuaternion q;
         ofVec3f offset;
         
-        ofColor face = color;
+        ofColor face = ofColor(ofColor::lightGrey);
         ofColor wireframe = ofColor(ofColor::black);
         
         ofMatrix4x4 gmat;

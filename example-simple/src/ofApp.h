@@ -3,6 +3,7 @@
 #include "ofMain.h"
 #include "ofxGui.h"
 #include "ofxGizmo.h"
+#include "ofxManipulator.h"
 #include "RobotController.h"
 #include "RobotParameters.h"
 class ofApp : public ofBaseApp{
@@ -24,6 +25,8 @@ public:
     void dragEvent(ofDragInfo dragInfo);
     void gotMessage(ofMessage msg);
     
+    ofParameter<int> ux, uy, uz, vx, vy, vz, wx, wy, wz;
+    ofParameter<int> angleX, angleY, angleZ;
     ofNode tcp;
     ofNode lookAtNode;
     ofQuaternion initialRot;
@@ -36,10 +39,6 @@ public:
     ofxGizmo look_target;
     void keypressed_gizmo(int key);
     
-    
-    int FOLLOW_GIZMO = 1;
-    int LOOK_AT_TARGET = 2;
-    int FOLLOW_CIRCLE = 3;
     // Scene
     void setup_scene();
     void update_scene();
@@ -55,9 +54,9 @@ public:
     void draw_gui();
     
     ofVec3f home;
-    float t;
-    ofPolyline line;
     
+    
+    ofxManipulator manipulator;
     ofxRobotArm::RobotParameters robotParams;
     ofxPanel panel;
     ofParameterGroup params;
@@ -68,13 +67,8 @@ public:
     void listener_show_perspective(bool & val);
     
     ofxPanel panel_robot;
-    
-    ofParameter<float> feedSpeed;
     ofParameter<bool> robot_live;
     ofParameter<ofVec3f> offset;
-    ofParameter<ofVec4f> rot;
-    ofParameter<int> FOLLOW_MODE;
     void draw_live_robot_warning();
     float minY, maxY;
-    
 };
