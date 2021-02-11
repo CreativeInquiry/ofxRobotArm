@@ -97,9 +97,8 @@ ofMatrix4x4 Path3D::getNextPose(){
         ptIndex = (ptIndex + direction) % ptf.framesSize();
         
         orientation = ptf.frameAt(ptIndex);
-        
-        return orientation;
     }
+    return orientation;
 }
 
 ofMatrix4x4 Path3D::getPoseAt(int index){

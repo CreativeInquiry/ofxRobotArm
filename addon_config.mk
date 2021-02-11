@@ -24,7 +24,7 @@ meta:
 common:
 	# dependencies with other addons, a list of them separated by spaces 
 	# or use += in several lines
-	# ADDON_DEPENDENCIES =
+	ADDON_DEPENDENCIES = ofxProtobuf ofxIKArm
 	
 	# include search paths, this will be usually parsed from the file system
 	# but if the addon or addon libraries need special search paths they can be
@@ -171,6 +171,8 @@ linux64:
 	# linux only, any library that should be included in the project using
 	# pkg-config
 	# ADDON_PKG_CONFIG_LIBRARIES =
+	
+	ADDON_LDFLAGS += -Llibs/relaxedIK/lib/linux/librelaxed_ik_lib -lboost_thread -lboost_regex 
 vs:
 	# After compiling copy the following dynamic libraries to the executable directory
 	# only windows visual studio
@@ -185,6 +187,6 @@ osx:
 	# ADDON_FRAMEWORKS =
 	ADDON_LIBS += ../../../libs/boost/lib/osx/libboost_thread.a 
 	ADDON_LIBS += ../../../libs/boost/lib/osx/libboost_regex.a 
+
 ios:
 tvos:
-

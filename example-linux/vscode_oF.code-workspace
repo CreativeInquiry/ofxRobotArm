@@ -1,0 +1,18 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "${workspaceRoot}/../../../../libs/openFrameworks"
+		},
+		{
+			"path": "${workspaceRoot}/../../../../addons"
+		}
+	],
+	"settings": {
+		"files.associations": {
+			"*.ipp": "cpp"
+		}
+	}
+}

@@ -4,7 +4,7 @@
 #pragma once
 #include "ofMain.h"
 #include "Pose.h"
-#include "UrDriver.h"
+#include "URDriver.h"
 
 namespace ofxRobotArm{
     class RobotParameters{

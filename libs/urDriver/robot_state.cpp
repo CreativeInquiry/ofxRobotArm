@@ -18,6 +18,7 @@
 
 #include "robot_state.h"
 #include "endian.h"
+
 RobotState::RobotState(std::condition_variable& msg_cond) {
 	version_msg_.major_version = 0;
 	version_msg_.minor_version = 0;
