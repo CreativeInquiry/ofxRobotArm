@@ -351,7 +351,7 @@ void RobotModel::drawMesh(ofFloatColor color, bool bDrawDebug){
         ofQuaternion q;
         ofVec3f offset;
         
-        ofColor face = ofColor(ofColor::lightGrey);
+        ofColor face = ofColor(color);
         ofColor wireframe = ofColor(ofColor::black);
         
         ofMatrix4x4 gmat;
