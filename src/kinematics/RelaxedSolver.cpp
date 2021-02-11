@@ -1,15 +1,15 @@
 //
-//  Solver.cpp
+//  RelaxedSolver.cpp
 //  example-simple
 //
 //  Created by Dan Moore on 1/2/21.
 //
 
-#include "Solver.h"
+#include "RelaxedSolver.h"
 #include "RelaxedIK.hpp"
 using namespace ofxRobotArm;
 
-Solver::Solver(){
+RelaxedSolver::RelaxedSolver(){
     vector<double> foo(6., 0.0);
     currentPose.setup(foo);
     currentPose.getBack().assign(6, 0.0);
@@ -17,34 +17,40 @@ Solver::Solver(){
     frameNum = 0;
 }
 
-Solver::~Solver(){
+RelaxedSolver::~RelaxedSolver(){
     stop();
     waitForThread(false);
 }
 
-void Solver::start(){
+void RelaxedSolver::start(){
     startThread();
 }
-void Solver::stop(){
+void RelaxedSolver::stop(){
     stopThread();
 }
-void Solver::startThread(){
+void RelaxedSolver::startThread(){
     bThreadStarted = true;
     ofThread::startThread();
 }
-void Solver::stopThread(){
+void RelaxedSolver::stopThread(){
     if(isThreadRunning()){
         bThreadStarted = false;
         ofThread::stopThread();
     }
 }
-void Solver::setPose(Pose desiredPose, Pose actualPose){
+
+void RelaxedSolver::setInitialPose(Pose pose){
     lock();
-    this->desiredPose = desiredPose;
-    this->actualPose = actualPose;
+    this->initialPose = pose;
     unlock();
 }
-vector<double> Solver::getCurrentPose(){
+
+void RelaxedSolver::setPose(Pose desiredPose){
+    lock();
+    this->desiredPose = desiredPose;
+    unlock();
+}
+vector<double> RelaxedSolver::getCurrentPose(){
     vector<double> ret;
     lock();
     currentPose.swapFront();
@@ -53,13 +59,13 @@ vector<double> Solver::getCurrentPose(){
     return ret;
 }
 
-void Solver::setInitialPose(vector<double> pose){
+void RelaxedSolver::setConfigurationPose(vector<double> pose){
     lock();
 //    set_starting_config(pose.data(), pose.size());
     unlock();
 }
 
-void Solver::setAngle(double angleX, double angleY, double angleZ){
+void RelaxedSolver::setAngle(double angleX, double angleY, double angleZ){
     lock();
     this->angleX = angleX;
     this->angleY = angleY;
@@ -67,26 +73,13 @@ void Solver::setAngle(double angleX, double angleY, double angleZ){
     unlock();
 }
 
-void Solver::threadedFunction(){
+void RelaxedSolver::threadedFunction(){
     while(isThreadRunning()){
         lock();
-  
-        //handed-ness?
-        ofMatrix4x4 R = ofMatrix4x4(u.x, v.x, w.x, 0,
-                                     u.y, v.y, w.y, 0,
-                                     u.z, v.z, w.z, 0,
-                                     0, 0, 0, 1);
-        ofMatrix4x4 RX, RY, RZ;
-        RX.makeRotationMatrix(angleX, ofVec3f(1, 0, 0));
-        RY.makeRotationMatrix(angleY, ofVec3f(0, 1, 0));
-        RZ.makeRotationMatrix(angleZ, ofVec3f(0, 0, 1));
-        R *= RX*RY*RZ;
+
+        ofVec3f difPos = (desiredPose.position - initialPose.position) * mat;
         
-        ofVec3f difPos = (desiredPose.position - actualPose.position) * R;
-        
-    
-    
-        ofQuaternion rot  = (desiredPose.orientation * actualPose.orientation);
+        ofQuaternion rot  = (desiredPose.orientation * initialPose.orientation);
    
         std::vector<double> pos(3, 0.0);
         pos[0] = difPos.x;
@@ -106,21 +99,23 @@ void Solver::threadedFunction(){
         if(frameNum > 4000)
             frameNum = 0;
         currentPose.swapBack();
-        unlock();
         
-        ofSleepMillis(1);
+        unlock();
     }
 }
 
-void Solver::setMatrix(ofVec3f u, ofVec3f v, ofVec3f w){
+void RelaxedSolver::setMatrix(ofVec3f u, ofVec3f v, ofVec3f w){
     lock();
-    this->u = u;
-    this->v = v;
-    this->w = w;
+
+    mat = ofMatrix4x4(u.x, v.x, w.x, 0,
+                      u.y, v.y, w.y, 0,
+                      u.z, v.z, w.z, 0,
+                      0, 0, 0, 1);
+
     unlock();
 }
 
-bool Solver::isThreadRunning(){
+bool RelaxedSolver::isThreadRunning(){
     bool ret;
     lock();
     ret = bThreadStarted;
@@ -128,7 +123,7 @@ bool Solver::isThreadRunning(){
     return ret;
 }
 
-uint64_t Solver::getFrame(){
+uint64_t RelaxedSolver::getFrame(){
     uint64_t t = 0;
     lock();
     frameAvg +=frameNum;

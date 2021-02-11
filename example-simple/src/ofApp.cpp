@@ -16,30 +16,21 @@ void ofApp::setup(){
     // start robot
     robot.start();
     
-    //    tcp.setPosition(0, 0, 0);
-    //    tcp.setOrientation(ofQuaternion(0, 0, 0, 1));
-    //    tcp.setPosition(250, 250, 250);
-    //    lookAtNode.setPosition(10, 0, 0);
-    //    ofQuaternion q;
-    //    q.makeRotate(90, 0, 1, 0);
-    //    tcp.setOrientation(q);
-    //    lookAtNode.setOrientation(q);
-    //    tcp_target.setNode(tcp);
-    //    lookAtNode.setParent(tcp);
-    //    look_target.setNode(lookAtNode);
-    //
-
     robot.setToolOffset(offset);
     
     tcp = robot.getActualTCPNode();
+    initialRot = tcp.getOrientationQuat();
     tcp.setPosition(tcp.getPosition()*1000);
-    tcp.setOrientation(ofQuaternion(0, 1, 0, 1));
+    ofQuaternion q;
+    q.makeRotate(90, 0, 1, 0);
+    tcp.setOrientation(q);
     tcp_target.setNode(tcp);
+
     
     //    lookAtNode.setPosition(-510, -510, 500);
     //    look_target.setNode(lookAtNode);
     
-    initialRot = tcp.getOrientationQuat();
+
     int x = 500;
     int y = -1000;
     int z = 500;
@@ -57,39 +48,45 @@ void ofApp::setup(){
     show_perspective = true;
     
     home.set(300, 0, 555);
+    
+    for(int i = 0 ; i < 360; i++){
+        line.addVertex(ofVec3f(425, 0, 150)+ofVec3f(((i+1)/360)*150, 0.6*i*sin(ofDegToRad(i)), i*cos(ofDegToRad(i))));
+    }
+    line.close();
+    
+    FOLLOW_MODE = LOOK_AT_TARGET;
 }
+
+
 
 //--------------------------------------------------------------
 void ofApp::update(){
+    ofQuaternion q = tcp_target.getRotation();
+    rot = ofVec4f(q.x(), q.y(), q.z(), q.w());
     
-    
-    robot.inverseKinematics.relaxedIK.setAngle(angleX, angleY, angleZ);
 
-    ofVec3f u = ofVec3f(ux, uy, uz);
-    ofVec3f v = ofVec3f(vx, vy, vz);
-    ofVec3f w = ofVec3f(wx, wy, wz);
-    robot.inverseKinematics.relaxedIK.setMatrix(u, v, w);
-
-//
-//    ofVec3f p = tcp_target.getTranslation();
-//    ofVec3f p2 = look_target.getTranslation();
-//
-//    ofMatrix4x4 mat, matR, matRR, matRRR;
-//    mat.makeLookAtMatrix(p2, p, ofVec3f(0, 0, 1));
-////    mat = mat.getInverse();
-////    matR.makeRotationMatrix(90, ofVec3f(1, 0, 0));
-////    matRRR.makeRotationMatrix(90, ofVec3f(0, 0, 1));
-////    mat = mat*matR*matRRR;
-
-    tcp.setPosition(tcp_target.getTranslation());
-    tcp.setOrientation(tcp_target.getRotation());
+    if(FOLLOW_MODE == LOOK_AT_TARGET){
+        ofVec3f p = look_target.getTranslation();
+        ofMatrix4x4 mat, mat2;
+        mat.makeLookAtMatrix(p, tcp_target.getTranslation(), ofVec3f(0, 1, 0));
+        tcp.setPosition(tcp_target.getTranslation());
+        tcp.setOrientation(mat.getRotate());
+    }else if(FOLLOW_MODE == FOLLOW_GIZMO){
+        tcp.setPosition(tcp_target.getTranslation());
+        tcp.setOrientation(tcp_target.getRotation());
+    }else if(FOLLOW_MODE == FOLLOW_CIRCLE){
+        t+=feedSpeed*1/60;
+        if(t>1){
+            t = 0;
+        }
+        ofVec3f p = line.getPointAtPercent(t);
+        tcp.setPosition(p);
+        tcp.setOrientation(tcp_target.getRotation());
+    }
 
     robot.setToolOffset(offset);
     robot.setDesired(tcp);
     robot.update();
-//    vector<double> zero(6, 0.0);
-//    robot.update(zero);
-    
 }
 
 //--------------------------------------------------------------
@@ -123,10 +120,13 @@ void ofApp::draw_scene(){
     ofDrawAxis(1500);
     ofDrawGrid(100, 10, false, false, false, true);
     // Draw Real Robot
-//    robot.draw(ofColor::red);
+    robot.draw(ofColor::red);
     // Draw Desired Robot
     robot.drawDesired(ofColor::whiteSmoke);
-
+    ofPushStyle();
+    ofSetColor(ofColor::aqua);
+    line.draw();
+    ofPopStyle();
     
     
     tcp_target.draw(cam);
@@ -143,8 +143,8 @@ bool ofApp::disable_camera(){
     ofRectangle gui_rect;
     gui_rect.setX(panel.getPosition().x);
     gui_rect.setY(panel.getPosition().y);
-    gui_rect.setWidth(panel.getWidth() + 20);
-    gui_rect.setHeight(panel.getHeight() + panel_robot.getHeight() + 20);
+    gui_rect.setWidth(panel.getWidth() + 120);
+    gui_rect.setHeight(panel.getHeight() + panel_robot.getHeight() + 120);
     if (gui_rect.inside(mouseX, mouseY))
         return true;
     
@@ -162,16 +162,7 @@ void ofApp::setup_gui(){
     params.add(show_side.set("SIDE", false));
     params.add(show_perspective.set("PERSP", false));
     
-    params.add(offset.set("offset", ofVec3f(0, 0, 0), ofVec3f(-100, -100, -100), ofVec3f(100, 100, 100)));
-    params.add(ux.set("UX", 1, -1, 1));
-    params.add(uy.set("UY", 0, -1, 1));
-    params.add(uz.set("UZ", 0, -1, 1));
-    params.add(vx.set("VX", 0, -1, 1));
-    params.add(vy.set("VY", 1, -1, 1));
-    params.add(vz.set("VZ", 0, -1, 1));
-    params.add(wx.set("WX", 0, -1, 1));
-    params.add(wy.set("WY", 0, -1, 1));
-    params.add(wz.set("WZ", 1, -1, 1));
+    params.add(offset.set("offset", ofVec3f(0, 0, 0), ofVec3f(-300, -300, -300), ofVec3f(300, 300, 300)));
     
     show_top.addListener(this, &ofApp::listener_show_top);
     show_front.addListener(this, &ofApp::listener_show_front);
@@ -186,6 +177,12 @@ void ofApp::setup_gui(){
     panel_robot.setPosition(panel.getPosition().x, panel.getPosition().y + panel.getHeight() + 5);
     panel_robot.add(robotParams.joints);
     panel_robot.add(robotParams.targetJoints);
+    
+    
+    panel_robot.add(rot.set("TCP ROT", ofVec4f(0, 0, 0, 0)));
+    panel_robot.add(feedSpeed.set("Feed Speed", 0.0001, 0.0001, 0.5));
+    panel_robot.add(FOLLOW_MODE.set("Follow Mode", 1, 1, 3));
+    panel_robot.add(robot.smoothness.set("Smooth Motion", 0.01, 0.01, 0.1));
     
     ofSetCircleResolution(60);
 }
@@ -232,7 +229,7 @@ void ofApp::listener_show_top(bool & val)
 {
     if (val) {
         
-        int x = 0;
+        int x = 300;
         int y = 0;
         int z = 2000;
         
@@ -257,7 +254,7 @@ void ofApp::listener_show_front(bool & val)
         
         int x = 2500;
         int y = 0;
-        int z = 600;
+        int z = 300;
         
         ofVec3f pos = ofVec3f(x, y, z);
         ofVec3f tgt = ofVec3f(0, pos.y, pos.z);
@@ -279,7 +276,7 @@ void ofApp::listener_show_side(bool & val)
         
         int x = 0;
         int y = -2500;
-        int z = 600;
+        int z = 300;
         
         ofVec3f pos = ofVec3f(x, y, z);
         ofVec3f tgt = ofVec3f(pos.x, 0, pos.z);
@@ -299,9 +296,9 @@ void ofApp::listener_show_perspective(bool & val)
 {
     if (val) {
         
-        int x = 1500;
-        int y = -1500;
-        int z = 1500;
+        int x = 500;
+        int y = -1000;
+        int z = 500;
         
         ofVec3f pos = ofVec3f(x, y, z);
         ofVec3f tgt = ofVec3f(0, 0, 0);
@@ -409,34 +406,28 @@ void ofApp::keypressed_gizmo(int key){
     bool val = true;
     switch (key) {
         case '1':
-            tcp_target.getMatrix().setRotate(initialRot);
+            FOLLOW_MODE = FOLLOW_GIZMO;
             break;
         case '2':
-            tcp_target.getMatrix().setRotate(ofQuaternion(1, 0, 0, 0));
+            FOLLOW_MODE = LOOK_AT_TARGET;
             break;
         case '3':
-            tcp_target.getMatrix().setRotate(ofQuaternion(0, 0, 1, 1));
+            FOLLOW_MODE = FOLLOW_CIRCLE;
             break;
         case '4':
-            tcp_target.getMatrix().setRotate(ofQuaternion(0, 1, 0, 1));
+            tcp_target.getMatrix().setRotate(initialRot);
             break;
         case '5':
-            tcp_target.getMatrix().setRotate(ofQuaternion(1, 1, 1, 1));
             break;
         case '6':
-            tcp_target.getMatrix().setRotate(ofQuaternion(0, 1, 1, 1));
             break;
         case '7':
-            tcp_target.getMatrix().setRotate(ofQuaternion(1, 0, 1, 1));
             break;
         case '8':
-            tcp_target.getMatrix().setRotate(ofQuaternion(1, 0, 0, 0));
             break;
         case '9':
-            tcp_target.getMatrix().setRotate(ofQuaternion(1, 1, 0, 0));
             break;
         case '0':
-            tcp_target.getMatrix().setRotate(ofQuaternion(1, 1, 1, 0));
             break;
         case OF_KEY_RETURN:
             tcp.setGlobalPosition(robot.desiredPose.forwardPose.getPosition());

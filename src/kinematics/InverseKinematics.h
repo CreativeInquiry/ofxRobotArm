@@ -6,8 +6,8 @@
 #include "ofxIKArm.h"
 #include "Utils.h"
 #include "RobotParameters.h"
-#include "Solver.h"
-// Copyright (c) 2016, Daniel Moore, Madeline Gannon, and The Frank-Ratchye STUDIO for Creative Inquiry All rights reserved.
+#include "RelaxedSolver.h"
+// Copyright (c) 2016,2021 Daniel Moore, Madeline Gannon, and The Frank-Ratchye STUDIO for Creative Inquiry All rights reserved.
 //
 namespace ofxRobotArm {
 
@@ -18,20 +18,21 @@ public:
     void setup();
     void setupParams(RobotParameters * params);
     
-    vector<double> inverseRelaxed(Pose targetPose, Pose currentPose);
-    
+    vector<double> inverseRelaxed(Pose targetPose);
+    void setRelaxedConfiguationPose(vector<double> pose);
+    void setRelaxedInitPose(Pose pose);
     void setRobotType(ofxRobotArm::RobotType type);
     int selectSolution(vector<vector<double> > & inversePosition, vector<double> currentQ, vector<double> weight);
     ofMatrix4x4 forwardKinematics(vector<double> pose);
     double* forwardKinematics(double o, double t, double th, double f, double fi, double s);
-    vector<vector<double> > inverseKinematics(ofxRobotArm::Pose targetPose, ofxRobotArm::Pose currentPose);
+    vector<vector<double> > inverseKinematics(ofxRobotArm::Pose targetPose);
     vector<vector<double> > inverseKinematics(ofMatrix4x4 pose);
     vector<vector<double> > inverseKinematics(vector<double> input);
     vector<vector<double> > inverseKinematics(double o, double t, double th, double f, double fi, double s);
     ofxRobotArm::RobotType type;
     Kinematics kinematics;
     vector<vector<double> > preInversePosition;
-    void setRelaxedPose(vector<double> pose);
+    
     void draw();
     vector< double > lookAtJoints(RobotModel * actualPose,  vector<double> targetPose, float aDeltaTimef, ofVec3f targetPos);
     vector< double > getArmIK(  RobotModel * actualPose, Pose targetTCP,  vector<double> targetPose, float aDeltaTimef );
@@ -62,7 +63,7 @@ public:
     shared_ptr< ofxIKArm > mIKArmInverted;
     vector<vector<double> > preSol;
     
-    Solver relaxedIK;
+    RelaxedSolver relaxedIK;
 };
 }
 

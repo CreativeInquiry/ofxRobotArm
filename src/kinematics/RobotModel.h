@@ -41,7 +41,6 @@ public:
     vector<ofMesh> meshes;
     ofMesh toolMesh;
     
-    ofShader shader;
     float elapsed_time, last_time;
     ofVec3f pt;
     vector<ofxRobotArm::Pose> pose;
@@ -57,7 +56,6 @@ public:
     
     ofParameter<float> stage;
     ofParameter<bool> bDrawModel;
-    ofParameter<bool> bDrawTargetModel;
-    ofParameter<bool> bUseShader;
+
 };
 }
