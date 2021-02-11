@@ -172,7 +172,11 @@ linux64:
 	# pkg-config
 	# ADDON_PKG_CONFIG_LIBRARIES =
 	
-	ADDON_LDFLAGS += -Llibs/relaxedIK/lib/linux/librelaxed_ik_lib -lboost_thread -lboost_regex 
+	ADDON_LDFLAGS = -L /usr/local/lib/librelaxed_ik_lib 
+	ADDON_LDFLAGS += -labb_libegm
+	ADDON_LDFLAGS += -labb_librws
+	ADDON_LDFLAGS += -lboost_thread 
+	ADDON_LDFLAGS += -lboost_regex 
 vs:
 	# After compiling copy the following dynamic libraries to the executable directory
 	# only windows visual studio
