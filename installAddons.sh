@@ -12,8 +12,6 @@ ${PREFIX}kylemcdonald/ofxCv
 ${PREFIX}CreativeInquiry/ofxNatNet
 ${PREFIX}NickHardeman/ofxGizmo
 ${PREFIX}CreativeInquiry/ofxTimeline
-${PREFIX}CreativeInquiry/ofxURDriver
-${PREFIX}CreativeInquiry/ofxPtf
 ${PREFIX}CreativeInquiry/ofxIKArm
 ${PREFIX}arturoc/ofxEasing
 ${PREFIX}moebiussurfing/ofxGuiExtended2

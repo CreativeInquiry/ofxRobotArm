@@ -16,14 +16,12 @@ URDriver::URDriver(){
 
     vector<double> foo;
     foo.assign(6, 0);
-    foo[0] = 3.14;
-    foo[1] = -0.3987385;
-    foo[2] = -2.07729916;
-    foo[3] = -1.03981438;
-    foo[4] = -1.58652782;
-    foo[5] = -1.5710159;
-    
-//    3.12769839, -0.3987385, -2.07729916, -1.03981438, -1.58652782, -1.5710159
+    foo[0] = 0.00001;
+    foo[1] = -1.57;
+    foo[2] = -1.57;
+    foo[3] = -1.57;
+    foo[4] = -1.57;
+    foo[5] = -1.57;
     
     jointsRaw.setup(foo);
     toolPointRaw.setup(foo);
@@ -66,12 +64,13 @@ URDriver::~URDriver(){
 vector<double> URDriver::getInitPose(){
     vector<double> foo;
     foo.assign(6, 0);
-    foo[0] = 3.14;
-    foo[1] = -0.3987385;
-    foo[2] = -2.07729916;
-    foo[3] = -1.03981438;
-    foo[4] = -1.58652782;
-    foo[5] = -1.5710159;
+   foo[0] = 0.00001;
+    foo[1] = -1.57;
+    foo[2] = -1.57;
+    foo[3] = -1.57;
+    foo[4] = -1.57;
+    foo[5] = -1.57;
+    
     return foo;
 }
 

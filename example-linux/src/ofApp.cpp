@@ -6,7 +6,7 @@ void ofApp::setup(){
     ofSetFrameRate(120);
     // setup scene
     setup_scene();
-    robotParams.setup(RobotType::IRB120);
+    robotParams.setup(RobotType::UR10);
     // setup robot
     robot.setup(robotParams);    // change IP string to your robot's IP address
     
@@ -21,9 +21,7 @@ void ofApp::setup(){
     tcp = robot.getActualTCPNode();
     initialRot = tcp.getOrientationQuat();
     tcp.setPosition(tcp.getPosition()*1000);
-    ofQuaternion q;
-    q.makeRotate(90, 0, 1, 0);
-    tcp.setOrientation(q);
+
     tcp_target.setNode(tcp);
 
     
@@ -182,7 +180,7 @@ void ofApp::setup_gui(){
     panel_robot.add(rot.set("TCP ROT", ofVec4f(0, 0, 0, 0)));
     panel_robot.add(feedSpeed.set("Feed Speed", 0.0001, 0.0001, 0.5));
     panel_robot.add(FOLLOW_MODE.set("Follow Mode", 1, 1, 3));
-    panel_robot.add(robot.smoothness.set("Smooth Motion", 0.01, 0.01, 0.1));
+    panel_robot.add(robot.smoothness.set("Smooth Motion", 0.01, 0.01, 1.0));
     
     ofSetCircleResolution(60);
 }
@@ -229,9 +227,9 @@ void ofApp::listener_show_top(bool & val)
 {
     if (val) {
         
-        int x = 300;
+        int x = 00;
         int y = 0;
-        int z = 2000;
+        int z = 3000;
         
         
         ofVec3f pos = ofVec3f(x, y, z);
@@ -252,7 +250,7 @@ void ofApp::listener_show_front(bool & val)
 {
     if (val) {
         
-        int x = 2500;
+        int x = 3500;
         int y = 0;
         int z = 300;
         
@@ -275,7 +273,7 @@ void ofApp::listener_show_side(bool & val)
     if (val) {
         
         int x = 0;
-        int y = -2500;
+        int y = -3500;
         int z = 300;
         
         ofVec3f pos = ofVec3f(x, y, z);
@@ -297,7 +295,7 @@ void ofApp::listener_show_perspective(bool & val)
     if (val) {
         
         int x = 500;
-        int y = -1000;
+        int y = -2000;
         int z = 500;
         
         ofVec3f pos = ofVec3f(x, y, z);
@@ -415,7 +413,6 @@ void ofApp::keypressed_gizmo(int key){
             FOLLOW_MODE = FOLLOW_CIRCLE;
             break;
         case '4':
-            tcp_target.getMatrix().setRotate(initialRot);
             break;
         case '5':
             break;
@@ -512,8 +509,8 @@ void ofApp::mousePressed(int x, int y, int button){
 
 //--------------------------------------------------------------
 void ofApp::mouseReleased(int x, int y, int button){
-    //    if (!cam.getMouseInputEnabled())
-    cam.enableMouseInput();
+    if (!cam.getMouseInputEnabled())
+        cam.enableMouseInput();
     
 }
 
