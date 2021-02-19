@@ -109,6 +109,8 @@ void ofApp::setup_gui(){
     panel_robot.add(robot_live.set("Robot_LIVE", false));
     panel_robot.setPosition(panel.getPosition().x, panel.getPosition().y + panel.getHeight() + 5);
     
+    robot_live.addListener(this, &ofApp::listener_robot_live);
+    
     ofSetCircleResolution(60);
 }
 
@@ -169,6 +171,12 @@ void ofApp::listener_show_top(bool & val)
         show_side = false;
         show_perspective = false;
     }
+}
+
+//--------------------------------------------------------------
+void ofApp::listener_robot_live(bool & val)
+{
+    robot.set_live(val);
 }
 
 //--------------------------------------------------------------
@@ -262,9 +270,10 @@ void ofApp::keypressed_robot(int key){
     switch (key) {
         // 'm' for MOVE!
         case 'm':
-        case 'M':
-            robot_live = !robot_live;
+        case 'M':{
+            robot_live.set(!robot_live);
             break;
+        }
     }
 }
 

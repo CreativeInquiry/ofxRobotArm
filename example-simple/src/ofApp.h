@@ -57,6 +57,7 @@ class ofApp : public ofBaseApp{
         
         ofxPanel panel_robot;
         ofParameter<bool> robot_live;
+        void listener_robot_live(bool & val);
         void draw_live_robot_warning();
 
         ofColor background_inner = ofColor(238);
