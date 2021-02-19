@@ -27,6 +27,7 @@ void RobotController::setup(string ipAddress, RobotType type){
     
     // setup robot parameters
     robotParams.setup(type);
+    robotParams.ipAddress = ipAddress;
     
     // setup Kinematic Model
     movement.setup();       // speed profile
@@ -38,7 +39,10 @@ void RobotController::setup(string ipAddress, RobotType type){
     
     // setup actual robot
     actualArm.setup(type);
-
+    
+    // pass the ip address to the robot
+    robot.setAllowReconnect(true);
+    robot.setup(ipAddress,0,1);
 }
 
 void RobotController::setEndEffector(string filename){
@@ -487,6 +491,10 @@ void RobotController::set_desired(ofNode target){
     // convert from mm to m
     robotParams.targetTCP.position = target.getGlobalPosition()/1000.0;
     robotParams.targetTCP.rotation = target.getGlobalOrientation();
+}
+
+void RobotController::set_live(bool val){
+    robotParams.bMove.set(val);
 }
 
 #pragma mark - Safety

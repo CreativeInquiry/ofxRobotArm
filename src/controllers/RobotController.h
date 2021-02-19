@@ -58,6 +58,7 @@ namespace ofxRobotArm {
         
         void set_desired(ofNode target);
         Plane tcp_plane;
+        void set_live(bool val);
         
         void moveArm();
         void draw(ofFloatColor color = ofFloatColor(1,1,1,1), bool debug = false);
