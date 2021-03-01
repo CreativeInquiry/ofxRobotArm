@@ -5,8 +5,9 @@
 //  Created by dantheman on 3/30/16.
 //
 //
-// Copyright (c) 2016, Daniel Moore, Madeline Gannon, and The Frank-Ratchye STUDIO for Creative Inquiry All rights reserved.
 //
+// Copyright (c) 2016, 2021 Daniel Moore, Madeline Gannon, and The Frank-Ratchye STUDIO for Creative Inquiry All rights reserved.
+////
 // #pragma once
 // /// \brief Converts a 3D point from millimeters to meters
 // /// \param v ofVec3f to convert
