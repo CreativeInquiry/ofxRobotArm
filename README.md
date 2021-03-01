@@ -1,4 +1,4 @@
-# ofxRobotArm CURRENT LINUX ONLY
+# ofxRobotArm LINUX ONLY
 ###### An openFrameworks addon for controlling and interacting with robot arms.
 
   - [About](#about)
@@ -43,7 +43,7 @@ apt install libboost-all-dev
 
 
 ## Overview
-`ofxRobotArm` is structured in multiple parts: [Controllers](/src/controllers), [Drivers](/src/drivers), [Kinematics](/src/kinematics), [Path](/src/path), [Utils](/src/utils), and [World](/src/world).  Controller contain the main RobotController.  Drivers contains the drivers for each manufacture ofxRobotArm supports: Universal Robots, ABB, KUKA, and many more.  Kinematics contains the kinematic model for each arm, inverse kinematic sovlers, and the relaxedIK sovler thread. Path contains helper classes for interfacing with paths.  Utils contain many useful utilities. World contains useful classes for describing the working enviroment. 
+`ofxRobotArm` is structured in multiple parts: [Controllers](/src/controllers), [Drivers](/src/drivers), [Kinematics](/src/kinematics), [Path](/src/path), [Utils](/src/utils), and [World](/src/world).  Controllers contain the main RobotController and other useful controllers.  Drivers contains the drivers for each manufacture ofxRobotArm supports: Universal Robots, ABB, KUKA, and many more.  Kinematics contains the kinematic model for each arm, inverse kinematic sovlers, and the relaxedIK sovler thread. Path contains helper classes for interfacing with paths.  Utils contain many useful utilities. World contains useful classes for describing the working enviroment. 
 
 
 ## Examples
