@@ -171,10 +171,11 @@ linux64:
 	# linux only, any library that should be included in the project using
 	# pkg-config
 	# ADDON_PKG_CONFIG_LIBRARIES =
-	
-	ADDON_LDFLAGS = -L /usr/local/lib/librelaxed_ik_lib 
-	ADDON_LDFLAGS += -labb_libegm
-	ADDON_LDFLAGS += -labb_librws
+	ADDON_LIBS = libs/relaxedIK/lib/linux64/librelaxed_ik_lib.a 
+	ADDON_LIBS += libs/libegm/lib/linux64/libabb_libegm.a 
+	ADDON_LIBS += libs/librws/lib/linux64/libabb_liberws.a
+	ADDON_LIBS += libs/protobuf/lib/linux64/libprotobuf.a
+	ADDON_LIBS += libs/protobuf/lib/linux64/libprotobuf-lite.a
 	ADDON_LDFLAGS += -lboost_thread 
 	ADDON_LDFLAGS += -lboost_regex 
 vs:
