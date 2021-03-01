@@ -52,7 +52,7 @@ void ofApp::setup(){
     }
     line.close();
     
-    FOLLOW_MODE = LOOK_AT_TARGET;
+    FOLLOW_MODE = FOLLOW_GIZMO;;
 }
 
 
