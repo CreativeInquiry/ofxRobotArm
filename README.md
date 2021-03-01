@@ -1,4 +1,4 @@
-# ofxRobotArm CURRENT LINUX ONLY
+# ofxRobotArm LINUX ONLY
 ###### An openFrameworks addon for controlling and interacting with robot arms.
 
   - [About](#about)
