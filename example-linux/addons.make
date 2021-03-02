@@ -9,3 +9,4 @@ ofxProtobuf
 ofxRobotArm
 ofxTiming
 ofxXmlSettings
+ofxNetwork
