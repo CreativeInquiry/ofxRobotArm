@@ -54,7 +54,7 @@ We've also included a number of example projects that show you the most common w
  
 
 ## Licensing
-`ofxRobotArm` is licensed under the [GPLv3](LICENSE) 
+`ofxRobotArm` is licensed under the [THE ANTI-CAPITALIST SOFTWARE LICENSE (v 1.4)](LICENSE) 
 
 
 ## Contact Info
