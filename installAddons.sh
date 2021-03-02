@@ -12,6 +12,6 @@ ${PREFIX}CreativeInquiry/ofxNatNet
 ${PREFIX}NickHardeman/ofxGizmo
 ${PREFIX}CreativeInquiry/ofxIKArm
 ${PREFIX}arturoc/ofxEasing
-
+${PREFIX}michaelbaisch/ofxYAML
 
 cd ../addons/ofxRobotArm

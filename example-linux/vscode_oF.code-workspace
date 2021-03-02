@@ -13,7 +13,9 @@
 	"settings": {
 		"files.associations": {
 			"*.ipp": "cpp",
-			"vector": "cpp"
+			"vector": "cpp",
+			"atomic": "cpp",
+			"string": "cpp"
 		}
 	}
 }

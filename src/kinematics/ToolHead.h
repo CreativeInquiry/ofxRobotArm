@@ -1,9 +1,8 @@
 //
 //  URToolHead.h
-//  ofxURDriver
-//
+//  ofxRobotArm//
 //  Created by Dan Moore on 2/20/16.
-// Copyright (c) 2016,2020 Daniel Moore, Madeline Gannon, and The Frank-Ratchye STUDIO for Creative Inquiry All rights reserved.
+//  Copyright (c) 2016,2020 Daniel Moore, Madeline Gannon, and The Frank-Ratchye STUDIO for Creative Inquiry All rights reserved.
 //
 
 #pragma once

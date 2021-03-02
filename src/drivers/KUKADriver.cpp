@@ -116,9 +116,6 @@ void KUKADriver::setup(string ipaddress, string port, double minPayload, double 
     bStarted = false;
 
     bTriedOnce = false;
-
-
-
 }
 void KUKADriver::start(){
     ofLog(OF_LOG_NOTICE)<<"Starting KUKADriver Controller"<<endl;

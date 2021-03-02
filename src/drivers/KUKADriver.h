@@ -41,7 +41,7 @@ public:
     
     ofxRobotArm::Pose getToolPose();
 
-    
+    ofxUDPManager udpConnection;
     
     bool wait = true;
 

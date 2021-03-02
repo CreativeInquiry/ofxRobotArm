@@ -24,7 +24,7 @@ meta:
 common:
 	# dependencies with other addons, a list of them separated by spaces 
 	# or use += in several lines
-	ADDON_DEPENDENCIES = ofxProtobuf ofxIKArm
+	ADDON_DEPENDENCIES = ofxIKArm ofxYAML 
 	
 	# include search paths, this will be usually parsed from the file system
 	# but if the addon or addon libraries need special search paths they can be
@@ -182,7 +182,6 @@ vs:
 	# After compiling copy the following dynamic libraries to the executable directory
 	# only windows visual studio
 	# ADDON_DLLS_TO_COPY = 
-	
 linuxarmv6l:
 linuxarmv7l:
 android/armeabi:	
@@ -192,6 +191,5 @@ osx:
 	# ADDON_FRAMEWORKS =
 	ADDON_LIBS += ../../../libs/boost/lib/osx/libboost_thread.a 
 	ADDON_LIBS += ../../../libs/boost/lib/osx/libboost_regex.a 
-
 ios:
 tvos:
