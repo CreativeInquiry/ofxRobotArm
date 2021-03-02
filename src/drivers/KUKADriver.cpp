@@ -82,12 +82,12 @@ void KUKADriver::setAllowReconnect(bool bDoReconnect){
     bTryReconnect = bDoReconnect;
 }
 
-void KUKADriver::setup(string port, double minPayload, double maxPayload){
+void KUKADriver::setup(string ipaddress, string port, double minPayload, double maxPayload){
     cout << "KUKADriver :: setup : ipAddress: " << port << endl;
-    if( port != "" && port.length() > 3 ) {
-
+    if( port != "" || ipaddress != ""  {
+        
     } else {
-        ofLogError( "ipAddress parameter is empty. Not initializing robot." );
+        ofLogError( "ip address or port parameter is empty. Not initializing robot." );
     }
     
     char buf[256];
@@ -116,6 +116,8 @@ void KUKADriver::setup(string port, double minPayload, double maxPayload){
     bStarted = false;
 
     bTriedOnce = false;
+
+
 
 }
 void KUKADriver::start(){
