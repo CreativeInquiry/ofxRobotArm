@@ -12,7 +12,10 @@ public:
     KUKADriver();
     ~KUKADriver();
     void setAllowReconnect(bool bDoReconnect);
-    void setup(string port, double minPayload = 0.0, double maxPayload = 1.0);
+    void setup();
+    void setup(string ipAddress, int port, double minPayload = 0.0, double maxPayload = 1.0);
+    void setup(string ipAddress, double minPayload = 0.0, double maxPayload = 1.0);
+    void setup(int port, double minPayload = 0.0, double maxPayload = 1.0);
     void start();
     bool isConnected();
     void disconnect();
@@ -45,6 +48,7 @@ public:
     
     bool wait = true;
 
+    bool bTryReconnect, bTeachModeEnabled;
     int sequence_number = 0;    // [-] (sequence number of a received EGM message).
     double time = 0.0;          // [seconds] (elapsed time during an EGM communication session).
     double position_reference = 0.0;      // [mm].

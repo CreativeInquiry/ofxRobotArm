@@ -12,14 +12,6 @@
 using namespace ofxRobotArm;
 KUKADriver::KUKADriver(){
     currentSpeed.assign(6, 0.0);
-    acceleration = 0.0;
-    robot       = NULL;
-    io_service = NULL;
-    thread_group = NULL;
-    bStarted    =false;
-
-    
-//    -0.25, 0.25, 0.13, 2.5, 0.45, -2.59
     vector<double> foo;
     foo.assign(6, 0.0001);
 
@@ -33,10 +25,8 @@ KUKADriver::KUKADriver(){
 }
 
 KUKADriver::~KUKADriver(){
-    if(robot){
+    if(isConnected()){
         disconnect();
-        delete robot;
-        robot = NULL;
     }
 }
 
@@ -50,13 +40,7 @@ void KUKADriver::stopThread(){
 }
 void KUKADriver::toggleTeachMode(){
     lock();
-    if(bTeachModeEnabled){
-        bTeachModeEnabled = false;
 
-    }else{
-        bTeachModeEnabled = true;
-
-    }
     unlock();
 }
 
@@ -68,13 +52,7 @@ vector<double> KUKADriver::getInitPose(){
 
 void KUKADriver::setTeachMode(bool enabled){
     lock();
-    if(enabled){
-        bTeachModeEnabled = true;
-
-    }else{
-        bTeachModeEnabled = false;
- 
-    }
+    bTeachModeEnabled = enabled;
     unlock();
 }
 
@@ -82,16 +60,32 @@ void KUKADriver::setAllowReconnect(bool bDoReconnect){
     bTryReconnect = bDoReconnect;
 }
 
-void KUKADriver::setup(string ipaddress, string port, double minPayload, double maxPayload){
+void KUKADriver::setup(){
+
+}
+
+void KUKADriver::setup(string ipAddress, double minPayload, double maxPayload){
+    
+}
+
+void KUKADriver::setup(int port, double minPayload, double maxPayload){
+
+}
+
+void KUKADriver::setup(string ipaddress, int port, double minPayload, double maxPayload){
     cout << "KUKADriver :: setup : ipAddress: " << port << endl;
-    if( port != "" || ipaddress != ""  {
+    if(ipaddress != "") {
         
     } else {
-        ofLogError( "ip address or port parameter is empty. Not initializing robot." );
+        ofLogError( "ip address parameter is empty. Not initializing robot." );
     }
     
     char buf[256];
-//    vector<string> foo = robot->getJointNames();
+
+    udpConnection.Create();
+    udpConnection.Connect(ipaddress.c_str(), port);
+    udpConnection.SetNonBlocking(true);
+
     std::string joint_prefix = "ur_";
     std::vector<std::string> joint_names;
     joint_prefix = "KUKADriver-";
@@ -107,9 +101,6 @@ void KUKADriver::setup(string ipaddress, string port, double minPayload, double 
     double min_payload = minPayload;
     double max_payload = maxPayload;
     
-    sprintf(buf, "Bounds for set_payload service calls: [%f, %f]",
-            min_payload, max_payload);
-    ofLog(OF_LOG_NOTICE)<<buf;
     poseProcessed.swapBack();
     poseRaw.swapBack();
     toolPoseRaw.swapBack();
@@ -135,10 +126,7 @@ bool KUKADriver::isConnected() {
 }
 
 void KUKADriver::disconnect(){
-    if( robot != NULL ){
-        robot = NULL;
-        delete robot;
-    }
+
 }
 
 bool KUKADriver::isDataReady(){
@@ -318,12 +306,10 @@ void KUKADriver::threadedFunction(){
         timer.tick();
         if(!bStarted && !bTriedOnce) {
             
-        }else{
-                
-                toolPoseRaw.swapBack();
-                poseRaw.swapBack();
-                poseProcessed.swapBack();
-            }
+        }else{                
+            toolPoseRaw.swapBack();
+            poseRaw.swapBack();
+            poseProcessed.swapBack();
         }
     }
 }

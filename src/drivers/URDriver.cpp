@@ -110,6 +110,17 @@ void URDriver::setTeachMode(bool enabled){
 void URDriver::setAllowReconnect(bool bDoReconnect){
     bTryReconnect = bDoReconnect;
 }
+void URDriver::setup(){
+
+}
+
+void URDriver::setup(string ipAddress, int port, double minPayload, double maxPayload){
+    
+}
+
+void URDriver::setup(int port, double minPayload, double maxPayload){
+
+}
 
 void URDriver::setup(string ipAddress, double minPayload, double maxPayload){
     cout << "URDriver :: setup : ipAddress: " << ipAddress << endl;

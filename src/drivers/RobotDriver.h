@@ -20,7 +20,10 @@ public:
         
     };
     virtual void setAllowReconnect(bool bDoReconnect)=0;
+    virtual void setup()=0;
+    virtual void setup(string ipAddress, int port, double minPayload = 0.0, double maxPayload = 1.0)=0;
     virtual void setup(string ipAddress, double minPayload = 0.0, double maxPayload = 1.0)=0;
+    virtual void setup(int port, double minPayload = 0.0, double maxPayload = 1.0)=0;
     virtual void start()=0;
     virtual bool isConnected()=0;
     virtual void disconnect()=0;

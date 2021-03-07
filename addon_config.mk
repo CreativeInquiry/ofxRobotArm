@@ -15,11 +15,11 @@
 # and the PG will write to the console the kind of error and in which line it is
 
 meta:
-	ADDON_NAME = ofxABBDriver
-	ADDON_DESCRIPTION = ofxABBDriver for ofxRobotArm!
+	ADDON_NAME = ofxRobotArm
+	ADDON_DESCRIPTION = ofxRobotArm
 	ADDON_AUTHOR = @danzeeeman
 	ADDON_TAGS = "addon" "template"
-	ADDON_URL = http://github.com/CreativeInquiry/ofxABBDriver
+	ADDON_URL = http://github.com/CreativeInquiry/ofxRobotArm
 
 common:
 	# dependencies with other addons, a list of them separated by spaces 
@@ -29,17 +29,7 @@ common:
 	# include search paths, this will be usually parsed from the file system
 	# but if the addon or addon libraries need special search paths they can be
 	# specified here separated by spaces or one per line using +=
-	# ADDON_INCLUDES += libs/abb_libegm/include/abb_libegm
-	# ADDON_INCLUDES += libs/abb_librws/include/abb_librws
-	# ADDON_INCLUDES += libs/abb_librws/protp/
-	# ADDON_INCLUDES += libs/abb_libegm/protp/
-	# ADDON_INCLUDES += libs/urDriver/
-	# ADDON_INCLUDES += src/constrollers
-	# ADDON_INCLUDES += src/drivers
-	# ADDON_INCLUDES += src/kinematics
-	# ADDON_INCLUDES += src/path
-	# ADDON_INCLUDES += src/utils
-	# ADDON_INCLUDES += src/world
+	# ADDON_INCLUDES = 
 	
 	# any special flag that should be passed to the compiler when using this
 	# addon

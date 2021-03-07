@@ -1,5 +1,5 @@
 #include "FileLoader.h"
-
+using namespace ofxRobotArm;
 URDFLoader::URDFLoader(){
 
 }

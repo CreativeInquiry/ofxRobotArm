@@ -82,13 +82,21 @@ void ABBDriver::setAllowReconnect(bool bDoReconnect){
     bTryReconnect = bDoReconnect;
 }
 
-void ABBDriver::setup(string port, double minPayload, double maxPayload){
-    cout << "ABBDriver :: setup : ipAddress: " << port << endl;
-    if( port != "" && port.length() > 3 ) {
+void ABBDriver::setup(){
 
-    } else {
-        ofLogError( "ipAddress parameter is empty. Not initializing robot." );
-    }
+}
+
+void ABBDriver::setup(string ipAddress, double minPayload, double maxPayload){
+    
+}
+
+void ABBDriver::setup(string ipAddress, int port, double minPayload, double maxPayload){
+
+}
+
+void ABBDriver::setup(int port, double minPayload, double maxPayload){
+    cout << "ABBDriver :: setup : " << port << endl;
+
     
     char buf[256];
 //    vector<string> foo = robot->getJointNames();
