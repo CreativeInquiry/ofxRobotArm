@@ -23,7 +23,7 @@ endif()
 ## POCO C++ Libraries ##
 ########################
 # We need at least 1.4.3 because of WebSocket support.
-find_package(Poco 1.4.3 REQUIRED COMPONENTS Foundation Net Util XML)
+# find_package(Poco 1.4.3 REQUIRED COMPONENTS Foundation Net Util XML)
 
 ###########
 ## Build ##
@@ -42,9 +42,11 @@ set(
     src/rws_state_machine_interface.cpp
 )
 
+
 add_library(${PROJECT_NAME} ${SRC_FILES})
 add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
-
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../../../ofxPoco/libs/poco/include/)
+link_directories(${CMAKE_CURRENT_SOURCE_DIR}/../../../ofxPoco/libs/poco/lib/osx)
 include(GenerateExportHeader)
 generate_export_header(${PROJECT_NAME})
 

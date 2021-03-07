@@ -43,7 +43,7 @@
 
 namespace
 {
-static const char EXCEPTION_CREATE_STRING[]{"Failed to create string"};
+  static const char* EXCEPTION_CREATE_STRING = "Failed to create string";
 }
 
 namespace abb
