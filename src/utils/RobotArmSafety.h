@@ -6,7 +6,7 @@
 //
 
 #pragma once
-#include "PoseRestrictor.h"
+#include "JointRestrictor.h"
 #include "CylinderRestrictor.h"
 #include "RobotArmCollision.h"
 //#include "UR5KinematicModel.h"
@@ -40,7 +40,7 @@ namespace ofxRobotArm {
         
         void setLerpMult( float aMult );
         
-        shared_ptr< PoseRestrictor > m_jointRestrictor;
+        shared_ptr< JointRestrictor > m_jointRestrictor;
         shared_ptr< CylinderRestrictor > mCylinderRestrictor;
         shared_ptr< RobotArmCollision > mCollision;
   
