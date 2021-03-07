@@ -24,11 +24,6 @@ void ofApp::setup(){
 
     tcp_target.setNode(tcp);
 
-    
-    //    lookAtNode.setPosition(-510, -510, 500);
-    //    look_target.setNode(lookAtNode);
-    
-
     int x = 500;
     int y = -1000;
     int z = 500;
@@ -51,8 +46,8 @@ void ofApp::setup(){
         line.addVertex(ofVec3f(425, 0, 150)+ofVec3f(((i+1)/360)*150, 0.6*i*sin(ofDegToRad(i)), i*cos(ofDegToRad(i))));
     }
     line.close();
-    
-    FOLLOW_MODE = FOLLOW_GIZMO;;
+
+    FOLLOW_MODE = FOLLOW_GIZMO;
 }
 
 
@@ -63,25 +58,30 @@ void ofApp::update(){
     rot = ofVec4f(q.x(), q.y(), q.z(), q.w());
     
 
-    if(FOLLOW_MODE == LOOK_AT_TARGET){
+    if(FOLLOW_MODE == FOLLOW_GIZMO)
+    {
+        tcp.setPosition(tcp_target.getTranslation());
+        tcp.setOrientation(tcp_target.getRotation());
+    }
+    else if(FOLLOW_MODE == LOOK_AT_TARGET)
+    {
         ofVec3f p = look_target.getTranslation();
         ofMatrix4x4 mat, mat2;
         mat.makeLookAtMatrix(p, tcp_target.getTranslation(), ofVec3f(0, 1, 0));
         tcp.setPosition(tcp_target.getTranslation());
         tcp.setOrientation(mat.getRotate());
-    }else if(FOLLOW_MODE == FOLLOW_GIZMO){
-        tcp.setPosition(tcp_target.getTranslation());
-        tcp.setOrientation(tcp_target.getRotation());
-    }else if(FOLLOW_MODE == FOLLOW_CIRCLE){
+    }
+    else if(FOLLOW_MODE == FOLLOW_CIRCLE)
+    {
         t+=feedSpeed*1/60;
-        if(t>1){
+        if(t>1)
+        {
             t = 0;
         }
         ofVec3f p = line.getPointAtPercent(t);
         tcp.setPosition(p);
         tcp.setOrientation(tcp_target.getRotation());
     }
-
     robot.setToolOffset(offset);
     robot.setDesired(tcp);
     robot.update();
