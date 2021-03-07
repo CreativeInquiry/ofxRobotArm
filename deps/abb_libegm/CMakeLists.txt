@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-
+set (CMAKE_CXX_STANDARD 11)
 # Read version from the package.xml file.
 file(READ ${CMAKE_CURRENT_SOURCE_DIR}/package.xml package_xml_str)
 if(NOT package_xml_str MATCHES "<version>([0-9]+.[0-9]+.[0-9]+)</version>")
@@ -20,7 +20,15 @@ endif()
 #########################
 ## Boost C++ Libraries ##
 #########################
-find_package(Boost REQUIRED COMPONENTS regex system thread)
+if(APPLE)
+  set(Boost_USE_STATIC_LIBS   ON)
+  set(Boost_USE_MULTITHREADED OFF)
+  set(Boost_NO_BOOST_CMAKE ON)
+  set(Boost_NO_SYSTEM_PATHS ON)
+  set(BOOST_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/../../../../libs/boost)
+  set(BOOST_INCLUDEDIR  ${CMAKE_CURRENT_SOURCE_DIR}/../../../../libs/boost/include/boost/)
+  set(BOOST_LIBRARYDIR ${CMAKE_CURRENT_SOURCE_DIR}/../../../../libs/boost/lib/osx)
+endif()
 
 #############################
 ## Google Protocol Buffers ##
@@ -35,8 +43,10 @@ if(WIN32)
   endforeach()
 endif()
 
+set ( Protobuf_USE_STATIC_LIBS ON )
 find_package(Protobuf REQUIRED)
 
+set(PROTOBUF_PROTOC_EXECUTABLE /usr/local/bin/protoc)
 # Make sure protoc is present, as apparently the above find_package() doesn't check that.
 if(NOT PROTOBUF_PROTOC_EXECUTABLE)
   message(FATAL_ERROR "Cannot find required 'protoc', cannot process Protobuf files without it. Aborting.")
@@ -97,12 +107,13 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 )
 
 
-
+set( Boost_LIBRARIES
+${BOOST_LIBRARYDIR}/libboost_regex.a
+${BOOST_LIBRARYDIR}/libboost_system.a
+${BOOST_LIBRARYDIR}/libboost_thread.a )
 
 target_link_libraries(${PROJECT_NAME} PUBLIC
-  Boost::regex
-  Boost::system
-  Boost::thread
+  ${Boost_LIBRARIES}
   ${PROTOBUF_LIBRARIES}
   Threads::Threads
 )

@@ -53,8 +53,7 @@ namespace internal {
 // the generated binary.
 class LIBPROTOBUF_EXPORT InlinedStringField {
  public:
-  InlinedStringField()
-    GOOGLE_PROTOBUF_ATTRIBUTE_ALWAYS_INLINE;
+  InlinedStringField() GOOGLE_PROTOBUF_ATTRIBUTE_ALWAYS_INLINE;
   explicit InlinedStringField(const ::std::string& default_value);
 
   void AssignWithDefault(const ::std::string* default_value,

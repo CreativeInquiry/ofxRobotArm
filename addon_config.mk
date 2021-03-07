@@ -57,87 +57,13 @@ common:
 	# in the src folders in libs and the root of the addon. if your addon needs
 	# to include files in different places or a different set of files per platform
 	# they can be specified here
+	# ADDON_SOURCES = 
 
-	# ADDON_SOURCES = libs/abb_libegm/src/egm_base_interface.cpp
-	# ADDON_SOURCES += libs/abb_libegm/src/egm_common_auxiliary.cpp
-	# ADDON_SOURCES += libs/abb_libegm/src/egm_common.cpp
-	# ADDON_SOURCES += libs/abb_libegm/src/egm_controller_interface.cpp
-	# ADDON_SOURCES += libs/abb_libegm/src/egm_interpolator.cpp
-	# ADDON_SOURCES += libs/abb_libegm/src/egm_logger.cpp
-	# ADDON_SOURCES += libs/abb_libegm/src/egm_trajectory_interface.cpp
-	# ADDON_SOURCES += libs/abb_libegm/src/egm_udp_server.cpp
-	# ADDON_SOURCES += libs/abb_librws/src/rws_client.cpp
-	# ADDON_SOURCES += libs/abb_librws/src/rws_common.cpp
-	# ADDON_SOURCES += libs/abb_librws/src/rws_interface.cpp
-	# ADDON_SOURCES += libs/abb_librws/src/rws_poco_client.cpp
-	# ADDON_SOURCES += libs/abb_librws/src/rws_rapid.cpp
-	# ADDON_SOURCES += libs/abb_librws/src/rws_state_machine_interface.cpp
-	# ADDON_SOURCES += libs/abb_libegm/proto/egm_wrapper_trajectory.pb.cc
-	# ADDON_SOURCES += libs/abb_libegm/proto/egm_wrapper.pb.cc
-	# ADDON_SOURCES += libs/abb_libegm/proto/egm.pb.cc
-	# ADDON_SOURCES += src/controllers/RobotController.cpp
-	# ADDON_SOURCES += src/controllers/PathController.cpp
-	# ADDON_SOURCES += src/controllers/Move.cpp
-	# ADDON_SOURCES += src/drivers/ABBDriver.cpp
-	# ADDON_SOURCES += src/drivers/URDriver.cpp
-	# ADDON_SOURCES += src/kinematics/InverseKinematics.cpp
-	# ADDON_SOURCES += src/kinematics/kin.cpp
-	# ADDON_SOURCES += src/kinematics/RobotKinematicModel.cpp
-	# ADDON_SOURCES += src/path/GMLPath.cpp
-	# ADDON_SOURCES += src/path/Path.cpp
-	# ADDON_SOURCES += src/path/Path3D.cpp
-	# ADDON_SOURCES += src/utils/CylinderRestrictor.cpp
-	# ADDON_SOURCES += src/utils/JointRestrictor.cpp
-	# ADDON_SOURCES += src/utils/PathPlayer.cpp
-	# ADDON_SOURCES += src/utils/PathRecorder.cpp
-	# ADDON_SOURCES += src/utils/RobotAngleOffsets.cpp
-	# ADDON_SOURCES += src/utils/RobotArmCollision.cpp
-	# ADDON_SOURCES += src/utils/RobotArmSafety.cpp
-	# ADDON_SOURCES += src/utils/RobotConstants.cpp
-	# ADDON_SOURCES += src/utils/RobotStateMachine.cpp
-	# ADDON_SOURCES += src/utils/ToolHead.cpp
-	# ADDON_SOURCES += src/world/WorkSurface3D.cpp
-	# ADDON_SOURCES += libs/urDriver/do_output.cpp
-	# ADDON_SOURCES += libs/urDriver/robot_state_RT.cpp
-	# ADDON_SOURCES += libs/urDriver/robot_state.cpp
-	# ADDON_SOURCES += libs/urDriver/ur_communication.cpp
-	# ADDON_SOURCES += libs/urDriver/ur_driver.cpp
-	# ADDON_SOURCES += libs/urDriver/ur_realtime_communication.cpp
-    
-			
-	
 	# source files that will be included as C files explicitly
 	# ADDON_C_SOURCES = 
 	
 	# source files that will be included as header files explicitly
-	# ADDON_HEADER_SOURCES = src/constrollers/RobotController.h
-	# ADDON_HEADER_SOURCES += src/constrollers/PathController.h
-	# ADDON_HEADER_SOURCES += src/constrollers/Move.h
-	# ADDON_HEADER_SOURCES += src/drivers/ABBDriver.h
-	# ADDON_HEADER_SOURCES += src/drivers/URDriver.h
-	# ADDON_HEADER_SOURCES += src/kinematics/InverseKinematics.h
-	# ADDON_HEADER_SOURCES += src/kinematics/kin.h
-	# ADDON_HEADER_SOURCES += src/kinematics/RobotKinematicModel.h
-	# ADDON_HEADER_SOURCES += src/path/GMLPath.h
-	# ADDON_HEADER_SOURCES += src/path/Path.h
-	# ADDON_HEADER_SOURCES += src/path/Path3D.h
-	# ADDON_HEADER_SOURCES += src/utils/CylinderRestrictor.h
-	# ADDON_HEADER_SOURCES += src/utils/JointRestrictor.h
-	# ADDON_HEADER_SOURCES += src/utils/PathPlayer.h
-	# ADDON_HEADER_SOURCES += src/utils/PathRecorder.h
-	# ADDON_HEADER_SOURCES += src/utils/RobotAngleOffsets.h
-	# ADDON_HEADER_SOURCES += src/utils/RobotArmCollision.h
-	# ADDON_HEADER_SOURCES += src/utils/RobotArmSafety.h
-	# ADDON_HEADER_SOURCES += src/utils/RobotConstants.h
-	# ADDON_HEADER_SOURCES += src/utils/RobotStateMachine.h
-	# ADDON_HEADER_SOURCES += src/utils/ToolHead.h
-	# ADDON_HEADER_SOURCES += src/world/WorkSurface3D.h
-	# ADDON_HEADER_SOURCES += libs/urDriver/do_output.h
-	# ADDON_HEADER_SOURCES += libs/urDriver/robot_state_RT.h
-	# ADDON_HEADER_SOURCES += libs/urDriver/robot_state.h
-	# ADDON_HEADER_SOURCES += libs/urDriver/ur_communication.h
-	# ADDON_HEADER_SOURCES += libs/urDriver/ur_driver.h
-	# ADDON_HEADER_SOURCES += libs/urDriver/ur_realtime_communication.h
+
 	
 	# source files that will be included as c++ files explicitly
 	# ADDON_CPP_SOURCES = 
@@ -189,6 +115,11 @@ android/armeabi-v7a:
 osx:
 	# osx/iOS only, any framework that should be included in the project
 	# ADDON_FRAMEWORKS =
+	ADDON_LIBS = libs/relaxedIK/lib/osx/librelaxed_ik_lib.a 
+	ADDON_LIBS += libs/libegm/lib/osx/libabb_libegm.a 
+	ADDON_LIBS += libs/librws/lib/osx/libabb_liberws.a
+	ADDON_LIBS += libs/protobuf/lib/osx/libprotobuf.a
+	ADDON_LIBS += libs/protobuf/lib/osx/libprotobuf-lite.a
 	ADDON_LIBS += ../../../libs/boost/lib/osx/libboost_thread.a 
 	ADDON_LIBS += ../../../libs/boost/lib/osx/libboost_regex.a 
 ios:

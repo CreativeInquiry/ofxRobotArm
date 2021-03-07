@@ -3,10 +3,11 @@ ofxEasing
 ofxGizmo
 ofxGui
 ofxIKArm
+ofxNetwork
 ofxOsc
 ofxPoco
 ofxProtobuf
+ofxYAML
 ofxRobotArm
 ofxTiming
 ofxXmlSettings
-ofxNetwork

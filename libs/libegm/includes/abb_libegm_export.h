@@ -9,15 +9,15 @@
 #  ifndef ABB_LIBEGM_EXPORT
 #    ifdef abb_libegm_EXPORTS
         /* We are building this library */
-#      define ABB_LIBEGM_EXPORT __attribute__((visibility("default")))
+#      define ABB_LIBEGM_EXPORT 
 #    else
         /* We are using this library */
-#      define ABB_LIBEGM_EXPORT __attribute__((visibility("default")))
+#      define ABB_LIBEGM_EXPORT 
 #    endif
 #  endif
 
 #  ifndef ABB_LIBEGM_NO_EXPORT
-#    define ABB_LIBEGM_NO_EXPORT __attribute__((visibility("hidden")))
+#    define ABB_LIBEGM_NO_EXPORT 
 #  endif
 #endif
 
