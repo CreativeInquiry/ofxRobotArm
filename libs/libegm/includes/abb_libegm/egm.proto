@@ -1,0 +1,183 @@
+// Definition of ABB sensor interface V1.1
+//
+// messages of type EgmRobot are sent out from the robot controller
+// messages of type EgmSensor are sent to the robot controller
+//
+syntax = "proto2";
+package abb.egm;
+
+message EgmHeader
+{
+    optional uint32 seqno = 1; // sequence number (to be able to find lost messages)
+    optional uint32 tm = 2;    // controller send time stamp in ms
+
+    enum MessageType {
+        MSGTYPE_UNDEFINED = 0;
+        MSGTYPE_COMMAND = 1;			// for future use
+        MSGTYPE_DATA = 2;				// sent by robot controller
+        MSGTYPE_CORRECTION = 3;			// sent by sensor for position guidance
+        MSGTYPE_PATH_CORRECTION = 4;	// sent by sensor for path correction
+    }
+
+    optional MessageType  mtype = 3 [default = MSGTYPE_UNDEFINED];
+}
+
+message EgmCartesian			// Cartesian position in mm
+{
+    required double x = 1;
+    required double y = 2;
+    required double z = 3;
+}
+
+// If you have pose input, i.e. not joint input, you can choose to send orientation data as quaternion or as Euler angles.
+// If both are sent, Euler angles have higher priority.
+
+message EgmQuaternion			// Quaternion orientation
+{
+    required double u0 = 1;
+    required double u1 = 2;
+    required double u2 = 3;
+    required double u3 = 4;
+}
+
+message EgmEuler				// Euler angle orientation in degrees
+{
+    required double x = 1;
+    required double y = 2;
+    required double z = 3;
+}
+
+message EgmClock				// Time in seconds and microseconds since 1 Jan 1970
+{
+    required uint64 sec = 1;
+    required uint64 usec = 2;
+}
+
+message EgmPose					// Pose (i.e. cartesian position and Quaternion orientation) relative to the correction frame defined by EGMActPose
+{
+    optional EgmCartesian	pos = 1;
+    optional EgmQuaternion	orient = 2;
+	optional EgmEuler		euler = 3;
+}
+
+message EgmCartesianSpeed 		// Array of 6 speed reference values in mm/s or degrees/s
+{
+    repeated double value = 1;
+}
+
+message EgmJoints 				// Array of 6 joint values for TCP robot in degrees
+{
+    repeated double joints = 1;
+}
+
+message EgmExternalJoints 		// Array of 6 joint values for additional axis, in degrees for rotating axis, in mm for linear axis
+{
+    repeated double joints = 1;
+}
+
+message EgmPlanned				// Planned  position for robot (joints or cartesian) and additional axis (array of 6 values)
+{								// Is used for position streaming (source: controller) and position guidance (source: sensor)
+    optional EgmJoints	joints = 1;
+    optional EgmPose	cartesian = 2;
+    optional EgmJoints	externalJoints = 3;
+	optional EgmClock	time = 4;
+}
+
+message EgmSpeedRef				// Speed reference values for robot (joint or cartesian) and additional axis (array of 6 values)
+{
+    optional EgmJoints			joints = 1;
+    optional EgmCartesianSpeed	cartesians = 2;
+    optional EgmJoints			externalJoints = 3;
+}
+
+
+message EgmPathCorr				// Cartesian path correction and measurement age
+{
+    required EgmCartesian   pos = 1;	// Sensor measurement (x, y, z) relative the sensor tool coordinate system
+	required uint32			age = 2;	// Sensor measurement age in ms
+}
+
+
+message EgmFeedBack				// Feed back position, i.e. actual measured position for robot (joints or cartesian) and additional axis (array of 6 values)
+{
+    optional EgmJoints  joints = 1;
+    optional EgmPose    cartesian = 2;
+    optional EgmJoints  externalJoints = 3;
+	optional EgmClock	time = 4;
+}
+
+message EgmMotorState			// Motor state
+{
+    enum MotorStateType {
+        MOTORS_UNDEFINED = 0;
+        MOTORS_ON = 1;
+        MOTORS_OFF = 2;
+    }
+
+    required MotorStateType state = 1;
+}
+
+message EgmMCIState				// EGM state
+{
+    enum MCIStateType {
+        MCI_UNDEFINED = 0;
+        MCI_ERROR = 1;
+        MCI_STOPPED = 2;
+        MCI_RUNNING = 3;
+    }
+
+    required MCIStateType state = 1 [default = MCI_UNDEFINED];
+}
+
+message EgmRapidCtrlExecState	// RAPID execution state
+{
+    enum RapidCtrlExecStateType {
+        RAPID_UNDEFINED = 0;
+        RAPID_STOPPED = 1;
+        RAPID_RUNNING = 2;
+    };
+
+    required RapidCtrlExecStateType state = 1  [default = RAPID_UNDEFINED];
+}
+
+message EgmTestSignals			// Test signals
+{
+    repeated double signals = 1;
+}
+
+message EgmMeasuredForce 				// Array of 6 force values for a robot
+{
+    repeated double force = 1;
+}
+
+// Robot controller outbound message, sent from the controller to the sensor during position guidance and position streaming
+message EgmRobot
+{
+    optional EgmHeader				header = 1;
+    optional EgmFeedBack			feedBack = 2;
+    optional EgmPlanned				planned = 3;
+
+    optional EgmMotorState			motorState = 4;
+    optional EgmMCIState			mciState = 5;
+    optional bool					mciConvergenceMet = 6;
+    optional EgmTestSignals			testSignals = 7;
+    optional EgmRapidCtrlExecState	rapidExecState = 8;
+    optional EgmMeasuredForce		measuredForce = 9;
+    optional double                 utilizationRate=10;
+}
+
+
+// Robot controller inbound message, sent from sensor to the controller during position guidance
+message EgmSensor
+{
+    optional EgmHeader		header = 1;
+    optional EgmPlanned		planned = 2;
+    optional EgmSpeedRef	speedRef = 3;
+}
+
+// Robot controller inbound message, sent from sensor during path correction
+message EgmSensorPathCorr
+{
+    optional EgmHeader		header = 1;
+    optional EgmPathCorr	pathCorr = 2;
+}
