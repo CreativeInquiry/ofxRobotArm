@@ -6,7 +6,7 @@ ofxIKArm
 ofxNetwork
 ofxOsc
 ofxPoco
-ofxYAML
 ofxRobotArm
 ofxTiming
 ofxXmlSettings
+ofxYAML

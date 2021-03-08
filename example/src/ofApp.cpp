@@ -19,8 +19,11 @@ void ofApp::setup(){
     robot.setToolOffset(offset);
     
     tcp = robot.getActualTCPNode();
-    initialRot = tcp.getOrientationQuat();
     tcp.setPosition(tcp.getPosition()*1000);
+    ofQuaternion q;
+    q.makeRotate(90, ofVec3f(0, 0, 1));
+    tcp.setOrientation(q);
+    initialRot = tcp.getOrientationQuat();
 
     tcp_target.setNode(tcp);
 
@@ -126,9 +129,9 @@ void ofApp::draw_scene(){
     line.draw();
     ofPopStyle();
     
-    
-    tcp_target.draw(cam);
     look_target.draw(cam);
+    tcp_target.draw(cam);
+
     cam.end();
 }
 
@@ -413,7 +416,8 @@ void ofApp::keypressed_gizmo(int key){
             FOLLOW_MODE = FOLLOW_CIRCLE;
             break;
         case '4':
-            break;
+            tcp.getGlobalOrientation(initialRot);
+            tcp_target.getMatrix().setRotation(initialRot);
         case '5':
             break;
         case '6':
