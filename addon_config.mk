@@ -105,9 +105,9 @@ android/armeabi-v7a:
 osx:
 	# osx/iOS only, any framework that should be included in the project
 	# ADDON_FRAMEWORKS =
-	ADDON_LIBS = libs/relaxedIK/lib/osx/librelaxed_ik_lib.a 
+	# ADDON_LIBS += libs/relaxedIK/lib/osx/librelaxed_ik_lib.a 
 	ADDON_LIBS += libs/libegm/lib/osx/libabb_libegm.a 
-	ADDON_LIBS += libs/librws/lib/osx/libabb_liberws.a
+	ADDON_LIBS += libs/librws/lib/osx/libabb_librws.a
 	ADDON_LIBS += libs/protobuf/lib/osx/libprotobuf.a
 	ADDON_LIBS += libs/protobuf/lib/osx/libprotobuf-lite.a
 	ADDON_LIBS += ../../../libs/boost/lib/osx/libboost_thread.a 

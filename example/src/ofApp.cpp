@@ -416,8 +416,8 @@ void ofApp::keypressed_gizmo(int key){
             FOLLOW_MODE = FOLLOW_CIRCLE;
             break;
         case '4':
-            tcp.getGlobalOrientation(initialRot);
-            tcp_target.getMatrix().setRotation(initialRot);
+            tcp.setOrientation(initialRot);
+            tcp_target.getMatrix().setRotate(initialRot);
         case '5':
             break;
         case '6':

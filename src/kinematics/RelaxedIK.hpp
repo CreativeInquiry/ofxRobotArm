@@ -18,8 +18,8 @@ extern "C" {
     };
 
     Opt solve(double* pos_arr, int pos_length, double* quat_arr, int quat_length);
-    void set_starting_config(double * pose, int pose_length);
-    void dynamic_obstacle_cb(char * name, double * pos, double * quat);
+//    void set_starting_config(double * pose, int pose_length);
+//    void dynamic_obstacle_cb(char * name, double * pos, double * quat);
 #ifdef __cplusplus
 };
 #endif

@@ -12,10 +12,10 @@
 
 
 namespace ofxRobotArm{
-class Solver : public ofThread {
+class RelaxedIKSolver : public ofThread {
 public:
-    Solver();
-    ~Solver();
+    RelaxedIKSolver();
+    ~RelaxedIKSolver();
     void start();
     void stop();
     void startThread();

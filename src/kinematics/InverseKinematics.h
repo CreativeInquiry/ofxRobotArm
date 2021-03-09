@@ -7,7 +7,7 @@
 #include "Utils.h"
 #include "RobotParameters.h"
 #include "RobotConstants.hpp"
-#include "Solver.h"
+#include "RelaxedIKSolver.h"
 //
 // Copyright (c) 2016, 2021 Daniel Moore, Madeline Gannon, and The Frank-Ratchye STUDIO for Creative Inquiry All rights reserved.
 ////
@@ -64,7 +64,7 @@ public:
     shared_ptr< ofxIKArm > mIKArmInverted;
     vector<vector<double> > preSol;
     
-    Solver relaxedIK;
+    RelaxedIKSolver relaxedIK;
 };
 }
 

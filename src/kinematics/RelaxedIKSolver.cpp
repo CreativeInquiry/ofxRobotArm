@@ -5,11 +5,11 @@
 //  Created by Dan Moore on 1/2/21.
 //
 
-#include "Solver.h"
+#include "RelaxedIKSolver.h"
 #include "RelaxedIK.hpp"
 using namespace ofxRobotArm;
 
-Solver::Solver(){
+RelaxedIKSolver::RelaxedIKSolver(){
     vector<double> foo(6., 0.0);
     currentPose.setup(foo);
     currentPose.getBack().assign(6, 0.0);
@@ -17,34 +17,34 @@ Solver::Solver(){
     frameNum = 0;
 }
 
-Solver::~Solver(){
+RelaxedIKSolver::~RelaxedIKSolver(){
     stop();
     waitForThread(false);
 }
 
-void Solver::start(){
+void RelaxedIKSolver::start(){
     startThread();
 }
-void Solver::stop(){
+void RelaxedIKSolver::stop(){
     stopThread();
 }
-void Solver::startThread(){
+void RelaxedIKSolver::startThread(){
     bThreadStarted = true;
     ofThread::startThread();
 }
-void Solver::stopThread(){
+void RelaxedIKSolver::stopThread(){
     if(isThreadRunning()){
         bThreadStarted = false;
         ofThread::stopThread();
     }
 }
-void Solver::setPose(Pose desiredPose, Pose actualPose){
+void RelaxedIKSolver::setPose(Pose desiredPose, Pose actualPose){
     lock();
     this->desiredPose = desiredPose;
     this->actualPose = actualPose;
     unlock();
 }
-vector<double> Solver::getCurrentPose(){
+vector<double> RelaxedIKSolver::getCurrentPose(){
     vector<double> ret;
     lock();
     currentPose.swapFront();
@@ -53,13 +53,13 @@ vector<double> Solver::getCurrentPose(){
     return ret;
 }
 
-void Solver::setInitialPose(vector<double> pose){
+void RelaxedIKSolver::setInitialPose(vector<double> pose){
     lock();
 //    set_starting_config(pose.data(), pose.size());
     unlock();
 }
 
-void Solver::setAngle(double angleX, double angleY, double angleZ){
+void RelaxedIKSolver::setAngle(double angleX, double angleY, double angleZ){
     lock();
     this->angleX = angleX;
     this->angleY = angleY;
@@ -67,7 +67,7 @@ void Solver::setAngle(double angleX, double angleY, double angleZ){
     unlock();
 }
 
-void Solver::threadedFunction(){
+void RelaxedIKSolver::threadedFunction(){
     while(isThreadRunning()){
         lock();
   
@@ -107,7 +107,7 @@ void Solver::threadedFunction(){
     }
 }
 
-void Solver::setMatrix(ofVec3f u, ofVec3f v, ofVec3f w){
+void RelaxedIKSolver::setMatrix(ofVec3f u, ofVec3f v, ofVec3f w){
     lock();
     this->u = u;
     this->v = v;
@@ -115,7 +115,7 @@ void Solver::setMatrix(ofVec3f u, ofVec3f v, ofVec3f w){
     unlock();
 }
 
-bool Solver::isThreadRunning(){
+bool RelaxedIKSolver::isThreadRunning(){
     bool ret;
     lock();
     ret = bThreadStarted;
@@ -123,7 +123,7 @@ bool Solver::isThreadRunning(){
     return ret;
 }
 
-uint64_t Solver::getFrame(){
+uint64_t RelaxedIKSolver::getFrame(){
     uint64_t t = 0;
     lock();
     frameAvg +=frameNum;
