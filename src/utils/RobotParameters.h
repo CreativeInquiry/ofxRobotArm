@@ -70,7 +70,7 @@ namespace ofxRobotArm{
             
         };
         
-        RobotType get_robot_type(){ return type; }
+        RobotType getRobotType(){ return type; }
         
         ofParameterGroup robotArmParams;
         ofParameter<ofVec3f> targetTCPPosition;

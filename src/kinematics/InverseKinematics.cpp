@@ -14,7 +14,7 @@ InverseKinematics::~InverseKinematics(){
 
 }
 
-void InverseKinematics::setupParams(RobotParameters * params){
+void InverseKinematics::setup(RobotParameters * params, bool useRelaxedIK){
     robotParams = params;
     this->params.setName("IKArm Commands");
     this->params.add( bControlIkWithMouse.set("ControlIkWithMouse", false ));
@@ -29,13 +29,14 @@ void InverseKinematics::setupParams(RobotParameters * params){
     this->params.add( mIKRampStartPct.set("IKRampStartPct", 0.3, 0.0, 1.0 ));
     this->params.add( mIKRampEndPct.set("IKRampEndPct", 1.5, 1.0, 2.0 ));
     this->params.add( mIKRampHeightPct.set("IKRampHeightPct", 0.3, 0.0, 1.0 ));
-    this->params.add( bUseRelaxedIK.set("Use RelaxedIK ", true));
+    this->params.add( bUseRelaxedIK.set("Use RelaxedIK ", useRelaxedIK));
     robotParams->jointsIK.add(this->params);
+
+    setRobotType(robotParams->getRobotType());
 }
 
 
 void InverseKinematics::setRobotType(ofxRobotArm::RobotType type){
-    ofLog()<<"InverseKinematics setRobotType"<<endl;
     this->type = type;
     kinematics.setType(this->type);
     if(this->type == UR3 || this->type == UR5 || this->type  == UR10){

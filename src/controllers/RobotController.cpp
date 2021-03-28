@@ -16,22 +16,21 @@ void RobotController::setup(RobotParameters & params) {
 }
 
 void RobotController::setup(string ipAddress, RobotParameters & params, bool offline){
-    if(params.get_robot_type() == UR3 || params.get_robot_type() == UR5 || params.get_robot_type()  == UR10){
+    if(params.getRobotType() == UR3 || params.getRobotType() == UR5 || params.getRobotType()  == UR10){
         robot = new URDriver();
-    }else if(params.get_robot_type() == IRB120){
+    }else if(params.getRobotType() == IRB120){
         robot = new ABBDriver();
     }
     
     robotParams = params;
     
-    desiredPose.setup(params.get_robot_type());
-    actualPose.setup(params.get_robot_type());
+    desiredPose.setup(params.getRobotType());
+    actualPose.setup(params.getRobotType());
     
     jointWeights.assign(6, 1.0f);
     smoothedPose.assign(6, 0.0f);
     
-    inverseKinematics.setRobotType(params.get_robot_type());
-    inverseKinematics.setupParams(&robotParams);
+    inverseKinematics.setup(&robotParams, true);;
     inverseKinematics.setRelaxedPose(robot->getInitPose());
 
     vector<double> pose = robot->getInitPose();
