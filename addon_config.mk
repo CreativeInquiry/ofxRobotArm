@@ -94,6 +94,8 @@ linux64:
 	ADDON_LIBS += libs/protobuf/lib/linux64/libprotobuf-lite.a
 	ADDON_LDFLAGS += -lboost_thread 
 	ADDON_LDFLAGS += -lboost_regex 
+	ADDON_LDFLAGS += -lnlopt
+	ADDON_LDFLAGS += -lm
 vs:
 	# After compiling copy the following dynamic libraries to the executable directory
 	# only windows visual studio

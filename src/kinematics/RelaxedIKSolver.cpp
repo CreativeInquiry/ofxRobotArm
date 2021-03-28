@@ -55,7 +55,7 @@ vector<double> RelaxedIKSolver::getCurrentPose(){
 
 void RelaxedIKSolver::setInitialPose(vector<double> pose){
     lock();
-//    set_starting_config(pose.data(), pose.size());
+    // set_starting_config(pose.data(), pose.size());
     unlock();
 }
 
@@ -81,7 +81,7 @@ void RelaxedIKSolver::threadedFunction(){
         
     
     
-        ofQuaternion rot  = (desiredPose.orientation * actualPose.orientation);
+        ofQuaternion rot  = desiredPose.orientation * actualPose.orientation;
    
         std::vector<double> pos(3, 0.0);
         pos[0] = difPos.x;

@@ -35,11 +35,10 @@ void InverseKinematics::setupParams(RobotParameters * params){
 
 
 void InverseKinematics::setRobotType(ofxRobotArm::RobotType type){
-    cout<<"setRobotType"<<endl;
+    ofLog()<<"InverseKinematics setRobotType"<<endl;
     this->type = type;
     kinematics.setType(this->type);
     if(this->type == UR3 || this->type == UR5 || this->type  == UR10){
-        cout<<"setRobotType"<<endl;
         relaxedIK.setMatrix(ofVec3f(-1, 0, 0), ofVec3f(0, -1, 0), ofVec3f(0, 0, 1));
     }else{
         relaxedIK.setMatrix(ofVec3f(1, 0, 0), ofVec3f(0, 1, 0), ofVec3f(0, 0, 1));

@@ -32,8 +32,13 @@ void RobotController::setup(string ipAddress, RobotParameters & params, bool off
     
     inverseKinematics.setRobotType(params.get_robot_type());
     inverseKinematics.setupParams(&robotParams);
-    
-    
+    inverseKinematics.setRelaxedPose(robot->getInitPose());
+
+    vector<double> pose = robot->getInitPose();
+
+    for(int i = 0 ; i < smoothedPose.size(); i++){
+        smoothedPose[i] = pose[i];
+    }
     
     if(!offline){
         robot->setAllowReconnect(params.bDoReconnect);
@@ -98,6 +103,8 @@ void RobotController::setTeachMode(){
 #pragma mark - IK
 void RobotController::updateIK(Pose pose){
     targetPoses = inverseKinematics.inverseKinematics(pose, initPose);
+    ofQuaternion rot  = pose.orientation * initPose.orientation;
+    robotParams.calcTCPOrientation = ofVec4f(rot.x(), rot.y(), rot.z(), rot.w());
     int selectedSolution = inverseKinematics.selectSolution(targetPoses,  robot->getCurrentPose(), jointWeights);
     if(selectedSolution > -1){
         targetPose = targetPoses[selectedSolution];

@@ -55,7 +55,7 @@ namespace ofxRobotArm{
             
             joints.add(tcpPosition.set("Actual Robot TCP POS", ofVec3f(0, 0, 0), ofVec3f(-1, -1, -1), ofVec3f(1, 1, 1)));
             joints.add(tcpOrientation.set("Actual Robot TCP ORIENT", ofVec4f(0,0,0,1), ofVec4f(-1,-1,-1,-1), ofVec4f(1,1,1,1)));
-            //            robotArmParams.add(calcTCPOrientation.set("Calculated Robot TCP ORIENT", ofVec4f(0,0,0,1), ofVec4f(-1,-1,-1,-1), ofVec4f(1,1,1,1)));
+            joints.add(calcTCPOrientation.set("Relaxed Robot TCP ORIENT", ofVec4f(0,0,0,1), ofVec4f(-1,-1,-1,-1), ofVec4f(1,1,1,1)));
             forwardTCPOrientation.set("Forward TCP ORIENT", ofVec4f(0,0,0,1), ofVec4f(-1,-1,-1,-1), ofVec4f(1,1,1,1));
             //            robotArmParams.add(forwardTCPOrientation.set("Forward TCP ORIENT", ofVec4f(0,0,0,1), ofVec4f(-1,-1,-1,-1), ofVec4f(1,1,1,1)));
             forwardTCPPosition.set("Forward TCP Pos", ofVec3f(0, 0, 0), ofVec3f(-1, -1, -1), ofVec3f(1, 1, 1));
