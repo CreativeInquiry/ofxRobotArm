@@ -17,7 +17,7 @@ class InverseKinematics{
 public:
     ~InverseKinematics();
     InverseKinematics();
-    void setup(RobotParameters * params, bool bUseRelaxedIK);
+    void setup(bool useRelaxedIK, RobotType type);
     
     vector<double> inverseRelaxed(Pose targetPose, Pose currentPose);
     

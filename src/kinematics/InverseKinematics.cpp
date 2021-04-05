@@ -14,25 +14,23 @@ InverseKinematics::~InverseKinematics(){
 
 }
 
-void InverseKinematics::setup(RobotParameters * params, bool useRelaxedIK){
-    robotParams = params;
-    this->params.setName("IKArm Commands");
-    this->params.add( bControlIkWithMouse.set("ControlIkWithMouse", false ));
-    this->params.add( bOnlyUseInverseIk.set("OnlyUseInverseIK", true ));
+void InverseKinematics::setup(bool useRelaxedIK, RobotType type){
+    params.setName("IKArm Commands");
+    params.add( bControlIkWithMouse.set("ControlIkWithMouse", false ));
+    params.add( bOnlyUseInverseIk.set("OnlyUseInverseIK", true ));
     
-    this->params.add( ikRobotMinY.set( "IkRobotMinY", -725, -2000, 2000 ));
-    this->params.add( ikRobotMaxY.set( "IkRobotMaxY", 0, -2000, 2000 ));
+    params.add( ikRobotMinY.set( "IkRobotMinY", -725, -2000, 2000 ));
+    params.add( ikRobotMaxY.set( "IkRobotMaxY", 0, -2000, 2000 ));
     
-    this->params.add( ikRobotMinZ.set( "IkRobotMinZ", 300, -500, 3000 ));
-    this->params.add( ikRobotMaxZ.set( "IkRobotMaxZ", 700, -500, 3000 ));
+    params.add( ikRobotMinZ.set( "IkRobotMinZ", 300, -500, 3000 ));
+    params.add( ikRobotMaxZ.set( "IkRobotMaxZ", 700, -500, 3000 ));
     
-    this->params.add( mIKRampStartPct.set("IKRampStartPct", 0.3, 0.0, 1.0 ));
-    this->params.add( mIKRampEndPct.set("IKRampEndPct", 1.5, 1.0, 2.0 ));
-    this->params.add( mIKRampHeightPct.set("IKRampHeightPct", 0.3, 0.0, 1.0 ));
-    this->params.add( bUseRelaxedIK.set("Use RelaxedIK ", useRelaxedIK));
-    robotParams->jointsIK.add(this->params);
+    params.add( mIKRampStartPct.set("IKRampStartPct", 0.3, 0.0, 1.0 ));
+    params.add( mIKRampEndPct.set("IKRampEndPct", 1.5, 1.0, 2.0 ));
+    params.add( mIKRampHeightPct.set("IKRampHeightPct", 0.3, 0.0, 1.0 ));
+    params.add( bUseRelaxedIK.set("Use RelaxedIK ", useRelaxedIK));
 
-    setRobotType(robotParams->getRobotType());
+    setRobotType(type);
 }
 
 
