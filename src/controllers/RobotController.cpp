@@ -4,41 +4,96 @@
 ////
 using namespace ofxRobotArm;
 RobotController::RobotController(){
-    
+    setupParams();
 }
 
 RobotController::~RobotController(){
    
 }
 
-void RobotController::setup(RobotParameters & params) {
-    setup(params.ipAddress, params, false);
+void RobotController::setupParams(){
+     
+    robotArmParams.setName("Robot Controls");
+    robotArmParams.add(bLive.set("Live", false));
+    robotArmParams.add(bCopy.set("Copy Actual TCP", false));    
+    robotArmParams.add(bTeachMode.set("Enable Teach Mode", false));
+    robotArmParams.add(bUseIKFast.set("Use IKFast", false));
+    robotArmParams.add(bUseRelaxedIK.set("Use RelaxedIK", true));
+    robotArmParams.add(bUseIKArm.set("Use IKArm", false));
+    robotArmParams.add(bDoReconnect.set("TryReconnect", false));
+    robotArmParams.add(bSmoothPose.set("Smooth Pose", true));
+    robotArmParams.add(smoothness.set("Smooth", 0.0, 0.001, 1.0));
+    
+    joints.setName("Joint Pos");
+    targetJoints.setName("Target Joints");
+    jointsIK.setName("IK Solver");
+    for(int i = 0; i < 6; i++){
+        pCurrentPose.push_back(ofParameter<double>());
+        joints.add(pCurrentPose.back().set("actual joint "+ofToString(i), 0, -360, 360));
+    }
+    
+    for(int i = 0; i < 6; i++){
+        pTargetPose.push_back(ofParameter<double>());
+        targetJoints.add(pTargetPose.back().set("target joint "+ofToString(i), 0, -360, 360));
+        pIkPose.push_back(ofParameter<double>());
+        jointsIK.add(pIkPose.back().set("ik joint "+ofToString(i), 0, -360, 360));
+    }
+    
+    pathRecorderParams.setName("Path Recording");
+    pathRecorderParams.add(bRecord.set("Record", false));
+    
+    joints.add(tcpPosition.set("Actual Robot TCP POS", ofVec3f(0, 0, 0), ofVec3f(-1, -1, -1), ofVec3f(1, 1, 1)));
+    joints.add(tcpOrientation.set("Actual Robot TCP ORIENT", ofVec4f(0,0,0,1), ofVec4f(-1,-1,-1,-1), ofVec4f(1,1,1,1)));
+    joints.add(calcTCPOrientation.set("Relaxed Robot TCP ORIENT", ofVec4f(0,0,0,1), ofVec4f(-1,-1,-1,-1), ofVec4f(1,1,1,1)));
+    forwardTCPOrientation.set("Forward TCP ORIENT", ofVec4f(0,0,0,1), ofVec4f(-1,-1,-1,-1), ofVec4f(1,1,1,1));
+    // robotArmParams.add(forwardTCPOrientation.set("Forward TCP ORIENT", ofVec4f(0,0,0,1), ofVec4f(-1,-1,-1,-1), ofVec4f(1,1,1,1)));
+    forwardTCPPosition.set("Forward TCP Pos", ofVec3f(0, 0, 0), ofVec3f(-1, -1, -1), ofVec3f(1, 1, 1));
+    // robotArmParams.add(forwardTCPPosition.set("Forward TCP Pos", ofVec3f(0, 0, 0), ofVec3f(-1, -1, -1), ofVec3f(1, 1, 1)));
+    
+    
+    // joints.add(targetTCPPosition.set("Set TCP POS", ofVec3f(0, 0, 0), ofVec3f(-1, -1, -1), ofVec3f(1, 1, 1)));
+    // joints.add(targetTCPOrientation.set("Set TCP ORIENT",ofVec4f(0,0,0,1), ofVec4f(-1,-1,-1,-1), ofVec4f(1,1,1,1)));
+    
+    // joints.add(tcpOffset.set("tcpOffset", ofVec3f(0, 0, 0), ofVec3f(-0.2, -0.2, -0.2), ofVec3f(0.2, 0.2, 0.2)));]
 }
 
-void RobotController::setup(string ipAddress, RobotParameters & params, bool offline){
-    if(params.get_robot_type() == UR3 || params.get_robot_type() == UR5 || params.get_robot_type()  == UR10){
+void RobotController::setup(string ipAddress, string urdfPath, RobotType type){
+    model.load(urdfPath);
+    setup(ipAddress, false, type);
+}
+
+void RobotController::setup(string ipAddress, bool offline, RobotType type){
+    this->type = type;
+
+    if(this->type == UR3 || this->type== UR5 ||this->type  == UR10){
         robot = new URDriver();
-    }else if(params.get_robot_type() == IRB120){
+    }else if(type == IRB120){
         robot = new ABBDriver();
     }
     
-    robotParams = params;
     
-    desiredPose.setup(params.get_robot_type());
-    actualPose.setup(params.get_robot_type());
+    desiredModel.setup(this->type);
+    actualModel.setup(this->type);
     
     jointWeights.assign(6, 1.0f);
     smoothedPose.assign(6, 0.0f);
     
-    inverseKinematics.setRobotType(params.get_robot_type());
-    inverseKinematics.setupParams(&robotParams);
-    
-    
-    
+    inverseKinematics.setup(this->type);
+
+
     if(!offline){
-        robot->setAllowReconnect(params.bDoReconnect);
+        robot->setAllowReconnect(bDoReconnect);
         robot->setup(ipAddress,0, 1);
     }
+    this->ipAddress = ipAddress;
+    vector<double> pose = robot->getInitPose();
+
+    inverseKinematics.setRelaxedPose(pose);
+
+    for(int i = 0 ; i < smoothedPose.size(); i++){
+        smoothedPose[i] = pose[i];
+    }
+    
     smoothness = 0.1;
     bSmoothPose = true;
     
@@ -51,24 +106,32 @@ void RobotController::setup(string ipAddress, RobotParameters & params, bool off
     inverseKinematics.setRelaxedPose(robot->getInitPose());
 }
 
-
-bool RobotController::arePoseControlledExternally() {
-    return robotParams.bSettingPoseExternally;
+void RobotController::toggleLive(){
+    bLive = !bLive;
 }
 
-
-void RobotController::setEndEffector(string filename){
-    actualPose.setEndEffector(filename);
-    desiredPose.setEndEffector(filename);
+bool RobotController::isLive(){
+    return bLive.get();
 }
 
 void RobotController::setHomePose(vector<double> pose){
     homePose = pose;
 }
 
+bool RobotController::arePoseControlledExternally() {
+    return bSetPoseExternally;
+}
+
+
+void RobotController::setEndEffector(string filename){
+    actualModel.setEndEffector(filename);
+    desiredModel.setEndEffector(filename);
+}
+
+
 void RobotController::setToolOffset(ofVec3f local){
-    desiredPose.setToolOffset(local);
-    actualPose.setToolOffset(local);
+    desiredModel.setToolOffset(local);
+    actualModel.setToolOffset(local);
 }
 
 void RobotController::start(){
@@ -88,16 +151,20 @@ void RobotController::toggleTeachMode(){
     robot->toggleTeachMode();
 }
 
-void RobotController::setTeachMode(){
-    if(isTeachModeEnabled != robotParams.bTeachMode){
-        isTeachModeEnabled = robotParams.bTeachMode;
-        robot->setTeachMode(isTeachModeEnabled);
-    }
+void RobotController::setTeachMode(bool teachMode){
+    robot->setTeachMode(teachMode);
 }
 
 #pragma mark - IK
 void RobotController::updateIK(Pose pose){
-    targetPoses = inverseKinematics.inverseKinematics(pose, initPose);
+    if(bUseRelaxedIK){
+        targetPoses = inverseKinematics.inverseRelaxedIK(pose, initPose);
+    }
+    if(bUseIKFast){
+        targetPoses = inverseKinematics.inverseIKFast(pose);
+    }
+    ofQuaternion rot  = pose.orientation * initPose.orientation;
+    calcTCPOrientation = ofVec4f(rot.x(), rot.y(), rot.z(), rot.w());
     int selectedSolution = inverseKinematics.selectSolution(targetPoses,  robot->getCurrentPose(), jointWeights);
     if(selectedSolution > -1){
         targetPose = targetPoses[selectedSolution];
@@ -119,7 +186,7 @@ void RobotController::update(){
     updateRobotData();
     // update the plane that visualizes the robot flange
     tcp_plane.update(target);
-    updateIK(desiredPose.getModifiedTCPPose());
+    updateIK(desiredModel.getModifiedTCPPose());
     updateMovement();
 }
 void RobotController::update(vector<double> _pose){
@@ -131,8 +198,9 @@ void RobotController::update(vector<double> _pose){
         ofNode fN;
         fN.setGlobalPosition(forwardIK.getTranslation());
         fN.setGlobalOrientation(forwardIK.getRotate());
-        desiredPose.setPose(targetPose);
-        desiredPose.setForwardPose(fN);
+        desiredModel.setPose(targetPose);
+        model.setPose(targetPose);
+        desiredModel.setForwardPose(fN);
     }
 }
 
@@ -142,7 +210,7 @@ void RobotController::safetyCheck(){
     
     robotSafety.setCurrentRobotArmAnlges( robot->getCurrentPose());
     robotSafety.setDesiredAngles(targetPose);
-    robotSafety.update(desiredPose);
+    robotSafety.update(desiredModel);
     robotSafety.update(1/60);
     targetPose = robotSafety.getDesiredAngles();
     
@@ -156,7 +224,7 @@ void RobotController::updateMovement(){
         vector<double> currentPose = getCurrentPose();
         for(auto p : targetPose){
             smoothedPose[i] = ofLerp(smoothedPose[i], p, smoothness);
-            robotParams.targetPose[i].set((smoothedPose[i]));
+            targetPose[i] = (smoothedPose[i]);
             i++;
         }
     }
@@ -166,11 +234,12 @@ void RobotController::updateMovement(){
         ofNode fN;
         fN.setGlobalPosition(forwardIK.getTranslation());
         fN.setGlobalOrientation(forwardIK.getRotate());
-        desiredPose.setPose(bSmoothPose?smoothedPose:targetPose);
-        desiredPose.setForwardPose(fN);
+        desiredModel.setPose(bSmoothPose?smoothedPose:targetPose);
+        model.setPose(bSmoothPose?smoothedPose:targetPose);
+        desiredModel.setForwardPose(fN);
     }
     
-    if(robotParams.bMove){
+    if(bLive){
         robot->setPose(bSmoothPose?smoothedPose:targetPose);
         stopPosition = targetPose;
         stopCount = 30;
@@ -189,9 +258,9 @@ void RobotController::updateMovement(){
 
 void RobotController::setDesired(ofNode target){
     // convert from mm to m
-    robotParams.targetTCP.position = target.getGlobalPosition()/1000.0;
-    robotParams.targetTCP.orientation = target.getGlobalOrientation();
-    desiredPose.setTCPPose(robotParams.targetTCP);
+    targetTCP.position = target.getGlobalPosition()/1000.0;
+    targetTCP.orientation = target.getGlobalOrientation();
+    desiredModel.setTCPPose(targetTCP);
     this->target = target;
 }
 
@@ -204,26 +273,26 @@ ofNode RobotController::getActualTCPNode(){
 void RobotController::updateRobotData(){
     // pass the current joints from the robot to the kinematic solver
     
-    robotParams.currentPose = getCurrentPose();
-    actualPose.setPose(robotParams.currentPose);
+    currentPose = getCurrentPose();
+    actualModel.setPose(currentPose);
 
-    ofMatrix4x4 forwardIK = inverseKinematics.forwardKinematics(robotParams.currentPose);
+    ofMatrix4x4 forwardIK = inverseKinematics.forwardKinematics(currentPose);
     ofVec3f translation = forwardIK.getTranslation();
     forwardNode.setGlobalPosition(translation);
     forwardNode.setGlobalOrientation(forwardIK.getRotate());
-    actualPose.setForwardPose(forwardNode);
+    actualModel.setForwardPose(forwardNode);
     forwardPose.position = forwardIK.getTranslation();
     forwardPose.orientation = forwardIK.getRotate();
     
-    robotParams.actualTCP =  forwardPose;
-    robotParams.tcpPosition = robotParams.actualTCP.position;
-    actualPose.setTCPPose(robotParams.actualTCP);
+    actualTCP =  forwardPose;
+    tcpPosition = actualTCP.position;
+    actualModel.setTCPPose(actualTCP);
     
-    ofQuaternion tcpO = robotParams.actualTCP.orientation;
-    robotParams.tcpOrientation = ofVec4f(tcpO.x(), tcpO.y(), tcpO.z(), tcpO.w());
+    ofQuaternion tcpO = actualTCP.orientation;
+    tcpOrientation = ofVec4f(tcpO.x(), tcpO.y(), tcpO.z(), tcpO.w());
     // update GUI params
-    for(int i = 0; i < robotParams.currentPose.size(); i++){
-        robotParams.pCurrentPose[i] = ofRadToDeg((float)robotParams.currentPose[i]);
+    for(int i = 0; i < currentPose.size(); i++){
+        pCurrentPose[i] = ofRadToDeg((float)currentPose[i]);
     }
 }
 
@@ -235,9 +304,11 @@ void RobotController::close(){
 }
 
 #pragma mark - drawing
-void RobotController::draw(ofFloatColor color, bool debug){
-    actualPose.drawMesh(color, debug);
-    actualPose.draw(color, debug);
+void RobotController::draw(ofColor color, bool debug){
+    // actualModel.drawMesh(color, debug);
+    // actualModel.draw(color, debug);
+    model.drawSkeleton();
+    model.draw(color);
 }
 
 void RobotController::drawSafety(ofCamera & cam){
@@ -248,25 +319,25 @@ void RobotController::drawIK(){
     inverseKinematics.draw();
 }
 
-void RobotController::drawDesired(ofFloatColor color){
-    desiredPose.drawMesh(color, false);
-    desiredPose.draw(color, false);
-    desiredPose.drawSkeleton();
+void RobotController::drawDesired(ofColor color){
+    // desiredModel.drawMesh(color, false);
+    // desiredModel.draw(color, false);
+    // desiredModel.drawSkeleton();
     tcp_plane.draw();
     
     ofPushStyle();
-    ofVec3f p = (desiredPose.forwardPose.getPosition() - actualPose.forwardPose.getPosition());
+    ofVec3f p = (desiredModel.forwardPose.getPosition() - actualModel.forwardPose.getPosition());
     float dist = p.length();
     ofSetColor(ofColor::aquamarine);
     if(dist >20){
-        ofDrawBitmapString("dist: "+ofToString(dist), actualPose.forwardPose.getPosition()+p.normalize()*dist/2);
-        ofDrawLine(desiredPose.forwardPose.getPosition(), actualPose.forwardPose.getPosition());
-        p = desiredPose.tcpNode.getPosition() - actualPose.forwardPose.getPosition();
+        ofDrawBitmapString("dist: "+ofToString(dist), actualModel.forwardPose.getPosition()+p.normalize()*dist/2);
+        ofDrawLine(desiredModel.forwardPose.getPosition(), actualModel.forwardPose.getPosition());
+        p = desiredModel.tcpNode.getPosition() - actualModel.forwardPose.getPosition();
     }
     dist = p.length();
     if(dist >20){
-        ofDrawBitmapString("dist: "+ofToString(dist), actualPose.forwardPose.getPosition()+p.normalize()*dist/2);
-        ofDrawLine(desiredPose.tcpNode.getPosition(), actualPose.forwardPose.getPosition());
+        ofDrawBitmapString("dist: "+ofToString(dist), actualModel.forwardPose.getPosition()+p.normalize()*dist/2);
+        ofDrawLine(desiredModel.tcpNode.getPosition(), actualModel.forwardPose.getPosition());
     }
     ofPopStyle();
     
@@ -281,7 +352,7 @@ void RobotController::drawDesired(ofFloatColor color){
 
 //void RobotController::updateIKArm(){
 //
-//    targetPoses = inverseKinematics.inverseKinematics(robotParams.targetTCP);
+//    targetPoses = inverseKinematics.inverseKinematics(targetTCP);
 //    int selectedSolution = inverseKinematics.selectSolution(targetPoses,  robot->getCurrentPose(), jointWeights);
 //    if(selectedSolution > -1){
 //        targetPose = targetPoses[selectedSolution];
@@ -290,7 +361,7 @@ void RobotController::drawDesired(ofFloatColor color){
 //            if( isnan(tpose) ) {
 //                tpose = 0.f;
 //            }
-//            robotParams.ikPose[i] = tpose;
+//            ikPose[i] = tpose;
 //        }
 //    }
 //    for(int i = 0; i < targetPose.size(); i++){
@@ -298,25 +369,25 @@ void RobotController::drawDesired(ofFloatColor color){
 //        if( isnan(tpose) ) {
 //            tpose = 0.f;
 //        }
-//        robotParams.targetPose[i] = ofRadToDeg(tpose);
+//        targetPose[i] = ofRadToDeg(tpose);
 //    }
-//    targetPose = inverseKinematics.getArmIK(&actualPose, robotParams.targetTCP, targetPose, 1.0/60.0f);
+//    targetPose = inverseKinematics.getArmIK(&actualModel, targetTCP, targetPose, 1.0/60.0f);
 //    for(int i = 0; i < targetPose.size(); i++){
 //        float tpose = (float)targetPose[i];
 //        if( isnan(tpose) ) {
 //            tpose = 0.f;
 //        }
-//        robotParams.targetPose[i] = ofRadToDeg(tpose);
+//        targetPose[i] = ofRadToDeg(tpose);
 //    }
 //
 //    // update the look at angles after the IK has been applied //
 //    // overrides the angles and sets them directly //
 //    // alters joint[3] && joint[4]
-////    vector< double > lookAtAngles = inverseKinematics.lookAtJoints(&actualPose, targetPose, 1.0/60.0f)
+////    vector< double > lookAtAngles = inverseKinematics.lookAtJoints(&actualModel, targetPose, 1.0/60.0f)
 //    // determine if these angles should be added or not //
 ////    for( int i = 0; i < targetPose.size(); i++ ) {
 ////        targetPose[i] = lookAtAngles[i];
 ////    }
 //
-//    desiredPose.setPose(targetPose);
+//    desiredModel.setPose(targetPose);
 //}

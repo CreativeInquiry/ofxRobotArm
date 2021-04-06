@@ -21,7 +21,6 @@ void ofApp::setup(){
     tcp = robot.getActualTCPNode();
     tcp.setPosition(tcp.getPosition()*1000);
     initialRot = tcp.getOrientationQuat();
-
     tcp_target.setNode(tcp);
 
     int x = 500;
@@ -61,7 +60,8 @@ void ofApp::update(){
     if(FOLLOW_MODE == FOLLOW_GIZMO)
     {
         tcp.setPosition(tcp_target.getTranslation());
-        tcp.setOrientation(tcp_target.getRotation());
+        ofQuaternion q = tcp_target.getRotation();
+        tcp.setOrientation(q);
     }
     else if(FOLLOW_MODE == LOOK_AT_TARGET)
     {
@@ -80,6 +80,7 @@ void ofApp::update(){
         }
         ofVec3f p = line.getPointAtPercent(t);
         tcp.setPosition(p);
+        tcp_target.setNode(tcp);
         tcp.setOrientation(tcp_target.getRotation());
     }
     robot.setToolOffset(offset);

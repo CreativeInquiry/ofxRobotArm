@@ -24,7 +24,7 @@ meta:
 common:
 	# dependencies with other addons, a list of them separated by spaces 
 	# or use += in several lines
-	ADDON_DEPENDENCIES = ofxIKArm ofxYAML 
+	ADDON_DEPENDENCIES = ofxIKArm ofxYAML ofxXmlSettings ofxSTLModel
 	
 	# include search paths, this will be usually parsed from the file system
 	# but if the addon or addon libraries need special search paths they can be
@@ -94,6 +94,8 @@ linux64:
 	ADDON_LIBS += libs/protobuf/lib/linux64/libprotobuf-lite.a
 	ADDON_LDFLAGS += -lboost_thread 
 	ADDON_LDFLAGS += -lboost_regex 
+	ADDON_LDFLAGS += -lnlopt
+	ADDON_LDFLAGS += -lm
 vs:
 	# After compiling copy the following dynamic libraries to the executable directory
 	# only windows visual studio

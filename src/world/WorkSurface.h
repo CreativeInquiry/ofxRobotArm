@@ -2,7 +2,7 @@
 
 #pragma once
 #include "ofMain.h"
-#include "RobotParameters.h"
+#include "Pose.h"
 #include "Path3D.h"
 #include "PathController.h"
 #include "ofxTiming.h"
@@ -20,7 +20,7 @@ namespace ofxRobotArm{
             LR
         };
         
-        virtual void setup(RobotParameters * parameters)=0;
+        virtual void setup()=0;
         virtual void update(Pose _currentTCP)=0;
         virtual void update()=0;
         virtual void draw()=0;
@@ -43,7 +43,6 @@ namespace ofxRobotArm{
         
     protected:
         
-        RobotParameters * parameters;
         ofParameter<ofVec3f> position;
         ofParameter<ofVec3f> rotation;
         ofParameter<float> retractDistance;

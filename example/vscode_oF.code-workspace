@@ -15,7 +15,27 @@
 			"*.ipp": "cpp",
 			"vector": "cpp",
 			"atomic": "cpp",
-			"string": "cpp"
+			"string": "cpp",
+			"cmath": "cpp",
+			"*.tcc": "cpp",
+			"deque": "cpp",
+			"forward_list": "cpp",
+			"list": "cpp",
+			"system_error": "cpp",
+			"array": "cpp",
+			"regex": "cpp",
+			"hash_map": "cpp",
+			"hash_set": "cpp",
+			"bitset": "cpp",
+			"string_view": "cpp",
+			"initializer_list": "cpp",
+			"utility": "cpp",
+			"valarray": "cpp",
+			"memory": "cpp",
+			"future": "cpp",
+			"istream": "cpp",
+			"functional": "cpp",
+			"tuple": "cpp"
 		}
 	}
 }
