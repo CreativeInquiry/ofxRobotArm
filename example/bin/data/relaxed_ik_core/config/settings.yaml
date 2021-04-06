@@ -24,3 +24,16 @@ loaded_robot:
   # the robot arm follow a cartesian path, put the animation file in the
   # animation_files folder and type the file name here
   input_device: keyboard
+  
+obstacles:
+  cuboids:
+    - name: box1
+      scale: [2.0,2.,0.002]
+      translation: [0.0,0.0,0.0]
+      rotation: [0.0,0.0,0.0]
+      animation: static
+    - name: box2
+      scale: [2.0,0.002,2.0]
+      translation: [0.0,0.5,0.0]
+      rotation: [0.0,0.0,0.0]
+      animation: static

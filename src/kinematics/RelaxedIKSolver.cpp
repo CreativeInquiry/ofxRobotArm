@@ -81,7 +81,7 @@ void RelaxedIKSolver::threadedFunction(){
         
     
     
-        ofQuaternion rot  = (desiredPose.orientation * actualPose.orientation);
+        ofQuaternion rot  = (actualPose.orientation*desiredPose.orientation);
    
         std::vector<double> pos(3, 0.0);
         pos[0] = difPos.x;

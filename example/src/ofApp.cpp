@@ -20,9 +20,6 @@ void ofApp::setup(){
     
     tcp = robot.getActualTCPNode();
     tcp.setPosition(tcp.getPosition()*1000);
-    ofQuaternion q;
-    q.makeRotate(90, ofVec3f(0, 0, 1));
-    tcp.setOrientation(q);
     initialRot = tcp.getOrientationQuat();
 
     tcp_target.setNode(tcp);
