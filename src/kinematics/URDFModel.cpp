@@ -29,6 +29,7 @@ void URDFModel::load(string filepath)
             xml.pushTag("joint", i);
             ofLog() << i << endl;
             string xyz = xml.getAttribute("origin", "xyz", "0.0 0.0 0.0", 0);
+            string rot = xml.getAttribute("origin", "rpy", "0.0 0.0 0.0", 0);
             cout << xyz << endl;
             jointMin[i] = xml.getAttribute("limit", "lower", -TWO_PI, 0);
             jointMax[i] = xml.getAttribute("limit", "upper", TWO_PI, 0);
@@ -43,11 +44,17 @@ void URDFModel::load(string filepath)
             node.setPosition(p.position);
             vector<string> ax = ofSplitString(axis, " ");
             p.axis = ofVec3f(ofToFloat(ax[0]), ofToFloat(ax[1]), ofToFloat(ax[2]));
+            vector<string> ro = ofSplitString(rot, " ");
+             ofLog() <<"ro "<<rot<< endl;
             p.rotation = 0;
-            p.orientation.makeRotate(p.rotation, p.axis);
+            p.orientation.makeRotate(ofRadToDeg(ofToFloat(ro[0])), ofVec3f(1, 0, 0),
+                                     ofRadToDeg(ofToFloat(ro[1])), ofVec3f(0, 1, 0),
+                                     ofRadToDeg(ofToFloat(ro[2])), ofVec3f(0, 0, 1));
+            
             if (i > 0)
             {
                 p.offset = p.position - pose[i - 1].position;
+                ofLog() <<"OFFSET "<< p.offset << endl;
                 node.setParent(nodes[i - 1]);
             }
             pose[i] = p;
@@ -91,7 +98,7 @@ void URDFModel::load(string filepath)
 void URDFModel::setPose(vector<double> pose){
     poseRadians = pose;
     for(int i = 0; i < pose.size(); i++){
-        this->pose[i].rotation = (ofRadToDeg(pose[i]));
+        this->pose[i].rotation = ofRadToDeg(pose[i]);
         this->pose[i].orientation.makeRotate(this->pose[i].rotation,this->pose[i].axis);
         nodes[i].setOrientation(this->pose[i].orientation);
     }    

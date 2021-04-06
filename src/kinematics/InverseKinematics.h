@@ -5,7 +5,6 @@
 #include "Pose.h"
 #include "ofxIKArm.h"
 #include "Utils.h"
-#include "RobotParameters.h"
 #include "RobotConstants.hpp"
 #include "RelaxedIKSolver.h"
 //
@@ -17,7 +16,7 @@ class InverseKinematics{
 public:
     ~InverseKinematics();
     InverseKinematics();
-    void setup(bool useRelaxedIK, RobotType type);
+    void setup(RobotType type);
     
     vector<double> inverseRelaxed(Pose targetPose, Pose currentPose);
     
@@ -25,10 +24,8 @@ public:
     int selectSolution(vector<vector<double> > & inversePosition, vector<double> currentQ, vector<double> weight);
     ofMatrix4x4 forwardKinematics(vector<double> pose);
     double* forwardKinematics(double o, double t, double th, double f, double fi, double s);
-    vector<vector<double> > inverseKinematics(ofxRobotArm::Pose targetPose, ofxRobotArm::Pose currentPose);
-    vector<vector<double> > inverseKinematics(ofMatrix4x4 pose);
-    vector<vector<double> > inverseKinematics(vector<double> input);
-    vector<vector<double> > inverseKinematics(double o, double t, double th, double f, double fi, double s);
+    vector<vector<double> > inverseRelaxedIK(ofxRobotArm::Pose targetPose, ofxRobotArm::Pose currentPose);
+    vector<vector<double> > inverseIKFast(ofxRobotArm::Pose targetPose);
     ofxRobotArm::RobotType type;
     Kinematics kinematics;
     vector<vector<double> > preInversePosition;
@@ -38,7 +35,6 @@ public:
     vector< double > getArmIK(  RobotModel * actualPose, Pose targetTCP,  vector<double> targetPose, float aDeltaTimef );
     vector< double > getArmIK(RobotModel * actualPose, vector<double> targetPose, ofVec3f aTargetWorldPos, ofVec3f aElbowWorldPos, bool aBInvertElbow, float aDeltaTimef);
     
-    RobotParameters * robotParams;
     ofVec3f getYawPitchRoll( ofQuaternion aquat );
     float getNeckAngleAlignedWithVector( RobotModel * actualPose, ofVec3f avec);
     

@@ -83,7 +83,6 @@ namespace ofxRobotArm {
         vector<vector<double> > targetPoses;
         
         // smooth angles //
-
         vector <double> homePose;
         vector <double> stopPosition;
         vector <double> targetPose;
@@ -91,7 +90,6 @@ namespace ofxRobotArm {
         vector <double> prePose;
         vector <double> smoothedPose;
         vector <double> jointWeights;
-
 
         ofParameter<bool> bSmoothPose;
         ofParameter<double> smoothness;
@@ -125,16 +123,11 @@ namespace ofxRobotArm {
         ofParameter<bool> bSetPoseExternally;
 
         std::string ipAddress;
-     
-        
         Pose actualTCP;
         Pose targetTCP;
 
         RobotType type;
-
         URDFModel model;
-
-
 
 
     private:

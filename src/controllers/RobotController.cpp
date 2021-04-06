@@ -17,7 +17,7 @@ void RobotController::setupParams(){
     robotArmParams.add(bLive.set("Live", false));
     robotArmParams.add(bCopy.set("Copy Actual TCP", false));    
     robotArmParams.add(bTeachMode.set("Enable Teach Mode", false));
-    robotArmParams.add(bUseIKFast.set("Use IKFast", true));
+    robotArmParams.add(bUseIKFast.set("Use IKFast", false));
     robotArmParams.add(bUseRelaxedIK.set("Use RelaxedIK", true));
     robotArmParams.add(bUseIKArm.set("Use IKArm", false));
     robotArmParams.add(bDoReconnect.set("TryReconnect", false));
@@ -78,7 +78,7 @@ void RobotController::setup(string ipAddress, bool offline, RobotType type){
     jointWeights.assign(6, 1.0f);
     smoothedPose.assign(6, 0.0f);
     
-    inverseKinematics.setup(true, this->type);
+    inverseKinematics.setup(this->type);
 
 
     if(!offline){
@@ -157,7 +157,12 @@ void RobotController::setTeachMode(bool teachMode){
 
 #pragma mark - IK
 void RobotController::updateIK(Pose pose){
-    targetPoses = inverseKinematics.inverseKinematics(pose, initPose);
+    if(bUseRelaxedIK){
+        targetPoses = inverseKinematics.inverseRelaxedIK(pose, initPose);
+    }
+    if(bUseIKFast){
+        targetPoses = inverseKinematics.inverseIKFast(pose);
+    }
     ofQuaternion rot  = pose.orientation * initPose.orientation;
     calcTCPOrientation = ofVec4f(rot.x(), rot.y(), rot.z(), rot.w());
     int selectedSolution = inverseKinematics.selectSolution(targetPoses,  robot->getCurrentPose(), jointWeights);
@@ -300,8 +305,8 @@ void RobotController::close(){
 
 #pragma mark - drawing
 void RobotController::draw(ofColor color, bool debug){
-    // actualModel.drawMesh(color, debug);
-    // actualModel.draw(color, debug);
+    actualModel.drawMesh(color, debug);
+    actualModel.draw(color, debug);
     model.drawSkeleton();
     model.draw(color);
 }
@@ -315,7 +320,7 @@ void RobotController::drawIK(){
 }
 
 void RobotController::drawDesired(ofColor color){
-    // desiredModel.drawMesh(color, false);
+    desiredModel.drawMesh(color, false);
     desiredModel.draw(color, false);
     desiredModel.drawSkeleton();
     tcp_plane.draw();

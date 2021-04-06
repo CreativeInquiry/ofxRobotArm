@@ -100,13 +100,13 @@ void Kinematics::setType(RobotType type){
         d5 =  0.0;
         d6 =  0.072;
         
-        a1 = 0; //a1
-        a2_2 = -0.070; //a2_2 Different a2
-        b  = 0; //b
-        c1 = 0.270; //c1
-        c2 = 0.290; //c2
-        c3 = 0.302; //c3
-        c4 = 0.072; //c4
+        a1 = 0; 
+        a2_2 = -0.070; 
+        b  = 0; 
+        c1 = 0.270; 
+        c2 = 0.290; 
+        c3 = 0.302; 
+        c4 = 0.072; 
         
         offsets[2] = -PI/2;
         //        sign_corrections[3] = -1;
