@@ -20,9 +20,7 @@ INFOLoader::~INFOLoader(){
 }
 
 void INFOLoader::load(string path){
-    
     yaml.load(path);
-
     yaml["urdf_file_name"];
     yaml["starting_config"];
     yaml["starting_config"];
@@ -31,6 +29,4 @@ void INFOLoader::load(string path){
     yaml["velocity_limits"];
     yaml["rot_offsets"];
     yaml["axis_types"];
-
-    
 }

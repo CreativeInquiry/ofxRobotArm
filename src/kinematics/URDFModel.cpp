@@ -3,9 +3,12 @@
 using namespace ofxRobotArm;
 URDFModel::URDFModel()
 {
+
 }
+
 URDFModel::~URDFModel()
 {
+
 }
 void URDFModel::load(string filepath)
 {
@@ -66,6 +69,7 @@ void URDFModel::load(string filepath)
             if(xml.pushTag("link", i))
             {
                 ofxAssimpModelLoader loader;
+                ofxSTLModel stlLoader;
                 if(xml.pushTag("visual"))
                 {
                     if(xml.pushTag("geometry"));
@@ -83,6 +87,14 @@ void URDFModel::load(string filepath)
                                 }
                                  ofLog(OF_LOG_NOTICE) <<m.getNumVertices()<<endl;
                                 meshes.push_back(m); 
+                            }
+                            else 
+                            {
+                                ofLog(OF_LOG_NOTICE)<<"STL "<< path << endl;
+                                stlLoader.read(path);
+                                meshes.push_back(stlLoader.vboMesh);
+                                cout<<"STL SIZE "<<meshes.back().getNumVertices()<<endl;
+
                             }
                         }
                         xml.popTag();
