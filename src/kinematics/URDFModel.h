@@ -2,7 +2,6 @@
 #include "ofMain.h"
 #include "ofxAssimpModelLoader.h"
 #include "ofxXmlSettings.h"
-#include "ofxSTLModel.h"
 #include "Pose.h"
 namespace ofxRobotArm{
     class URDF{

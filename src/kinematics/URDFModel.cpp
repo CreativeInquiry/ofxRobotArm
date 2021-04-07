@@ -69,7 +69,6 @@ void URDFModel::load(string filepath)
             if(xml.pushTag("link", i))
             {
                 ofxAssimpModelLoader loader;
-                ofxSTLModel stlLoader;
                 if(xml.pushTag("visual"))
                 {
                     if(xml.pushTag("geometry"));
@@ -78,7 +77,7 @@ void URDFModel::load(string filepath)
                         if (path != "")
                         {
                             ofLog(OF_LOG_NOTICE) << path << endl;
-                            if(loader.loadModel(ofToDataPath(path), false)){
+                            if(loader.loadModel(ofToDataPath(path))){
                                 ofLog(OF_LOG_NOTICE) << "LOADED" << endl;
                                 ofMesh m;
                                 for(int i = 0 ; i < loader.getMeshCount(); i++){
@@ -87,14 +86,8 @@ void URDFModel::load(string filepath)
                                 }
                                  ofLog(OF_LOG_NOTICE) <<m.getNumVertices()<<endl;
                                 meshes.push_back(m); 
-                            }
-                            else 
-                            {
-                                ofLog(OF_LOG_NOTICE)<<"STL "<< path << endl;
-                                stlLoader.read(path);
-                                meshes.push_back(stlLoader.vboMesh);
-                                cout<<"STL SIZE "<<meshes.back().getNumVertices()<<endl;
-
+                            }else{
+                                ofLog(OF_LOG_NOTICE) << "NOT LOADED!"<< endl;
                             }
                         }
                         xml.popTag();
@@ -109,7 +102,7 @@ void URDFModel::load(string filepath)
 
 void URDFModel::setPose(vector<double> pose){
     poseRadians = pose;
-    for(int i = 0; i < pose.size(); i++){
+    for(int i = 0; i < pose.size() && i < this->pose.size(); i++){
         this->pose[i].rotation = ofRadToDeg(pose[i]);
         this->pose[i].orientation.makeRotate(this->pose[i].rotation,this->pose[i].axis);
         nodes[i].setOrientation(this->pose[i].orientation);

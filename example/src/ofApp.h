@@ -4,7 +4,6 @@
 #include "ofxGui.h"
 #include "ofxGizmo.h"
 #include "RobotController.h"
-#include "RobotParameters.h"
 class ofApp : public ofBaseApp{
     
 public:
@@ -58,7 +57,6 @@ public:
     float t;
     ofPolyline line;
     
-    ofxRobotArm::RobotParameters robotParams;
     ofxPanel panel;
     ofParameterGroup params;
     ofParameter<bool> show_gui, show_top, show_front, show_side, show_perspective;
