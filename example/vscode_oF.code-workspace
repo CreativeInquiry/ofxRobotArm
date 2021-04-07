@@ -35,7 +35,8 @@
 			"future": "cpp",
 			"istream": "cpp",
 			"functional": "cpp",
-			"tuple": "cpp"
+			"tuple": "cpp",
+			"random": "cpp"
 		}
 	}
 }
