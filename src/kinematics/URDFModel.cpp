@@ -73,7 +73,7 @@ void URDFModel::load(string filepath)
                 {
                     if(xml.pushTag("geometry"));
                     {
-                        string path = xml.getAttribute("mesh", "filename", "", 0);
+                        string path = ofToDataPath(xml.getAttribute("mesh", "filename", "", 0));
                         if (path != "")
                         {
                             ofLog(OF_LOG_NOTICE) << path << endl;
@@ -86,8 +86,11 @@ void URDFModel::load(string filepath)
                                 }
                                  ofLog(OF_LOG_NOTICE) <<m.getNumVertices()<<endl;
                                 meshes.push_back(m); 
+<<<<<<< HEAD
                             }else{
                                 ofLog(OF_LOG_NOTICE) << "NOT LOADED!"<< endl;
+=======
+>>>>>>> 3207b46d1a4bbfe12f5f1084aefeadd9821ef08b
                             }
                         }
                         xml.popTag();
