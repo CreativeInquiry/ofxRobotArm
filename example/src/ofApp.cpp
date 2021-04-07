@@ -21,6 +21,8 @@ void ofApp::setup(){
     tcp = robot.getActualTCPNode();
     tcp.setPosition(tcp.getPosition()*1000);
     initialRot = tcp.getOrientationQuat();
+    initialRot = initialRot.inverse();
+    tcp.setOrientation(initialRot);
     tcp_target.setNode(tcp);
 
     int x = 500;
@@ -538,6 +540,8 @@ void ofApp::mouseExited(int x, int y){
 //--------------------------------------------------------------
 void ofApp::windowResized(int w, int h){
     tcp_target.setViewDimensions(w, h);
+    look_target.setViewDimensions(w, h);
+    
 }
 
 //--------------------------------------------------------------

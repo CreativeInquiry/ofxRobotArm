@@ -26,6 +26,6 @@ obstacles:
   cuboids:
     - name: box1
       scale: [0.00125,0.00125,1.0]
-      translation: [0.0,0.0,-1.0]
+      translation: [0.0,0.0,-2.0]
       rotation: [0.0,0.0,0.0]
       animation: static
