@@ -74,7 +74,7 @@ void URDFModel::load(string filepath)
                 {
                     if(xml.pushTag("geometry"));
                     {
-                        string path = xml.getAttribute("mesh", "filename", "", 0);
+                        string path = ofToDataPath(xml.getAttribute("mesh", "filename", "", 0));
                         if (path != "")
                         {
                             ofLog(OF_LOG_NOTICE) << path << endl;
@@ -87,14 +87,6 @@ void URDFModel::load(string filepath)
                                 }
                                  ofLog(OF_LOG_NOTICE) <<m.getNumVertices()<<endl;
                                 meshes.push_back(m); 
-                            }
-                            else 
-                            {
-                                ofLog(OF_LOG_NOTICE)<<"STL "<< path << endl;
-                                stlLoader.read(path);
-                                meshes.push_back(stlLoader.vboMesh);
-                                cout<<"STL SIZE "<<meshes.back().getNumVertices()<<endl;
-
                             }
                         }
                         xml.popTag();
