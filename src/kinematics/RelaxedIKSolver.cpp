@@ -102,6 +102,8 @@ void RelaxedIKSolver::threadedFunction(){
             frameNum = 0;
         currentPose.swapBack();
         unlock();
+        
+        ofSleepMillis(1);
     }
 }
 

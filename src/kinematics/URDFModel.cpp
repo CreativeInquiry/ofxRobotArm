@@ -78,7 +78,7 @@ void URDFModel::load(string filepath)
                         if (path != "")
                         {
                             ofLog(OF_LOG_NOTICE) << path << endl;
-                            if(loader.loadModel(ofToDataPath(path), false)){
+                            if(loader.loadModel(path, false)){
                                 ofLog(OF_LOG_NOTICE) << "LOADED" << endl;
                                 ofMesh m;
                                 for(int i = 0 ; i < loader.getMeshCount(); i++){

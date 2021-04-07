@@ -305,8 +305,8 @@ void RobotController::close(){
 
 #pragma mark - drawing
 void RobotController::draw(ofColor color, bool debug){
-    // actualModel.drawMesh(color, debug);
-    // actualModel.draw(color, debug);
+    actualModel.drawMesh(color, debug);
+    actualModel.draw(color, debug);
     model.drawSkeleton();
     model.draw(color);
 }
@@ -320,9 +320,9 @@ void RobotController::drawIK(){
 }
 
 void RobotController::drawDesired(ofColor color){
-    // desiredModel.drawMesh(color, false);
-    // desiredModel.draw(color, false);
-    // desiredModel.drawSkeleton();
+    desiredModel.drawMesh(color, false);
+    desiredModel.draw(color, false);
+    desiredModel.drawSkeleton();
     tcp_plane.draw();
     
     ofPushStyle();
