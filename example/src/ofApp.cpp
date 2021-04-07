@@ -6,9 +6,9 @@ void ofApp::setup(){
     ofSetFrameRate(120);
     // setup scene
     setup_scene();
-    robotParams.setup(RobotType::UR10);
     // setup robot
-    robot.setup(robotParams);    // change IP string to your robot's IP address
+    string path = "relaxed_ik_core/config/urdfs/ur5.urdf";
+    robot.setup("192.168.0.1", ofToDataPath(path), RobotType::UR5);    // change IP string to your robot's IP address
     
     // setup gui
     setup_gui();
@@ -20,11 +20,9 @@ void ofApp::setup(){
     
     tcp = robot.getActualTCPNode();
     tcp.setPosition(tcp.getPosition()*1000);
-    ofQuaternion q;
-    q.makeRotate(90, ofVec3f(0, 0, 1));
-    tcp.setOrientation(q);
-    initialRot = q;
-
+    initialRot = tcp.getOrientationQuat();
+    initialRot = initialRot.inverse();
+    tcp.setOrientation(initialRot);
     tcp_target.setNode(tcp);
 
     int x = 500;
@@ -178,14 +176,13 @@ void ofApp::setup_gui(){
     panel_robot.setup("Robot_Controller");
     panel_robot.add(robot_live.set("Robot_LIVE", false));
     panel_robot.setPosition(panel.getPosition().x, panel.getPosition().y + panel.getHeight() + 5);
-    panel_robot.add(robotParams.joints);
-    panel_robot.add(robotParams.targetJoints);
+
     
     
     panel_robot.add(rot.set("TCP ROT", ofVec4f(0, 0, 0, 0)));
     panel_robot.add(feedSpeed.set("Feed Speed", 0.0001, 0.0001, 0.5));
     panel_robot.add(FOLLOW_MODE.set("Follow Mode", 1, 1, 3));
-    panel_robot.add(robot.smoothness.set("Smooth Motion", 0.01, 0.01, 1.0));
+    panel_robot.add(robot.robotArmParams);
     
     ofSetCircleResolution(60);
 }
@@ -433,7 +430,7 @@ void ofApp::keypressed_gizmo(int key){
         case '0':
             break;
         case OF_KEY_RETURN:
-            tcp.setGlobalPosition(robot.desiredPose.forwardPose.getPosition());
+            tcp.setGlobalPosition(robot.desiredModel.forwardPose.getPosition());
             tcp_target.getMatrix().setTranslation(tcp.getPosition());
             break;
         case ' ':
@@ -543,6 +540,8 @@ void ofApp::mouseExited(int x, int y){
 //--------------------------------------------------------------
 void ofApp::windowResized(int w, int h){
     tcp_target.setViewDimensions(w, h);
+    look_target.setViewDimensions(w, h);
+    
 }
 
 //--------------------------------------------------------------
