@@ -1,6 +1,6 @@
 # Enter the information of the robot you want to run RelaxedIK on
 loaded_robot:
-  name: irb120_info.yaml # please enter the name of the corresponding info file
+  name: ur5_info.yaml # please enter the name of the corresponding info file
   link_radius: 0.05 # by default
   # please select from noECA, ECA, ECA3, and ECAA
   # noECA: doesn't incorporate environment collision avoidance

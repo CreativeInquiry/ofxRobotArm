@@ -7,8 +7,8 @@ void ofApp::setup(){
     // setup scene
     setup_scene();
     // setup robot
-    string path = "relaxed_ik_core/config/urdfs/irb120.urdf";
-    robot.setup("192.168.0.1", ofToDataPath(path), RobotType::IRB120);    // change IP string to your robot's IP address
+    string path = "relaxed_ik_core/config/urdfs/ur5.urdf";
+    robot.setup("192.168.0.1", ofToDataPath(path), RobotType::UR5);    // change IP string to your robot's IP address
     
     // setup gui
     setup_gui();
