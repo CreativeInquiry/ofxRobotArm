@@ -78,15 +78,10 @@ void RelaxedIKSolver::threadedFunction(){
                                      0, 0, 0, 1);
         
         ofVec3f difPos = (desiredPose.position - actualPose.position) *R;
+    
+        ofQuaternion rot  = (actualPose.orientation * desiredPose.orientation);
         
-
-        
-        ofQuaternion rot  = (desiredPose.orientation * actualPose.orientation);
-        
-        ofVec4f r = ofVec4f(rot.x(), rot.y(), rot.z(), rot.w());
-        ofLog(OF_LOG_NOTICE)<<" "<<r<<endl;
-        r = r*R;
-        ofLog(OF_LOG_NOTICE)<<" "<<r<<endl;
+        ofVec4f r = ofVec4f(rot.x(), rot.y(), rot.z(), rot.w())*R;
    
         std::vector<double> pos(3, 0.0);
         pos[0] = difPos.x;
@@ -107,6 +102,8 @@ void RelaxedIKSolver::threadedFunction(){
             frameNum = 0;
         currentPose.swapBack();
         unlock();
+        
+        ofSleepMillis(1);
     }
 }
 
