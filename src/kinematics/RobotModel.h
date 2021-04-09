@@ -26,6 +26,7 @@ namespace ofxRobotArm
         void setup(string path);
   
         void loadURDF(string path);
+        void loadModel(string path);
 
         void drawSkeleton();
         void drawMesh(ofFloatColor color = ofFloatColor(1, 1, 1, 1), bool bDrawDebug = true);

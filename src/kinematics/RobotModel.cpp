@@ -98,7 +98,7 @@ void RobotModel::loadURDF(string path)
         {
             if (xml.pushTag("link", i))
             {
-                ofxAssimpModelLoader loader;
+                
                 if (xml.pushTag("visual"))
                 {
                     if (xml.pushTag("geometry"))
@@ -108,6 +108,7 @@ void RobotModel::loadURDF(string path)
                         if (path != "")
                         {
                             ofLog(OF_LOG_NOTICE) << path << endl;
+                            ofxAssimpModelLoader loader;
                             if (loader.loadModel(ofToDataPath(path)))
                             {
                                 ofLog(OF_LOG_NOTICE) << "LOADED" << endl;
@@ -132,6 +133,22 @@ void RobotModel::loadURDF(string path)
                 xml.popTag();
             }
         }
+    }
+}
+
+void RobotModel::loadModel(string path){
+    ofLog(OF_LOG_NOTICE) << "LOADING " <<path<< endl;
+     ofxAssimpModelLoader loader;
+    if (loader.loadModel(ofToDataPath("models/"+path)))
+    {
+        for (int i = 0; i < loader.getNumMeshes(); i++)
+        {
+            meshes.push_back(loader.getMesh(i));
+        }
+    }
+    else
+    {
+        ofLogFatalError() << "PLEASE PLACE THE 3D FILES OF THE ARM IN data/models/" << endl;
     }
 }
 
@@ -601,7 +618,7 @@ void RobotModel::drawMesh(ofFloatColor color, bool bDrawDebug)
                     }
                     ofPopMatrix();
             }
-            else if (type == IRB120)
+            else if (type == IRB120 && meshes.size() > 0)
             {
 
                 // Base
