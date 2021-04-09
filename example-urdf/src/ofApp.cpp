@@ -6,7 +6,7 @@ void ofApp::setup(){
     ofSetFrameRate(120);
     // setup scene
     setup_scene();
-    robot.setup("192.168.0.1", (string)"relaxed_ik_core/config/urdfs/robot.urdf", ofxRobotArm::IRB120);
+    robot.setup("192.168.0.1", (string)"relaxed_ik_core/config/urdfs/irb120.urdf", ofxRobotArm::IRB120);
 
     // setup robot
     // robot.setup(robotParams);    // change IP string to your robot's IP address
@@ -123,10 +123,8 @@ void ofApp::draw_scene(){
     ofDrawAxis(1500);
     ofDrawGrid(100, 10, false, false, false, true);
     // Draw Real Robot
-    // robot.draw(ofColor::red);
     robot.draw(ofColor::red);
     // Draw Desired Robot
-    // robot.drawDesired(ofColor::whiteSmoke);
     robot.drawDesired(ofColor::whiteSmoke);
 
     ofPushStyle();

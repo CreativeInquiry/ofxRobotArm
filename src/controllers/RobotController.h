@@ -14,7 +14,6 @@
 #include "RobotConstants.hpp"
 #include "Plane.h"
 #include "RobotConstants.hpp"
-#include "URDFModel.h"
 
 namespace ofxRobotArm {
     
@@ -25,12 +24,15 @@ namespace ofxRobotArm {
         
         /// \brief creates and connects to a new robot using a default IP Address
         /// \params params default parameters for the robot & GUI
-        void setup(string ipAddress, string urdfPath, RobotType type);
+        void setup(string ipAddress, string urdfPath, RobotType type,  bool offline = false);
         void setup(string ipAddress, bool offline, RobotType type);
         void setupParams();
         void setHomePose(vector<double> pose);
         void start();
         
+        void initKinematics();
+        void connectRobot(bool offline);
+
         /// \brief creates and connects to a new robot
         /// \params ipAddress ipAddress of the robot
         /// \params params default parameters for the robot & GUI
@@ -126,9 +128,6 @@ namespace ofxRobotArm {
         Pose targetTCP;
 
         RobotType type;
-        URDFModel model;
-
-
     private:
         Pose initPose;
         Pose forwardPose;

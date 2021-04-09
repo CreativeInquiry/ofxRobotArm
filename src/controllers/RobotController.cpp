@@ -14,15 +14,14 @@ RobotController::~RobotController(){
 void RobotController::setupParams(){
      
     robotArmParams.setName("Robot Controls");
-    robotArmParams.add(bLive.set("Live", false));
-    robotArmParams.add(bCopy.set("Copy Actual TCP", false));    
+    robotArmParams.add(bLive.set("Live", false));    
     robotArmParams.add(bTeachMode.set("Enable Teach Mode", false));
     robotArmParams.add(bUseIKFast.set("Use IKFast", false));
     robotArmParams.add(bUseRelaxedIK.set("Use RelaxedIK", true));
     robotArmParams.add(bUseIKArm.set("Use IKArm", false));
     robotArmParams.add(bDoReconnect.set("TryReconnect", false));
     robotArmParams.add(bSmoothPose.set("Smooth Pose", true));
-    robotArmParams.add(smoothness.set("Smooth", 0.0, 0.001, 1.0));
+    robotArmParams.add(smoothness.set("Smooth", 0.01, 0.001, 1.0));
     
     joints.setName("Joint Pos");
     targetJoints.setName("Target Joints");
@@ -46,20 +45,24 @@ void RobotController::setupParams(){
     joints.add(tcpOrientation.set("Actual Robot TCP ORIENT", ofVec4f(0,0,0,1), ofVec4f(-1,-1,-1,-1), ofVec4f(1,1,1,1)));
     joints.add(calcTCPOrientation.set("Relaxed Robot TCP ORIENT", ofVec4f(0,0,0,1), ofVec4f(-1,-1,-1,-1), ofVec4f(1,1,1,1)));
     forwardTCPOrientation.set("Forward TCP ORIENT", ofVec4f(0,0,0,1), ofVec4f(-1,-1,-1,-1), ofVec4f(1,1,1,1));
-    // robotArmParams.add(forwardTCPOrientation.set("Forward TCP ORIENT", ofVec4f(0,0,0,1), ofVec4f(-1,-1,-1,-1), ofVec4f(1,1,1,1)));
     forwardTCPPosition.set("Forward TCP Pos", ofVec3f(0, 0, 0), ofVec3f(-1, -1, -1), ofVec3f(1, 1, 1));
-    // robotArmParams.add(forwardTCPPosition.set("Forward TCP Pos", ofVec3f(0, 0, 0), ofVec3f(-1, -1, -1), ofVec3f(1, 1, 1)));
-    
-    
-    // joints.add(targetTCPPosition.set("Set TCP POS", ofVec3f(0, 0, 0), ofVec3f(-1, -1, -1), ofVec3f(1, 1, 1)));
-    // joints.add(targetTCPOrientation.set("Set TCP ORIENT",ofVec4f(0,0,0,1), ofVec4f(-1,-1,-1,-1), ofVec4f(1,1,1,1)));
-    
-    // joints.add(tcpOffset.set("tcpOffset", ofVec3f(0, 0, 0), ofVec3f(-0.2, -0.2, -0.2), ofVec3f(0.2, 0.2, 0.2)));]
 }
 
-void RobotController::setup(string ipAddress, string urdfPath, RobotType type){
-    model.load(urdfPath);
-    setup(ipAddress, false, type);
+void RobotController::setup(string ipAddress, string urdfPath, RobotType type, bool offline){ 
+   this->type = type;
+
+    if(this->type == UR3 || this->type== UR5 ||this->type  == UR10){
+        robot = new URDriver();
+    }else if(type == IRB120){
+        robot = new ABBDriver();
+    }
+    
+    desiredModel.setup(urdfPath);
+    actualModel.setup(urdfPath);
+
+    this->ipAddress = ipAddress;
+    connectRobot(offline);
+    initKinematics();
 }
 
 void RobotController::setup(string ipAddress, bool offline, RobotType type){
@@ -71,40 +74,38 @@ void RobotController::setup(string ipAddress, bool offline, RobotType type){
         robot = new ABBDriver();
     }
     
-    
     desiredModel.setup(this->type);
     actualModel.setup(this->type);
     
-    jointWeights.assign(6, 1.0f);
-    smoothedPose.assign(6, 0.0f);
-    
-    inverseKinematics.setup(this->type);
+    this->ipAddress = ipAddress;
+    connectRobot(offline);
+    initKinematics();
+}
 
-
+void RobotController::connectRobot(bool offline){
     if(!offline){
         robot->setAllowReconnect(bDoReconnect);
-        robot->setup(ipAddress,0, 1);
+        robot->setup(ipAddress, 0, 1);
     }
-    this->ipAddress = ipAddress;
+}
+
+void RobotController::initKinematics(){
+    jointWeights.assign(6, 1.0f);
+    smoothedPose.assign(6, 0.0f);
     vector<double> pose = robot->getInitPose();
-
+    inverseKinematics.setup(type);
     inverseKinematics.setRelaxedPose(pose);
-
-    for(int i = 0 ; i < smoothedPose.size(); i++){
-        smoothedPose[i] = pose[i];
-    }
-    
-    smoothness = 0.1;
-    bSmoothPose = true;
-    
-    ofMatrix4x4 forwardIK = inverseKinematics.forwardKinematics(robot->getInitPose());
+    ofMatrix4x4 forwardIK = inverseKinematics.forwardKinematics(pose);
     forwardNode.setGlobalPosition(forwardIK.getTranslation());
     forwardNode.setGlobalOrientation(forwardIK.getRotate());
     initPose.position = forwardIK.getTranslation();
     initPose.orientation = forwardIK.getRotate();
-    
-    inverseKinematics.setRelaxedPose(robot->getInitPose());
+
+    for(int i = 0 ; i < smoothedPose.size(); i++){
+        smoothedPose[i] = pose[i];
+    }
 }
+
 
 void RobotController::toggleLive(){
     bLive = !bLive;
@@ -199,7 +200,6 @@ void RobotController::update(vector<double> _pose){
         fN.setGlobalPosition(forwardIK.getTranslation());
         fN.setGlobalOrientation(forwardIK.getRotate());
         desiredModel.setPose(targetPose);
-        model.setPose(targetPose);
         desiredModel.setForwardPose(fN);
     }
 }
@@ -235,7 +235,6 @@ void RobotController::updateMovement(){
         fN.setGlobalPosition(forwardIK.getTranslation());
         fN.setGlobalOrientation(forwardIK.getRotate());
         desiredModel.setPose(bSmoothPose?smoothedPose:targetPose);
-        model.setPose(bSmoothPose?smoothedPose:targetPose);
         desiredModel.setForwardPose(fN);
     }
     
@@ -307,8 +306,7 @@ void RobotController::close(){
 void RobotController::draw(ofColor color, bool debug){
     actualModel.drawMesh(color, debug);
     actualModel.draw(color, debug);
-    model.drawSkeleton();
-    model.draw(color);
+
 }
 
 void RobotController::drawSafety(ofCamera & cam){
@@ -323,6 +321,7 @@ void RobotController::drawDesired(ofColor color){
     desiredModel.drawMesh(color, false);
     desiredModel.draw(color, false);
     desiredModel.drawSkeleton();
+
     tcp_plane.draw();
     
     ofPushStyle();
@@ -343,9 +342,6 @@ void RobotController::drawDesired(ofColor color){
     
 
 }
-
-
-
 
 
 
