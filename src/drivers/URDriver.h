@@ -29,20 +29,15 @@ public:
     void stopThread();
     void toggleTeachMode();
     void setTeachMode(bool enabled);
-    bool bTeachModeEnabled;
     void threadedFunction();
     ofVec4f getCalculatedTCPOrientation();
     vector<double> getToolPointRaw();
     vector<double> getCurrentPose();
-    vector<double> getJointAngles();
     vector<double>  getInitPose();
-    vector <double> getAchievablePosition(vector<double> position);
-    
     bool isDataReady();
     float getThreadFPS();
     bool bDataReady;
     bool bStarted;
-    ofQuaternion convertAxisAngle(double rx, double ry, double rz);
     void moveJoints(vector<double> pos);
     void setSpeed(vector<double> speeds, double acceleration = 100.0);
     void setPose(vector<double> positions);
@@ -80,6 +75,7 @@ public:
 
 
     bool bMove;
+    bool bTeachModeEnabled;
     
     Synchronized<vector<double> > jointsProcessed;
     Synchronized<vector<double> > jointsRaw;

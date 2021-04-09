@@ -1,5 +1,5 @@
 //
-//  URUtils.h
+//  Utils.h
 //  urModernDriverTest
 //
 //  Created by dantheman on 3/30/16.
@@ -23,3 +23,13 @@
 //     return ofVec3f(v*ofVec3f(1000, 1000, 1000));
 // }
 
+#pragma once
+ofQuaternion convertAxisAngle(double rx, double ry, double rz) {
+    float angle = ofVec3f(rx, ry, rz).normalize().length();
+    double s = sin(angle/2);
+    float x = (rx) * s;
+    float y = (ry) * s;
+    float z = (rz) * s;
+    float w = cos(angle/2);
+    return ofQuaternion(x, y, z, w);
+}

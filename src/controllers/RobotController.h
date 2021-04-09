@@ -11,7 +11,6 @@
 #include "RobotModel.h"
 #include "ofxIKArm.h"
 #include "RobotArmSafety.h"
-#include "Utils.h"
 #include "RobotConstants.hpp"
 #include "Plane.h"
 #include "RobotConstants.hpp"

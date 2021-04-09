@@ -157,14 +157,6 @@ vector<double> KUKADriver::getCurrentPose(){
     
     return ret;
 }
-vector<double> KUKADriver::getJointAngles(){
-    vector<double> ret;
-    lock();
-    poseProcessed.swapFront();
-    ret = poseProcessed.getFront();
-    unlock();
-    return ret;
-}
 
 ofVec4f KUKADriver::getCalculatedTCPOrientation(){
     ofVec4f ret;
@@ -215,91 +207,9 @@ void KUKADriver::setPose(vector<double> pose){
     unlock();
 }
 
-ofQuaternion KUKADriver::convertAxisAngle(double rx, double ry, double rz) {
-    float angle = ofVec3f(rx, ry, rz).normalize().length();
-    double s = sin(angle/2);
-    float x = (rx) * s;
-    float y = (ry) * s;
-    float z = (rz) * s;
-    float w = cos(angle/2);
-    return ofQuaternion(x, y, z, w);
-}
-
 void KUKADriver::setToolOffset(ofVec3f localPos){
     
 }
-
-vector <double> KUKADriver::getAchievablePosition(vector<double> position){
-    float maxAccelDeg = 500.0;
-    float maxSpeedPct = 1.0;
-    
-    if( !bMove && deccelCount > 0 ){
-        maxSpeedPct = ofMap(deccelCount, 1, numDeccelSteps-1, 0.0, 1.0, true);
-        if( maxSpeedPct < 0.9 ){
-            acceleratePct = 0;
-        }
-        //cout << " deccelCount " << deccelCount << " maxSpeedPct " << maxSpeedPct << endl;
-    }
-    if( bMove ){
-        acceleratePct += 0.02;
-        if( acceleratePct > 1.0 ){
-            acceleratePct = 1.0;
-        }
-    }
-    
-    maxSpeedPct *= acceleratePct;
-    
-    //this seeems to do much better with a hardcoded timedelta
-    float timeDiff = 1.0/120.0;//timeNow-lastTimeSentMove;
-
-    if( currentPoseRadian.size() && position.size() ){
-        
-        bool bHasSpeed = true;
-        vector <double> lastSpeed = calculatedSpeed;
-        
-        if( calculatedSpeed.size() != position.size() ){
-            calculatedSpeed.assign(position.size(), 0);
-            lastSpeed = calculatedSpeed;
-            bHasSpeed = false;
-        }
-        
-        for(int d= 0; d < position.size(); d++){
-            calculatedSpeed[d] = (position[d]-currentPoseRadian[d])/timeDiff;
-        }
-        
-        vector <double> acceleration;
-        acceleration.assign(calculatedSpeed.size(), 0);
-        
-        for(int d = 0; d < acceleration.size(); d++){
-            acceleration[d] = (calculatedSpeed[d]-lastSpeed[d])/timeDiff;
-            
-            float accelDegPerSec = ofRadToDeg(acceleration[d]);
-            
-            //this is the max accel reccomended.
-            //if we are over it we limit the new position to being the old position plus the current speed, plus the max acceleration
-            //this seems to actually work - fuck yes!
-            if( fabs( accelDegPerSec ) > maxAccelDeg ){
-                
-                //cout << d << " currentRobotPositionRadians is " << ofRadToDeg( currentRobotPositionRadians[d] ) << " request is " << ofRadToDeg(position[d]) <<  " speed is " << ofRadToDeg( calculatedSpeed[d] ) << " prev Speed is " << ofRadToDeg(lastSpeed[d])  << " accel is "  << accelDegPerSec << endl;
-
-                float newAccel = ofDegToRad( maxAccelDeg ) * (float)ofSign(accelDegPerSec);
-                float speedDiff = newAccel * timeDiff;
-                float targetSpeed = lastSpeed[d] + speedDiff;
-                
-                position[d] = currentPoseRadian[d] + ( targetSpeed * timeDiff * maxSpeedPct );
-                
-                //cout << "---- hit limit: accel is " << ofRadToDeg(newAccel) << " targetSpeed is now " << ofRadToDeg(targetSpeed) << " pos is now " << position[d] << endl;
-            }else if( maxSpeedPct < 1.0 ){
-                position[d] = currentPoseRadian[d] + ( currentSpeed[d] * timeDiff * maxSpeedPct );
-            }
-            
-        }
-        
-    }
-    
-    return position;
-}
-
 
 void KUKADriver::threadedFunction(){
     while(isThreadRunning()){

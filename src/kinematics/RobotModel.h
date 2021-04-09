@@ -12,7 +12,6 @@
 #include "ofxAssimpModelLoader.h"
 #include "Synchronized.h"
 #include "Pose.h"
-#include "Utils.h"
 #include "RobotConstants.hpp"
 
 //#include "ofxBullet.h"

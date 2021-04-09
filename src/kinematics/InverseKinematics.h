@@ -4,7 +4,6 @@
 #include "RobotModel.h"
 #include "Pose.h"
 #include "ofxIKArm.h"
-#include "Utils.h"
 #include "RobotConstants.hpp"
 #include "RelaxedIKSolver.h"
 //

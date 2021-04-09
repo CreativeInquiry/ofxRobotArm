@@ -180,14 +180,6 @@ vector<double> ABBDriver::getCurrentPose(){
     
     return ret;
 }
-vector<double> ABBDriver::getJointAngles(){
-    vector<double> ret;
-    lock();
-    poseProcessed.swapFront();
-    ret = poseProcessed.getFront();
-    unlock();
-    return ret;
-}
 
 ofVec4f ABBDriver::getCalculatedTCPOrientation(){
     ofVec4f ret;
@@ -238,15 +230,7 @@ void ABBDriver::setPose(vector<double> pose){
     unlock();
 }
 
-ofQuaternion ABBDriver::convertAxisAngle(double rx, double ry, double rz) {
-    float angle = ofVec3f(rx, ry, rz).normalize().length();
-    double s = sin(angle/2);
-    float x = (rx) * s;
-    float y = (ry) * s;
-    float z = (rz) * s;
-    float w = cos(angle/2);
-    return ofQuaternion(x, y, z, w);
-}
+
 
 void ABBDriver::setToolOffset(ofVec3f localPos){
     

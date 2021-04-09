@@ -28,8 +28,7 @@ public:
     ofNode lookAtNode;
     ofQuaternion initialRot;
     // Robot
-    ofxRobotArm::RobotController ur5;
-    ofxRobotArm::RobotController irb120;
+    ofxRobotArm::RobotController robot;
     void keypressed_robot(int key);
     
     // Control & Interaction
