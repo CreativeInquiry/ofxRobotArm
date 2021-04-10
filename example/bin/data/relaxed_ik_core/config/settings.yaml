@@ -1,6 +1,6 @@
 # Enter the information of the robot you want to run RelaxedIK on
 loaded_robot:
-  name: ur5_info.yaml # please enter the name of the corresponding info file
+  name: irb120_info.yaml # please enter the name of the corresponding info file
   link_radius: 0.05 # by default
   # please select from noECA, ECA, ECA3, and ECAA
   # noECA: doesn't incorporate environment collision avoidance
@@ -22,10 +22,5 @@ loaded_robot:
 #            The option "interactive" means that you will be able to drag the obstacle around with your mouse. 
 #            If you want to drive the robot with an animation file, please make sure to put the corresponding 
 #            animation file in the animation_files folder
-obstacles:
-  cuboids:
-    - name: box1
-      scale: [0.00125,0.00125,1.0]
-      translation: [0.0,0.0,-2.0]
-      rotation: [0.0,0.0,0.0]
-      animation: static
+
+

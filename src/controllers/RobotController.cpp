@@ -57,8 +57,8 @@ void RobotController::setup(string ipAddress, string urdfPath, RobotType type, b
         robot = new ABBDriver();
     }
     
-    desiredModel.setup(urdfPath);
-    actualModel.setup(urdfPath);
+    desiredModel.setup(urdfPath, this->type);
+    actualModel.setup(urdfPath, this->type);
 
     this->ipAddress = ipAddress;
     connectRobot(offline);
@@ -208,11 +208,11 @@ void RobotController::update(vector<double> _pose){
 #pragma mark - Safety
 void RobotController::safetyCheck(){
     
-    robotSafety.setCurrentRobotArmAnlges( robot->getCurrentPose());
-    robotSafety.setDesiredAngles(targetPose);
-    robotSafety.update(desiredModel);
-    robotSafety.update(1/60);
-    targetPose = robotSafety.getDesiredAngles();
+    // robotSafety.setCurrentRobotArmAnlges( robot->getCurrentPose());
+    // robotSafety.setDesiredAngles(targetPose);
+    // robotSafety.update(desiredModel);
+    // robotSafety.update(1/60);
+    // targetPose = robotSafety.getDesiredAngles();
     
 }
 
@@ -310,7 +310,7 @@ void RobotController::draw(ofColor color, bool debug){
 }
 
 void RobotController::drawSafety(ofCamera & cam){
-    robotSafety.draw();
+    // robotSafety.draw();
 }
 
 void RobotController::drawIK(){

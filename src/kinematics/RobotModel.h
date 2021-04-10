@@ -23,14 +23,15 @@ namespace ofxRobotArm
         RobotModel();
         ~RobotModel();
         void setup(RobotType type);
-        void setup(string path);
+        void setup(string path, RobotType type);
   
-        void loadURDF(string path);
+        void loadURDF(string path, RobotType type);
         void loadModel(string path);
 
         void drawSkeleton();
         void drawMesh(ofFloatColor color = ofFloatColor(1, 1, 1, 1), bool bDrawDebug = true);
         void draw(ofFloatColor color = ofFloatColor(1, 1, 1, 1), bool bDrawDebug = true);
+        void drawArc(float aStartAngleDegrees, float aEndAngleDegrees, ofVec3f aForwardAxis, ofVec3f aSideAxis);
         void setToolMesh(ofMesh mesh);
         void setPose(vector<double> pose);
         void setTCPPose(Pose pose);

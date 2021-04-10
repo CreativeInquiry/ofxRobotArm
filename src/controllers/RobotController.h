@@ -10,10 +10,9 @@
 #include "InverseKinematics.h"
 #include "RobotModel.h"
 #include "ofxIKArm.h"
-#include "RobotArmSafety.h"
+// #include "RobotArmSafety.h"
 #include "RobotConstants.hpp"
 #include "Plane.h"
-#include "RobotConstants.hpp"
 
 namespace ofxRobotArm {
     
@@ -66,7 +65,7 @@ namespace ofxRobotArm {
         RobotModel actualModel;
         vector<RobotModel*> desiredModels;
         InverseKinematics inverseKinematics;
-        RobotArmSafety robotSafety;
+        // RobotArmSafety robotSafety;
 
         ofNode forwardNode;
     

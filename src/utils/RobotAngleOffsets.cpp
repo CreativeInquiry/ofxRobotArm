@@ -69,18 +69,15 @@ void RobotAngleOffsets::update( float aDeltaTimef ) {
         mSmoothInvAddAngles[i] = mSmoothInvAddAngles[i]+tlerp;//ofLerp( mSmoothInvAddAngles[i], invAddAngles[i], 0.05 * aDeltaTimef * 60.0f );
     }
     for( int i = 0; i < mSmoothAddAngles.size(); i++ ) {
-        
-        //ofLog(OF_LOG_VERBOSE) << "mSmoothAddAngles["<<i<<"]: " << mSmoothAddAngles[i] << " | " << ofGetFrameNum() << endl;
-//        float tlerp = ofLerp( mSmoothAddAngles[i], addAngles[i], 0.05 * aDeltaTimef * 60.0f );
-        float tlerp = (addAngles[i]-mSmoothAddAngles[i]) * tLerpAmnt;//ofLerp( mSmoothInvAddAngles[i], invAddAngles[i], 0.05 * aDeltaTimef * 60.0f );
+
+        float tlerp = (addAngles[i]-mSmoothAddAngles[i]) * tLerpAmnt;
         tlerp = ofClamp( tlerp, -maxLerp, maxLerp );
-        mSmoothAddAngles[i] = mSmoothAddAngles[i]+tlerp;//ofLerp( mSmoothAddAngles[i], addAngles[i], 0.05 * aDeltaTimef * 60.0f );
+        mSmoothAddAngles[i] = mSmoothAddAngles[i]+tlerp;
     }
     for( int i = 0; i < mSmoothAngleScales.size(); i++ ) {
-//        float tlerp = ofLerp( mSmoothAngleScales[i], angleScales[i], 0.05 * aDeltaTimef * 60.0f );
         float tlerp = (angleScales[i]-mSmoothAngleScales[i]) * tLerpAmnt;
         tlerp = ofClamp( tlerp, -maxLerp, maxLerp );
-        mSmoothAngleScales[i] = mSmoothAngleScales[i] + tlerp;//ofLerp( mSmoothAngleScales[i], angleScales[i], 0.05 * aDeltaTimef * 60.0f );
+        mSmoothAngleScales[i] = mSmoothAngleScales[i] + tlerp;
     }
     
 }
@@ -95,19 +92,16 @@ vector< double > RobotAngleOffsets::getOffsetPose( vector< double > aInPose ) {
         
         if( i < mSmoothInvAddAngles.size() ) {
             if( mSmoothInvAddAngles[i] != 0.0f ) {
-//                tOutPose[i] = ofWrapRadians( ( DEG_TO_RAD * mSmoothInvAddAngles[i]) - tOutPose[i] );
                 tOutPose[i] = ( ( DEG_TO_RAD * mSmoothInvAddAngles[i]) - tOutPose[i] );
             }
         }
         if( i < mSmoothAddAngles.size() ) {
             if( mSmoothAddAngles[i] != 0. ) {
-//                tOutPose[i] = ofWrapRadians( tOutPose[i] + (mSmoothAddAngles[i] * DEG_TO_RAD) );
                 tOutPose[i] = ( tOutPose[i] + (mSmoothAddAngles[i] * DEG_TO_RAD) );
             }
         }
         
         if( i < mSmoothAngleScales.size() ) {
-//            tOutPose[i] = ofWrapRadians( tOutPose[i] * mSmoothAngleScales[i] );
             tOutPose[i] = ( tOutPose[i] * mSmoothAngleScales[i] );
         }
     }

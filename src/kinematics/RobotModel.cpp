@@ -21,13 +21,14 @@ void RobotModel::setForwardPose(ofNode pose)
     forwardPose.setGlobalOrientation(pose.getGlobalOrientation());
 }
 
-void RobotModel::setup(string path)
+void RobotModel::setup(string path, RobotType type)
 {
-    loadURDF(path);
+    loadURDF(path, type);
 }
 
-void RobotModel::loadURDF(string path)
+void RobotModel::loadURDF(string path, RobotType type)
 {
+    this->type = type;
     ofxXmlSettings xml;
     if (xml.load(ofToDataPath(path)))
     {
@@ -98,25 +99,24 @@ void RobotModel::loadURDF(string path)
         {
             if (xml.pushTag("link", i))
             {
-                
+
                 if (xml.pushTag("visual"))
                 {
                     if (xml.pushTag("geometry"))
                         ;
                     {
-                        string path = ofToDataPath(xml.getAttribute("mesh", "filename", "", 0));
+                        string path = ofToDataPath(xml.getAttribute("mesh", "filename", "", 0), true);
                         if (path != "")
                         {
-                            ofLog(OF_LOG_NOTICE) << path << endl;
+                            ofLog(OF_LOG_NOTICE) << "LOADING " << path << endl;
                             ofxAssimpModelLoader loader;
-                            if (loader.loadModel(ofToDataPath(path)))
+                            if (loader.loadModel(path))
                             {
-                                ofLog(OF_LOG_NOTICE) << "LOADED" << endl;
+                                ofLog(OF_LOG_NOTICE) << "LOADED 3D FILE" << endl;
                                 ofMesh m;
                                 for (int i = 0; i < loader.getMeshCount(); i++)
                                 {
                                     m.append(loader.getMesh(i));
-                                    ofLog(OF_LOG_NOTICE) << "MESH " << endl;
                                 }
                                 ofLog(OF_LOG_NOTICE) << m.getNumVertices() << endl;
                                 meshes.push_back(m);
@@ -136,10 +136,11 @@ void RobotModel::loadURDF(string path)
     }
 }
 
-void RobotModel::loadModel(string path){
-    ofLog(OF_LOG_NOTICE) << "LOADING " <<path<< endl;
-     ofxAssimpModelLoader loader;
-    if (loader.loadModel(ofToDataPath("models/"+path)))
+void RobotModel::loadModel(string path)
+{
+    ofLog(OF_LOG_NOTICE) << "LOADING " << path << endl;
+    ofxAssimpModelLoader loader;
+    if (loader.loadModel(ofToDataPath("models/" + path)))
     {
         for (int i = 0; i < loader.getNumMeshes(); i++)
         {
@@ -158,11 +159,11 @@ void RobotModel::setup(RobotType type)
 {
     this->type = type;
 
-    if (type == RobotType::UR3 || type == RobotType::UR5 || type == RobotType::UR10)
+    if (this->type == RobotType::UR3 || this->type == RobotType::UR5 || this->type == RobotType::UR10)
     {
         pose.resize(6);
         nodes.resize(6);
-        if (type == RobotType::UR3)
+        if (this->type == RobotType::UR3)
         {
             ofLog(OF_LOG_NOTICE) << "LOADING ROBOTYPE UR3" << endl;
             if (loader.loadModel(ofToDataPath("models/ur3.dae")))
@@ -184,7 +185,7 @@ void RobotModel::setup(RobotType type)
             pose[4].position.set(0, 0, 0);
             pose[5].position.set(0, 0, 0);
         }
-        else if (type == RobotType::UR5)
+        else if (this->type == RobotType::UR5)
         {
             ofLog(OF_LOG_NOTICE) << "LOADING ROBOTYPE UR5" << endl;
             if (loader.loadModel(ofToDataPath("models/ur5.dae")))
@@ -206,7 +207,7 @@ void RobotModel::setup(RobotType type)
             pose[4].position.set(0, -0.117242, 0.950973);
             pose[5].position.set(0, -0.164751, 0.996802);
         }
-        else if (type == RobotType::UR10)
+        else if (this->type == RobotType::UR10)
         {
             ofLog(OF_LOG_NOTICE) << "LOADING ROBOTYPE UR10" << endl;
             // should load model from addon data path, not app
@@ -283,7 +284,7 @@ void RobotModel::setup(RobotType type)
         toolNode.setPosition(tool.position);
         toolNode.setOrientation(nodes[5].getGlobalOrientation());
     }
-    else if (type == RobotType::IRB120)
+    else if (this->type == RobotType::IRB120)
     {
         pose.resize(6);
         nodes.resize(6);
@@ -361,7 +362,7 @@ void RobotModel::setup(RobotType type)
 
 ofQuaternion RobotModel::getToolPointQuaternion()
 {
-    return toOf(nodes[5].getGlobalTransformMatrix()).getRotate();
+    return toolNode.getGlobalOrientation();
 }
 
 ofNode RobotModel::getTool()
@@ -463,18 +464,30 @@ void RobotModel::drawSkeleton()
             // draw each link
             ofPushStyle();
             {
-                float t = i / float(nodes.size());
-     
-                ofSetColor(colorOne.getLerped(colorTwo, t));
                 if (i != 0)
                 {
+                    float t = i / float(nodes.size());
+
+                    ofSetColor(colorOne.getLerped(colorTwo, t));
+
+                    ofPushMatrix();
+                    {
+                        ofMultMatrix(joint.getGlobalTransformMatrix());
+                        ofScale(100, 100, 100);
+                        ofSetLineWidth(2);
+                        ofVec3f forward = ofVec3f(0, 0, 1).getPerpendicular(pose[i].axis);
+                        drawArc(jointMin[i] * RAD_TO_DEG, jointMax[i] * RAD_TO_DEG, forward, pose[i].axis);
+                        forward.rotate(pose[i].rotation, pose[i].axis);
+                        ofDrawLine(ofVec3f(), forward);
+                    }
+                    ofPopMatrix();
+                    
+                    ofSetColor(colorOne.getLerped(colorTwo, t));
                     // draw each joint
                     joint.draw();
-                }
-                ofSetLineWidth(5);
 
-                if (i != 0)
-                {
+                    ofSetLineWidth(5);
+
                     ofDrawLine(nodes[i - 1].getGlobalPosition(), p);
                     dist = p.distance(nodes[i - 1].getGlobalPosition());
                 }
@@ -531,6 +544,7 @@ void RobotModel::drawSkeleton()
                     ofDrawBitmapString("pos:  " + ofToString(fwp), fwp + ofVec3f(0, 0, 80));
                 }
             }
+
             i++;
         }
     }
@@ -555,70 +569,70 @@ void RobotModel::drawMesh(ofFloatColor color, bool bDrawDebug)
 
             if (type == UR3 || type == UR5 || type == UR10)
             {
-                    ofPushMatrix();
+                ofPushMatrix();
+                {
+                    int i = 0;
+                    for (auto &joint : pose) //pose.size(); i++)
                     {
-                        int i = 0;
-                        for (auto &joint : pose) //pose.size(); i++)
-                        {
-                            float x;
-                            ofVec3f axis;
-                            q = joint.orientation;
-                            q.getRotate(x, axis);
-                            ofTranslate(pose[i].offset * 1000);
-                            gmat.translate(pose[i].offset * 1000);
+                        float x;
+                        ofVec3f axis;
+                        q = joint.orientation;
+                        q.getRotate(x, axis);
+                        ofTranslate(pose[i].offset * 1000);
+                        gmat.translate(pose[i].offset * 1000);
 
-                            if (bDrawDebug)
-                            {
-                                ofDrawAxis(30);
-                            }
-                            ofMatrix4x4 tmat;
-                            if (i >= 3)
-                            {
-                                ofPushMatrix();
-                                {
-                                    ofRotateDeg(-180, 0, 0, 1);
-                                    ofRotateDeg(-180, 1, 0, 0);
-                                    ofScale(100, 100, 100);
-                                    ofSetColor(color);
-                                    meshes[i].draw();
-                                    ofSetColor(wireframe, 100);
-                                    meshes[i].drawWireframe();
-                                }
-                                ofPopMatrix();
-                            }
-                            ofRotateDeg(x, axis.x, axis.y, axis.z);
-                            if (i < 3)
-                            {
-                                ofPushMatrix();
-                                {
-                                    ofRotateDeg(-180, 0, 0, 1);
-                                    ofRotateDeg(-180, 1, 0, 0);
-                                    ofScale(100, 100, 100);
-                                    ofSetColor(color);
-                                    meshes[i].draw();
-                                    ofSetColor(wireframe, 100);
-                                    meshes[i].drawWireframe();
-                                }
-                                ofPopMatrix();
-                            }
-                            if (i == 5)
-                            {
-                                // include flange offset
-                                ofTranslate(0, -0.0308 * 1000, 0);
-                                // the x-axis was rotating backwards,
-                                // so I'm doing some funny business here
-                                ofRotateDeg(180, 0, 0, 1);
-                                ofRotateDeg(-180, nodes[5].getXAxis().x,
-                                            nodes[5].getXAxis().y,
-                                            nodes[5].getXAxis().z);
-                                toolMesh.drawWireframe();
-                            }
-                            i++;
+                        if (bDrawDebug)
+                        {
+                            ofDrawAxis(30);
                         }
+                        ofMatrix4x4 tmat;
+                        if (i >= 3)
+                        {
+                            ofPushMatrix();
+                            {
+                                ofRotateDeg(-180, 0, 0, 1);
+                                ofRotateDeg(-180, 1, 0, 0);
+                                ofScale(100, 100, 100);
+                                ofSetColor(color);
+                                meshes[i].draw();
+                                ofSetColor(wireframe, 100);
+                                meshes[i].drawWireframe();
+                            }
+                            ofPopMatrix();
+                        }
+                        ofRotateDeg(x, axis.x, axis.y, axis.z);
+                        if (i < 3)
+                        {
+                            ofPushMatrix();
+                            {
+                                ofRotateDeg(-180, 0, 0, 1);
+                                ofRotateDeg(-180, 1, 0, 0);
+                                ofScale(100, 100, 100);
+                                ofSetColor(color);
+                                meshes[i].draw();
+                                ofSetColor(wireframe, 100);
+                                meshes[i].drawWireframe();
+                            }
+                            ofPopMatrix();
+                        }
+                        if (i == 5)
+                        {
+                            // include flange offset
+                            ofTranslate(0, -0.0308 * 1000, 0);
+                            // the x-axis was rotating backwards,
+                            // so I'm doing some funny business here
+                            ofRotateDeg(180, 0, 0, 1);
+                            ofRotateDeg(-180, nodes[5].getXAxis().x,
+                                        nodes[5].getXAxis().y,
+                                        nodes[5].getXAxis().z);
+                            toolMesh.drawWireframe();
+                        }
+                        i++;
                     }
-                    ofPopMatrix();
+                }
+                ofPopMatrix();
             }
-            else if (type == IRB120 && meshes.size() > 0)
+            else if (type == IRB120)
             {
 
                 // Base
@@ -626,7 +640,6 @@ void RobotModel::drawMesh(ofFloatColor color, bool bDrawDebug)
                 {
                     ofTranslate(nodes[0].getPosition());
                     ofScale(1000, 1000, 1000);
-                    ofRotateDeg(90, 1, 0, 0);
                     ofSetColor(face);
                     meshes[0].drawFaces();
                     ofSetColor(wireframe, 100);
@@ -639,7 +652,6 @@ void RobotModel::drawMesh(ofFloatColor color, bool bDrawDebug)
                 {
                     ofMultMatrix(nodes[0].getGlobalTransformMatrix());
                     ofScale(1000, 1000, 1000);
-                    ofRotateDeg(90, 1, 0, 0);
                     ofSetColor(face);
                     meshes[1].drawFaces();
                     ofSetColor(wireframe, 100);
@@ -652,7 +664,6 @@ void RobotModel::drawMesh(ofFloatColor color, bool bDrawDebug)
                 {
                     ofMultMatrix(nodes[1].getGlobalTransformMatrix());
                     ofScale(1000, 1000, 1000);
-                    ofRotateDeg(90, 1, 0, 0);
                     ofSetColor(face);
                     meshes[2].drawFaces();
                     ofSetColor(wireframe, 100);
@@ -665,7 +676,6 @@ void RobotModel::drawMesh(ofFloatColor color, bool bDrawDebug)
                 {
                     ofMultMatrix(nodes[2].getGlobalTransformMatrix());
                     ofScale(1000, 1000, 1000);
-                    ofRotateDeg(90, 1, 0, 0);
                     ofSetColor(face);
                     meshes[3].drawFaces();
                     ofSetColor(wireframe, 100);
@@ -678,10 +688,8 @@ void RobotModel::drawMesh(ofFloatColor color, bool bDrawDebug)
                 {
                     ofMultMatrix(nodes[3].getGlobalTransformMatrix());
                     ofMatrix4x4 mat;
-                    mat.makeTranslationMatrix(ofVec3f(-134, 0, 0));
                     ofMultMatrix(mat);
                     ofScale(1000, 1000, 1000);
-                    ofRotateDeg(90, 1, 0, 0);
                     ofSetColor(face);
                     meshes[4].drawFaces();
                     ofSetColor(wireframe, 100);
@@ -694,7 +702,6 @@ void RobotModel::drawMesh(ofFloatColor color, bool bDrawDebug)
                 {
                     ofMultMatrix(nodes[4].getGlobalTransformMatrix());
                     ofScale(1000, 1000, 1000);
-                    ofRotateDeg(90, 1, 0, 0);
                     ofSetColor(face);
                     meshes[5].drawFaces();
                     ofSetColor(wireframe, 100);
@@ -707,7 +714,6 @@ void RobotModel::drawMesh(ofFloatColor color, bool bDrawDebug)
                 {
                     ofMultMatrix(nodes[5].getGlobalTransformMatrix());
                     ofScale(1000, 1000, 1000);
-                    ofRotateDeg(90, 1, 0, 0);
                     ofSetColor(face);
                     meshes[6].drawFaces();
                     ofSetColor(wireframe, 100);
@@ -744,4 +750,35 @@ void RobotModel::draw(ofFloatColor color, bool bDrawDebug)
         ofPopStyle();
     }
     ofPopMatrix();
+}
+
+void RobotModel::drawArc(float aStartAngleDegrees, float aEndAngleDegrees, ofVec3f aForwardAxis, ofVec3f aSideAxis)
+{
+    float startDegrees = aStartAngleDegrees;
+    float endDegrees = aEndAngleDegrees;
+    float tangleDiff = endDegrees - startDegrees;
+    int iterations = fabs(tangleDiff) / 4;
+    if (iterations < 2)
+        iterations = 2;
+
+    float currDegree = startDegrees;
+    float tstep = tangleDiff / (float)iterations;
+
+    ofVec3f cvec = aForwardAxis;
+
+    ofMesh tmesh;
+    tmesh.setMode(OF_PRIMITIVE_LINE_STRIP);
+
+    tmesh.addVertex(ofVec3f());
+    for (int i = 0; i <= iterations; i++)
+    {
+        cvec = aForwardAxis;
+        cvec.rotate(currDegree, aSideAxis);
+        tmesh.addVertex(cvec);
+        currDegree += tstep;
+        currDegree = ofWrapDegrees(currDegree);
+    }
+    tmesh.addVertex(ofVec3f());
+
+    tmesh.draw();
 }

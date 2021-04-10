@@ -7,8 +7,7 @@ void ofApp::setup(){
     // setup scene
     setup_scene();
     // setup robot
-    string path = "relaxed_ik_core/config/urdfs/ur5.urdf";
-    robot.setup("192.168.0.1", ofToDataPath(path), RobotType::UR5);    // change IP string to your robot's IP address
+    robot.setup("192.168.0.1", false, RobotType::IRB120);    // change IP string to your robot's IP address
     
     // setup gui
     setup_gui();
@@ -20,7 +19,8 @@ void ofApp::setup(){
     
     tcp = robot.getActualTCPNode();
     tcp.setPosition(tcp.getPosition()*1000);
-    initialRot = ofQuaternion(1, 0, 0, 0);
+    initialRot = tcp.getGlobalOrientation();
+    initialRot = initialRot.inverse();
     tcp.setOrientation(initialRot);
     tcp_target.setNode(tcp);
 
@@ -81,7 +81,6 @@ void ofApp::update(){
         }
         ofVec3f p = line.getPointAtPercent(t);
         tcp.setPosition(p);
-        tcp_target.setNode(tcp);
         tcp.setOrientation(tcp_target.getRotation());
     }
     robot.setToolOffset(offset);
@@ -141,8 +140,8 @@ bool ofApp::disable_camera(){
         return true;
     
     ofRectangle gui_rect;
-    gui_rect.setX(panel.getPosition().x);
-    gui_rect.setY(panel.getPosition().y);
+    gui_rect.setX(panel.getPosition().x-10);
+    gui_rect.setY(panel.getPosition().y-10);
     gui_rect.setWidth(panel.getWidth() + 120);
     gui_rect.setHeight(panel.getHeight() + panel_robot.getHeight() + 120);
     if (gui_rect.inside(mouseX, mouseY))
@@ -224,13 +223,14 @@ void ofApp::setup_camera(){
 }
 
 //--------------------------------------------------------------
+//--------------------------------------------------------------
 void ofApp::listener_show_top(bool & val)
 {
     if (val) {
         
-        int x = 00;
+        int x = 0;
         int y = 0;
-        int z = 3000;
+        int z = 1700;
         
         
         ofVec3f pos = ofVec3f(x, y, z);
@@ -251,9 +251,9 @@ void ofApp::listener_show_front(bool & val)
 {
     if (val) {
         
-        int x = 3500;
+        int x = 1700;
         int y = 0;
-        int z = 300;
+        int z = 400;
         
         ofVec3f pos = ofVec3f(x, y, z);
         ofVec3f tgt = ofVec3f(0, pos.y, pos.z);
@@ -273,9 +273,9 @@ void ofApp::listener_show_side(bool & val)
 {
     if (val) {
         
-        int x = 0;
-        int y = -3500;
-        int z = 300;
+        int x = 600;
+        int y = -1700;
+        int z = 400;
         
         ofVec3f pos = ofVec3f(x, y, z);
         ofVec3f tgt = ofVec3f(pos.x, 0, pos.z);
@@ -295,9 +295,9 @@ void ofApp::listener_show_perspective(bool & val)
 {
     if (val) {
         
-        int x = 500;
-        int y = -2000;
-        int z = 500;
+        int x = 800;
+        int y = -1700;
+        int z = 600;
         
         ofVec3f pos = ofVec3f(x, y, z);
         ofVec3f tgt = ofVec3f(0, 0, 0);

@@ -7,7 +7,7 @@
             "request": "launch",
             "args": [],
             "stopAtEntry": false,
-            "cwd": "${workspaceRoot}",
+            "cwd": "${workspaceRoot}/bin/",
             "environment": [],
             "externalConsole": false,
             "linux": {
