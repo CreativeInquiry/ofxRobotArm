@@ -65,8 +65,8 @@ void RobotModel::loadURDF(string path, RobotType type)
             string xyz = xml.getAttribute("origin", "xyz", "0.0 0.0 0.0", 0);
             string rot = xml.getAttribute("origin", "rpy", "0.0 0.0 0.0", 0);
             cout << xyz << endl;
-            jointMin[i] = xml.getAttribute("limit", "lower", -TWO_PI, 0);
-            jointMax[i] = xml.getAttribute("limit", "upper", TWO_PI, 0);
+            jointMin[i] = ofClamp(xml.getAttribute("limit", "lower", -TWO_PI, 0), -TWO_PI, TWO_PI);
+            jointMax[i] = ofClamp(xml.getAttribute("limit", "upper", TWO_PI, 0), -TWO_PI, TWO_PI);
             string axis = xml.getAttribute("axis", "xyz", "0.0 0.0 0.0", 0);
             ofLog() << axis << endl;
             xml.popTag();
@@ -464,24 +464,29 @@ void RobotModel::drawSkeleton()
             // draw each link
             ofPushStyle();
             {
-                if (i != 0)
+                float t = i / float(nodes.size());
+                ofSetColor(colorOne.getLerped(colorTwo, t));
+                if (pose[i].axis != ofVec3f(0, 1, 0))
                 {
-                    float t = i / float(nodes.size());
-
-                    ofSetColor(colorOne.getLerped(colorTwo, t));
-
                     ofPushMatrix();
                     {
                         ofMultMatrix(joint.getGlobalTransformMatrix());
+                        ofMatrix4x4 mat;
+                        mat.makeRotationMatrix(-pose[i].rotation, pose[i].axis);
+                        ofMultMatrix(mat);
                         ofScale(100, 100, 100);
                         ofSetLineWidth(2);
-                        ofVec3f forward = ofVec3f(0, 0, 1).getPerpendicular(pose[i].axis);
+                        ofVec3f forward = ofVec3f(0, 1, 0).getPerpendicular(pose[i].axis);
+                        cout << i << " "
+                             << "MIN " << jointMin[i] * RAD_TO_DEG << " MAX" << jointMax[i] * RAD_TO_DEG << endl;
                         drawArc(jointMin[i] * RAD_TO_DEG, jointMax[i] * RAD_TO_DEG, forward, pose[i].axis);
                         forward.rotate(pose[i].rotation, pose[i].axis);
                         ofDrawLine(ofVec3f(), forward);
+                        ofSetColor(colorOne.getLerped(colorTwo, t), 100);
+                        drawArc(jointMin[i] * RAD_TO_DEG, pose[i].rotation, ofVec3f(0, 1, 0).getPerpendicular(pose[i].axis), pose[i].axis, true);
                     }
                     ofPopMatrix();
-                    
+
                     ofSetColor(colorOne.getLerped(colorTwo, t));
                     // draw each joint
                     joint.draw();
@@ -490,6 +495,25 @@ void RobotModel::drawSkeleton()
 
                     ofDrawLine(nodes[i - 1].getGlobalPosition(), p);
                     dist = p.distance(nodes[i - 1].getGlobalPosition());
+                }else{
+
+                    ofPushMatrix();
+                    {
+                        ofMultMatrix(joint.getGlobalTransformMatrix());
+                        ofMatrix4x4 mat;
+                        mat.makeRotationMatrix(-pose[i].rotation, pose[i].axis);
+                        ofMultMatrix(mat);
+                        ofScale(100, 100, 100);
+                        ofSetLineWidth(2);
+                        ofVec3f forward = ofVec3f(0, 0, 1).getPerpendicular(pose[i].axis);
+                        cout<<i<<" "<<"MIN "<<jointMin[i] * RAD_TO_DEG<<" MAX"<<jointMax[i] * RAD_TO_DEG<<endl;
+                        drawArc(jointMin[i] * RAD_TO_DEG, jointMax[i] * RAD_TO_DEG, forward, pose[i].axis);
+                        forward.rotate(pose[i].rotation, pose[i].axis);
+                        ofDrawLine(ofVec3f(), forward);
+                        ofSetColor(colorOne.getLerped(colorTwo, t), 100);
+                        drawArc(jointMin[i] * RAD_TO_DEG, pose[i].rotation, ofVec3f(0, 0, 1).getPerpendicular(pose[i].axis), pose[i].axis, true);
+                    }
+                    ofPopMatrix();
                 }
             }
             ofPopStyle();
@@ -752,7 +776,7 @@ void RobotModel::draw(ofFloatColor color, bool bDrawDebug)
     ofPopMatrix();
 }
 
-void RobotModel::drawArc(float aStartAngleDegrees, float aEndAngleDegrees, ofVec3f aForwardAxis, ofVec3f aSideAxis)
+void RobotModel::drawArc(float aStartAngleDegrees, float aEndAngleDegrees, ofVec3f aForwardAxis, ofVec3f aSideAxis, bool fill)
 {
     float startDegrees = aStartAngleDegrees;
     float endDegrees = aEndAngleDegrees;
@@ -767,7 +791,14 @@ void RobotModel::drawArc(float aStartAngleDegrees, float aEndAngleDegrees, ofVec
     ofVec3f cvec = aForwardAxis;
 
     ofMesh tmesh;
-    tmesh.setMode(OF_PRIMITIVE_LINE_STRIP);
+    if (fill)
+    {
+        tmesh.setMode(OF_PRIMITIVE_TRIANGLE_FAN);
+    }
+    else
+    {
+        tmesh.setMode(OF_PRIMITIVE_LINE_STRIP);
+    }
 
     tmesh.addVertex(ofVec3f());
     for (int i = 0; i <= iterations; i++)

@@ -31,7 +31,7 @@ namespace ofxRobotArm
         void drawSkeleton();
         void drawMesh(ofFloatColor color = ofFloatColor(1, 1, 1, 1), bool bDrawDebug = true);
         void draw(ofFloatColor color = ofFloatColor(1, 1, 1, 1), bool bDrawDebug = true);
-        void drawArc(float aStartAngleDegrees, float aEndAngleDegrees, ofVec3f aForwardAxis, ofVec3f aSideAxis);
+        void drawArc(float aStartAngleDegrees, float aEndAngleDegrees, ofVec3f aForwardAxis, ofVec3f aSideAxis,  bool fill = false);
         void setToolMesh(ofMesh mesh);
         void setPose(vector<double> pose);
         void setTCPPose(Pose pose);
