@@ -220,7 +220,7 @@ vector<vector<double> > InverseKinematics::inverseIKFast(Pose targetPose)
 ofMatrix4x4 InverseKinematics::forwardKinematics(vector<double> pose)
 {
     if(type == UR3 || type == UR5 || type == UR10){
-        return toOF(forwardKinematics(pose[0], pose[1], pose[2], pose[3], pose[4], pose[5]));
+        return forwardKinematics(pose[0], pose[1], pose[2], pose[3], pose[4], pose[5]);
     }
     if(type == IRB120){
         ofMatrix4x4 mat;
@@ -237,19 +237,19 @@ void InverseKinematics::setRelaxedPose(vector<double> pose){
 
 
 
-double* InverseKinematics::forwardKinematics(double o, double t, double th, double f, double fi, double s)
+ofMatrix4x4 InverseKinematics::forwardKinematics(double o, double t, double th, double f, double fi, double s)
 {
     
     double q[6] = {o, t, th, f, fi, s};
-    double* T1 = new double[16];
-    double* T2 = new double[16];
-    double* T3 = new double[16];
-    double* T4 = new double[16];
-    double* T5 = new double[16];
-    double* T6 = new double[16];
+    double* transform1 = new double[16];
+    double* transform2 = new double[16];
+    double* transform3 = new double[16];
+    double* transform4 = new double[16];
+    double* transform5 = new double[16];
+    double* transform6 = new double[16];
     
-    kinematics.forward_allHK(q, T1, T2, T2, T4, T5, T6);
-    return T6;
+    kinematics.forwardHK(q, transform6);
+    return toOF(transform6);
 }
 
 

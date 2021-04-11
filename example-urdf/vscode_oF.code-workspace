@@ -42,7 +42,8 @@
 			"ostream": "cpp",
 			"ratio": "cpp",
 			"type_traits": "cpp",
-			"complex": "cpp"
+			"complex": "cpp",
+			"random": "cpp"
 		}
 	}
 }

@@ -80,11 +80,12 @@ void RobotModel::loadURDF(string path, RobotType type)
             p.axis = ofVec3f(ofToFloat(ax[0]), ofToFloat(ax[1]), ofToFloat(ax[2]));
             vector<string> ro = ofSplitString(rot, " ");
             ofLog() << "ro " << rot << endl;
+            p.rotOffset = ofVec3f(ofToFloat(ro[0]), ofToFloat(ro[1]), ofToFloat(ro[2]));
             p.rotation = 0;
             p.orientation.makeRotate(ofRadToDeg(ofToFloat(ro[0])), ofVec3f(1, 0, 0),
                                      ofRadToDeg(ofToFloat(ro[1])), ofVec3f(0, 1, 0),
                                      ofRadToDeg(ofToFloat(ro[2])), ofVec3f(0, 0, 1));
-            node.setOrientation(p.orientation);
+            node.setGlobalOrientation(p.orientation);
             if (i > 0)
             {
                 p.offset = p.position - pose[i - 1].position;
@@ -394,7 +395,7 @@ Pose RobotModel::getModifiedTCPPose()
 
 void RobotModel::setPose(vector<double> pose)
 {
-    poseRadians = pose;
+    // poseRadians = pose;
     // if (type == RobotType::UR5 || type == RobotType::UR3 || type == RobotType::UR10)
     // {
     //     for (int i = 0; i < pose.size(); i++)
@@ -413,14 +414,17 @@ void RobotModel::setPose(vector<double> pose)
     //     }
     // }
     // else
-    {
-        for (int i = 0; i < pose.size(); i++)
+    // {
+        int i = 0;
+        for (auto pdouble : pose)
         {
-            this->pose[i].rotation = (ofRadToDeg(pose[i]));
+            cout<<this->pose[i].rotOffset.length()<<endl;
+            this->pose[i].rotation = ofRadToDeg(pdouble+this->pose[i].rotOffset.length());
             this->pose[i].orientation.makeRotate(this->pose[i].rotation, this->pose[i].axis);
             nodes[i].setOrientation(this->pose[i].orientation);
+            i++;
         }
-    }
+    // }
 }
 
 void RobotModel::setEndEffector(string filename)
