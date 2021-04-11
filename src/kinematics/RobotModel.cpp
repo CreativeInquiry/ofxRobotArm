@@ -65,8 +65,8 @@ void RobotModel::loadURDF(string path, RobotType type)
             string xyz = xml.getAttribute("origin", "xyz", "0.0 0.0 0.0", 0);
             string rot = xml.getAttribute("origin", "rpy", "0.0 0.0 0.0", 0);
             cout << xyz << endl;
-            jointMin[i] = ofClamp(xml.getAttribute("limit", "lower", -TWO_PI, 0), -TWO_PI, TWO_PI);
-            jointMax[i] = ofClamp(xml.getAttribute("limit", "upper", TWO_PI, 0), -TWO_PI, TWO_PI);
+            jointMin[i] = xml.getAttribute("limit", "lower", -TWO_PI, 0);
+            jointMax[i] = xml.getAttribute("limit", "upper", TWO_PI, 0);
             string axis = xml.getAttribute("axis", "xyz", "0.0 0.0 0.0", 0);
             ofLog() << axis << endl;
             xml.popTag();
