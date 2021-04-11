@@ -43,7 +43,8 @@
 			"ratio": "cpp",
 			"type_traits": "cpp",
 			"complex": "cpp",
-			"random": "cpp"
+			"random": "cpp",
+			"variant": "cpp"
 		}
 	}
 }

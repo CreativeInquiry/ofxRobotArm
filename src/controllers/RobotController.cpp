@@ -24,7 +24,7 @@ void RobotController::setupParams()
     robotArmParams.add(bDoReconnect.set("TryReconnect", false));
     robotArmParams.add(bSmoothPose.set("Smooth Pose", true));
     robotArmParams.add(smoothness.set("Smooth", 0.01, 0.001, 1.0));
-    robotArmParams.add(origin.set("Origin", ofVec3f(0, 0, 0), ofVec3f(-100, -100, -100), ofVec3f(100, 100, 100)));
+    robotArmParams.add(origin.set("Origin", ofVec3f(0, 0, 0), ofVec3f(-500, -500, -500), ofVec3f(500, 500, 500)));
 
     joints.setName("Joint Pos");
     targetJoints.setName("Target Joints");
@@ -384,24 +384,6 @@ void RobotController::drawDesired(ofColor color)
     ofPopMatrix();
 
     tcp_plane.draw();
-
-    ofPushStyle();
-    ofVec3f p = (desiredModel.forwardPose.getPosition() - actualModel.forwardPose.getPosition());
-    float dist = p.length();
-    ofSetColor(ofColor::aquamarine);
-    if (dist > 20)
-    {
-        ofDrawBitmapString("dist: " + ofToString(dist), actualModel.forwardPose.getPosition() + p.normalize() * dist / 2);
-        ofDrawLine(desiredModel.forwardPose.getPosition(), actualModel.forwardPose.getPosition());
-        p = desiredModel.tcpNode.getPosition() - actualModel.forwardPose.getPosition();
-    }
-    dist = p.length();
-    if (dist > 20)
-    {
-        ofDrawBitmapString("dist: " + ofToString(dist), actualModel.forwardPose.getPosition() + p.normalize() * dist / 2);
-        ofDrawLine(desiredModel.tcpNode.getPosition(), actualModel.forwardPose.getPosition());
-    }
-    ofPopStyle();
 }
 
 //void RobotController::updateIKArm(){

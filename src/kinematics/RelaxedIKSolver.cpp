@@ -10,6 +10,7 @@
 using namespace ofxRobotArm;
 
 RelaxedIKSolver::RelaxedIKSolver(){
+    ofLog()<<"RelaxedIKSolver THREAD"<<endl;
     vector<double> foo(6., 0.0);
     currentPose.setup(foo);
     currentPose.getBack().assign(6, 0.0);

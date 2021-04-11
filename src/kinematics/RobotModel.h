@@ -29,8 +29,8 @@ namespace ofxRobotArm
         void loadModel(string path);
 
         void drawSkeleton();
-        void drawMesh(ofFloatColor color = ofFloatColor(1, 1, 1, 1), bool bDrawDebug = true);
-        void draw(ofFloatColor color = ofFloatColor(1, 1, 1, 1), bool bDrawDebug = true);
+        void drawMesh(ofColor color = ofColor::white, bool bDrawDebug = true);
+        void draw(ofColor color = ofColor::white, bool bDrawDebug = true);
         void drawArc(float aStartAngleDegrees, float aEndAngleDegrees, ofVec3f aForwardAxis, ofVec3f aSideAxis,  bool fill = false);
         void setToolMesh(ofMesh mesh);
         void setPose(vector<double> pose);

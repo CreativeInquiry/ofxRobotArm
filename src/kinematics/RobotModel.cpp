@@ -562,87 +562,14 @@ void RobotModel::drawSkeleton()
     ofPopStyle();
 }
 
-void RobotModel::drawMesh(ofFloatColor color, bool bDrawDebug)
+void RobotModel::drawMesh(ofColor color, bool bDrawDebug)
 {
     ofEnableDepthTest();
     {
         ofPushStyle();
         {
-            ofQuaternion q;
-            ofVec3f offset;
-
             ofColor face = ofColor(color);
             ofColor wireframe = ofColor(ofColor::black);
-
-            ofMatrix4x4 gmat;
-            gmat.makeIdentityMatrix();
-            gmat.makeScaleMatrix(1, 1, 1);
-
-            // if (type == UR3 || type == UR5 || type == UR10)
-            // {
-            //     ofPushMatrix();
-            //     {
-            //         int i = 0;
-            //         for (auto &joint : pose) //pose.size(); i++)
-            //         {
-            //             float x;
-            //             ofVec3f axis;
-            //             q = joint.orientation;
-            //             q.getRotate(x, axis);
-            //             ofTranslate(pose[i].offset * 1000);
-            //             if (bDrawDebug)
-            //             {
-            //                 ofDrawAxis(30);
-            //             }
-            //             ofMatrix4x4 tmat;
-            //             if (i >= 3)
-            //             {
-            //                 ofPushMatrix();
-            //                 {
-            //                     ofRotateDeg(-180, 0, 0, 1);
-            //                     ofRotateDeg(-180, 1, 0, 0);
-            //                     ofScale(100, 100, 100);
-            //                     ofSetColor(color);
-            //                     meshes[i].draw();
-            //                     ofSetColor(wireframe, 100);
-            //                     meshes[i].drawWireframe();
-            //                 }
-            //                 ofPopMatrix();
-            //             }
-            //             ofRotateDeg(x, axis.x, axis.y, axis.z);
-            //             if (i < 3)
-            //             {
-            //                 ofPushMatrix();
-            //                 {
-            //                     ofRotateDeg(-180, 0, 0, 1);
-            //                     ofRotateDeg(-180, 1, 0, 0);
-            //                     ofScale(100, 100, 100);
-            //                     ofSetColor(color);
-            //                     meshes[i].draw();
-            //                     ofSetColor(wireframe, 100);
-            //                     meshes[i].drawWireframe();
-            //                 }
-            //                 ofPopMatrix();
-            //             }
-            //             if (i == 5)
-            //             {
-            //                 // include flange offset
-            //                 ofTranslate(0, -0.0308 * 1000, 0);
-            //                 // the x-axis was rotating backwards,
-            //                 // so I'm doing some funny business here
-            //                 ofRotateDeg(180, 0, 0, 1);
-            //                 ofRotateDeg(-180, nodes[5].getXAxis().x,
-            //                             nodes[5].getXAxis().y,
-            //                             nodes[5].getXAxis().z);
-            //                 toolMesh.drawWireframe();
-            //             }
-            //             i++;
-            //         }
-            //     }
-            //     ofPopMatrix();
-            // }
-            // else if (type == IRB120)
-            // {
 
             int i = 0;
             for (auto mesh : meshes)
@@ -682,7 +609,7 @@ void RobotModel::drawMesh(ofFloatColor color, bool bDrawDebug)
     ofDisableDepthTest();
 }
 
-void RobotModel::draw(ofFloatColor color, bool bDrawDebug)
+void RobotModel::draw(ofColor color, bool bDrawDebug)
 {
     ofPushMatrix();
     {
