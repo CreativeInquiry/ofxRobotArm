@@ -395,36 +395,16 @@ Pose RobotModel::getModifiedTCPPose()
 
 void RobotModel::setPose(vector<double> pose)
 {
-    // poseRadians = pose;
-    // if (type == RobotType::UR5 || type == RobotType::UR3 || type == RobotType::UR10)
-    // {
-    //     for (int i = 0; i < pose.size(); i++)
-    //     {
-    //         if (i == 1 || i == 3)
-    //         {
-    //             this->pose[i].rotation = ofRadToDeg(pose[i]) + 90;
-    //             this->pose[i].orientation.makeRotate(this->pose[i].rotation, this->pose[i].axis);
-    //         }
-    //         else
-    //         {
-    //             this->pose[i].rotation = ofRadToDeg(pose[i]);
-    //             this->pose[i].orientation.makeRotate(this->pose[i].rotation, this->pose[i].axis);
-    //         }
-    //         nodes[i].setOrientation(this->pose[i].orientation);
-    //     }
-    // }
-    // else
-    // {
-        int i = 0;
-        for (auto pdouble : pose)
-        {
-            cout<<this->pose[i].rotOffset.length()<<endl;
-            this->pose[i].rotation = ofRadToDeg(pdouble+this->pose[i].rotOffset.length());
-            this->pose[i].orientation.makeRotate(this->pose[i].rotation, this->pose[i].axis);
-            nodes[i].setOrientation(this->pose[i].orientation);
-            i++;
-        }
-    // }
+    
+    int i = 0;
+    for (auto pdouble : pose)
+    {
+        this->pose[i].rotation = ofRadToDeg(pdouble+this->pose[i].rotOffset.length());
+        poseRadians[i] = pdouble+this->pose[i].rotOffset.length();
+        this->pose[i].orientation.makeRotate(this->pose[i].rotation, this->pose[i].axis);
+        nodes[i].setOrientation(this->pose[i].orientation);
+        i++;
+    }
 }
 
 void RobotModel::setEndEffector(string filename)
