@@ -26,6 +26,9 @@ void ofApp::setup(){
     tcp.setOrientation(initialRot);
     tcp_target.setNode(tcp);
 
+    lookAtNode.setPosition(tcp.getPosition()+ofVec3f(0, 500, 0));
+    look_target.setNode(lookAtNode);
+
     int x = 500;
     int y = -1000;
     int z = 500;
@@ -45,7 +48,7 @@ void ofApp::setup(){
     home.set(300, 0, 555);
     
     for(int i = 0 ; i < 360; i++){
-        line.addVertex(ofVec3f(250, 0, 150)+ofVec3f(((i+1)/360)*150, 0.6*i*sin(ofDegToRad(i)), i*cos(ofDegToRad(i))));
+        line.addVertex(ofVec3f(350, 0, 150)+ofVec3f(((i+1)/360)*150, 0.6*i*sin(ofDegToRad(i)), i*cos(ofDegToRad(i))));
     }
     line.close();
 
@@ -70,7 +73,7 @@ void ofApp::update(){
     {
         ofVec3f p = look_target.getTranslation();
         ofMatrix4x4 mat, mat2;
-        mat.makeLookAtMatrix(p, tcp_target.getTranslation(), ofVec3f(0, 1, 0));
+        mat.makeLookAtMatrix(p, tcp_target.getTranslation(), ofVec3f(0, 0, 1));
         tcp.setPosition(tcp_target.getTranslation());
         tcp.setOrientation(mat.getRotate());
     }

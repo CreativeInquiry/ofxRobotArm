@@ -465,7 +465,7 @@ void RobotModel::drawSkeleton()
             ofPushStyle();
             {
                 float t = i / float(nodes.size());
-                ofSetColor(colorOne.getLerped(colorTwo, t));
+
                 if (pose[i].axis != ofVec3f(0, 1, 0))
                 {
                     ofPushMatrix();
@@ -474,11 +474,10 @@ void RobotModel::drawSkeleton()
                         ofMatrix4x4 mat;
                         mat.makeRotationMatrix(-pose[i].rotation, pose[i].axis);
                         ofMultMatrix(mat);
-                        ofScale(100, 100, 100);
-                        ofSetLineWidth(2);
+                        ofScale(50, 50, 50);
+                        ofSetLineWidth(3);
                         ofVec3f forward = ofVec3f(0, 1, 0).getPerpendicular(pose[i].axis);
-                        cout << i << " "
-                             << "MIN " << jointMin[i] * RAD_TO_DEG << " MAX" << jointMax[i] * RAD_TO_DEG << endl;
+                        ofSetColor(colorOne.getLerped(colorTwo, t));
                         drawArc(jointMin[i] * RAD_TO_DEG, jointMax[i] * RAD_TO_DEG, forward, pose[i].axis);
                         forward.rotate(pose[i].rotation, pose[i].axis);
                         ofDrawLine(ofVec3f(), forward);
@@ -486,16 +485,9 @@ void RobotModel::drawSkeleton()
                         drawArc(jointMin[i] * RAD_TO_DEG, pose[i].rotation, ofVec3f(0, 1, 0).getPerpendicular(pose[i].axis), pose[i].axis, true);
                     }
                     ofPopMatrix();
-
-                    ofSetColor(colorOne.getLerped(colorTwo, t));
-                    // draw each joint
-                    joint.draw();
-
-                    ofSetLineWidth(5);
-
-                    ofDrawLine(nodes[i - 1].getGlobalPosition(), p);
-                    dist = p.distance(nodes[i - 1].getGlobalPosition());
-                }else{
+                }
+                else if (pose[i].axis != ofVec3f(0, 0, 1))
+                {
 
                     ofPushMatrix();
                     {
@@ -503,10 +495,10 @@ void RobotModel::drawSkeleton()
                         ofMatrix4x4 mat;
                         mat.makeRotationMatrix(-pose[i].rotation, pose[i].axis);
                         ofMultMatrix(mat);
-                        ofScale(100, 100, 100);
-                        ofSetLineWidth(2);
+                        ofScale(50, 50, 50);
+                        ofSetLineWidth(3);
+                        ofSetColor(colorOne.getLerped(colorTwo, t));
                         ofVec3f forward = ofVec3f(0, 0, 1).getPerpendicular(pose[i].axis);
-                        cout<<i<<" "<<"MIN "<<jointMin[i] * RAD_TO_DEG<<" MAX"<<jointMax[i] * RAD_TO_DEG<<endl;
                         drawArc(jointMin[i] * RAD_TO_DEG, jointMax[i] * RAD_TO_DEG, forward, pose[i].axis);
                         forward.rotate(pose[i].rotation, pose[i].axis);
                         ofDrawLine(ofVec3f(), forward);
@@ -514,6 +506,17 @@ void RobotModel::drawSkeleton()
                         drawArc(jointMin[i] * RAD_TO_DEG, pose[i].rotation, ofVec3f(0, 0, 1).getPerpendicular(pose[i].axis), pose[i].axis, true);
                     }
                     ofPopMatrix();
+                }
+
+                if (i > 0)
+                {
+                    ofSetColor(colorOne.getLerped(colorTwo, t));
+                    // draw each joint
+                    joint.draw();
+
+                    ofSetLineWidth(5);
+                    ofDrawLine(nodes[i - 1].getGlobalPosition(), p);
+                    dist = p.distance(nodes[i - 1].getGlobalPosition());
                 }
             }
             ofPopStyle();

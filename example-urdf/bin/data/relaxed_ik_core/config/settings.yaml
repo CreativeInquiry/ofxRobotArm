@@ -23,9 +23,9 @@ loaded_robot:
 #            If you want to drive the robot with an animation file, please make sure to put the corresponding 
 #            animation file in the animation_files folder
 obstacles:
-  cuboids:
-    - name: box2
-      scale: [0.1,0.1,1.0]
-      translation: [0.0,0.0,-1.1]
-      rotation: [0.0,0.0,0.0]
-      animation: static
+  # cuboids:
+  #   - name: box2
+  #     scale: [0.1,0.1,1.0]
+  #     translation: [0.0,0.0,-1.1]
+  #     rotation: [0.0,0.0,0.0]
+  #     animation: static
