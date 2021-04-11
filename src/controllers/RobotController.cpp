@@ -324,9 +324,11 @@ void RobotController::updateRobotData()
     ofVec3f translation = forwardIK.getTranslation();
     forwardNode.setGlobalPosition(translation);
     forwardNode.setGlobalOrientation(forwardIK.getRotate());
-    actualModel.setForwardPose(forwardNode);
-    forwardPose.position = forwardIK.getTranslation();
+    forwardPose.position = translation;
     forwardPose.orientation = forwardIK.getRotate();
+
+    actualModel.setForwardPose(forwardNode);
+
 
     actualTCP = forwardPose;
     tcpPosition = actualTCP.position;
