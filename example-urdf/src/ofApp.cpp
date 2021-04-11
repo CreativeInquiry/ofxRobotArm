@@ -6,7 +6,7 @@ void ofApp::setup(){
     ofSetFrameRate(120);
     // setup scene
     setup_scene();
-    robot.setup("192.168.0.1", (string)"relaxed_ik_core/config/urdfs/ur5.urdf", ofxRobotArm::UR5);
+    robot.setup("192.168.0.1", (string)"relaxed_ik_core/config/urdfs/irb120.urdf", ofxRobotArm::IRB120);
 
     // setup robot
     // robot.setup(robotParams);    // change IP string to your robot's IP address
