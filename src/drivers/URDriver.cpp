@@ -301,7 +301,7 @@ void URDriver::threadedFunction(){
             jointsRaw.getBack() = robot->rt_interface_->robot_state_->getQActual();
             jointsProcessed.getBack() = jointsRaw.getBack();
             dtoolPoint.orientation = ofQuaternion();
-            for(int i = 0; i < joints.size(); i++){
+            for(unsigned int i = 0; i < joints.size(); i++){
                 jointsProcessed.getBack()[i] = ofRadToDeg(jointsRaw.getBack()[i]);
                 if(i == 1 || i == 3){
                     jointsProcessed.getBack()[i]+=90;

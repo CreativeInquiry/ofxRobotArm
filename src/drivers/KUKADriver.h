@@ -4,8 +4,9 @@
 #include "RobotDriver.h"
 #include "ofxTiming.h"
 #include "Pose.h"
+#include "robotKuka.hpp"
 #include "Synchronized.h"
-#include "ofxNetwork.h"
+
 namespace ofxRobotArm{
 class KUKADriver : public RobotDriver{
 public:
@@ -41,8 +42,8 @@ public:
     
     ofxRobotArm::Pose getToolPose();
 
-    ofxUDPManager udpConnection;
-    
+    kuka::RobotKuka robot;
+
     bool wait = true;
 
     bool bTryReconnect, bTeachModeEnabled;

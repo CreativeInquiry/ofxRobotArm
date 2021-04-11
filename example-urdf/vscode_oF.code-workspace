@@ -44,7 +44,10 @@
 			"type_traits": "cpp",
 			"complex": "cpp",
 			"random": "cpp",
-			"variant": "cpp"
+			"variant": "cpp",
+			"mutex": "cpp",
+			"shared_mutex": "cpp",
+			"condition_variable": "cpp"
 		}
 	}
 }

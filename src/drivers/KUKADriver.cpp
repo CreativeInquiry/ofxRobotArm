@@ -79,22 +79,10 @@ void KUKADriver::setup(string ipaddress, int port, double minPayload, double max
     } else {
         ofLogError( "ip address parameter is empty. Not initializing robot." );
     }
-    
-    char buf[256];
-
-    udpConnection.Create();
-    udpConnection.Connect(ipaddress.c_str(), port);
-    udpConnection.SetNonBlocking(true);
-
-    std::string joint_prefix = "ur_";
-    std::vector<std::string> joint_names;
-    joint_prefix = "KUKADriver-";
-    joint_names.push_back(joint_prefix + "joint_1");
-    joint_names.push_back(joint_prefix + "joint_2");
-    joint_names.push_back(joint_prefix + "joint_3");
-    joint_names.push_back(joint_prefix + "joint_4");
-    joint_names.push_back(joint_prefix + "joint_5");
-    joint_names.push_back(joint_prefix + "joint_6");
+    const std::string::size_type size = ipaddress.size();
+    char *buffer = new char[size + 1];   //we need extra char for NUL
+    memcpy(buffer, ipaddress.c_str(), size + 1);
+    robot.startCommunicator(buffer, port);
 
     //Bounds for SetPayload service
     //Using a very conservative value as it should be set through the parameter server
@@ -126,7 +114,7 @@ bool KUKADriver::isConnected() {
 }
 
 void KUKADriver::disconnect(){
-
+    robot.stopCommunicator();
 }
 
 bool KUKADriver::isDataReady(){
@@ -153,7 +141,6 @@ vector<double> KUKADriver::getCurrentPose(){
     poseRaw.swapFront();
     ret = poseRaw.getFront();
     unlock();
-    
     
     return ret;
 }
@@ -217,6 +204,11 @@ void KUKADriver::threadedFunction(){
         if(!bStarted && !bTriedOnce) {
             
         }else{                
+
+            if(bMove && currentPose.size()> 0){
+                kuka::KukaPose p = kuka::KukaPose(currentPose[0], currentPose[1],currentPose[2],currentPose[3],currentPose[4],currentPose[5]);;
+                robot.move(p, 1.0);
+            }
             toolPoseRaw.swapBack();
             poseRaw.swapBack();
             poseProcessed.swapBack();

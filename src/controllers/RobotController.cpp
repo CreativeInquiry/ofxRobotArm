@@ -329,15 +329,14 @@ void RobotController::updateRobotData()
 
     actualModel.setForwardPose(forwardNode);
 
-
-    actualTCP = forwardPose;
+    actualTCP = robot->getToolPose();
     tcpPosition = actualTCP.position;
     actualModel.setTCPPose(actualTCP);
 
     ofQuaternion tcpO = actualTCP.orientation;
     tcpOrientation = ofVec4f(tcpO.x(), tcpO.y(), tcpO.z(), tcpO.w());
     // update GUI params
-    for (int i = 0; i < currentPose.size(); i++)
+    for (unsigned int i = 0; i < currentPose.size(); i++)
     {
         pCurrentPose[i] = ofRadToDeg((float)currentPose[i]);
     }

@@ -67,17 +67,15 @@ namespace ofxRobotArm
             if (currentPoseRadian.size() && position.size())
             {
 
-                bool bHasSpeed = true;
                 vector<double> lastSpeed = calculatedSpeed;
 
                 if (calculatedSpeed.size() != position.size())
                 {
                     calculatedSpeed.assign(position.size(), 0);
                     lastSpeed = calculatedSpeed;
-                    bHasSpeed = false;
                 }
 
-                for (int d = 0; d < position.size(); d++)
+                for (unsigned int d = 0; d < position.size(); d++)
                 {
                     calculatedSpeed[d] = (position[d] - currentPoseRadian[d]) / timeDiff;
                 }
@@ -85,7 +83,7 @@ namespace ofxRobotArm
                 vector<double> acceleration;
                 acceleration.assign(calculatedSpeed.size(), 0);
 
-                for (int d = 0; d < acceleration.size(); d++)
+                for (unsigned int d = 0; d < acceleration.size(); d++)
                 {
                     acceleration[d] = (calculatedSpeed[d] - lastSpeed[d]) / timeDiff;
 
