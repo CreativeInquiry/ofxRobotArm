@@ -28,6 +28,8 @@ namespace ofxRobotArm {
         void setupParams();
         void setHomePose(vector<double> pose);
         void start();
+
+        void setRobotOrigin(ofVec3f origin);
         
         void initKinematics();
         void connectRobot(bool offline);
