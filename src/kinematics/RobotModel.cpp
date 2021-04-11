@@ -84,7 +84,7 @@ void RobotModel::loadURDF(string path, RobotType type)
             p.orientation.makeRotate(ofRadToDeg(ofToFloat(ro[0])), ofVec3f(1, 0, 0),
                                      ofRadToDeg(ofToFloat(ro[1])), ofVec3f(0, 1, 0),
                                      ofRadToDeg(ofToFloat(ro[2])), ofVec3f(0, 0, 1));
-
+            node.setOrientation(p.orientation);
             if (i > 0)
             {
                 p.offset = p.position - pose[i - 1].position;
@@ -395,24 +395,24 @@ Pose RobotModel::getModifiedTCPPose()
 void RobotModel::setPose(vector<double> pose)
 {
     poseRadians = pose;
-    if (type == RobotType::UR5 || type == RobotType::UR3 || type == RobotType::UR10)
-    {
-        for (int i = 0; i < pose.size(); i++)
-        {
-            if (i == 1 || i == 3)
-            {
-                this->pose[i].rotation = ofRadToDeg(pose[i]) + 90;
-                this->pose[i].orientation.makeRotate(this->pose[i].rotation, this->pose[i].axis);
-            }
-            else
-            {
-                this->pose[i].rotation = ofRadToDeg(pose[i]);
-                this->pose[i].orientation.makeRotate(this->pose[i].rotation, this->pose[i].axis);
-            }
-            nodes[i].setOrientation(this->pose[i].orientation);
-        }
-    }
-    else
+    // if (type == RobotType::UR5 || type == RobotType::UR3 || type == RobotType::UR10)
+    // {
+    //     for (int i = 0; i < pose.size(); i++)
+    //     {
+    //         if (i == 1 || i == 3)
+    //         {
+    //             this->pose[i].rotation = ofRadToDeg(pose[i]) + 90;
+    //             this->pose[i].orientation.makeRotate(this->pose[i].rotation, this->pose[i].axis);
+    //         }
+    //         else
+    //         {
+    //             this->pose[i].rotation = ofRadToDeg(pose[i]);
+    //             this->pose[i].orientation.makeRotate(this->pose[i].rotation, this->pose[i].axis);
+    //         }
+    //         nodes[i].setOrientation(this->pose[i].orientation);
+    //     }
+    // }
+    // else
     {
         for (int i = 0; i < pose.size(); i++)
         {
@@ -474,7 +474,7 @@ void RobotModel::drawSkeleton()
                         ofMatrix4x4 mat;
                         mat.makeRotationMatrix(-pose[i].rotation, pose[i].axis);
                         ofMultMatrix(mat);
-                        ofScale(50, 50, 50);
+                        ofScale(70, 70, 70);
                         ofSetLineWidth(3);
                         ofVec3f forward = ofVec3f(0, 1, 0).getPerpendicular(pose[i].axis);
                         ofSetColor(colorOne.getLerped(colorTwo, t));
@@ -495,7 +495,7 @@ void RobotModel::drawSkeleton()
                         ofMatrix4x4 mat;
                         mat.makeRotationMatrix(-pose[i].rotation, pose[i].axis);
                         ofMultMatrix(mat);
-                        ofScale(50, 50, 50);
+                        ofScale(70, 70, 70);
                         ofSetLineWidth(3);
                         ofSetColor(colorOne.getLerped(colorTwo, t));
                         ofVec3f forward = ofVec3f(0, 0, 1).getPerpendicular(pose[i].axis);
@@ -594,159 +594,103 @@ void RobotModel::drawMesh(ofFloatColor color, bool bDrawDebug)
             gmat.makeIdentityMatrix();
             gmat.makeScaleMatrix(1, 1, 1);
 
-            if (type == UR3 || type == UR5 || type == UR10)
+            // if (type == UR3 || type == UR5 || type == UR10)
+            // {
+            //     ofPushMatrix();
+            //     {
+            //         int i = 0;
+            //         for (auto &joint : pose) //pose.size(); i++)
+            //         {
+            //             float x;
+            //             ofVec3f axis;
+            //             q = joint.orientation;
+            //             q.getRotate(x, axis);
+            //             ofTranslate(pose[i].offset * 1000);
+            //             if (bDrawDebug)
+            //             {
+            //                 ofDrawAxis(30);
+            //             }
+            //             ofMatrix4x4 tmat;
+            //             if (i >= 3)
+            //             {
+            //                 ofPushMatrix();
+            //                 {
+            //                     ofRotateDeg(-180, 0, 0, 1);
+            //                     ofRotateDeg(-180, 1, 0, 0);
+            //                     ofScale(100, 100, 100);
+            //                     ofSetColor(color);
+            //                     meshes[i].draw();
+            //                     ofSetColor(wireframe, 100);
+            //                     meshes[i].drawWireframe();
+            //                 }
+            //                 ofPopMatrix();
+            //             }
+            //             ofRotateDeg(x, axis.x, axis.y, axis.z);
+            //             if (i < 3)
+            //             {
+            //                 ofPushMatrix();
+            //                 {
+            //                     ofRotateDeg(-180, 0, 0, 1);
+            //                     ofRotateDeg(-180, 1, 0, 0);
+            //                     ofScale(100, 100, 100);
+            //                     ofSetColor(color);
+            //                     meshes[i].draw();
+            //                     ofSetColor(wireframe, 100);
+            //                     meshes[i].drawWireframe();
+            //                 }
+            //                 ofPopMatrix();
+            //             }
+            //             if (i == 5)
+            //             {
+            //                 // include flange offset
+            //                 ofTranslate(0, -0.0308 * 1000, 0);
+            //                 // the x-axis was rotating backwards,
+            //                 // so I'm doing some funny business here
+            //                 ofRotateDeg(180, 0, 0, 1);
+            //                 ofRotateDeg(-180, nodes[5].getXAxis().x,
+            //                             nodes[5].getXAxis().y,
+            //                             nodes[5].getXAxis().z);
+            //                 toolMesh.drawWireframe();
+            //             }
+            //             i++;
+            //         }
+            //     }
+            //     ofPopMatrix();
+            // }
+            // else if (type == IRB120)
+            // {
+
+            int i = 0;
+            for (auto mesh : meshes)
             {
-                ofPushMatrix();
+                if (i == 0)
                 {
-                    int i = 0;
-                    for (auto &joint : pose) //pose.size(); i++)
+                    ofPushMatrix();
                     {
-                        float x;
-                        ofVec3f axis;
-                        q = joint.orientation;
-                        q.getRotate(x, axis);
-                        ofTranslate(pose[i].offset * 1000);
-                        gmat.translate(pose[i].offset * 1000);
-
-                        if (bDrawDebug)
-                        {
-                            ofDrawAxis(30);
-                        }
-                        ofMatrix4x4 tmat;
-                        if (i >= 3)
-                        {
-                            ofPushMatrix();
-                            {
-                                ofRotateDeg(-180, 0, 0, 1);
-                                ofRotateDeg(-180, 1, 0, 0);
-                                ofScale(100, 100, 100);
-                                ofSetColor(color);
-                                meshes[i].draw();
-                                ofSetColor(wireframe, 100);
-                                meshes[i].drawWireframe();
-                            }
-                            ofPopMatrix();
-                        }
-                        ofRotateDeg(x, axis.x, axis.y, axis.z);
-                        if (i < 3)
-                        {
-                            ofPushMatrix();
-                            {
-                                ofRotateDeg(-180, 0, 0, 1);
-                                ofRotateDeg(-180, 1, 0, 0);
-                                ofScale(100, 100, 100);
-                                ofSetColor(color);
-                                meshes[i].draw();
-                                ofSetColor(wireframe, 100);
-                                meshes[i].drawWireframe();
-                            }
-                            ofPopMatrix();
-                        }
-                        if (i == 5)
-                        {
-                            // include flange offset
-                            ofTranslate(0, -0.0308 * 1000, 0);
-                            // the x-axis was rotating backwards,
-                            // so I'm doing some funny business here
-                            ofRotateDeg(180, 0, 0, 1);
-                            ofRotateDeg(-180, nodes[5].getXAxis().x,
-                                        nodes[5].getXAxis().y,
-                                        nodes[5].getXAxis().z);
-                            toolMesh.drawWireframe();
-                        }
-                        i++;
+                        ofTranslate(nodes[i].getPosition());
+                        ofScale(1000, 1000, 1000);
+                        ofSetColor(face);
+                        mesh.drawFaces();
+                        ofSetColor(wireframe, 100);
+                        mesh.drawWireframe();
                     }
+                    ofPopMatrix();
                 }
-                ofPopMatrix();
-            }
-            else if (type == IRB120)
-            {
-
-                // Base
-                ofPushMatrix();
+                else
                 {
-                    ofTranslate(nodes[0].getPosition());
-                    ofScale(1000, 1000, 1000);
-                    ofSetColor(face);
-                    meshes[0].drawFaces();
-                    ofSetColor(wireframe, 100);
-                    meshes[0].drawWireframe();
+                    ofPushMatrix();
+                    {
+                        ofMultMatrix(nodes[i - 1].getGlobalTransformMatrix());
+                        ofScale(1000, 1000, 1000);
+                        ofSetColor(face);
+                        mesh.drawFaces();
+                        ofSetColor(wireframe, 100);
+                        mesh.drawWireframe();
+                    }
+                    ofPopMatrix();
                 }
-                ofPopMatrix();
 
-                // link 1
-                ofPushMatrix();
-                {
-                    ofMultMatrix(nodes[0].getGlobalTransformMatrix());
-                    ofScale(1000, 1000, 1000);
-                    ofSetColor(face);
-                    meshes[1].drawFaces();
-                    ofSetColor(wireframe, 100);
-                    meshes[1].drawWireframe();
-                }
-                ofPopMatrix();
-
-                // link 2
-                ofPushMatrix();
-                {
-                    ofMultMatrix(nodes[1].getGlobalTransformMatrix());
-                    ofScale(1000, 1000, 1000);
-                    ofSetColor(face);
-                    meshes[2].drawFaces();
-                    ofSetColor(wireframe, 100);
-                    meshes[2].drawWireframe();
-                }
-                ofPopMatrix();
-
-                // link 3
-                ofPushMatrix();
-                {
-                    ofMultMatrix(nodes[2].getGlobalTransformMatrix());
-                    ofScale(1000, 1000, 1000);
-                    ofSetColor(face);
-                    meshes[3].drawFaces();
-                    ofSetColor(wireframe, 100);
-                    meshes[3].drawWireframe();
-                }
-                ofPopMatrix();
-
-                // link 4
-                ofPushMatrix();
-                {
-                    ofMultMatrix(nodes[3].getGlobalTransformMatrix());
-                    ofMatrix4x4 mat;
-                    ofMultMatrix(mat);
-                    ofScale(1000, 1000, 1000);
-                    ofSetColor(face);
-                    meshes[4].drawFaces();
-                    ofSetColor(wireframe, 100);
-                    meshes[4].drawWireframe();
-                }
-                ofPopMatrix();
-
-                // link 5
-                ofPushMatrix();
-                {
-                    ofMultMatrix(nodes[4].getGlobalTransformMatrix());
-                    ofScale(1000, 1000, 1000);
-                    ofSetColor(face);
-                    meshes[5].drawFaces();
-                    ofSetColor(wireframe, 100);
-                    meshes[5].drawWireframe();
-                }
-                ofPopMatrix();
-
-                // link 6
-                ofPushMatrix();
-                {
-                    ofMultMatrix(nodes[5].getGlobalTransformMatrix());
-                    ofScale(1000, 1000, 1000);
-                    ofSetColor(face);
-                    meshes[6].drawFaces();
-                    ofSetColor(wireframe, 100);
-                    meshes[6].drawWireframe();
-                }
-                ofPopMatrix();
+                i++;
             }
         }
         ofPopStyle();

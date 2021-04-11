@@ -6,7 +6,7 @@ void ofApp::setup(){
     ofSetFrameRate(120);
     // setup scene
     setup_scene();
-    robot.setup("192.168.0.1", (string)"relaxed_ik_core/config/urdfs/irb120.urdf", ofxRobotArm::IRB120);
+    robot.setup("192.168.0.1", (string)"relaxed_ik_core/config/urdfs/ur5.urdf", ofxRobotArm::UR5);
 
     // setup robot
     // robot.setup(robotParams);    // change IP string to your robot's IP address
@@ -22,11 +22,12 @@ void ofApp::setup(){
     
     tcp = robot.getActualTCPNode();
     tcp.setPosition(tcp.getPosition()*1000);
-    initialRot = ofQuaternion(ofVec4f(0, 0.7, 0, 0.7));
+    initialRot = tcp.getOrientationQuat();
+    initialRot = initialRot.inverse();
     tcp.setOrientation(initialRot);
     tcp_target.setNode(tcp);
 
-    lookAtNode.setPosition(tcp.getPosition()+ofVec3f(0, 500, 0));
+    lookAtNode.setPosition(tcp.getPosition()+ofVec3f(250, 0, 0));
     look_target.setNode(lookAtNode);
 
     int x = 500;
@@ -412,7 +413,6 @@ void ofApp::keypressed_camera(int key){
 
 //--------------------------------------------------------------
 void ofApp::keypressed_gizmo(int key){
-    bool val = true;
     switch (key) {
         case '1':
             FOLLOW_MODE = FOLLOW_GIZMO;

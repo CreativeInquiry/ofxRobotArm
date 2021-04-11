@@ -67,6 +67,8 @@ namespace ofxRobotArm {
         InverseKinematics inverseKinematics;
         // RobotArmSafety robotSafety;
 
+        ofParameter<ofVec3f> origin;
+
         ofNode forwardNode;
     
         ofParameterGroup joints;
