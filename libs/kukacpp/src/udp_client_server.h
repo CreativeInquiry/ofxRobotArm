@@ -7,6 +7,7 @@
 #include <sys/socket.h>
 #include <netdb.h>
 #include <stdexcept>
+#include <string>
 
 namespace udp_client_server
 {

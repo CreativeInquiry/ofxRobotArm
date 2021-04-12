@@ -24,6 +24,8 @@ void RobotController::setupParams()
     robotArmParams.add(bDoReconnect.set("TryReconnect", false));
     robotArmParams.add(bSmoothPose.set("Smooth Pose", true));
     robotArmParams.add(smoothness.set("Smooth", 0.01, 0.001, 1.0));
+    robotArmParams.add(bOverrideNthJoint.set("Override Nth Joint", false));
+    robotArmParams.add(nthJoint.set("Nth Joint", 0, -TWO_PI, TWO_PI));
     robotArmParams.add(origin.set("Origin", ofVec3f(0, 0, 0), ofVec3f(-500, -500, -500), ofVec3f(500, 500, 500)));
 
     joints.setName("Joint Pos");
@@ -94,6 +96,11 @@ void RobotController::setup(string ipAddress, bool offline, RobotType type)
     connectRobot(offline);
     initKinematics();
 }
+
+void RobotController::setNthJoint(double pose){
+    nthJoint.set(pose);
+}
+
 
 void RobotController::setRobotOrigin(ofVec3f origin)
 {
@@ -193,7 +200,8 @@ void RobotController::updateIK(Pose pose)
     {
         targetPoses = inverseKinematics.inverseIKFast(pose);
     }
-    ofQuaternion rot = pose.orientation * initPose.orientation;
+    
+    ofQuaternion rot = initPose.orientation * pose.orientation;
     calcTCPOrientation = ofVec4f(rot.x(), rot.y(), rot.z(), rot.w());
     int selectedSolution = inverseKinematics.selectSolution(targetPoses, robot->getCurrentPose(), jointWeights);
     if (selectedSolution > -1)
@@ -211,6 +219,10 @@ void RobotController::updateIK(Pose pose)
         }
         p = tpose;
         i++;
+    }
+    
+    if(bOverrideNthJoint){
+        targetPose[targetPose.size()-1] = nthJoint.get();
     }
 }
 

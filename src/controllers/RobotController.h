@@ -30,6 +30,9 @@ namespace ofxRobotArm {
         void start();
 
         void setRobotOrigin(ofVec3f origin);
+
+        void setNthJoint(double rotation);
+        
         
         void initKinematics();
         void connectRobot(bool offline);
@@ -96,7 +99,9 @@ namespace ofxRobotArm {
         vector <double> jointWeights;
 
         ofParameter<bool> bSmoothPose;
+        ofParameter<bool> bOverrideNthJoint;
         ofParameter<double> smoothness;
+        ofParameter<double> nthJoint;
         ofParameter<ofVec3f> targetTCPPosition;
         ofParameter<ofVec4f> targetTCPOrientation;
         ofParameter<ofVec4f> tcpOrientation;

@@ -61,6 +61,8 @@ void ofApp::setup(){
     line.close();
 
     FOLLOW_MODE = FOLLOW_GIZMO;
+    
+    
 }
 
 
