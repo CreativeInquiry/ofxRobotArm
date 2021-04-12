@@ -17,6 +17,7 @@
 
 namespace ofxRobotArm
 {
+
     class RobotModel
     {
     public:

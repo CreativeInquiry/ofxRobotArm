@@ -32,75 +32,76 @@ void RobotModel::loadURDF(string path, RobotType type)
     ofxXmlSettings xml;
     if (xml.load(ofToDataPath(path)))
     {
-        ofLog(OF_LOG_NOTICE) << "Loading URDF:" << path << endl;
+        ofLog(OF_LOG_NOTICE) << "Loading URDF:" << ofToDataPath(path) << endl;
         if (!xml.pushTag("robot"))
         {
             ofLogFatalError() << "CANNOT FIND ROBOT TAG" << endl;
         }
-
+        
         int numLinks = xml.getNumTags("link");
         if (numLinks <= 0)
         {
             ofLogFatalError() << "CANNOT FIND ROBOT LINKS" << endl;
         }
         ofLog(OF_LOG_NOTICE) << "URDF::NUM LINKS " << numLinks << endl;
-
+        
         int numJoints = xml.getNumTags("joint");
         if (numJoints <= 0)
         {
             ofLogFatalError() << "CANNOT FIND ROBOT JOINTS" << endl;
         }
         ofLog(OF_LOG_NOTICE) << "URDF::NUM JOINTS " << numJoints << endl;
-
+        
         pose.resize(numJoints);
         jointMin.resize(numJoints);
         jointMax.resize(numJoints);
         nodes.resize(numJoints);
         poseRadians.resize(numJoints);
-
+        
         for (int i = 0; i < numJoints; i++)
         {
-            xml.pushTag("joint", i);
-            ofLog() << i << endl;
-            string xyz = xml.getAttribute("origin", "xyz", "0.0 0.0 0.0", 0);
-            string rot = xml.getAttribute("origin", "rpy", "0.0 0.0 0.0", 0);
-            cout << xyz << endl;
-            jointMin[i] = xml.getAttribute("limit", "lower", -TWO_PI, 0);
-            jointMax[i] = xml.getAttribute("limit", "upper", TWO_PI, 0);
-            string axis = xml.getAttribute("axis", "xyz", "0.0 0.0 0.0", 0);
-            ofLog() << axis << endl;
-            xml.popTag();
-            Pose p;
-            ofNode node = ofNode();
-            vector<string> pos = ofSplitString(xyz, " ");
-            p.position = ofVec3f(ofToFloat(pos[0]), ofToFloat(pos[1]), ofToFloat(pos[2])) * 1000;
-            ofLog() << p.position << endl;
-            node.setPosition(p.position);
-            vector<string> ax = ofSplitString(axis, " ");
-            p.axis = ofVec3f(ofToFloat(ax[0]), ofToFloat(ax[1]), ofToFloat(ax[2]));
-            vector<string> ro = ofSplitString(rot, " ");
-            ofLog() << "ro " << rot << endl;
-            p.rotOffset = ofVec3f(ofToFloat(ro[0]), ofToFloat(ro[1]), ofToFloat(ro[2]));
-            p.rotation = 0;
-            p.orientation.makeRotate(ofRadToDeg(ofToFloat(ro[0])), ofVec3f(1, 0, 0),
-                                     ofRadToDeg(ofToFloat(ro[1])), ofVec3f(0, 1, 0),
-                                     ofRadToDeg(ofToFloat(ro[2])), ofVec3f(0, 0, 1));
-            node.setGlobalOrientation(p.orientation);
-            if (i > 0)
-            {
-                p.offset = p.position - pose[i - 1].position;
-                ofLog() << "OFFSET " << p.offset << endl;
-                node.setParent(nodes[i - 1]);
+            string type  = xml.getAttribute("joint", "type", "revolute");
+            string name  = xml.getAttribute("joint", "name", "");
+            
+            if(xml.pushTag("joint", i)){
+                string xyz = xml.getAttribute("origin", "xyz", "0.0 0.0 0.0", 0);
+                string rot = xml.getAttribute("origin", "rpy", "0.0 0.0 0.0", 0);
+                jointMin[i] = xml.getAttribute("limit", "lower", -TWO_PI, 0);
+                jointMax[i] = xml.getAttribute("limit", "upper", TWO_PI, 0);
+                string axis = xml.getAttribute("axis", "xyz", "0.0 0.0 0.0", 0);
+                
+                Pose p;
+                p.name = name;
+                p.type = type;
+                vector<string> pos = ofSplitString(xyz, " ");
+                p.position = ofVec3f(ofToFloat(pos[0]), ofToFloat(pos[1]), ofToFloat(pos[2]));
+                vector<string> ax = ofSplitString(axis, " ");
+                p.axis = ofVec3f(ofToFloat(ax[0]), ofToFloat(ax[1]), ofToFloat(ax[2]));
+                vector<string> ro = ofSplitString(rot, " ");
+                p.rotOffset = ofVec3f(ofToFloat(ro[0]), ofToFloat(ro[1]), ofToFloat(ro[2]));
+                p.rotation = 0;
+                p.orientation.makeRotate(ofRadToDeg(ofToFloat(ro[0])), ofVec3f(1, 0, 0),
+                                         ofRadToDeg(ofToFloat(ro[1])), ofVec3f(0, 1, 0),
+                                         ofRadToDeg(ofToFloat(ro[2])), ofVec3f(0, 0, 1));
+                pose[i] = p;
+                xml.popTag();
+                
+                if(i > 0){
+                    pose[i].offset = pose[i].position - pose[i-1].position;
+                    nodes[i].setParent(nodes[i-1]);
+                }
+                nodes[i].setPosition(pose[i].position * 1000);
+                nodes[i].setOrientation(pose[i].orientation);
             }
-            pose[i] = p;
-            nodes[i] = node;
         }
-
+        toolNode.setParent(nodes[5]);
+        
+        
         for (int i = 0; i < numLinks; i++)
         {
             if (xml.pushTag("link", i))
             {
-
+                
                 if (xml.pushTag("visual"))
                 {
                     if (xml.pushTag("geometry"))
@@ -159,7 +160,7 @@ void RobotModel::loadModel(string path)
 void RobotModel::setup(RobotType type)
 {
     this->type = type;
-
+    
     if (this->type == RobotType::UR3 || this->type == RobotType::UR5 || this->type == RobotType::UR10)
     {
         pose.resize(6);
@@ -178,7 +179,7 @@ void RobotModel::setup(RobotType type)
             {
                 ofLogFatalError() << "PLEASE PLACE THE 3D FILES OF THE UR ARM IN data/models/ur3.dae" << endl;
             }
-
+            
             pose[0].position.set(0, 0, 0);
             pose[1].position.set(0, 0, 0);
             pose[2].position.set(0, 0, 0);
@@ -200,7 +201,7 @@ void RobotModel::setup(RobotType type)
             {
                 ofLogFatalError() << "PLEASE PLACE THE 3D FILES OF THE UR ARM IN data/models/ur5.dae" << endl;
             }
-
+            
             pose[0].position.set(0, 0, 0);
             pose[1].position.set(0, -0.072238, 0.083204);
             pose[2].position.set(0, -0.077537, 0.51141);
@@ -223,9 +224,9 @@ void RobotModel::setup(RobotType type)
             {
                 ofLogFatalError() << "PLEASE PLACE THE 3D FILES OF THE UR ARM IN data/models/ur10.dae" << endl;
             }
-
+            
             pose[0].position.set(0, 0, 0);
-
+            
             // These are correct joint positions for the non-home D-H position.
             // Reference: https://asd.sutd.edu.sg/dfab/a-geometric-inverse-kinematics-solution-for-the-universal-robot/
             // These are correct joint positions for the HOME position (0 rotations on each joint).
@@ -235,7 +236,7 @@ void RobotModel::setup(RobotType type)
             pose[4].position.set(0, -0.16395, 1.3733);
             pose[5].position.set(0, -0.22535, 1.4273);
         }
-
+        
         // Setup the joint axes
         pose[0].axis.set(0, 0, 1);
         pose[1].axis.set(0, -1, 0);
@@ -243,30 +244,30 @@ void RobotModel::setup(RobotType type)
         pose[3].axis.set(0, -1, 0);
         pose[4].axis.set(0, 0, 1);
         pose[5].axis.set(0, 1, 0);
-
+        
         pose[0].orientation.makeRotate(0, pose[0].axis);
         pose[1].orientation.makeRotate(0, pose[1].axis);
         pose[2].orientation.makeRotate(0, pose[2].axis);
         pose[3].orientation.makeRotate(0, pose[3].axis);
         pose[4].orientation.makeRotate(0, pose[4].axis);
         pose[5].orientation.makeRotate(0, pose[5].axis);
-
+        
         pose[0].rotation = 0;
         pose[1].rotation = 0;
         pose[2].rotation = 0;
         pose[3].rotation = 0;
         pose[4].rotation = 0;
         pose[5].rotation = 0;
-
+        
         tool.position.set(pose[5].position + ofVec3f(0.0, -0.0308, 0.0)); // flange position
-
+        
         for (int i = 1; i < pose.size(); i++)
         {
             pose[i].offset = pose[i].position - pose[i - 1].position;
             ofLog(OF_LOG_NOTICE) << "JOINT: " << i << " OFFSETS XYZ " << pose[i].offset << endl;
         }
         tool.offset = pose[5].offset;
-
+        
         tool.position.set(pose[5].position);
         tool.orientation = pose[5].orientation;
         tool.rotation = pose[5].rotation;
@@ -303,44 +304,44 @@ void RobotModel::setup(RobotType type)
         }
         // Reference: https://library.e.abb.com/public/7139d7f4f2cb4d0da9b7fac6541e91d1/3HAC035960%20PS%20IRB%20120-en.pdf
         // ROS https://github.com/ros-industrial/abb_experimental/blob/kinetic-devel/abb_irb120_support/urdf/irb120_3_58_macro.xacro
-
+        
         pose[0].position.set(0, 0, 0);
         pose[1].position.set(0, 0, 0.270);
         pose[2].position.set(0, 0, 0.560);
         pose[3].position.set(0.134, 0, 0.630);
         pose[4].position.set(0.302, 0, 0.630);
         pose[5].position.set(0.374, 0, 0.630);
-
+        
         pose[0].axis.set(0, 0, 1);
         pose[1].axis.set(0, 1, 0);
         pose[2].axis.set(0, 1, 0);
         pose[3].axis.set(1, 0, 0);
         pose[4].axis.set(0, 1, 0);
         pose[5].axis.set(1, 0, 0);
-
+        
         pose[0].orientation.makeRotate(0, pose[0].axis);
         pose[1].orientation.makeRotate(0, pose[1].axis);
         pose[2].orientation.makeRotate(0, pose[2].axis);
         pose[3].orientation.makeRotate(0, pose[3].axis);
         pose[4].orientation.makeRotate(0, pose[4].axis);
         pose[5].orientation.makeRotate(0, pose[5].axis);
-
+        
         pose[0].rotation = 0;
         pose[1].rotation = 0;
         pose[2].rotation = 0;
         pose[3].rotation = 0;
         pose[4].rotation = 0;
         pose[5].rotation = 0;
-
+        
         tool.position.set(pose[5].position + ofVec3f(0.0, -0.0308, 0.0)); // flange position
-
+        
         for (int i = 1; i < pose.size(); i++)
         {
             pose[i].offset = pose[i].position - pose[i - 1].position;
             ofLog(OF_LOG_NOTICE) << "JOINT: " << i << " OFFSETS XYZ " << pose[i].offset << endl;
         }
         tool.offset = pose[5].offset;
-
+        
         tool.position.set(pose[5].position);
         tool.orientation = pose[5].orientation;
         tool.rotation = pose[5].rotation;
@@ -410,7 +411,7 @@ void RobotModel::setPose(vector<double> pose)
 void RobotModel::setEndEffector(string filename)
 {
     string path = ofToDataPath("models/" + filename);
-
+    
     loader.clear();
     if (loader.loadModel("models/" + filename))
     {
@@ -441,7 +442,7 @@ void RobotModel::drawSkeleton()
         float dist = 0;
         for (auto joint : nodes)
         {
-
+            
             ofVec3f p = joint.getGlobalPosition();
             ofColor colorOne = ofColor(ofColor::aqua);
             ofColor colorTwo = ofColor(ofColor::magenta);
@@ -449,7 +450,7 @@ void RobotModel::drawSkeleton()
             ofPushStyle();
             {
                 float t = i / float(nodes.size());
-
+                
                 if (pose[i].axis != ofVec3f(0, 1, 0))
                 {
                     ofPushMatrix();
@@ -472,7 +473,7 @@ void RobotModel::drawSkeleton()
                 }
                 else if (pose[i].axis != ofVec3f(0, 0, 1))
                 {
-
+                    
                     ofPushMatrix();
                     {
                         ofMultMatrix(joint.getGlobalTransformMatrix());
@@ -491,31 +492,31 @@ void RobotModel::drawSkeleton()
                     }
                     ofPopMatrix();
                 }
-
+                
                 if (i > 0)
                 {
                     ofSetColor(colorOne.getLerped(colorTwo, t));
                     // draw each joint
                     joint.draw();
-
+                    
                     ofSetLineWidth(5);
                     ofDrawLine(nodes[i - 1].getGlobalPosition(), p);
                     dist = p.distance(nodes[i - 1].getGlobalPosition());
                 }
             }
             ofPopStyle();
-
+            
             // show length of each link
             ofSetColor(255, 200);
             if (i == 0)
                 ofDrawBitmapString(dist, p.getInterpolated(ofVec3f(), .5));
             else
                 ofDrawBitmapString(dist, p.getInterpolated(nodes[i - 1].getGlobalPosition(), .5));
-
+            
             // show joint id
             ofSetColor(255, 200);
             ofDrawBitmapString(ofToString(i), p.x + 5, p.y, p.z + 5);
-
+            
             // show angle at joint
             ofDrawBitmapString("angle: " + ofToString(pose[i].rotation), p + ofVec3f(0, 0, 20));
             if (ofGetKeyPressed(OF_KEY_CONTROL) && i == 5)
@@ -523,12 +524,12 @@ void RobotModel::drawSkeleton()
                 ofSetColor(colorOne);
                 ofDrawBitmapString("pos: " + ofToString(p), p + ofVec3f(0, 0, 40));
             }
-
+            
             if (i == 5)
             {
-                ofSetColor(colorOne, 100);
+                ofSetColor(255, 0, 255, 100);
                 toolNode.draw();
-
+                
                 ofSetColor(colorOne, 100);
                 tcpNode.draw();
                 ofVec3f tcp = tcpNode.getGlobalPosition();
@@ -540,7 +541,7 @@ void RobotModel::drawSkeleton()
                 ofDrawBitmapString("TCP Desired Pose", tcp + ofVec3f(0, 0, 20));
                 ofDrawBitmapString("dist: " + ofToString(dist), endJoint + p.normalize() * dist / 2 + ofVec3f(0, 0, -40));
                 ofDrawBitmapString("pos:  " + ofToString(tcp), tcp + ofVec3f(0, 0, 80));
-
+                
                 ofVec3f fwp = forwardPose.getGlobalPosition();
                 p = fwp - endJoint;
                 dist = p.length();
@@ -555,7 +556,7 @@ void RobotModel::drawSkeleton()
                     ofDrawBitmapString("pos:  " + ofToString(fwp), fwp + ofVec3f(0, 0, 80));
                 }
             }
-
+            
             i++;
         }
     }
@@ -570,7 +571,7 @@ void RobotModel::drawMesh(ofColor color, bool bDrawDebug)
         {
             ofColor face = ofColor(color);
             ofColor wireframe = ofColor(ofColor::black);
-
+            
             int i = 0;
             for (auto mesh : meshes)
             {
@@ -600,7 +601,7 @@ void RobotModel::drawMesh(ofColor color, bool bDrawDebug)
                     }
                     ofPopMatrix();
                 }
-
+                
                 i++;
             }
         }
@@ -615,7 +616,7 @@ void RobotModel::draw(ofColor color, bool bDrawDebug)
     {
         ofPushStyle();
         {
-
+            
             ofSetColor(255, 255, 255);
             if (bDrawDebug)
             {
@@ -642,12 +643,12 @@ void RobotModel::drawArc(float aStartAngleDegrees, float aEndAngleDegrees, ofVec
     int iterations = fabs(tangleDiff) / 4;
     if (iterations < 2)
         iterations = 2;
-
+    
     float currDegree = startDegrees;
     float tstep = tangleDiff / (float)iterations;
-
+    
     ofVec3f cvec = aForwardAxis;
-
+    
     ofMesh tmesh;
     if (fill)
     {
@@ -657,7 +658,7 @@ void RobotModel::drawArc(float aStartAngleDegrees, float aEndAngleDegrees, ofVec
     {
         tmesh.setMode(OF_PRIMITIVE_LINE_STRIP);
     }
-
+    
     tmesh.addVertex(ofVec3f());
     for (int i = 0; i <= iterations; i++)
     {
@@ -668,6 +669,6 @@ void RobotModel::drawArc(float aStartAngleDegrees, float aEndAngleDegrees, ofVec
         currDegree = ofWrapDegrees(currDegree);
     }
     tmesh.addVertex(ofVec3f());
-
+    
     tmesh.draw();
 }

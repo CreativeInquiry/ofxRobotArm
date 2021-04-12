@@ -15,6 +15,8 @@ namespace ofxRobotArm {
         ofVec3f position;
         ofQuaternion orientation;
         float rotation;
+        string name;
+        string type;
     };
 }
 
