@@ -57,6 +57,8 @@ void RobotModel::loadURDF(string path, RobotType type)
         jointMax.resize(numJoints);
         nodes.resize(numJoints);
         poseRadians.resize(numJoints);
+
+        
         
         for (int i = 0; i < numJoints; i++)
         {
@@ -94,9 +96,12 @@ void RobotModel::loadURDF(string path, RobotType type)
                 nodes[i].setOrientation(pose[i].orientation);
             }
         }
-        toolNode.setParent(nodes[5]);
-        
-        
+        toolNode.setParent(nodes[5]);        
+        originNode.setPosition(ofVec3f(0, 0, 0));
+
+        nodes[0].setParent(originNode);
+
+
         for (int i = 0; i < numLinks; i++)
         {
             if (xml.pushTag("link", i))
@@ -153,6 +158,13 @@ void RobotModel::loadModel(string path)
     {
         ofLogFatalError() << "PLEASE PLACE THE 3D FILES OF THE ARM IN data/models/" << endl;
     }
+}
+
+
+void RobotModel::setOrigin(ofVec3f pos, ofQuaternion orientation)
+{
+    originNode.setGlobalPosition(pos);
+    originNode.setGlobalOrientation(orientation);
 }
 
 // D-H Parameters for UR Robot Arms:

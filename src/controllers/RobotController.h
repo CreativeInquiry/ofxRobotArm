@@ -29,7 +29,7 @@ namespace ofxRobotArm {
         void setHomePose(vector<double> pose);
         void start();
 
-        void setRobotOrigin(ofVec3f origin);
+        void setRobotOrigin(ofVec3f origin, ofQuaternion orientation);
 
         void setNthJoint(double rotation);
         

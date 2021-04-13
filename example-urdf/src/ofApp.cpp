@@ -19,7 +19,7 @@ void ofApp::setup(){
     robot1.start();
     // robot2.start();
 
-    robot1.setRobotOrigin(ofVec3f(0, 500, 0));
+    robot1.setRobotOrigin(ofVec3f(0, 500, 0), ofQuaternion());
     // robot2.setRobotOrigin(ofVec3f(0, -500, 0));
 
     

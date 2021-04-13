@@ -25,6 +25,9 @@ namespace ofxRobotArm
         ~RobotModel();
         void setup(RobotType type);
         void setup(string path, RobotType type);
+
+        void setOrigin(ofNode node);
+        void setOrigin(ofVec3f pos, ofQuaternion orientation);
   
         void loadURDF(string path, RobotType type);
         void loadModel(string path);
@@ -57,6 +60,8 @@ namespace ofxRobotArm
         vector<double> jointMax;
         Pose tool;
 
+
+        ofNode originNode;
         Pose dtoolPoint;
         ofVec3f localOffset;
         ofNode forwardPose;

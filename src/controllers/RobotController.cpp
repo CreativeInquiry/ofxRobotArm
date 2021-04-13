@@ -97,14 +97,16 @@ void RobotController::setup(string ipAddress, bool offline, RobotType type)
     initKinematics();
 }
 
-void RobotController::setNthJoint(double pose){
+void RobotController::setNthJoint(double pose)
+{
     nthJoint.set(pose);
 }
 
-
-void RobotController::setRobotOrigin(ofVec3f origin)
+void RobotController::setRobotOrigin(ofVec3f origin, ofQuaternion orientation)
 {
     this->origin = origin;
+    desiredModel.setOrigin(this->origin, orientation);
+    actualModel.setOrigin(this->origin, orientation);
 }
 
 void RobotController::connectRobot(bool offline)
@@ -200,7 +202,7 @@ void RobotController::updateIK(Pose pose)
     {
         targetPoses = inverseKinematics.inverseIKFast(pose);
     }
-    
+
     ofQuaternion rot = initPose.orientation * pose.orientation;
     calcTCPOrientation = ofVec4f(rot.x(), rot.y(), rot.z(), rot.w());
     int selectedSolution = inverseKinematics.selectSolution(targetPoses, robot->getCurrentPose(), jointWeights);
@@ -220,9 +222,10 @@ void RobotController::updateIK(Pose pose)
         p = tpose;
         i++;
     }
-    
-    if(bOverrideNthJoint){
-        targetPose[targetPose.size()-1] = nthJoint.get();
+
+    if (bOverrideNthJoint)
+    {
+        targetPose[targetPose.size() - 1] = nthJoint.get();
     }
 }
 
@@ -312,7 +315,7 @@ void RobotController::updateMovement()
 void RobotController::setDesired(ofNode target)
 {
     // convert from mm to m
-    targetTCP.position = (target.getGlobalPosition() - origin) / 1000.0;
+    targetTCP.position = (target.getGlobalPosition()) / 1000.0;
     targetTCP.orientation = target.getGlobalOrientation();
     desiredModel.setTCPPose(targetTCP);
     this->target = target;
@@ -367,16 +370,10 @@ void RobotController::draw(ofColor color, bool debug)
 {
     ofPushMatrix();
     {
-        ofTranslate(origin.get());
         actualModel.drawMesh(color, debug);
         actualModel.draw(color, debug);
     }
     ofPopMatrix();
-}
-
-void RobotController::drawSafety(ofCamera &cam)
-{
-    // robotSafety.draw();
 }
 
 void RobotController::drawIK()
@@ -389,7 +386,6 @@ void RobotController::drawDesired(ofColor color)
 
     ofPushMatrix();
     {
-        ofTranslate(origin.get());
         desiredModel.drawMesh(color, false);
         desiredModel.draw(color, false);
         desiredModel.drawSkeleton();
