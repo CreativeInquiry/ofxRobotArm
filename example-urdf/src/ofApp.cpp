@@ -6,7 +6,7 @@ void ofApp::setup(){
     ofSetFrameRate(120);
     // setup scene
     setup_scene();
-    robot1.setup("192.168.0.1", (string)"relaxed_ik_core/config/urdfs/ur10.urdf", ofxRobotArm::UR10);
+    robot1.setup("192.168.0.1", (string)"relaxed_ik_core/config/urdfs/irb120.urdf", ofxRobotArm::IRB120);
     // robot2.setup("192.168.0.1", (string)"relaxed_ik_core/config/urdfs/irb120.urdf", ofxRobotArm::IRB120);
 
     // setup robot
@@ -30,7 +30,7 @@ void ofApp::setup(){
     tcp.setPosition(tcp.getPosition()*1000);
     initialRot = tcp.getOrientationQuat();
     //IRB120 needs to invert the calculated orientation;
-    // initialRot = initialRot.inverse();
+    initialRot = initialRot.inverse();
     tcp.setOrientation(initialRot);
     tcp_target.setNode(tcp);
 
