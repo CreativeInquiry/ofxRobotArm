@@ -32,15 +32,8 @@ public:
     vector<double> getCurrentPose();
     vector<double> getInitPose();
 
-    bool isDataReady();
-    float getThreadFPS();
-    bool bDataReady;
-    bool bStarted;
-
-    void setSpeed(vector<double> speeds, double acceleration = 100.0);
-    void setPose(vector<double> pose);
     
-    ofxRobotArm::Pose getToolPose();
+
 
     kuka::RobotKuka robot;
 

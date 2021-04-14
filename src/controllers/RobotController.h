@@ -7,6 +7,7 @@
 #include "RobotDriver.h"
 #include "URDriver.h"
 #include "ABBDriver.h"
+#include "XARMDriver.h"
 #include "InverseKinematics.h"
 #include "RobotModel.h"
 #include "ofxIKArm.h"
@@ -24,7 +25,7 @@ namespace ofxRobotArm {
         /// \brief creates and connects to a new robot using a default IP Address
         /// \params params default parameters for the robot & GUI
         void setup(string ipAddress, string urdfPath, RobotType type,  bool offline = false);
-        void setup(string ipAddress, bool offline, RobotType type);
+        void createRobot(RobotType type);
         void setupParams();
         void setHomePose(vector<double> pose);
         void start();

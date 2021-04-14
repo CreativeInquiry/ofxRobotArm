@@ -11,7 +11,7 @@
 #include "ABBDriver.h"
 using namespace ofxRobotArm;
 ABBDriver::ABBDriver(){
-    currentSpeed.assign(6, 0.0);
+    currentSpeed.assign(numJoints, 0.0);
     acceleration = 0.0;
     robot       = NULL;
     io_service = NULL;
@@ -21,14 +21,14 @@ ABBDriver::ABBDriver(){
     
 //    -0.25, 0.25, 0.13, 2.5, 0.45, -2.59
     vector<double> foo;
-    foo.assign(6, 0.0001);
+    foo.assign(numJoints, 0.0001);
 
     poseRaw.setup(foo);
     toolPoseRaw.setup(foo);
     poseProcessed.setup(foo);
-    poseRaw.getBack().assign(6, 0.0001);
-    poseProcessed.getBack().assign(6, 0.0001);
-    toolPoseRaw.getBack().assign(6, 0.0001);
+    poseRaw.getBack().assign(numJoints, 0.0001);
+    poseProcessed.getBack().assign(numJoints, 0.0001);
+    toolPoseRaw.getBack().assign(numJoints, 0.0001);
     numDeccelSteps = 120;
 }
 
@@ -176,8 +176,6 @@ vector<double> ABBDriver::getCurrentPose(){
     poseRaw.swapFront();
     ret = poseRaw.getFront();
     unlock();
-    
-    
     return ret;
 }
 
@@ -187,14 +185,6 @@ ofVec4f ABBDriver::getCalculatedTCPOrientation(){
     ret = ofVec4f(dtoolPoint.orientation.x(), dtoolPoint.orientation.y(), dtoolPoint.orientation.z(), dtoolPoint.orientation.w());
     unlock();
     return ret;
-}
-
-float ABBDriver::getThreadFPS(){
-    float fps = 0;
-    lock();
-    fps = timer.getFrameRate();
-    unlock();
-    return fps;
 }
 
 ofxRobotArm::Pose ABBDriver::getToolPose(){

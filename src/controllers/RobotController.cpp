@@ -5,7 +5,7 @@
 using namespace ofxRobotArm;
 RobotController::RobotController()
 {
-    setupParams();
+ 
 }
 
 RobotController::~RobotController()
@@ -31,13 +31,12 @@ void RobotController::setupParams()
     joints.setName("Joint Pos");
     targetJoints.setName("Target Joints");
     jointsIK.setName("IK Solver");
-    for (int i = 0; i < 6; i++)
+    for (unsigned int i = 0; i < currentPose.size(); i++)
     {
         pCurrentPose.push_back(ofParameter<double>());
         joints.add(pCurrentPose.back().set("actual joint " + ofToString(i), 0, -360, 360));
     }
-
-    for (int i = 0; i < 6; i++)
+    for (unsigned int i = 0; i < currentPose.size(); i++)
     {
         pTargetPose.push_back(ofParameter<double>());
         targetJoints.add(pTargetPose.back().set("target joint " + ofToString(i), 0, -360, 360));
@@ -58,15 +57,8 @@ void RobotController::setupParams()
 void RobotController::setup(string ipAddress, string urdfPath, RobotType type, bool offline)
 {
     this->type = type;
+    createRobot(this->type);
 
-    if (this->type == UR3 || this->type == UR5 || this->type == UR10)
-    {
-        robot = new URDriver();
-    }
-    else if (type == IRB120)
-    {
-        robot = new ABBDriver();
-    }
 
     desiredModel.setup(urdfPath, this->type);
     actualModel.setup(urdfPath, this->type);
@@ -74,13 +66,12 @@ void RobotController::setup(string ipAddress, string urdfPath, RobotType type, b
     this->ipAddress = ipAddress;
     connectRobot(offline);
     initKinematics();
+    setupParams();
 }
 
-void RobotController::setup(string ipAddress, bool offline, RobotType type)
-{
-    this->type = type;
 
-    if (this->type == UR3 || this->type == UR5 || this->type == UR10)
+void RobotController::createRobot(RobotType type){
+    if (type == UR3 || type == UR5 || type == UR10)
     {
         robot = new URDriver();
     }
@@ -88,13 +79,10 @@ void RobotController::setup(string ipAddress, bool offline, RobotType type)
     {
         robot = new ABBDriver();
     }
-
-    desiredModel.setup(this->type);
-    actualModel.setup(this->type);
-
-    this->ipAddress = ipAddress;
-    connectRobot(offline);
-    initKinematics();
+    else if(type == XARM7)
+    {
+        robot = new XARMDriver(type);
+    }
 }
 
 void RobotController::setNthJoint(double pose)
@@ -120,9 +108,10 @@ void RobotController::connectRobot(bool offline)
 
 void RobotController::initKinematics()
 {
-    jointWeights.assign(6, 1.0f);
-    smoothedPose.assign(6, 0.0f);
+
     vector<double> pose = robot->getInitPose();
+    jointWeights.assign(pose.size(), 1.0f);
+    smoothedPose.assign(pose.size(), 0.0f);
     inverseKinematics.setup(type);
     inverseKinematics.setRelaxedPose(pose);
     ofMatrix4x4 forwardIK = inverseKinematics.forwardKinematics(pose);
@@ -130,9 +119,12 @@ void RobotController::initKinematics()
     forwardNode.setGlobalOrientation(forwardIK.getRotate());
     initPose.position = forwardIK.getTranslation();
     initPose.orientation = forwardIK.getRotate();
-    for (int i = 0; i < smoothedPose.size(); i++)
+    
+    int i = 0;
+    for (auto joint : smoothedPose)
     {
-        smoothedPose[i] = pose[i];
+        joint = pose[i];
+        i++;
     }
 }
 
@@ -205,12 +197,8 @@ void RobotController::updateIK(Pose pose)
 
     ofQuaternion rot = initPose.orientation * pose.orientation;
     calcTCPOrientation = ofVec4f(rot.x(), rot.y(), rot.z(), rot.w());
-    int selectedSolution = inverseKinematics.selectSolution(targetPoses, robot->getCurrentPose(), jointWeights);
-    if (selectedSolution > -1)
-    {
-        targetPose = targetPoses[selectedSolution];
-    }
-
+    targetPose = targetPoses[0];
+    
     int i = 0;
     for (auto p : targetPose)
     {
@@ -351,9 +339,9 @@ void RobotController::updateRobotData()
     ofQuaternion tcpO = actualTCP.orientation;
     tcpOrientation = ofVec4f(tcpO.x(), tcpO.y(), tcpO.z(), tcpO.w());
     // update GUI params
-    for (unsigned int i = 0; i < currentPose.size(); i++)
-    {
-        pCurrentPose[i] = ofRadToDeg((float)currentPose[i]);
+    int i = 0;
+    for(auto p : pCurrentPose){
+        p = ofRadToDeg((float)currentPose[i++]);
     }
 }
 

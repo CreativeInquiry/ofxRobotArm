@@ -80,78 +80,78 @@ int argMin(std::vector<double> vec)
 }
 
 
-int InverseKinematics::selectSolution(vector<vector<double> > & inversePosition, vector<double> currentQ, vector<double> weight)
-{
-   int selectedSolution = 0;
-   if(type == ofxRobotArm::UR3 || type == ofxRobotArm::UR5 || type == ofxRobotArm::UR10){
-       for(int i = 0; i < inversePosition.size(); i++){
-           for(int j = 0; j < inversePosition[i].size(); j++){
-               if(j == 1 || j == 3){
-                   if(inversePosition[i][j] > PI){
-                       inversePosition[i][j]  = ofMap(inversePosition[i][j], PI, TWO_PI, -PI, 0, true);
-                   }
-               }
-           }
-       }
-   }
-
-   for(int i = 0; i < inversePosition.size(); i++){
-       for(int j = 0; j < inversePosition[i].size(); j++){
-           if(preInversePosition.size() > 0){
-               if(i == selectedSolution){
-                   if(preInversePosition[i][j]-inversePosition[i][j] >= TWO_PI){
-                       ofLog(OF_LOG_WARNING)<<"JOINT WRAPS SOL "<<ofToString(i)<<" Joint "<<ofToString(j)<<endl;
-                   }
-               }
-           }
-       }
-   }
-
-   vector<double> test_sol;
-   vector<vector<double> > valid_sols;
-   test_sol.assign(6, 9999.);
-   vector<double> addAngle = {-1*TWO_PI, 0, TWO_PI};
-   for(int i = 0; i < inversePosition.size(); i++){
-       for(int j = 0; j < inversePosition[i].size(); j++){
-           for(int k = 0; k < addAngle.size(); k++){
-               float test_ang = inversePosition[i][j]+addAngle[k];
-               if(fabs(test_ang - currentQ[j])  < fabs(test_sol[j] -  currentQ[j]) && abs(test_ang) <= TWO_PI){
-                   test_sol[j] = test_ang;
-               }
-           }
-       }
-       bool testValid = false;
-       for(int l = 0; l < test_sol.size(); l++){
-           if(test_sol[l] != 9999){
-               testValid = true;
-           }else{
-               testValid = false;
-           }
-       }
-       if(testValid){
-           valid_sols.push_back(test_sol);
-
-       }
-   }
-
-   vector<double> sumsValid;
-   sumsValid.assign(valid_sols.size(), 0);
-   for(int i = 0; i < valid_sols.size(); i++){
-       for(int j = 0; j < valid_sols[i].size(); j++){
-           sumsValid[i] = pow(weight[j]*(valid_sols[i][j] - currentQ[j]), 2);
-       }
-   }
-    
-    preInversePosition = inversePosition;
-    
-    
-//    inversePosition = valid_sols;
-    if(inversePosition.size() > 0){
-        return 0;
-    }else{
-        return -1;
-    }
-}
+//int InverseKinematics::selectSolution(vector<vector<double> > & inversePosition, vector<double> currentQ, vector<double> weight)
+//{
+//   int selectedSolution = 0;
+//   if(type == ofxRobotArm::UR3 || type == ofxRobotArm::UR5 || type == ofxRobotArm::UR10){
+//       for(int i = 0; i < inversePosition.size(); i++){
+//           for(int j = 0; j < inversePosition[i].size(); j++){
+//               if(j == 1 || j == 3){
+//                   if(inversePosition[i][j] > PI){
+//                       inversePosition[i][j]  = ofMap(inversePosition[i][j], PI, TWO_PI, -PI, 0, true);
+//                   }
+//               }
+//           }
+//       }
+//   }
+//
+//   for(int i = 0; i < inversePosition.size(); i++){
+//       for(int j = 0; j < inversePosition[i].size(); j++){
+//           if(preInversePosition.size() > 0){
+//               if(i == selectedSolution){
+//                   if(preInversePosition[i][j]-inversePosition[i][j] >= TWO_PI){
+//                       ofLog(OF_LOG_WARNING)<<"JOINT WRAPS SOL "<<ofToString(i)<<" Joint "<<ofToString(j)<<endl;
+//                   }
+//               }
+//           }
+//       }
+//   }
+//
+//   vector<double> test_sol;
+//   vector<vector<double> > valid_sols;
+//   test_sol.assign(, 9999.);
+//   vector<double> addAngle = {-1*TWO_PI, 0, TWO_PI};
+//   for(int i = 0; i < inversePosition.size(); i++){
+//       for(int j = 0; j < inversePosition[i].size(); j++){
+//           for(int k = 0; k < addAngle.size(); k++){
+//               float test_ang = inversePosition[i][j]+addAngle[k];
+//               if(fabs(test_ang - currentQ[j])  < fabs(test_sol[j] -  currentQ[j]) && abs(test_ang) <= TWO_PI){
+//                   test_sol[j] = test_ang;
+//               }
+//           }
+//       }
+//       bool testValid = false;
+//       for(int l = 0; l < test_sol.size(); l++){
+//           if(test_sol[l] != 9999){
+//               testValid = true;
+//           }else{
+//               testValid = false;
+//           }
+//       }
+//       if(testValid){
+//           valid_sols.push_back(test_sol);
+//
+//       }
+//   }
+//
+//   vector<double> sumsValid;
+//   sumsValid.assign(valid_sols.size(), 0);
+//   for(int i = 0; i < valid_sols.size(); i++){
+//       for(int j = 0; j < valid_sols[i].size(); j++){
+//           sumsValid[i] = pow(weight[j]*(valid_sols[i][j] - currentQ[j]), 2);
+//       }
+//   }
+//
+//    preInversePosition = inversePosition;
+//
+//
+////    inversePosition = valid_sols;
+//    if(inversePosition.size() > 0){
+//        return 0;
+//    }else{
+//        return -1;
+//    }
+//}
 
 
 

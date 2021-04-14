@@ -45,7 +45,6 @@ public:
     boost::thread_group * thread_group;
     // Robot Arm
     
-    
     bool wait = true;
     abb::egm::wrapper::Input input;
     abb::egm::wrapper::Joints actualPose;

@@ -20,7 +20,7 @@ public:
     vector<double> inverseRelaxed(Pose targetPose, Pose currentPose);
     
     void setRobotType(ofxRobotArm::RobotType type);
-    int selectSolution(vector<vector<double> > & inversePosition, vector<double> currentQ, vector<double> weight);
+    //int selectSolution(vector<vector<double> > & inversePosition, vector<double> currentQ, vector<double> weight);
     ofMatrix4x4 forwardKinematics(vector<double> pose);
     ofMatrix4x4 forwardKinematics(double o, double t, double th, double f, double fi, double s);
     vector<vector<double> > inverseRelaxedIK(ofxRobotArm::Pose targetPose, ofxRobotArm::Pose currentPose);

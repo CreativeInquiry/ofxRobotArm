@@ -33,9 +33,7 @@ namespace ofxRobotArm
         virtual void toggleTeachMode() = 0;
         virtual void setTeachMode(bool enabled) = 0;
         virtual void threadedFunction() = 0;
-        virtual ofVec4f getCalculatedTCPOrientation() = 0;
-        virtual vector<double> getToolPointRaw() = 0;
-        virtual vector<double> getCurrentPose() = 0;
+
         vector<double> getAchievablePosition(vector<double> position)
         {
             float maxAccelDeg = 500.0;
@@ -114,12 +112,80 @@ namespace ofxRobotArm
 
             return position;
         }
-        virtual bool isDataReady() = 0;
-        virtual float getThreadFPS() = 0;
         
-        virtual void setSpeed(vector<double> speeds, double acceleration = 100.0) = 0;
-        virtual void setPose(vector<double> positions) = 0;
-        virtual ofxRobotArm::Pose getToolPose() = 0;
+        float getThreadFPS(){
+            float fps = 0;
+            lock();
+            fps = timer.getFrameRate();
+            unlock();
+            return fps;
+        }
+   
+        bool isDataReady(){
+            if(bDataReady){
+                bDataReady = false;
+                return true;
+            }else{
+                return false;
+            }
+        }
+        vector<double> getToolPointRaw(){
+            vector<double> ret;
+            lock();
+            toolPoseRaw.swapFront();
+            ret = toolPoseRaw.getFront();
+            unlock();
+            return ret;
+        }
+
+        vector<double> getCurrentPose(){
+            vector<double> ret;
+            
+            lock();
+            poseRaw.swapFront();
+            ret = poseRaw.getFront();
+            unlock();
+            
+            return ret;
+        }
+
+        ofVec4f getCalculatedTCPOrientation(){
+            ofVec4f ret;
+            lock();
+            ret = ofVec4f(dtoolPoint.orientation.x(), dtoolPoint.orientation.y(), dtoolPoint.orientation.z(), dtoolPoint.orientation.w());
+            unlock();
+            return ret;
+        }
+
+        ofxRobotArm::Pose getToolPose(){
+            ofxRobotArm::Pose ret;
+            lock();
+            ret = tool;
+            unlock();
+            return ret;
+        }
+
+        void setSpeed(vector<double> speeds, double accel){
+            lock();
+            currentSpeed = speeds;
+            acceleration = accel;
+            bMove = true;
+            bMoveWithPos = false;
+            unlock();
+        }
+
+        void setPose(vector<double> pose){
+            lock();
+            currentPose = pose;
+            bMove = true;
+            bMoveWithPos = true;
+            deccelCount = numDeccelSteps+4;
+            bStop = false;
+            unlock();
+        }
+
+        
+        
         virtual vector<double> getInitPose() = 0;
         // Robot Arm
 
@@ -133,6 +199,7 @@ namespace ofxRobotArm
         vector<double> currentPoseRadian;
         vector<double> currentPose;
         vector<double> targetPose;
+        vector<double> initPose;
 
         double acceleration;
 
@@ -159,5 +226,6 @@ namespace ofxRobotArm
         float acceleratePct = 0.0;
         int deccelCount = 0;
         int numDeccelSteps = 60;
+        int numJoints = 6;
     };
 }

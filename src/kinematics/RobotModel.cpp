@@ -117,7 +117,7 @@ void RobotModel::loadURDF(string path, RobotType type)
                         {
                             ofLog(OF_LOG_NOTICE) << "LOADING " << path << endl;
                             ofxAssimpModelLoader loader;
-                            if (loader.loadModel(path))
+                            if (loader.loadModel(path, true))
                             {
                                 ofLog(OF_LOG_NOTICE) << "LOADED 3D FILE" << endl;
                                 ofMesh m;
