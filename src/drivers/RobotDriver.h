@@ -116,7 +116,7 @@ namespace ofxRobotArm
         }
         virtual bool isDataReady() = 0;
         virtual float getThreadFPS() = 0;
-        virtual void moveJoints(vector<double> pose) = 0;
+        
         virtual void setSpeed(vector<double> speeds, double acceleration = 100.0) = 0;
         virtual void setPose(vector<double> positions) = 0;
         virtual ofxRobotArm::Pose getToolPose() = 0;

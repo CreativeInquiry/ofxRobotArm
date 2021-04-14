@@ -36,7 +36,7 @@ public:
     float getThreadFPS();
     bool bDataReady;
     bool bStarted;
-    void moveJoints(vector<double> pos);
+
     void setSpeed(vector<double> speeds, double acceleration = 100.0);
     void setPose(vector<double> pose);
     

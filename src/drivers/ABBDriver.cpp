@@ -205,12 +205,6 @@ ofxRobotArm::Pose ABBDriver::getToolPose(){
     return ret;
 }
 
-void ABBDriver::moveJoints(vector<double> pos){
-    lock();
-    poseBuffers.push_back(pos);
-    unlock();
-}
-
 void ABBDriver::setSpeed(vector<double> speeds, double accel){
     lock();
     currentSpeed = speeds;

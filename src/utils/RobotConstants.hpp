@@ -13,5 +13,6 @@ namespace ofxRobotArm{
         UR5,
         UR10,
         IRB120,
+        XARM7,
     };
 }

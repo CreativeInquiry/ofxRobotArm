@@ -169,12 +169,6 @@ ofxRobotArm::Pose KUKADriver::getToolPose(){
     return ret;
 }
 
-void KUKADriver::moveJoints(vector<double> pos){
-    lock();
-    poseBuffers.push_back(pos);
-    unlock();
-}
-
 void KUKADriver::setSpeed(vector<double> speeds, double accel){
     lock();
     currentSpeed = speeds;

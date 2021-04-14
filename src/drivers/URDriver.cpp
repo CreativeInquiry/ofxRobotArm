@@ -238,11 +238,6 @@ ofxRobotArm::Pose URDriver::getToolPose(){
     return ret;
 }
 
-void URDriver::moveJoints(vector<double> pos){
-    lock();
-    posBuffer.push_back(pos);
-    unlock();
-}
 
 void URDriver::setSpeed(vector<double> speeds, double accel){
     lock();
