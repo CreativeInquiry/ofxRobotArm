@@ -23,7 +23,7 @@ namespace ofxRobotArm
     public:
         RobotModel();
         ~RobotModel();
-        void setup(RobotType type);
+        // void setup(RobotType type);
         void setup(string path, RobotType type);
 
         void setOrigin(ofNode node);

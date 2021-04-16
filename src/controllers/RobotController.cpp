@@ -23,7 +23,7 @@ void RobotController::setupParams()
     robotArmParams.add(bUseIKArm.set("Use IKArm", false));
     robotArmParams.add(bDoReconnect.set("TryReconnect", false));
     robotArmParams.add(bSmoothPose.set("Smooth Pose", true));
-    robotArmParams.add(smoothness.set("Smooth", 0.01, 0.001, 1.0));
+    robotArmParams.add(smoothness.set("Smooth", 0.1, 0.001, 1.0));
     robotArmParams.add(bOverrideNthJoint.set("Override Nth Joint", false));
     robotArmParams.add(nthJoint.set("Nth Joint", 0, -TWO_PI, TWO_PI));
     robotArmParams.add(origin.set("Origin", ofVec3f(0, 0, 0), ofVec3f(-500, -500, -500), ofVec3f(500, 500, 500)));
@@ -240,17 +240,6 @@ void RobotController::update(vector<double> _pose)
         desiredModel.setPose(targetPose);
         desiredModel.setForwardPose(fN);
     }
-}
-
-#pragma mark - Safety
-void RobotController::safetyCheck()
-{
-
-    // robotSafety.setCurrentRobotArmAnlges( robot->getCurrentPose());
-    // robotSafety.setDesiredAngles(targetPose);
-    // robotSafety.update(desiredModel);
-    // robotSafety.update(1/60);
-    // targetPose = robotSafety.getDesiredAngles();
 }
 
 #pragma mark - Movements

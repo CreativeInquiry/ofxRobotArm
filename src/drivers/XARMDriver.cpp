@@ -45,7 +45,7 @@ void XARMDriver::start() {
 
 }
 bool  XARMDriver::isConnected() {
-
+    return false;
 }
 void XARMDriver::disconnect() {
 

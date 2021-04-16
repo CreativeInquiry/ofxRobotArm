@@ -45,7 +45,6 @@ namespace ofxRobotArm {
         void updateJoints(double deltatime);
         void toggleTeachMode();
         void setTeachMode(bool teachMode);
-        void safetyCheck();
         void updateMovement();
         void updateRobotData();
         void update();
@@ -56,7 +55,6 @@ namespace ofxRobotArm {
         void draw(ofColor color = ofColor(255,255,255,255), bool debug = false);
         void drawDesired(ofColor color = ofColor(255,255,255,255));
         void drawIK();
-        void drawSafety(ofCamera & cam);
         bool arePoseControlledExternally();
         void setToolOffset(ofVec3f local);
         ofNode getActualTCPNode();
