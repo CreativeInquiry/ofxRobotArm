@@ -100,133 +100,32 @@ void URDFModel::load(string filepath)
     }
 }
 
-void URDFModel::setPose(vector<double> pose){
-    poseRadians = pose;
-    for(int i = 0; i < pose.size() && i < this->pose.size(); i++){
-        this->pose[i].rotation = ofRadToDeg(pose[i]);
-        this->pose[i].orientation.makeRotate(this->pose[i].rotation,this->pose[i].axis);
-        nodes[i].setOrientation(this->pose[i].orientation);
-    }    
-}
-
-void URDFModel::draw(ofColor color)
-{
-
-    drawMesh(color);
-    drawSkeleton();
-}
-
-
-void URDFModel::drawMesh(ofColor color){
-    ofPushStyle();
-    {
-        ofEnableDepthTest();
-        int i = 0; 
-        for (auto joint : meshes)
-        {
-            ofSetColor(255, 255, 255);
-            ofPushMatrix();
-            ofMultMatrix(nodes[i].getGlobalTransformMatrix());
-            joint.draw();
-            ofPopMatrix();
-            i++;
-        }
-        ofDisableDepthTest();
+bool URDFModel::setup(string path, bool forceFixedBase, int flag){
+    mFlag = flag;
+    parser.setSourceFile(path);
+    ofFile file;
+    file.open(ofToDataPath(path), ofFile::ReadOnly, false);
+    ofBuffer buff = file.readToBuffer();
+    std::string xml = buff.getText();
+    bool result;
+    if (xml.length())
+	{
+			result = parser.loadUrdf(xml.c_str(), forceFixedBase, (mFlag & CUF_PARSE_SENSORS));
+			if (parser.getModel().m_rootLinks.size())
+			{
+				if (mFlag & CUF_MERGE_FIXED_LINKS)
+				{
+					parser.mergeFixedLinks(parser.getModel(), parser.getModel().m_rootLinks[0], forceFixedBase, 0);
+					parser.getModel().m_links.clear();
+					parser.getModel().m_joints.clear();
+					parser.recreateModel(parser.getModel(), parser.getModel().m_rootLinks[0]);
+				}
+				if (mFlag & CUF_PRINT_URDF_INFO)
+				{
+					parser.printTree(parser.getModel().m_rootLinks[0], 0);
+				}
+			}
     }
-    ofPopStyle();
-}
 
-
-void URDFModel::drawSkeleton()
-{
-    ofPushStyle();
-    {
-        int i = 0;
-        float dist = 0;
-        for (auto joint : nodes)
-        {
-
-            ofVec3f p = joint.getGlobalPosition();
-
-            // draw each link
-            ofPushStyle();
-            float t = i / float(nodes.size());
-            ofColor colorOne = ofColor(ofColor::aqua);
-            ofColor colorTwo = ofColor(ofColor::magenta);
-            ofSetColor(colorOne.getLerped(colorTwo, t));
-            if (i != 0)
-            {
-                // draw each joint
-                joint.draw();
-            }
-            ofSetLineWidth(5);
-
-            if (i != 0)
-            {
-                ofDrawLine(nodes[i - 1].getGlobalPosition(), p);
-                dist = p.distance(nodes[i - 1].getGlobalPosition());
-            }
-            ofPopStyle();
-
-            // show length of each link
-            ofSetColor(255, 200);
-            if (i == 0)
-                ofDrawBitmapString(dist, p.getInterpolated(ofVec3f(), .5));
-            else
-                ofDrawBitmapString(dist, p.getInterpolated(nodes[i - 1].getGlobalPosition(), .5));
-
-            // show joint id
-            ofSetColor(255, 200);
-            ofDrawBitmapString(ofToString(i), p.x + 5, p.y, p.z + 5);
-
-            // show angle at joint
-            ofDrawBitmapString("angle: " + ofToString(pose[i].rotation), p + ofVec3f(0, 0, 20));
-            if (ofGetKeyPressed(OF_KEY_CONTROL) && i == 5)
-            {
-                ofSetColor(colorOne);
-                ofDrawBitmapString("pos: " + ofToString(p), p + ofVec3f(0, 0, 40));
-            }
-
-            if (i == 5)
-            {
-                ofSetColor(colorOne, 100);
-                toolNode.draw();
-
-                ofSetColor(colorOne, 100);
-                tcpNode.draw();
-                ofVec3f tcp = tcpNode.getGlobalPosition();
-                ofVec3f endJoint = nodes[i].getGlobalPosition();
-                p = tcp - endJoint;
-                dist = p.length();
-                ofSetColor(colorOne, 100);
-                ofDrawLine(endJoint, tcp);
-                ofDrawBitmapString("TCP Desired Pose", tcp + ofVec3f(0, 0, 20));
-                ofDrawBitmapString("dist: " + ofToString(dist), endJoint + p.normalize() * dist / 2 + ofVec3f(0, 0, -40));
-                ofDrawBitmapString("pos:  " + ofToString(tcp), tcp + ofVec3f(0, 0, 80));
-
-                ofVec3f fwp = forwardPose.getGlobalPosition();
-                p = fwp - endJoint;
-                dist = p.length();
-                ofSetColor(colorTwo, 100);
-                forwardPose.draw();
-                if (fwp.distance(tcp) > 20)
-                {
-                    ofSetColor(colorTwo, 100);
-                    ofDrawLine(endJoint, fwp);
-                    ofDrawBitmapString("Forward Pose", fwp + ofVec3f(0, 0, 20));
-                    ofDrawBitmapString("dist: " + ofToString(dist), endJoint + p.normalize() * dist / 2 + ofVec3f(0, 0, -40));
-                    ofDrawBitmapString("pos:  " + ofToString(fwp), fwp + ofVec3f(0, 0, 80));
-                }
-            }
-            i++;
-        }
-    }
-    ofPopStyle();
-}
-
-void URDFModel::setEndEffector(string filename)
-{
-}
-void URDFModel::setToolMesh(ofMesh mesh)
-{
+    return result;
 }

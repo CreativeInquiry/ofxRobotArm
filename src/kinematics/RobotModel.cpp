@@ -380,8 +380,8 @@ void RobotModel::setTCPPose(Pose pose)
     mat.makeRotationMatrix(toolNode.getGlobalOrientation());
     ofVec3f pos = toolNode.getPosition() / 1000.0;
     tool.position = tool.position - pos * mat;
-    tcpNode.setGlobalPosition(tool.position * 1000);
-    tcpNode.setGlobalOrientation(pose.orientation);
+    tcpNode.setPosition(tool.position * 1000);
+    tcpNode.setOrientation(pose.orientation);
 }
 
 Pose RobotModel::getModifiedTCPPose()
