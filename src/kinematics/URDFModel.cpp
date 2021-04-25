@@ -100,7 +100,7 @@ void URDFModel::load(string filepath)
     }
 }
 
-bool URDFModel::setup(string path, bool forceFixedBase, int flag){
+bool URDFModel::setup(string path, bool forceFixedBase, bool mergeFixedJoints, bool printDebug, bool parseSensors){
     mFlag = flag;
     parser.setSourceFile(path);
     ofFile file;
@@ -110,17 +110,17 @@ bool URDFModel::setup(string path, bool forceFixedBase, int flag){
     bool result;
     if (xml.length())
 	{
-			result = parser.loadUrdf(xml.c_str(), forceFixedBase, (mFlag & CUF_PARSE_SENSORS));
+			result = parser.loadUrdf(xml.c_str(), forceFixedBase, parseSensors);
 			if (parser.getModel().m_rootLinks.size())
 			{
-				if (mFlag & CUF_MERGE_FIXED_LINKS)
+				if (mergeFixedJoints)
 				{
 					parser.mergeFixedLinks(parser.getModel(), parser.getModel().m_rootLinks[0], forceFixedBase, 0);
 					parser.getModel().m_links.clear();
 					parser.getModel().m_joints.clear();
 					parser.recreateModel(parser.getModel(), parser.getModel().m_rootLinks[0]);
 				}
-				if (mFlag & CUF_PRINT_URDF_INFO)
+				if (printDebug)
 				{
 					parser.printTree(parser.getModel().m_rootLinks[0], 0);
 				}

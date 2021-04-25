@@ -5,7 +5,6 @@
 using namespace ofxRobotArm;
 RobotController::RobotController()
 {
- 
 }
 
 RobotController::~RobotController()
@@ -59,7 +58,6 @@ void RobotController::setup(string ipAddress, string urdfPath, RobotType type, b
     this->type = type;
     createRobot(this->type);
 
-
     desiredModel.setup(urdfPath, this->type);
     actualModel.setup(urdfPath, this->type);
 
@@ -69,8 +67,8 @@ void RobotController::setup(string ipAddress, string urdfPath, RobotType type, b
     setupParams();
 }
 
-
-void RobotController::createRobot(RobotType type){
+void RobotController::createRobot(RobotType type)
+{
     if (type == UR3 || type == UR5 || type == UR10)
     {
         robot = new URDriver();
@@ -79,7 +77,7 @@ void RobotController::createRobot(RobotType type){
     {
         robot = new ABBDriver();
     }
-    else if(type == XARM7)
+    else if (type == XARM7)
     {
         robot = new XARMDriver(type);
     }
@@ -102,7 +100,19 @@ void RobotController::connectRobot(bool offline)
     if (!offline)
     {
         robot->setAllowReconnect(bDoReconnect);
-        robot->setup(ipAddress, 0, 1);
+
+        if (type == UR3 || type == UR5 || type == UR10)
+        {
+            robot->setup(ipAddress, 0, 1);
+        }
+        else if (type == IRB120)
+        {
+            robot->setup(ipAddress, 0, 1);
+        }
+        else if (type == XARM7)
+        {
+            robot->setup(ipAddress, 0, 1);
+        }
     }
 }
 
@@ -119,7 +129,7 @@ void RobotController::initKinematics()
     forwardNode.setGlobalOrientation(forwardIK.getRotate());
     initPose.position = forwardIK.getTranslation();
     initPose.orientation = forwardIK.getRotate();
-    
+
     int i = 0;
     for (auto joint : smoothedPose)
     {
@@ -198,7 +208,7 @@ void RobotController::updateIK(Pose pose)
     ofQuaternion rot = initPose.orientation * pose.orientation;
     calcTCPOrientation = ofVec4f(rot.x(), rot.y(), rot.z(), rot.w());
     targetPose = targetPoses[0];
-    
+
     int i = 0;
     for (auto p : targetPose)
     {
@@ -221,8 +231,6 @@ void RobotController::updateIK(Pose pose)
 void RobotController::update()
 {
     updateRobotData();
-    // update the plane that visualizes the robot flange
-    tcp_plane.update(target);
     updateIK(desiredModel.getModifiedTCPPose());
     updateMovement();
 }
@@ -245,6 +253,7 @@ void RobotController::update(vector<double> _pose)
 #pragma mark - Movements
 void RobotController::updateMovement()
 {
+    tcp_plane.update(target);
 
     if (bSmoothPose)
     {
@@ -257,7 +266,7 @@ void RobotController::updateMovement()
             i++;
         }
     }
-
+    
     if (targetPose.size() > 0 && smoothedPose.size() > 0)
     {
         ofMatrix4x4 forwardIK = inverseKinematics.forwardKinematics(bSmoothPose ? smoothedPose : targetPose);
@@ -329,7 +338,8 @@ void RobotController::updateRobotData()
     tcpOrientation = ofVec4f(tcpO.x(), tcpO.y(), tcpO.z(), tcpO.w());
     // update GUI params
     int i = 0;
-    for(auto p : pCurrentPose){
+    for (auto p : pCurrentPose)
+    {
         p = ofRadToDeg((float)currentPose[i++]);
     }
 }
