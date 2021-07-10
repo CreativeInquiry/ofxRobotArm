@@ -1,4 +1,4 @@
-# ofxRobotArm LINUX ONLY
+# ofxRobotArm V2021.BETA.1
 ###### An openFrameworks addon for controlling and interacting with robot arms.
 
   - [About](#about)
@@ -13,9 +13,9 @@
 
 
 ## About
-`ofxRobotArm` is an openFrameworks addon for doing creative things with robot arms. The goal of the addon is to remove as many technical barriers as possible to get up and running with robots. We've included a number of examples that show you how different ways of controlling and interacting with a robot arm, including direct manipulation, geometry-based manipulation, motion capture-based interactions, and keyframe animation. By developing `ofxRobotArm` for openFrameworks, we hope to help you extend human-robot interaction in new and diverse ways.
+`ofxRobotArm` is an openFrameworks addon for doing creative things with robot arms. The goal of the addon is to remove as many technical barriers as possible to get up and running with robots. We've included an example of how to get up and running with ofxRobotArm and your Robot Arm.  By developing `ofxRobotArm` for openFrameworks, we hope to help you extend human-robot interaction in new and diverse ways.
 
-Currently the addon is configured to work with Universal Robot's and ABB robot arms (untested).  KUKA Support is pending. 
+Currently the addon is configured to work with Universal Robot's and ABB robot arms (untested).  KUKA and xArm Support is pending. 
 
 Development for `ofxRobotArm` was sponsored by [The Frank-Ratchye STUDIO for Creative Inquiry](http://studioforcreativeinquiry.org/). 
 Technical development was lead by [Dan Moore](http://makeitdoathing.com) and [Madeline Gannon](https://atonaton.com).
@@ -25,10 +25,11 @@ Technical development was lead by [Dan Moore](http://makeitdoathing.com) and [Ma
 ## Dependencies
 After download, you can run the `installAddons.sh` script to clone all the external addons used in the `ofxRobotArm` examples and the core of `ofxRobotArm`.  
 
+Non Core Addon depedencies
 - ofxGizmo
 - ofxEasing
 - ofxTiming
-- ofxIKArm
+- ofxYAML
 
 You will need to download the other precompiled dependencies via GIT LSF
 
@@ -37,9 +38,11 @@ You will need to download the other precompiled dependencies via GIT LSF
 - protobuf
 - relaxedIK
 
-You will need to install boost
+On Linux You will need to install boost
 
 apt install libboost-all-dev
+
+On Mac you will need to unzip the boost.zip and replace the version shipped with openFrameworks. 
 
 
 ## Overview
@@ -50,7 +53,7 @@ apt install libboost-all-dev
 We've also included a number of example projects that show you the most common ways of programming 6-axis robots:
 
 **1. Direct Manipulation**
- - [`example-linux`](/example-linux) lets you use your mouse to drag around and rotate your robot.
+ - [`example-urdf`](/example-urdf) lets you use your mouse to drag around and rotate your robot.
  
 
 ## Licensing
@@ -81,7 +84,7 @@ Here are some of the references and resources that have made `ofxRobotArm` possi
 
 ## Future Development
 
-* Collision Detection
+* CollisionIK
 * More Robot Arms!
 
 
