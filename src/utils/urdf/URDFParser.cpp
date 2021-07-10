@@ -1799,7 +1799,7 @@ bool UrdfParser::mergeFixedLinks(UrdfModel &model, UrdfLink *link, bool forceFix
 	{
 		printf("\t");
 	}
-	printf("processing %s\n", link->m_name);
+    ofLog()<<"processing "<<link->m_name<<endl;
 
 	for (int i = 0; i < link->m_childJoints.size();)
 	{
@@ -1812,7 +1812,7 @@ bool UrdfParser::mergeFixedLinks(UrdfModel &model, UrdfLink *link, bool forceFix
 				printf("\t");
 			}
 			//mergeChildLink
-			printf("merge %s into %s!\n", childLink->m_name, link->m_name);
+            ofLog()<<"merge "<<childLink->m_name<<" into "<<link->m_name<<endl;
 			for (int c = 0; c < childLink->m_collisionArray.size(); c++)
 			{
 				UrdfCollision col = childLink->m_collisionArray[c];
@@ -1892,7 +1892,8 @@ bool UrdfParser::mergeFixedLinks(UrdfModel &model, UrdfLink *link, bool forceFix
 				{
 					printf("\t");
 				}
-				printf("relink %s from %s to %s!\n", grandChildLink->m_name, childLink->m_name, link->m_name);
+		
+                ofLog()<<"relink "<<grandChildLink->m_name<<" from "<<childLink->m_name<<" to "<<link->m_name<<endl;
 
 				grandChildJoint->m_parentLinkName = link->m_name;
 				ofMatrix4x4 mat = childJoint->m_parentLinkToJointTransform.getGlobalTransformMatrix() * grandChildJoint->m_parentLinkToJointTransform.getGlobalTransformMatrix();
@@ -1933,21 +1934,8 @@ const std::string sJointNames[] = {
 
 bool UrdfParser::printTree(UrdfLink *link, int level)
 {
-	printf("\n");
-	for (int l = 0; l < level; l++)
-	{
-		printf("\t");
-	}
-	printf("%s (mass=%f) ", link->m_name, link->m_inertia.m_mass);
-	if (link->m_parentJoint)
-	{
-		printf("(joint %s, joint type=%s\n", link->m_parentJoint->m_name, sJointNames[link->m_parentJoint->m_type]);
-	}
-	else
-	{
-		printf("\n");
-	}
 
+    ofLog()<<link->m_name<<" mass= "<<link->m_inertia.m_mass;
 	for (int i = 0; i < link->m_childJoints.size(); i++)
 	{
 		printTree(link->m_childLinks[i], level + 1);

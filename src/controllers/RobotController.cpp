@@ -22,12 +22,6 @@ void RobotController::setupParams()
     robotArmParams.add(bUseIKArm.set("Use IKArm", false));
     robotArmParams.add(bDoReconnect.set("TryReconnect", false));
     robotArmParams.add(bSmoothPose.set("Smooth Pose", true));
-    for(int i = 0 ; i < currentPose.size(); i++){
-        ofParameter<double> smooth;
-        smooth.set("Smooth-"+i, 0.1, 0.001, 1.0);
-        robotArmParams.add(smooth);
-        smoothedWeights.push_back(smooth);
-    }
     robotArmParams.add(bOverrideNthJoint.set("Override Nth Joint", false));
     robotArmParams.add(nthJoint.set("Nth Joint", 0, -TWO_PI, TWO_PI));
     robotArmParams.add(origin.set("Origin", ofVec3f(0, 0, 0), ofVec3f(-500, -500, -500), ofVec3f(500, 500, 500)));
@@ -132,6 +126,12 @@ void RobotController::initKinematics(ofxRobotArm::IKType ikType)
     vector<double> pose = robot->getInitPose();
     jointWeights.assign(pose.size(), 1.0f);
     smoothedPose.assign(pose.size(), 0.0f);
+    for(int i = 0 ; i < pose.size(); i++){
+        ofParameter<double> smooth;
+        smooth.set("Smooth-"+ofToString(i), 0.1, 0.001, 1.0);
+        robotArmParams.add(smooth);
+        smoothedWeights.push_back(smooth);
+    }
     inverseKinematics.setup(robotType, ikType, pose);
     ofMatrix4x4 forwardIK = inverseKinematics.forwardKinematics(pose);
     forwardNode.setGlobalPosition(forwardIK.getTranslation());
