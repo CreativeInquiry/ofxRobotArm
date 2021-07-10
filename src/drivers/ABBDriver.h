@@ -59,5 +59,6 @@ public:
     double position_amplitude = 100.0;    // [mm].
     double orientation_amplitude = -10.0; // [degrees].
     double frequency = 0.25;
+    double numJoints = 6;
 };
 }
