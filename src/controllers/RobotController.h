@@ -26,18 +26,17 @@ namespace ofxRobotArm {
         void setup(string ipAddress, string urdfPath, RobotType robotType, IKType ikType, bool offline);
         void createRobot(RobotType type);
         void createModels(string urdfpath);
+        void connectRobot(bool offline);
         void setupParams();
-        void setHomePose(vector<double> pose);
-        void start();
-
-        void setRobotOrigin(ofVec3f origin, ofQuaternion orientation);
-
-        void setNthJoint(double rotation);
-        
         
         void initKinematics(ofxRobotArm::IKType type);
+        
+        void setNthJoint(double rotation);
+        void setRobotOrigin(ofVec3f origin, ofQuaternion orientation);
+        void setHomePose(vector<double> pose);
         void setIKType(ofxRobotArm::IKType ikType);
-        void connectRobot(bool offline);
+        
+        void start();
 
         /// \brief creates and connects to a new robot
         /// \params ipAddress ipAddress of the robot
@@ -129,6 +128,7 @@ namespace ofxRobotArm {
         ofParameter<bool> bUseRelaxedIK;
         ofParameter<bool> bUseIKArm;
         ofParameter<bool> bSetPoseExternally;
+        ofParameter<bool> bHome;
 
         std::string ipAddress;
         Pose actualTCP;
