@@ -14,11 +14,8 @@ void ofApp::setup(){
     
     // setup gui
     setup_gui();
-    
     // start robot
     robot1.start();
-
-    
     robot1.setToolOffset(offset);
     // robot2.setToolOffset(offset);
     
@@ -57,11 +54,7 @@ void ofApp::setup(){
     line.close();
 
     FOLLOW_MODE = FOLLOW_GIZMO;
-    
-    
 }
-
-
 
 //--------------------------------------------------------------
 void ofApp::update(){
