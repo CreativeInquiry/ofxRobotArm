@@ -1,6 +1,6 @@
 # Enter the information of the robot you want to run RelaxedIK on
 loaded_robot:
-  name: irb120_info.yaml # please enter the name of the corresponding info file
+  name: ur10_info.yaml # please enter the name of the corresponding info file
   link_radius: 0.05 # by default
   # 1. FIRST ENTRY: please select from noECA, ECA, ECA3, and ECAA
   # noECA: doesn't incorporate environment collision avoidance
@@ -19,7 +19,7 @@ loaded_robot:
   # online: smaller weight (1 and 1) to the matching position and orientation objectives
   # offline: larger weight (10 and 9) to the matching position and orientation objectives
   # # Concatenate the entries with a single '+', for example, ECA+SM+online
-  objective_mode: ECA
+  objective_mode: ECAA
   # please type keyboard here if interactive control is desired; if you want to have
   # the robot arm follow a cartesian path, put the animation file in the
   # animation_files folder and type the file name here

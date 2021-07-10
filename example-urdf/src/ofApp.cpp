@@ -6,8 +6,8 @@ void ofApp::setup(){
     ofSetFrameRate(120);
     // setup scene
     setup_scene();
-    robot1.setup("192.168.0.1", (string)"relaxed_ik_core/config/urdfs/irb120.urdf", ofxRobotArm::IRB120, ofxRobotArm::RELAXED, true);
-    // robot2.setup("192.168.0.1", (string)"relaxed_ik_core/config/urdfs/irb120.urdf", ofxRobotArm::IRB120);
+    robot1.setup("192.168.0.1", (string)"relaxed_ik_core/config/urdfs/ur10.urdf", ofxRobotArm::UR10, ofxRobotArm::RELAXED, true);
+//    robot2.setup("192.168.0.1", (string)"relaxed_ik_core/config/urdfs/irb120.urdf", ofxRobotArm::IRB120, ofxRobotArm::SW, true);
 
     // setup robot
     // robot.setup(robotParams);    // change IP string to your robot's IP address
@@ -16,8 +16,9 @@ void ofApp::setup(){
     setup_gui();
     // start robot
     robot1.start();
+//    robot2.start();
     robot1.setToolOffset(offset);
-    // robot2.setToolOffset(offset);
+//    robot2.setToolOffset(offset);
     
     tcp = robot1.getActualTCPNode();
     tcp.setPosition(tcp.getPosition()*1000);
@@ -73,6 +74,7 @@ void ofApp::update(){
         ofVec3f p = look_target.getTranslation();
         ofMatrix4x4 mat, mat2;
         mat.makeLookAtMatrix(p, tcp_target.getTranslation(), ofVec3f(0, 1, 0));
+        mat = mat.getInverse();
         tcp.setPosition(tcp_target.getTranslation());
         tcp.setOrientation(mat.getRotate());
     }
@@ -93,9 +95,9 @@ void ofApp::update(){
     robot1.setDesired(tcp);
     robot1.update();
 
-    // robot2.setToolOffset(offset);
-    // robot2.setDesired(tcp);
-    // robot2.update();
+//    robot2.setToolOffset(offset);
+//    robot2.setDesired(tcp);
+//    robot2.update();
 }
 
 //--------------------------------------------------------------
@@ -110,7 +112,7 @@ void ofApp::draw(){
         draw_gui();
     }
     // if robot is LIVE, draw indicator
-    if (robot1.isLive()){
+    if (robot1.isLive() || robot2.isLive()){
         draw_live_robot_warning();
     }
 }
@@ -133,9 +135,9 @@ void ofApp::draw_scene(){
     robot1.drawDesired(ofColor::whiteSmoke);
 
     // Draw Real Robot
-    // robot2.draw(robot2.isLive()?ofColor::green:ofColor::red);
+    robot2.draw(robot2.isLive()?ofColor::green:ofColor::red);
     // // Draw Desired Robot
-    // robot2.drawDesired(ofColor::whiteSmoke);
+    robot2.drawDesired(ofColor::whiteSmoke);
 
     ofPushStyle();
     ofSetColor(ofColor::aqua);
@@ -250,7 +252,6 @@ void ofApp::listener_show_top(bool & val)
         int x = 0;
         int y = 0;
         int z = 1700;
-        
         
         ofVec3f pos = ofVec3f(x, y, z);
         ofVec3f tgt = ofVec3f(pos.x, pos.y, 0);

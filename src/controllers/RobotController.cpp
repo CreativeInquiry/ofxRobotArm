@@ -212,10 +212,13 @@ void RobotController::setTeachMode(bool teachMode)
 void RobotController::updateIK(Pose pose)
 {
 
-    targetPoses = inverseKinematics.inverseKinematics(pose, initPose);
     ofQuaternion rot = initPose.orientation * pose.orientation;
     calcTCPOrientation = ofVec4f(rot.x(), rot.y(), rot.z(), rot.w());
-    targetPose = targetPoses[0];
+    
+    targetPoses = inverseKinematics.inverseKinematics(pose, initPose);
+    if(targetPoses.size() > 0){
+        targetPose = targetPoses[0];
+    }
 
     int i = 0;
     for (auto p : targetPose)
@@ -266,28 +269,30 @@ void RobotController::updateRobotData()
     // pass the current joints from the robot to the kinematic solver
 
     currentPose = getCurrentPose();
-    actualModel.setPose(currentPose);
+    if(currentPose.size() > 0){
+        actualModel.setPose(currentPose);
 
-    ofMatrix4x4 forwardIK = inverseKinematics.forwardKinematics(currentPose);
-    ofVec3f translation = forwardIK.getTranslation();
-    forwardNode.setGlobalPosition(translation);
-    forwardNode.setGlobalOrientation(forwardIK.getRotate());
-    forwardPose.position = translation;
-    forwardPose.orientation = forwardIK.getRotate();
+        ofMatrix4x4 forwardIK = inverseKinematics.forwardKinematics(currentPose);
+        ofVec3f translation = forwardIK.getTranslation();
+        forwardNode.setGlobalPosition(translation);
+        forwardNode.setGlobalOrientation(forwardIK.getRotate());
+        forwardPose.position = translation;
+        forwardPose.orientation = forwardIK.getRotate();
 
-    actualModel.setForwardPose(forwardNode);
+        actualModel.setForwardPose(forwardNode);
 
-    actualTCP = robot->getToolPose();
-    tcpPosition = actualTCP.position;
-    actualModel.setTCPPose(actualTCP);
+        actualTCP = robot->getToolPose();
+        tcpPosition = actualTCP.position;
+        actualModel.setTCPPose(actualTCP);
 
-    ofQuaternion tcpO = actualTCP.orientation;
-    tcpOrientation = ofVec4f(tcpO.x(), tcpO.y(), tcpO.z(), tcpO.w());
-    // update GUI params
-    int i = 0;
-    for (auto p : pCurrentPose)
-    {
-        p = ofRadToDeg((float)currentPose[i++]);
+        ofQuaternion tcpO = actualTCP.orientation;
+        tcpOrientation = ofVec4f(tcpO.x(), tcpO.y(), tcpO.z(), tcpO.w());
+        // update GUI params
+        int i = 0;
+        for (auto p : pCurrentPose)
+        {
+            p = ofRadToDeg((float)currentPose[i++]);
+        }
     }
 }
 
