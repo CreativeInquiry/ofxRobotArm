@@ -34,9 +34,6 @@ public:
     void setAngle(double angleX, double angleY, double angleZ);
     double angleX, angleY, angleZ;
     
-
-    ofVec3f u, v, w;
-    void setMatrix(ofVec3f u, ofVec3f v, ofVec3f w);
     
     uint64_t getFrame();
     uint64_t frameNum;

@@ -22,7 +22,12 @@ void RobotController::setupParams()
     robotArmParams.add(bUseIKArm.set("Use IKArm", false));
     robotArmParams.add(bDoReconnect.set("TryReconnect", false));
     robotArmParams.add(bSmoothPose.set("Smooth Pose", true));
-    robotArmParams.add(smoothness.set("Smooth", 0.1, 0.001, 1.0));
+    for(int i = 0 ; i < currentPose.size(); i++){
+        ofParameter<double> smooth;
+        smooth.set("Smooth-"+i, 0.1, 0.001, 1.0);
+        robotArmParams.add(smooth);
+        smoothedWeights.push_back(smooth);
+    }
     robotArmParams.add(bOverrideNthJoint.set("Override Nth Joint", false));
     robotArmParams.add(nthJoint.set("Nth Joint", 0, -TWO_PI, TWO_PI));
     robotArmParams.add(origin.set("Origin", ofVec3f(0, 0, 0), ofVec3f(-500, -500, -500), ofVec3f(500, 500, 500)));
@@ -53,19 +58,18 @@ void RobotController::setupParams()
     forwardTCPPosition.set("Forward TCP Pos", ofVec3f(0, 0, 0), ofVec3f(-1, -1, -1), ofVec3f(1, 1, 1));
 }
 
-void RobotController::setup(string ipAddress, string urdfPath, RobotType type, bool offline)
+void RobotController::setup(string ipAddress, string urdfPath, RobotType robotType, IKType ikType, bool offline)
 {
-    this->type = type;
-    createRobot(this->type);
-
-    desiredModel.setup(urdfPath, this->type);
-    actualModel.setup(urdfPath, this->type);
-
+    this->robotType = robotType;
     this->ipAddress = ipAddress;
+
+    createRobot(this->robotType);
+    createModels(urdfPath);
     connectRobot(offline);
-    initKinematics();
+    initKinematics(ikType);
     setupParams();
 }
+
 
 void RobotController::createRobot(RobotType type)
 {
@@ -83,6 +87,33 @@ void RobotController::createRobot(RobotType type)
     }
 }
 
+void RobotController::connectRobot(bool offline)
+{
+    if (!offline && robot != nullptr)
+    {
+        robot->setAllowReconnect(bDoReconnect);
+
+        if (robotType == UR3 || robotType == UR5 || robotType == UR10)
+        {
+            robot->setup(ipAddress, 0, 1);
+        }
+        else if (robotType == IRB120)
+        {
+            robot->setup(ipAddress, 0, 1);
+        }
+        else if (robotType == XARM7)
+        {
+            robot->setup(ipAddress, 0, 1);
+        }
+    }
+}
+
+void RobotController::createModels(string urdfpath)
+{
+    desiredModel.setup(urdfpath,robotType);
+    actualModel.setup(urdfpath, robotType);
+}
+
 void RobotController::setNthJoint(double pose)
 {
     nthJoint.set(pose);
@@ -95,35 +126,13 @@ void RobotController::setRobotOrigin(ofVec3f origin, ofQuaternion orientation)
     actualModel.setOrigin(this->origin, orientation);
 }
 
-void RobotController::connectRobot(bool offline)
-{
-    if (!offline)
-    {
-        robot->setAllowReconnect(bDoReconnect);
-
-        if (type == UR3 || type == UR5 || type == UR10)
-        {
-            robot->setup(ipAddress, 0, 1);
-        }
-        else if (type == IRB120)
-        {
-            robot->setup(ipAddress, 0, 1);
-        }
-        else if (type == XARM7)
-        {
-            robot->setup(ipAddress, 0, 1);
-        }
-    }
-}
-
-void RobotController::initKinematics()
+void RobotController::initKinematics(ofxRobotArm::IKType ikType)
 {
 
     vector<double> pose = robot->getInitPose();
     jointWeights.assign(pose.size(), 1.0f);
     smoothedPose.assign(pose.size(), 0.0f);
-    inverseKinematics.setup(type);
-    inverseKinematics.setRelaxedPose(pose);
+    inverseKinematics.setup(robotType, ikType, pose);
     ofMatrix4x4 forwardIK = inverseKinematics.forwardKinematics(pose);
     forwardNode.setGlobalPosition(forwardIK.getTranslation());
     forwardNode.setGlobalOrientation(forwardIK.getRotate());
@@ -136,6 +145,10 @@ void RobotController::initKinematics()
         joint = pose[i];
         i++;
     }
+}
+
+void RobotController::setIKType(ofxRobotArm::IKType ikType){
+    inverseKinematics.setIKType(ikType);
 }
 
 void RobotController::toggleLive()
@@ -173,7 +186,10 @@ void RobotController::setToolOffset(ofVec3f local)
 void RobotController::start()
 {
     // Start the connection to the actual robot over TCP/IP
-    robot->start();
+    if(robot != nullptr){
+        robot->start();
+    }
+    
 }
 
 vector<double> RobotController::getCurrentPose()
@@ -196,15 +212,8 @@ void RobotController::setTeachMode(bool teachMode)
 #pragma mark - IK
 void RobotController::updateIK(Pose pose)
 {
-    if (bUseRelaxedIK)
-    {
-        targetPoses = inverseKinematics.inverseRelaxedIK(pose, initPose);
-    }
-    if (bUseIKFast)
-    {
-        targetPoses = inverseKinematics.inverseIKFast(pose);
-    }
 
+    targetPoses = inverseKinematics.inverseKinematics(pose, initPose);
     ofQuaternion rot = initPose.orientation * pose.orientation;
     calcTCPOrientation = ofVec4f(rot.x(), rot.y(), rot.z(), rot.w());
     targetPose = targetPoses[0];
@@ -261,25 +270,25 @@ void RobotController::updateMovement()
         vector<double> currentPose = getCurrentPose();
         for (auto p : targetPose)
         {
-            smoothedPose[i] = ofLerp(smoothedPose[i], p, smoothness);
-            targetPose[i] = (smoothedPose[i]);
+            smoothedPose[i] = ofLerp(smoothedPose[i], p, smoothedWeights[i]);
+            targetPose[i] = smoothedPose[i];
             i++;
         }
     }
     
-    if (targetPose.size() > 0 && smoothedPose.size() > 0)
+    if (targetPose.size() > 0)
     {
-        ofMatrix4x4 forwardIK = inverseKinematics.forwardKinematics(bSmoothPose ? smoothedPose : targetPose);
+        ofMatrix4x4 forwardIK = inverseKinematics.forwardKinematics(targetPose);
         ofNode fN;
         fN.setGlobalPosition(forwardIK.getTranslation());
         fN.setGlobalOrientation(forwardIK.getRotate());
-        desiredModel.setPose(bSmoothPose ? smoothedPose : targetPose);
+        desiredModel.setPose(targetPose);
         desiredModel.setForwardPose(fN);
     }
 
     if (bLive)
     {
-        robot->setPose(bSmoothPose ? smoothedPose : targetPose);
+        robot->setPose(targetPose);
         stopPosition = targetPose;
         stopCount = 30;
     }
@@ -363,10 +372,6 @@ void RobotController::draw(ofColor color, bool debug)
     ofPopMatrix();
 }
 
-void RobotController::drawIK()
-{
-    inverseKinematics.draw();
-}
 
 void RobotController::drawDesired(ofColor color)
 {
@@ -382,44 +387,3 @@ void RobotController::drawDesired(ofColor color)
     tcp_plane.draw();
 }
 
-//void RobotController::updateIKArm(){
-//
-//    targetPoses = inverseKinematics.inverseKinematics(targetTCP);
-//    int selectedSolution = inverseKinematics.selectSolution(targetPoses,  robot->getCurrentPose(), jointWeights);
-//    if(selectedSolution > -1){
-//        targetPose = targetPoses[selectedSolution];
-//        for(int i = 0; i < targetPose.size(); i++){
-//            float tpose = (float)targetPose[i];
-//            if( isnan(tpose) ) {
-//                tpose = 0.f;
-//            }
-//            ikPose[i] = tpose;
-//        }
-//    }
-//    for(int i = 0; i < targetPose.size(); i++){
-//        float tpose = (float)targetPose[i];
-//        if( isnan(tpose) ) {
-//            tpose = 0.f;
-//        }
-//        targetPose[i] = ofRadToDeg(tpose);
-//    }
-//    targetPose = inverseKinematics.getArmIK(&actualModel, targetTCP, targetPose, 1.0/60.0f);
-//    for(int i = 0; i < targetPose.size(); i++){
-//        float tpose = (float)targetPose[i];
-//        if( isnan(tpose) ) {
-//            tpose = 0.f;
-//        }
-//        targetPose[i] = ofRadToDeg(tpose);
-//    }
-//
-//    // update the look at angles after the IK has been applied //
-//    // overrides the angles and sets them directly //
-//    // alters joint[3] && joint[4]
-////    vector< double > lookAtAngles = inverseKinematics.lookAtJoints(&actualModel, targetPose, 1.0/60.0f)
-//    // determine if these angles should be added or not //
-////    for( int i = 0; i < targetPose.size(); i++ ) {
-////        targetPose[i] = lookAtAngles[i];
-////    }
-//
-//    desiredModel.setPose(targetPose);
-//}

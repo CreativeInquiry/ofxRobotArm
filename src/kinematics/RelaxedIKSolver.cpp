@@ -101,14 +101,6 @@ void RelaxedIKSolver::threadedFunction(){
     }
 }
 
-void RelaxedIKSolver::setMatrix(ofVec3f u, ofVec3f v, ofVec3f w){
-    lock();
-    this->u = u;
-    this->v = v;
-    this->w = w;
-    unlock();
-}
-
 bool RelaxedIKSolver::isThreadRunning(){
     bool ret;
     lock();

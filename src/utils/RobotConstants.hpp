@@ -15,4 +15,9 @@ namespace ofxRobotArm{
         IRB120,
         XARM7,
     };
+    enum IKType{
+        SW,
+        HK,
+        RELAXED
+    };
 }

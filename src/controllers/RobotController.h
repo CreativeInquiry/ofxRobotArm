@@ -9,9 +9,8 @@
 #include "ABBDriver.h"
 #include "XARMDriver.h"
 #include "InverseKinematics.h"
-#include "RobotModel.h"
+#include "URDFModel.h"
 #include "ofxIKArm.h"
-// #include "RobotArmSafety.h"
 #include "RobotConstants.hpp"
 #include "Plane.h"
 
@@ -24,8 +23,9 @@ namespace ofxRobotArm {
         
         /// \brief creates and connects to a new robot using a default IP Address
         /// \params params default parameters for the robot & GUI
-        void setup(string ipAddress, string urdfPath, RobotType type,  bool offline = false);
+        void setup(string ipAddress, string urdfPath, RobotType robotType, IKType ikType, bool offline);
         void createRobot(RobotType type);
+        void createModels(string urdfpath);
         void setupParams();
         void setHomePose(vector<double> pose);
         void start();
@@ -35,7 +35,8 @@ namespace ofxRobotArm {
         void setNthJoint(double rotation);
         
         
-        void initKinematics();
+        void initKinematics(ofxRobotArm::IKType type);
+        void setIKType(ofxRobotArm::IKType ikType);
         void connectRobot(bool offline);
 
         /// \brief creates and connects to a new robot
@@ -54,7 +55,6 @@ namespace ofxRobotArm {
         void setDesired(ofNode target);  
         void draw(ofColor color = ofColor(255,255,255,255), bool debug = false);
         void drawDesired(ofColor color = ofColor(255,255,255,255));
-        void drawIK();
         bool arePoseControlledExternally();
         void setToolOffset(ofVec3f local);
         ofNode getActualTCPNode();
@@ -99,7 +99,7 @@ namespace ofxRobotArm {
 
         ofParameter<bool> bSmoothPose;
         ofParameter<bool> bOverrideNthJoint;
-        ofParameter<double> smoothness;
+        vector< ofParameter<double> > smoothedWeights;
         ofParameter<double> nthJoint;
         ofParameter<ofVec3f> targetTCPPosition;
         ofParameter<ofVec4f> targetTCPOrientation;
@@ -134,7 +134,8 @@ namespace ofxRobotArm {
         Pose actualTCP;
         Pose targetTCP;
 
-        RobotType type;
+        ofxRobotArm::RobotType robotType;
+        ofxRobotArm::IKType ikType;
     private:
         Pose initPose;
         Pose forwardPose;

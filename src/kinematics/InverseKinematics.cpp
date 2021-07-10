@@ -3,170 +3,201 @@
 // Copyright (c) 2016, 2021 Daniel Moore, Madeline Gannon, and The Frank-Ratchye STUDIO for Creative Inquiry All rights reserved.
 ////
 using namespace ofxRobotArm;
-
-
-
-InverseKinematics::InverseKinematics(){
-
+const static double ANGLE_THRESH = ofDegToRad(30);
+const double ZERO_THRESH = 0.00000001;
+int SIGN(double x)
+{
+    return (x > 0) - (x < 0);
 }
 
-InverseKinematics::~InverseKinematics(){
-
-}
-
-void InverseKinematics::setup(RobotType type){
-    params.setName("IKArm Commands");
-    params.add( bControlIkWithMouse.set("ControlIkWithMouse", false ));
-    params.add( bOnlyUseInverseIk.set("OnlyUseInverseIK", true ));
-    
-    params.add( ikRobotMinY.set( "IkRobotMinY", -725, -2000, 2000 ));
-    params.add( ikRobotMaxY.set( "IkRobotMaxY", 0, -2000, 2000 ));
-    
-    params.add( ikRobotMinZ.set( "IkRobotMinZ", 300, -500, 3000 ));
-    params.add( ikRobotMaxZ.set( "IkRobotMaxZ", 700, -500, 3000 ));
-    
-    params.add( mIKRampStartPct.set("IKRampStartPct", 0.3, 0.0, 1.0 ));
-    params.add( mIKRampEndPct.set("IKRampEndPct", 1.5, 1.0, 2.0 ));
-    params.add( mIKRampHeightPct.set("IKRampHeightPct", 0.3, 0.0, 1.0 ));
-    setRobotType(type);
-}
-
-
-void InverseKinematics::setRobotType(ofxRobotArm::RobotType type){
-    this->type = type;
-    kinematics.setType(this->type);
-    if(this->type == UR3 || this->type == UR5 || this->type  == UR10){
-        relaxedIK.setMatrix(ofVec3f(-1, 0, 0), ofVec3f(0, -1, 0), ofVec3f(0, 0, 1));
-    }else{
-        relaxedIK.setMatrix(ofVec3f(1, 0, 0), ofVec3f(0, 1, 0), ofVec3f(0, 0, 1));
-    }
-}
 /// \brief Converts a 4x4 matrix to a 1D array
 /// \param input ofMatrix4x4 to convert
 /// \return row-major array in UR World Cords
-double* toIK(ofMatrix4x4 input){
-    double* T = new double[16];
-    for(int i = 0; i < 4; i++){
+double *toIK(ofMatrix4x4 input)
+{
+    double *T = new double[16];
+    for (int i = 0; i < 4; i++)
+    {
         T[i] = (double)input._mat[i][0];
-        T[i+(4)] = (double)input._mat[i][1];
-        T[i+(8)] = (double)input._mat[i][2];
-        T[i+(12)] = (double)input._mat[i][3];
+        T[i + (4)] = (double)input._mat[i][1];
+        T[i + (8)] = (double)input._mat[i][2];
+        T[i + (12)] = (double)input._mat[i][3];
     }
     return T;
 }
 
-ofMatrix4x4 toOF(double * T){
+ofMatrix4x4 toOF(double *T)
+{
     ofMatrix4x4 output;
-    for(int i = 0; i < 4; i++){
+    for (int i = 0; i < 4; i++)
+    {
         output._mat[i][0] = T[i];
-        output._mat[i][1] = T[i+(4)];
-        output._mat[i][2] = T[i+(8)];
-        output._mat[i][3] = T[i+(12)];
+        output._mat[i][1] = T[i + (4)];
+        output._mat[i][2] = T[i + (8)];
+        output._mat[i][3] = T[i + (12)];
     }
     return output;
 }
 
-int argMin(std::vector<double> vec)
+InverseKinematics::InverseKinematics()
 {
-    std::vector<double>::iterator mins = std::min_element(vec.begin(), vec.end()); //returns all mins
-    double min = mins[0]; //select the zeroth min if multiple mins exist
-    for(int i=0; i < vec.size(); i++)
+}
+
+InverseKinematics::~InverseKinematics()
+{
+}
+
+void InverseKinematics::setup(ofxRobotArm::RobotType robotType, ofxRobotArm::IKType ikType, vector<double> pose)
+{
+    params.setName("IKArm Commands");
+    params.add(bControlIkWithMouse.set("ControlIkWithMouse", false));
+    params.add(bOnlyUseInverseIk.set("OnlyUseInverseIK", true));
+
+    params.add(ikRobotMinY.set("IkRobotMinY", -725, -2000, 2000));
+    params.add(ikRobotMaxY.set("IkRobotMaxY", 0, -2000, 2000));
+
+    params.add(ikRobotMinZ.set("IkRobotMinZ", 300, -500, 3000));
+    params.add(ikRobotMaxZ.set("IkRobotMaxZ", 700, -500, 3000));
+
+    params.add(mIKRampStartPct.set("IKRampStartPct", 0.3, 0.0, 1.0));
+    params.add(mIKRampEndPct.set("IKRampEndPct", 1.5, 1.0, 2.0));
+    params.add(mIKRampHeightPct.set("IKRampHeightPct", 0.3, 0.0, 1.0));
+    setRobotType(robotType);
+    setIKType(ikType);
+    setRelaxedPose(pose);
+    initPose = pose;
+}
+
+void InverseKinematics::setIKType(ofxRobotArm::IKType type){
+    ikType = type;
+
+}
+
+void InverseKinematics::setRobotType(ofxRobotArm::RobotType type)
+{
+    robotType = type;
+
+    offsets.assign(6, 0);
+    sign_corrections.assign(6, 1);
+    joint_limit_min.assign(6, 0);
+    joint_limit_max.assign(6, 0);
+    if (robotType == UR3)
     {
-        //Note: could use fabs( (min - vec[i]) < 0.01) if worried about floating-point precision
-        if(vec[i] == min)
-            return i;
+        d1 = 0.1519;
+        a2 = -0.24365;
+        a3 = -0.21325;
+        d4 = 0.11235;
+        d5 = 0.08535;
+        d6 = 0.0819;
+
+        offsets[0] = PI;
+
+        joint_limit_min[0] = -360;
+        joint_limit_min[1] = -360;
+        joint_limit_min[2] = -360;
+        joint_limit_min[3] = -360;
+        joint_limit_min[4] = -360;
+        joint_limit_min[5] = -360;
+
+        joint_limit_max[0] = 360;
+        joint_limit_max[1] = 360;
+        joint_limit_max[2] = 360;
+        joint_limit_max[3] = 360;
+        joint_limit_max[4] = 360;
+        joint_limit_max[5] = 360;
     }
-    return -1;
+    else if (robotType == UR5)
+    {
+        d1 = 0.089159;
+        a2 = -0.42500;
+        a3 = -0.39225;
+        d4 = 0.10915;
+        d5 = 0.09465;
+        d6 = 0.0823;
+
+        offsets[0] = PI;
+
+        joint_limit_min[0] = -360;
+        joint_limit_min[1] = -360;
+        joint_limit_min[2] = -360;
+        joint_limit_min[3] = -360;
+        joint_limit_min[4] = -360;
+        joint_limit_min[5] = -360;
+
+        joint_limit_max[0] = 360;
+        joint_limit_max[1] = 360;
+        joint_limit_max[2] = 360;
+        joint_limit_max[3] = 360;
+        joint_limit_max[4] = 360;
+        joint_limit_max[5] = 360;
+    }
+    else if (robotType == UR10)
+    {
+        d1 = 0.1273;
+        a2 = -0.612;
+        a3 = -0.5723;
+        d4 = 0.163941;
+        d5 = 0.1157;
+        d6 = 0.0922;
+
+        offsets[0] = PI;
+
+        joint_limit_min[0] = -360;
+        joint_limit_min[1] = -360;
+        joint_limit_min[2] = -360;
+        joint_limit_min[3] = -360;
+        joint_limit_min[4] = -360;
+        joint_limit_min[5] = -360;
+
+        joint_limit_max[0] = 360;
+        joint_limit_max[1] = 360;
+        joint_limit_max[2] = 360;
+        joint_limit_max[3] = 360;
+        joint_limit_max[4] = 360;
+        joint_limit_max[5] = 360;
+    }
+    else if (robotType == IRB120)
+    {
+        d1 = 0.290;
+        a2 = 0.270;
+        a3 = -0.070;
+        d4 = 0.302;
+        d5 = 0.0;
+        d6 = 0.072;
+
+        a1 = 0;
+        a2_2 = -0.070;
+        b = 0;
+        c1 = 0.270;
+        c2 = 0.290;
+        c3 = 0.302;
+        c4 = 0.072;
+
+        offsets[2] = -PI / 2;
+
+        joint_limit_min[0] = -165;
+        joint_limit_min[1] = -110;
+        joint_limit_min[2] = -90;
+        joint_limit_min[3] = -160;
+        joint_limit_min[4] = -120;
+        joint_limit_min[5] = -400;
+
+        joint_limit_max[0] = 165;
+        joint_limit_max[1] = 110;
+        joint_limit_max[2] = 70;
+        joint_limit_max[3] = 160;
+        joint_limit_max[4] = 120;
+        joint_limit_max[5] = 400;
+    }
+    vector<double> pose(6.0, 0);
 }
 
-
-//int InverseKinematics::selectSolution(vector<vector<double> > & inversePosition, vector<double> currentQ, vector<double> weight)
-//{
-//   int selectedSolution = 0;
-//   if(type == ofxRobotArm::UR3 || type == ofxRobotArm::UR5 || type == ofxRobotArm::UR10){
-//       for(int i = 0; i < inversePosition.size(); i++){
-//           for(int j = 0; j < inversePosition[i].size(); j++){
-//               if(j == 1 || j == 3){
-//                   if(inversePosition[i][j] > PI){
-//                       inversePosition[i][j]  = ofMap(inversePosition[i][j], PI, TWO_PI, -PI, 0, true);
-//                   }
-//               }
-//           }
-//       }
-//   }
-//
-//   for(int i = 0; i < inversePosition.size(); i++){
-//       for(int j = 0; j < inversePosition[i].size(); j++){
-//           if(preInversePosition.size() > 0){
-//               if(i == selectedSolution){
-//                   if(preInversePosition[i][j]-inversePosition[i][j] >= TWO_PI){
-//                       ofLog(OF_LOG_WARNING)<<"JOINT WRAPS SOL "<<ofToString(i)<<" Joint "<<ofToString(j)<<endl;
-//                   }
-//               }
-//           }
-//       }
-//   }
-//
-//   vector<double> test_sol;
-//   vector<vector<double> > valid_sols;
-//   test_sol.assign(, 9999.);
-//   vector<double> addAngle = {-1*TWO_PI, 0, TWO_PI};
-//   for(int i = 0; i < inversePosition.size(); i++){
-//       for(int j = 0; j < inversePosition[i].size(); j++){
-//           for(int k = 0; k < addAngle.size(); k++){
-//               float test_ang = inversePosition[i][j]+addAngle[k];
-//               if(fabs(test_ang - currentQ[j])  < fabs(test_sol[j] -  currentQ[j]) && abs(test_ang) <= TWO_PI){
-//                   test_sol[j] = test_ang;
-//               }
-//           }
-//       }
-//       bool testValid = false;
-//       for(int l = 0; l < test_sol.size(); l++){
-//           if(test_sol[l] != 9999){
-//               testValid = true;
-//           }else{
-//               testValid = false;
-//           }
-//       }
-//       if(testValid){
-//           valid_sols.push_back(test_sol);
-//
-//       }
-//   }
-//
-//   vector<double> sumsValid;
-//   sumsValid.assign(valid_sols.size(), 0);
-//   for(int i = 0; i < valid_sols.size(); i++){
-//       for(int j = 0; j < valid_sols[i].size(); j++){
-//           sumsValid[i] = pow(weight[j]*(valid_sols[i][j] - currentQ[j]), 2);
-//       }
-//   }
-//
-//    preInversePosition = inversePosition;
-//
-//
-////    inversePosition = valid_sols;
-//    if(inversePosition.size() > 0){
-//        return 0;
-//    }else{
-//        return -1;
-//    }
-//}
-
-
-
-vector<vector<double> > InverseKinematics::inverseRelaxedIK(Pose targetPose, Pose currentPose){
-    if(!relaxedIK.isThreadRunning()){
-        relaxedIK.start();
-    }
-    relaxedIK.setPose(targetPose, currentPose);
-    relaxedIK.setPose(targetPose, currentPose);
-    vector<vector<double> > sols;
-    sols.push_back(relaxedIK.getCurrentPose());
-    return sols;
+void InverseKinematics::setRelaxedPose(vector<double> pose)
+{
+    relaxedIK.setInitialPose(pose);
 }
 
-vector<vector<double> > InverseKinematics::inverseIKFast(Pose targetPose)
+vector<vector<double>> InverseKinematics::inverseKinematics(Pose targetPose, Pose currentPose)
 {
 
     ofMatrix4x4 translate;
@@ -175,365 +206,884 @@ vector<vector<double> > InverseKinematics::inverseIKFast(Pose targetPose)
 
     translate.makeTranslationMatrix(targetPose.position);
     rotate.makeRotationMatrix(targetPose.orientation);
-    mat = rotate*translate;
+    mat = rotate * translate;
 
-    double q_sols[8*6];
-    vector<vector<double> > sols;
-    if(type == UR3 || type == UR5 || type == UR10){
-        double* T = new double[16];
+    double q_sols[8 * 6];
+    vector<vector<double>> sols;
+
+    if (ikType == SW)
+    {
+        int num_sols = inverseSW(mat, q_sols);
+        for (int i = 0; i < num_sols; i++)
+        {
+            vector<double> fooSol;
+            fooSol.push_back(q_sols[i * 6]);
+            fooSol.push_back(q_sols[i * 6 + 1]);
+            fooSol.push_back(q_sols[i * 6 + 2]);
+            fooSol.push_back(q_sols[i * 6 + 3]);
+            fooSol.push_back(q_sols[i * 6 + 4]);
+            fooSol.push_back(q_sols[i * 6 + 5]);
+            if (isValid(&fooSol[0]))
+            {
+                harmonizeTowardZero(&fooSol[0]);
+                sols.push_back(fooSol);
+            }
+        }
+    }
+    else if (ikType == HK)
+    {
+        double *T = new double[16];
         T = toIK(mat);
-        int num_sols = kinematics.inverseHK(T, q_sols);
-        for(int i=0;i<num_sols;i++){
+        int num_sols = inverseHK(T, q_sols);
+        for (int i = 0; i < num_sols; i++)
+        {
             vector<double> fooSol;
-            fooSol.push_back(q_sols[i*6]);
-            fooSol.push_back(q_sols[i*6+1]);
-            fooSol.push_back(q_sols[i*6+2]);
-            fooSol.push_back(q_sols[i*6+3]);
-            fooSol.push_back(q_sols[i*6+4]);
-            fooSol.push_back(q_sols[i*6+5]);
-            if(kinematics.isValid(&fooSol[0])){
-                kinematics.harmonizeTowardZero(&fooSol[0]);
+            fooSol.push_back(q_sols[i * 6]);
+            fooSol.push_back(q_sols[i * 6 + 1]);
+            fooSol.push_back(q_sols[i * 6 + 2]);
+            fooSol.push_back(q_sols[i * 6 + 3]);
+            fooSol.push_back(q_sols[i * 6 + 4]);
+            fooSol.push_back(q_sols[i * 6 + 5]);
+            if (isValid(&fooSol[0]))
+            {
+                harmonizeTowardZero(&fooSol[0]);
                 sols.push_back(fooSol);
             }
         }
     }
-    if(type == IRB120){
-        kinematics.inverseSW(mat, q_sols);
-        for(int i=0;i<8;i++){
-            vector<double> fooSol;
-            fooSol.push_back(q_sols[i*6]);
-            fooSol.push_back(q_sols[i*6+1]);
-            fooSol.push_back(q_sols[i*6+2]);
-            fooSol.push_back(q_sols[i*6+3]);
-            fooSol.push_back(q_sols[i*6+4]);
-            fooSol.push_back(q_sols[i*6+5]);
-            if(kinematics.isValid(&fooSol[0])){
-                kinematics.harmonizeTowardZero(&fooSol[0]);
-                sols.push_back(fooSol);
-            }
+    else if (ikType == RELAXED)
+    {
+        if (!relaxedIK.isThreadRunning())
+        {
+            relaxedIK.start();
         }
+        relaxedIK.setPose(targetPose, currentPose);
+        sols.push_back(relaxedIK.getCurrentPose());
     }
+
     return sols;
 }
 
-
 ofMatrix4x4 InverseKinematics::forwardKinematics(vector<double> pose)
 {
-    if(type == UR3 || type == UR5 || type == UR10){
-        return forwardKinematics(pose[0], pose[1], pose[2], pose[3], pose[4], pose[5]);
+    if (robotType == UR3 || robotType == UR5 || robotType == UR10)
+    {
+        return forwardHK(pose[0], pose[1], pose[2], pose[3], pose[4], pose[5]);
     }
-    if(type == IRB120){
+    if (robotType == IRB120)
+    {
         ofMatrix4x4 mat;
-        kinematics.forwardSW(pose[0], pose[1], pose[2], pose[3], pose[4], pose[5], mat);        
-        return mat;
+        return forwardSW(pose[0], pose[1], pose[2], pose[3], pose[4], pose[5]);
     }
     return ofMatrix4x4();
 }
 
+#pragma mark - HK
 
-void InverseKinematics::setRelaxedPose(vector<double> pose){
-    relaxedIK.setInitialPose(pose);
-}
-
-
-
-ofMatrix4x4 InverseKinematics::forwardKinematics(double o, double t, double th, double f, double fi, double s)
+ofMatrix4x4 InverseKinematics::forwardHK(double o, double t, double th, double f, double fi, double s)
 {
-    
+
     double q[6] = {o, t, th, f, fi, s};
-    double* transform1 = new double[16];
-    double* transform2 = new double[16];
-    double* transform3 = new double[16];
-    double* transform4 = new double[16];
-    double* transform5 = new double[16];
-    double* transform6 = new double[16];
-    
-    kinematics.forwardHK(q, transform6);
+    double *transform1 = new double[16];
+    double *transform2 = new double[16];
+    double *transform3 = new double[16];
+    double *transform4 = new double[16];
+    double *transform5 = new double[16];
+    double *transform6 = new double[16];
+
+    forwardHK(q, transform6);
     return toOF(transform6);
 }
 
-
-vector< double > InverseKinematics::getArmIK(RobotModel * actualPose, Pose targetTCP,  vector<double> targetPose, float aDeltaTimef ) {
-    vector <double> armFrom = getArmIK(actualPose, targetPose, targetTCP.position*1000.0f, ofVec3f(), false, aDeltaTimef );
-    return armFrom;
+void InverseKinematics::forwardHK(const double *q, double *T)
+{
+    double s1 = sin(*q), c1 = cos(*q);
+    q++;
+    double q23 = *q, q234 = *q, s2 = sin(*q), c2 = cos(*q);
+    q++;
+    double s3 = sin(*q), c3 = cos(*q);
+    q23 += *q;
+    q234 += *q;
+    q++;
+    double s4 = sin(*q), c4 = cos(*q);
+    q234 += *q;
+    q++;
+    double s5 = sin(*q), c5 = cos(*q);
+    q++;
+    double s6 = sin(*q), c6 = cos(*q);
+    double s23 = sin(q23), c23 = cos(q23);
+    double s234 = sin(q234), c234 = cos(q234);
+    *T = c234 * c1 * s5 - c5 * s1;
+    T++;
+    *T = c6 * (s1 * s5 + c234 * c1 * c5) - s234 * c1 * s6;
+    T++;
+    *T = -s6 * (s1 * s5 + c234 * c1 * c5) - s234 * c1 * c6;
+    T++;
+    *T = d6 * c234 * c1 * s5 - a3 * c23 * c1 - a2 * c1 * c2 - d6 * c5 * s1 - d5 * s234 * c1 - d4 * s1;
+    T++;
+    *T = c1 * c5 + c234 * s1 * s5;
+    T++;
+    *T = -c6 * (c1 * s5 - c234 * c5 * s1) - s234 * s1 * s6;
+    T++;
+    *T = s6 * (c1 * s5 - c234 * c5 * s1) - s234 * c6 * s1;
+    T++;
+    *T = d6 * (c1 * c5 + c234 * s1 * s5) + d4 * c1 - a3 * c23 * s1 - a2 * c2 * s1 - d5 * s234 * s1;
+    T++;
+    *T = -s234 * s5;
+    T++;
+    *T = -c234 * s6 - s234 * c5 * c6;
+    T++;
+    *T = s234 * c5 * s6 - c234 * c6;
+    T++;
+    *T = d1 + a3 * s23 + a2 * s2 - d5 * (c23 * c4 - s23 * s4) - d6 * s5 * (c23 * s4 + s23 * c4);
+    T++;
+    *T = 0.0;
+    T++;
+    *T = 0.0;
+    T++;
+    *T = 0.0;
+    T++;
+    *T = 1.0;
 }
 
+void InverseKinematics::forward_allHK(const double *q, double *T1, double *T2, double *T3,
+                                      double *T4, double *T5, double *T6)
+{
+    double s1 = sin(*q), c1 = cos(*q);
+    q++; // q1
+    double q23 = *q, q234 = *q, s2 = sin(*q), c2 = cos(*q);
+    q++; // q2
+    double s3 = sin(*q), c3 = cos(*q);
+    q23 += *q;
+    q234 += *q;
+    q++; // q3
+    q234 += *q;
+    q++; // q4
+    double s5 = sin(*q), c5 = cos(*q);
+    q++;                               // q5
+    double s6 = sin(*q), c6 = cos(*q); // q6
+    double s23 = sin(q23), c23 = cos(q23);
+    double s234 = sin(q234), c234 = cos(q234);
 
-//------------------------------------------------------------------
-vector< double > InverseKinematics::getArmIK(RobotModel * actualPose, vector<double> targetPose, ofVec3f aTargetWorldPos, ofVec3f aElbowWorldPos, bool aBInvertElbow, float aDeltaTimef ) {
-    // ok, now let's address the ik //
-    if( !mIKArm ) {
-        mIKArm = shared_ptr< ofxIKArm >( new ofxIKArm() );
-        
+    if (T1 != NULL)
+    {
+        *T1 = c1;
+        T1++;
+        *T1 = 0;
+        T1++;
+        *T1 = s1;
+        T1++;
+        *T1 = 0;
+        T1++;
+        *T1 = s1;
+        T1++;
+        *T1 = 0;
+        T1++;
+        *T1 = -c1;
+        T1++;
+        *T1 = 0;
+        T1++;
+        *T1 = 0;
+        T1++;
+        *T1 = 1;
+        T1++;
+        *T1 = 0;
+        T1++;
+        *T1 = d1;
+        T1++;
+        *T1 = 0;
+        T1++;
+        *T1 = 0;
+        T1++;
+        *T1 = 0;
+        T1++;
+        *T1 = 1;
+        T1++;
     }
-    if( !mIKArmInverted ) {
-        mIKArmInverted = shared_ptr< ofxIKArm >( new ofxIKArm() );
+
+    if (T2 != NULL)
+    {
+        *T2 = c1 * c2;
+        T2++;
+        *T2 = -c1 * s2;
+        T2++;
+        *T2 = s1;
+        T2++;
+        *T2 = a2 * c1 * c2;
+        T2++;
+        *T2 = c2 * s1;
+        T2++;
+        *T2 = -s1 * s2;
+        T2++;
+        *T2 = -c1;
+        T2++;
+        *T2 = a2 * c2 * s1;
+        T2++;
+        *T2 = s2;
+        T2++;
+        *T2 = c2;
+        T2++;
+        *T2 = 0;
+        T2++;
+        *T2 = d1 + a2 * s2;
+        T2++;
+        *T2 = 0;
+        T2++;
+        *T2 = 0;
+        T2++;
+        *T2 = 0;
+        T2++;
+        *T2 = 1;
+        T2++;
     }
-    if( mIKArm->getArmLength() <= 0.0f ) {
-        mIKArm->setDrawSize( 10 );
-        mIKArm->setup(actualPose->nodes[1].getGlobalPosition(), actualPose->nodes[2].getGlobalPosition(), actualPose->nodes[3].getGlobalPosition() );
-        mIKArm->setDrawSize( 10 );
-        
-        // disable the elbow target and set to constrain along axis //
-        mIKArm->setShoulderUpVectorEnabled( true );
-        mIKArm->setShoulderUpVector( ofVec3f(0,-1,0));
-        mIKArm->setInverted( true );
-        
-        ofLog(OF_LOG_VERBOSE) << "Setting up the ik arm " << mIKArm->getArmLength() << " shoulder: " << mIKArm->getUpperArmLength() << " forearm len: " << mIKArm->getLowerArmLength() << " | " << ofGetFrameNum() << endl;
+
+    if (T3 != NULL)
+    {
+        *T3 = c23 * c1;
+        T3++;
+        *T3 = -s23 * c1;
+        T3++;
+        *T3 = s1;
+        T3++;
+        *T3 = c1 * (a3 * c23 + a2 * c2);
+        T3++;
+        *T3 = c23 * s1;
+        T3++;
+        *T3 = -s23 * s1;
+        T3++;
+        *T3 = -c1;
+        T3++;
+        *T3 = s1 * (a3 * c23 + a2 * c2);
+        T3++;
+        *T3 = s23;
+        T3++;
+        *T3 = c23;
+        T3++;
+        *T3 = 0;
+        T3++;
+        *T3 = d1 + a3 * s23 + a2 * s2;
+        T3++;
+        *T3 = 0;
+        T3++;
+        *T3 = 0;
+        T3++;
+        *T3 = 0;
+        T3++;
+        *T3 = 1;
+        T3++;
     }
-    if( mIKArmInverted->getArmLength() <= 0.0f ) {
-        mIKArmInverted->setup( actualPose->nodes[1].getGlobalPosition(), actualPose->nodes[2].getGlobalPosition(), actualPose->nodes[3].getGlobalPosition() );
-        mIKArmInverted->setDrawSize( 10 );
-        
-        // disable the elbow target and set to constrain along axis //
-        mIKArmInverted->setShoulderUpVectorEnabled( true );
-        mIKArmInverted->setShoulderUpVector( ofVec3f(0,1,0) );
-        mIKArmInverted->setInverted( false );
-        
-        ofLog(OF_LOG_VERBOSE) << "Setting up the inverted ik arm " << mIKArmInverted->getArmLength() << " shoulder: " << mIKArmInverted->getUpperArmLength() << " forearm len: " << mIKArmInverted->getLowerArmLength() << " | " << ofGetFrameNum() << endl;
+
+    if (T4 != NULL)
+    {
+        *T4 = c234 * c1;
+        T4++;
+        *T4 = s1;
+        T4++;
+        *T4 = s234 * c1;
+        T4++;
+        *T4 = c1 * (a3 * c23 + a2 * c2) + d4 * s1;
+        T4++;
+        *T4 = c234 * s1;
+        T4++;
+        *T4 = -c1;
+        T4++;
+        *T4 = s234 * s1;
+        T4++;
+        *T4 = s1 * (a3 * c23 + a2 * c2) - d4 * c1;
+        T4++;
+        *T4 = s234;
+        T4++;
+        *T4 = 0;
+        T4++;
+        *T4 = -c234;
+        T4++;
+        *T4 = d1 + a3 * s23 + a2 * s2;
+        T4++;
+        *T4 = 0;
+        T4++;
+        *T4 = 0;
+        T4++;
+        *T4 = 0;
+        T4++;
+        *T4 = 1;
+        T4++;
     }
-    
-    // now we are ready to ik all day //
-    //if( aBInvertElbow ) {
-    mIKArmInverted->setTarget( aTargetWorldPos );
-    //        mIKArmInverted->setElbowTarget( aElbowWorldPos );
-    mIKArmInverted->update();
-    //} else {
-    mIKArm->setTarget( aTargetWorldPos );
-    //        mIKArm->setElbowTarget( aElbowWorldPos );
-    mIKArm->update();
-    //}
-    
-    vector< double > ttargetAngles = targetPose;
-    
-    // figure out how to pull out the angles //
-    // the y is the forward, so we can measure the rotation around the xaxis //
-    ofQuaternion globalRot, elbowRot;//  = mIKArm->getShoulderJoint()->getGlobalTransform().getRotate();
-    ofQuaternion globalRotI, elbowRotI;//
-    
-    globalRotI   = mIKArmInverted->getShoulderJoint()->getGlobalTransform().getRotate();
-    elbowRotI    = mIKArmInverted->getElbowJoint()->localTransform.getRotate();
-    
-    globalRot   = mIKArm->getShoulderJoint()->getGlobalTransform().getRotate();
-    elbowRot    = mIKArm->getElbowJoint()->localTransform.getRotate();
-    
-    
-    ofVec3f shouldYPR       = getYawPitchRoll( globalRot );
-    ofVec3f elbowYPR        = getYawPitchRoll( elbowRot );
-    
-    //    targetPose[0] = ofWrapRadians( shouldYPR.x - PI/2 );
-    
-    if( aBInvertElbow ) {
-        // the up axis is reversed, so we don't need to invert calculations //
-        ttargetAngles[1] = ofWrapRadians( shouldYPR.z+PI/2, ofDegToRad(-180.f), ofDegToRad(180) );
-        ttargetAngles[2] = ofWrapRadians( elbowYPR.z+PI, ofDegToRad(-180.f), ofDegToRad(180) );
-        //        ttargetAngles[1] = ofWrapRadians( PI-shouldYPR.z + PI/2+PI, ofDegToRad(-360.f), ofDegToRad(360) );
-        //        ttargetAngles[2] = ofWrapRadians( PI-elbowYPR.z, ofDegToRad(-360.f), ofDegToRad(360) );
-    } else {
-        //        ttargetAngles[1] = ofWrapRadians( PI-shouldYPR.z + PI/2+PI, ofDegToRad(-360.f), ofDegToRad(360) );
-        //        ttargetAngles[2] = ofWrapRadians( PI-elbowYPR.z, ofDegToRad(-360.f), ofDegToRad(360) );
-        
-        ttargetAngles[1] = ofWrapRadians( shouldYPR.z+PI/2, ofDegToRad(-180), ofDegToRad(180) );
-        ttargetAngles[2] = ofWrapRadians( elbowYPR.z+PI, ofDegToRad(-180), ofDegToRad(180) );
+
+    if (T5 != NULL)
+    {
+        *T5 = s1 * s5 + c234 * c1 * c5;
+        T5++;
+        *T5 = -s234 * c1;
+        T5++;
+        *T5 = c5 * s1 - c234 * c1 * s5;
+        T5++;
+        *T5 = c1 * (a3 * c23 + a2 * c2) + d4 * s1 + d5 * s234 * c1;
+        T5++;
+        *T5 = c234 * c5 * s1 - c1 * s5;
+        T5++;
+        *T5 = -s234 * s1;
+        T5++;
+        *T5 = -c1 * c5 - c234 * s1 * s5;
+        T5++;
+        *T5 = s1 * (a3 * c23 + a2 * c2) - d4 * c1 + d5 * s234 * s1;
+        T5++;
+        *T5 = s234 * c5;
+        T5++;
+        *T5 = c234;
+        T5++;
+        *T5 = -s234 * s5;
+        T5++;
+        *T5 = d1 + a3 * s23 + a2 * s2 - d5 * c234;
+        T5++;
+        *T5 = 0;
+        T5++;
+        *T5 = 0;
+        T5++;
+        *T5 = 0;
+        T5++;
+        *T5 = 1;
+        T5++;
     }
-    
-    //    ofLog(OF_LOG_VERBOSE) << "PersonReact :: angles [1]: " << ofRadToDeg(ttargetAngles[1]) << " [2]: " << ofRadToDeg(ttargetAngles[2]) << " | " << ofGetFrameNum() << endl;
-    //    ofLog(OF_LOG_VERBOSE) << "PersonReact :: getArmIK :: angle [2]: " << ofRadToDeg(ttargetAngles[2]) << " | " << ofGetFrameNum() << endl;
-    
-    //    mModelTarget->setAngles( targetPose );
-    
-    return ttargetAngles;
+
+    if (T6 != NULL)
+    {
+        *T6 = c6 * (s1 * s5 + c234 * c1 * c5) - s234 * c1 * s6;
+        T6++;
+        *T6 = -s6 * (s1 * s5 + c234 * c1 * c5) - s234 * c1 * c6;
+        T6++;
+        *T6 = c5 * s1 - c234 * c1 * s5;
+        T6++;
+        *T6 = d6 * (c5 * s1 - c234 * c1 * s5) + c1 * (a3 * c23 + a2 * c2) + d4 * s1 + d5 * s234 * c1;
+        T6++;
+        *T6 = -c6 * (c1 * s5 - c234 * c5 * s1) - s234 * s1 * s6;
+        T6++;
+        *T6 = s6 * (c1 * s5 - c234 * c5 * s1) - s234 * c6 * s1;
+        T6++;
+        *T6 = -c1 * c5 - c234 * s1 * s5;
+        T6++;
+        *T6 = s1 * (a3 * c23 + a2 * c2) - d4 * c1 - d6 * (c1 * c5 + c234 * s1 * s5) + d5 * s234 * s1;
+        T6++;
+        *T6 = c234 * s6 + s234 * c5 * c6;
+        T6++;
+        *T6 = c234 * c6 - s234 * c5 * s6;
+        T6++;
+        *T6 = -s234 * s5;
+        T6++;
+        *T6 = d1 + a3 * s23 + a2 * s2 - d5 * c234 - d6 * s234 * s5;
+        T6++;
+        *T6 = 0;
+        T6++;
+        *T6 = 0;
+        T6++;
+        *T6 = 0;
+        T6++;
+        *T6 = 1;
+        T6++;
+    }
 }
 
+int InverseKinematics::inverseHK(const double *T, double *q_sols, double q6_des)
+{
+    int num_sols = 0;
+    double T02 = -*T;
+    T++;
+    double T00 = *T;
+    T++;
+    double T01 = *T;
+    T++;
+    double T03 = -*T;
+    T++;
+    double T12 = -*T;
+    T++;
+    double T10 = *T;
+    T++;
+    double T11 = *T;
+    T++;
+    double T13 = -*T;
+    T++;
+    double T22 = *T;
+    T++;
+    double T20 = -*T;
+    T++;
+    double T21 = -*T;
+    T++;
+    double T23 = *T;
 
+    ////////////////////////////// shoulder rotate joint (q1) //////////////////////////////
+    double q1[2];
+    {
+        double A = d6 * T12 - T13;
+        double B = d6 * T02 - T03;
+        double R = A * A + B * B;
+        if (fabs(A) < ZERO_THRESH)
+        {
+            double div;
+            if (fabs(fabs(d4) - fabs(B)) < ZERO_THRESH)
+                div = -SIGN(d4) * SIGN(B);
+            else
+                div = -d4 / B;
+            double arcsin = asin(div);
+            if (fabs(arcsin) < ZERO_THRESH)
+                arcsin = 0.0;
+            if (arcsin < 0.0)
+                q1[0] = arcsin + 2.0 * PI;
+            else
+                q1[0] = arcsin;
+            q1[1] = PI - arcsin;
+        }
+        else if (fabs(B) < ZERO_THRESH)
+        {
+            double div;
+            if (fabs(fabs(d4) - fabs(A)) < ZERO_THRESH)
+                div = SIGN(d4) * SIGN(A);
+            else
+                div = d4 / A;
+            double arccos = acos(div);
+            q1[0] = arccos;
+            q1[1] = 2.0 * PI - arccos;
+        }
+        else if (d4 * d4 > R)
+        {
+            return num_sols;
+        }
+        else
+        {
+            double arccos = acos(d4 / sqrt(R));
+            double arctan = atan2(-B, A);
+            double pos = arccos + arctan;
+            double neg = -arccos + arctan;
+            if (fabs(pos) < ZERO_THRESH)
+                pos = 0.0;
+            if (fabs(neg) < ZERO_THRESH)
+                neg = 0.0;
+            if (pos >= 0.0)
+                q1[0] = pos;
+            else
+                q1[0] = 2.0 * PI + pos;
+            if (neg >= 0.0)
+                q1[1] = neg;
+            else
+                q1[1] = 2.0 * PI + neg;
+        }
+    }
+    ////////////////////////////////////////////////////////////////////////////////
 
+    ////////////////////////////// wrist 2 joint (q5) //////////////////////////////
+    double q5[2][2];
+    {
+        for (int i = 0; i < 2; i++)
+        {
+            double numer = (T03 * sin(q1[i]) - T13 * cos(q1[i]) - d4);
+            double div;
+            if (fabs(fabs(numer) - fabs(d6)) < ZERO_THRESH)
+                div = SIGN(numer) * SIGN(d6);
+            else
+                div = numer / d6;
+            double arccos = acos(div);
+            q5[i][0] = arccos;
+            q5[i][1] = 2.0 * PI - arccos;
+        }
+    }
+    ////////////////////////////////////////////////////////////////////////////////
+
+    {
+        for (int i = 0; i < 2; i++)
+        {
+            for (int j = 0; j < 2; j++)
+            {
+                double c1 = cos(q1[i]), s1 = sin(q1[i]);
+                double c5 = cos(q5[i][j]), s5 = sin(q5[i][j]);
+                double q6;
+                ////////////////////////////// wrist 3 joint (q6) //////////////////////////////
+                if (fabs(s5) < ZERO_THRESH)
+                    q6 = q6_des;
+                else
+                {
+                    q6 = atan2(SIGN(s5) * -(T01 * s1 - T11 * c1),
+                               SIGN(s5) * (T00 * s1 - T10 * c1));
+                    if (fabs(q6) < ZERO_THRESH)
+                        q6 = 0.0;
+                    if (q6 < 0.0)
+                        q6 += 2.0 * PI;
+                }
+                ////////////////////////////////////////////////////////////////////////////////
+
+                double q2[2], q3[2], q4[2];
+                ///////////////////////////// RRR joints (q2,q3,q4) ////////////////////////////
+                double c6 = cos(q6), s6 = sin(q6);
+                double x04x = -s5 * (T02 * c1 + T12 * s1) - c5 * (s6 * (T01 * c1 + T11 * s1) - c6 * (T00 * c1 + T10 * s1));
+                double x04y = c5 * (T20 * c6 - T21 * s6) - T22 * s5;
+                double p13x = d5 * (s6 * (T00 * c1 + T10 * s1) + c6 * (T01 * c1 + T11 * s1)) - d6 * (T02 * c1 + T12 * s1) +
+                              T03 * c1 + T13 * s1;
+                double p13y = T23 - d1 - d6 * T22 + d5 * (T21 * c6 + T20 * s6);
+
+                double c3 = (p13x * p13x + p13y * p13y - a2 * a2 - a3 * a3) / (2.0 * a2 * a3);
+                if (fabs(fabs(c3) - 1.0) < ZERO_THRESH)
+                    c3 = SIGN(c3);
+                else if (fabs(c3) > 1.0)
+                {
+                    // TODO NO SOLUTION
+                    continue;
+                }
+                double arccos = acos(c3);
+                q3[0] = arccos;
+                q3[1] = 2.0 * PI - arccos;
+                double denom = a2 * a2 + a3 * a3 + 2 * a2 * a3 * c3;
+                double s3 = sin(arccos);
+                double A = (a2 + a3 * c3), B = a3 * s3;
+                q2[0] = atan2((A * p13y - B * p13x) / denom, (A * p13x + B * p13y) / denom);
+                q2[1] = atan2((A * p13y + B * p13x) / denom, (A * p13x - B * p13y) / denom);
+                double c23_0 = cos(q2[0] + q3[0]);
+                double s23_0 = sin(q2[0] + q3[0]);
+                double c23_1 = cos(q2[1] + q3[1]);
+                double s23_1 = sin(q2[1] + q3[1]);
+                q4[0] = atan2(c23_0 * x04y - s23_0 * x04x, x04x * c23_0 + x04y * s23_0);
+                q4[1] = atan2(c23_1 * x04y - s23_1 * x04x, x04x * c23_1 + x04y * s23_1);
+                ////////////////////////////////////////////////////////////////////////////////
+                for (int k = 0; k < 2; k++)
+                {
+                    if (fabs(q2[k]) < ZERO_THRESH)
+                        q2[k] = 0.0;
+                    else if (q2[k] < 0.0)
+                        q2[k] += 2.0 * PI;
+                    if (fabs(q4[k]) < ZERO_THRESH)
+                        q4[k] = 0.0;
+                    else if (q4[k] < 0.0)
+                        q4[k] += 2.0 * PI;
+                    q_sols[num_sols * 6 + 0] = q1[i];
+                    q_sols[num_sols * 6 + 1] = q2[k];
+                    q_sols[num_sols * 6 + 2] = q3[k];
+                    q_sols[num_sols * 6 + 3] = q4[k];
+                    q_sols[num_sols * 6 + 4] = q5[i][j];
+                    q_sols[num_sols * 6 + 5] = q6;
+                    num_sols++;
+                }
+            }
+        }
+    }
+
+    for (int i = 0; i < num_sols; i++)
+    {
+        for (int j = 0; j < 6; j++)
+        {
+            q_sols[6 * i + j] = q_sols[6 * i + j] * sign_corrections[j] + offsets[j];
+        }
+    }
+
+    return num_sols;
+}
+
+#pragma mark - SW
+
+// ----------------------------------------------------------
+ofMatrix4x4 InverseKinematics::forwardSW(double t1, double t2, double t3, double t4, double t5, double t6)
+{
+    ofMatrix4x4 sol;
+    double q[6];
+    q[0] = t1 * sign_corrections[0] - offsets[0];
+    q[1] = t2 * sign_corrections[1] - offsets[1];
+    q[2] = t3 * sign_corrections[2] - offsets[2];
+    q[3] = t4 * sign_corrections[3] - offsets[3];
+    q[4] = t5 * sign_corrections[4] - offsets[4];
+    q[5] = t6 * sign_corrections[5] - offsets[5];
+
+    double psi3 = std::atan2(a2_2, c3);
+    double k = std::sqrt(pow(a2_2, 2) + pow(c3, 2));
+
+    double cx1 = c2 * std::sin(q[1]) + k * std::sin(q[1] + q[2] + psi3) + a1;
+    double cy1 = b;
+    double cz1 = c2 * std::cos(q[1]) + k * std::cos(q[1] + q[2] + psi3);
+
+    double cx0 = cx1 * std::cos(q[0]) - cy1 * std::sin(q[0]);
+    double cy0 = cx1 * std::sin(q[0]) + cy1 * std::cos(q[0]);
+    double cz0 = cz1 + c1;
+
+    double s1 = std::sin(q[0]);
+    double s2 = std::sin(q[1]);
+    double s3 = std::sin(q[2]);
+    double s4 = std::sin(q[3]);
+    double s5 = std::sin(q[4]);
+    double s6 = std::sin(q[5]);
+
+    double c1_2 = std::cos(q[0]);
+    double c2_2 = std::cos(q[1]);
+    double c3_2 = std::cos(q[2]);
+    double c4_2 = std::cos(q[3]);
+    double c5_2 = std::cos(q[4]);
+    double c6_2 = std::cos(q[5]);
+
+    ofMatrix4x4 r_0c;
+    r_0c.set(c1_2 * c2_2 * c3_2 - c1_2 * s2 * s3, -s1, c1_2 * c2_2 * s3 + c1_2 * s2 * c3_2, 0,
+             s1 * c2_2 * c3_2 - s1 * s2 * s3, c1_2, s1 * c2_2 * s3 + s1 * s2 * c3_2, 0,
+             -s2 * c3_2 - c2_2 * s3, 0, -s2 * s3 + c2_2 * c3_2, 0,
+             0, 0, 0, 1);
+
+    ofMatrix4x4 r_ce;
+    r_ce.set(c4_2 * c5_2 * c6_2 - s4 * s6, -c4_2 * c5_2 * s6 - s4 * c6_2, c4_2 * s5, 0,
+             s4 * c5_2 * c6_2 + c4_2 * s6, -s4 * c5_2 * s6 + c4_2 * c6_2, s4 * s5, 0,
+             -s5 * c6_2, s5 * s6, c5_2, 0,
+             0, 0, 0, 1);
+
+    ofMatrix4x4 r_oe = r_0c * r_ce;
+
+    ofVec3f u = ofVec3f(cx0, cy0, cz0) + r_oe * ofVec3f(0, 0, 1) * c4;
+    ofMatrix4x4 mat;
+    mat.makeTranslationMatrix(u);
+    sol = r_oe * mat;
+
+    return sol;
+}
+
+int InverseKinematics::inverseSW(ofMatrix4x4 pose, double *sol)
+{
+    ofVec3f c = pose.getTranslation() - ofMatrix4x4::transform3x3(pose, ofVec3f(0, 0, 1)) * c4;
+    double nx1 = std::sqrt(pow(c.x, 2) + pow(c.y, 2) - pow(b, 2)) - a1;
+
+    // Compute theta1_i, theta1_ii
+    double tmp1 = std::atan2(c.y, c.x);
+    double tmp2 = std::atan2(b, nx1 + a1);
+    double theta1_i = tmp1 - tmp2;
+    double theta1_ii = tmp1 + tmp2 - PI;
+    double tmp3 = (c.z - c1);
+    double s1_2 = pow(nx1, 2) + pow(tmp3, 2);
+
+    double tmp4 = nx1 + 2 * a1;
+    double s2_2 = pow(tmp4, 2) + pow(tmp3, 2);
+    double kappa_2 = pow(a2_2, 2) + pow(c3, 2);
+
+    double c2_2 = c2 * c2;
+
+    double tmp5 = s1_2 + c2_2 - kappa_2;
+
+    double s1 = std::sqrt(s1_2);
+    double s2 = std::sqrt(s2_2);
+    double theta2_i = -std::acos(tmp5 / (2.0 * s1 * c2)) + std::atan2(nx1, c.z - c1);
+    double theta2_ii = std::acos(tmp5 / (2.0 * s1 * c2)) + std::atan2(nx1, c.z - c1);
+
+    double tmp6 = s2_2 + c2_2 - kappa_2;
+
+    double theta2_iii = -std::acos(tmp6 / (2.0 * s2 * c2)) - std::atan2(nx1 + 2.0 * a1, c.z - c1);
+    double theta2_iv = std::acos(tmp6 / (2.0 * s2 * c2)) - std::atan2(nx1 + 2.0 * a1, c.z - c1);
+
+    // theta3
+    double tmp7 = s1_2 - c2_2 - kappa_2;
+    double tmp8 = s2_2 - c2_2 - kappa_2;
+    double tmp9 = 2 * c2 * std::sqrt(kappa_2);
+    double theta3_i = std::acos(tmp7 / tmp9) - std::atan2(a2_2, c3);
+
+    double theta3_ii = -std::acos(tmp7 / tmp9) - std::atan2(a2_2, c3);
+
+    double theta3_iii = std::acos(tmp8 / tmp9) - std::atan2(a2_2, c3);
+    double theta3_iv = -std::acos(tmp8 / tmp9) - std::atan2(a2_2, c3);
+
+    // Now for the orientation part...
+    double s23[4];
+    double c23[4];
+    double sin1[4];
+    double cos1[4];
+
+    sin1[0] = std::sin(theta1_i);
+    sin1[1] = std::sin(theta1_i);
+    sin1[2] = std::sin(theta1_ii); // ???
+    sin1[3] = std::sin(theta1_ii);
+
+    cos1[0] = std::cos(theta1_i);
+    cos1[1] = std::cos(theta1_i);
+    cos1[2] = std::cos(theta1_ii); // ???
+    cos1[3] = std::cos(theta1_ii);
+
+    s23[0] = std::sin(theta2_i + theta3_i);
+    s23[1] = std::sin(theta2_ii + theta3_ii);
+    s23[2] = std::sin(theta2_iii + theta3_iii);
+    s23[3] = std::sin(theta2_iv + theta3_iv);
+
+    c23[0] = std::cos(theta2_i + theta3_i);
+    c23[1] = std::cos(theta2_ii + theta3_ii);
+    c23[2] = std::cos(theta2_iii + theta3_iii);
+    c23[3] = std::cos(theta2_iv + theta3_iv);
+
+    double m[4];
+    m[0] = get(pose, 0, 2) * s23[0] * cos1[0] + get(pose, 1, 2) * s23[0] * sin1[0] + get(pose, 2, 2) * c23[0];
+    m[1] = get(pose, 0, 2) * s23[1] * cos1[1] + get(pose, 1, 2) * s23[1] * sin1[1] + get(pose, 2, 2) * c23[1];
+    m[2] = get(pose, 0, 2) * s23[2] * cos1[2] + get(pose, 1, 2) * s23[2] * sin1[2] + get(pose, 2, 2) * c23[2];
+    m[3] = get(pose, 0, 2) * s23[3] * cos1[3] + get(pose, 1, 2) * s23[3] * sin1[3] + get(pose, 2, 2) * c23[3];
+
+    double theta4_i = std::atan2(get(pose, 1, 2) * cos1[0] - get(pose, 0, 2) * sin1[0],
+                                 get(pose, 0, 2) * c23[0] * cos1[0] + get(pose, 1, 2) * c23[0] * sin1[0] - get(pose, 2, 2) * s23[0]);
+
+    double theta4_ii = std::atan2(get(pose, 1, 2) * cos1[1] - get(pose, 0, 2) * sin1[1],
+                                  get(pose, 0, 2) * c23[1] * cos1[1] + get(pose, 1, 2) * c23[1] * sin1[1] - get(pose, 2, 2) * s23[1]);
+
+    double theta4_iii = std::atan2(get(pose, 1, 2) * cos1[2] - get(pose, 0, 2) * sin1[2],
+                                   get(pose, 0, 2) * c23[2] * cos1[2] + get(pose, 1, 2) * c23[2] * sin1[2] - get(pose, 2, 2) * s23[2]);
+
+    double theta4_iv = std::atan2(get(pose, 1, 2) * cos1[3] - get(pose, 0, 2) * sin1[3],
+                                  get(pose, 0, 2) * c23[3] * cos1[3] + get(pose, 1, 2) * c23[3] * sin1[3] - get(pose, 2, 2) * s23[3]);
+
+    double theta4_v = theta4_i + PI;
+    double theta4_vi = theta4_ii + PI;
+    double theta4_vii = theta4_iii + PI;
+    double theta4_viii = theta4_iv + PI;
+
+    double theta5_i = std::atan2(std::sqrt(1 - m[0] * m[0]), m[0]);
+    double theta5_ii = std::atan2(std::sqrt(1 - m[1] * m[1]), m[1]);
+    double theta5_iii = std::atan2(std::sqrt(1 - m[2] * m[2]), m[2]);
+    double theta5_iv = std::atan2(std::sqrt(1 - m[3] * m[3]), m[3]);
+
+    double theta5_v = -theta5_i;
+    double theta5_vi = -theta5_ii;
+    double theta5_vii = -theta5_iii;
+    double theta5_viii = -theta5_iv;
+
+    double theta6_i = std::atan2(get(pose, 0, 1) * s23[0] * cos1[0] + get(pose, 1, 1) * s23[0] * sin1[0] + get(pose, 2, 1) * c23[0],
+                                 -get(pose, 0, 0) * s23[0] * cos1[0] - get(pose, 1, 0) * s23[0] * sin1[0] - get(pose, 2, 0) * c23[0]);
+
+    double theta6_ii = std::atan2(get(pose, 0, 1) * s23[1] * cos1[1] + get(pose, 1, 1) * s23[1] * sin1[1] + get(pose, 2, 1) * c23[1],
+                                  -get(pose, 0, 0) * s23[1] * cos1[1] - get(pose, 1, 0) * s23[1] * sin1[1] - get(pose, 2, 0) * c23[1]);
+
+    double theta6_iii = std::atan2(get(pose, 0, 1) * s23[2] * cos1[2] + get(pose, 1, 1) * s23[2] * sin1[2] + get(pose, 2, 1) * c23[2],
+                                   -get(pose, 0, 0) * s23[2] * cos1[2] - get(pose, 1, 0) * s23[2] * sin1[2] - get(pose, 2, 0) * c23[2]);
+
+    double theta6_iv = std::atan2(get(pose, 0, 1) * s23[3] * cos1[3] + get(pose, 1, 1) * s23[3] * sin1[3] + get(pose, 2, 1) * c23[3],
+                                  -get(pose, 0, 0) * s23[3] * cos1[3] - get(pose, 1, 0) * s23[3] * sin1[3] - get(pose, 2, 0) * c23[3]);
+
+    double theta6_v = theta6_i - PI;
+    double theta6_vi = theta6_ii - PI;
+    double theta6_vii = theta6_iii - PI;
+    double theta6_viii = theta6_iv - PI;
+
+    sol[6 * 0 + 0] = (theta1_i + offsets[0]) * sign_corrections[0];
+    sol[6 * 0 + 1] = (theta2_i + offsets[1]) * sign_corrections[1];
+    sol[6 * 0 + 2] = (theta3_i + offsets[2]) * sign_corrections[2];
+    sol[6 * 0 + 3] = (theta4_i + offsets[3]) * sign_corrections[3];
+    sol[6 * 0 + 4] = (theta5_i + offsets[4]) * sign_corrections[4];
+    sol[6 * 0 + 5] = (theta6_i + offsets[5]) * sign_corrections[5];
+
+    sol[6 * 1 + 0] = (theta1_i + offsets[0]) * sign_corrections[0];
+    sol[6 * 1 + 1] = (theta2_ii + offsets[1]) * sign_corrections[1];
+    sol[6 * 1 + 2] = (theta3_ii + offsets[2]) * sign_corrections[2];
+    sol[6 * 1 + 3] = (theta4_ii + offsets[3]) * sign_corrections[3];
+    sol[6 * 1 + 4] = (theta5_ii + offsets[4]) * sign_corrections[4];
+    sol[6 * 1 + 5] = (theta6_ii + offsets[5]) * sign_corrections[5];
+
+    sol[6 * 2 + 0] = (theta1_ii + offsets[0]) * sign_corrections[0];
+    sol[6 * 2 + 1] = (theta2_iii + offsets[1]) * sign_corrections[1];
+    sol[6 * 2 + 2] = (theta3_iii + offsets[2]) * sign_corrections[2];
+    sol[6 * 2 + 3] = (theta4_iii + offsets[3]) * sign_corrections[3];
+    sol[6 * 2 + 4] = (theta5_iii + offsets[4]) * sign_corrections[4];
+    sol[6 * 2 + 5] = (theta6_iii + offsets[5]) * sign_corrections[5];
+
+    sol[6 * 3 + 0] = (theta1_ii + offsets[0]) * sign_corrections[0];
+    sol[6 * 3 + 1] = (theta2_iv + offsets[1]) * sign_corrections[1];
+    sol[6 * 3 + 2] = (theta3_iv + offsets[2]) * sign_corrections[2];
+    sol[6 * 3 + 3] = (theta4_iv + offsets[3]) * sign_corrections[3];
+    sol[6 * 3 + 4] = (theta5_iv + offsets[4]) * sign_corrections[4];
+    sol[6 * 3 + 5] = (theta6_iv + offsets[5]) * sign_corrections[5];
+
+    sol[6 * 4 + 0] = (theta1_i + offsets[0]) * sign_corrections[0];
+    sol[6 * 4 + 1] = (theta2_i + offsets[1]) * sign_corrections[1];
+    sol[6 * 4 + 2] = (theta3_i + offsets[2]) * sign_corrections[2];
+    sol[6 * 4 + 3] = (theta4_v + offsets[3]) * sign_corrections[3];
+    sol[6 * 4 + 4] = (theta5_v + offsets[4]) * sign_corrections[4];
+    sol[6 * 4 + 5] = (theta6_v + offsets[5]) * sign_corrections[5];
+
+    sol[6 * 5 + 0] = (theta1_i + offsets[0]) * sign_corrections[0];
+    sol[6 * 5 + 1] = (theta2_ii + offsets[1]) * sign_corrections[1];
+    sol[6 * 5 + 2] = (theta3_ii + offsets[2]) * sign_corrections[2];
+    sol[6 * 5 + 3] = (theta4_vi + offsets[3]) * sign_corrections[3];
+    sol[6 * 5 + 4] = (theta5_vi + offsets[4]) * sign_corrections[4];
+    sol[6 * 5 + 5] = (theta6_vi + offsets[5]) * sign_corrections[5];
+
+    sol[6 * 6 + 0] = (theta1_ii + offsets[0]) * sign_corrections[0];
+    sol[6 * 6 + 1] = (theta2_iii + offsets[1]) * sign_corrections[1];
+    sol[6 * 6 + 2] = (theta3_iii + offsets[2]) * sign_corrections[2];
+    sol[6 * 6 + 3] = (theta4_vii + offsets[3]) * sign_corrections[3];
+    sol[6 * 6 + 4] = (theta5_vii + offsets[4]) * sign_corrections[4];
+    sol[6 * 6 + 5] = (theta6_vii + offsets[5]) * sign_corrections[5];
+
+    sol[6 * 7 + 0] = (theta1_ii + offsets[0]) * sign_corrections[0];
+    sol[6 * 7 + 1] = (theta2_iv + offsets[1]) * sign_corrections[1];
+    sol[6 * 7 + 2] = (theta3_iv + offsets[2]) * sign_corrections[2];
+    sol[6 * 7 + 3] = (theta4_viii + offsets[3]) * sign_corrections[3];
+    sol[6 * 7 + 4] = (theta5_viii + offsets[4]) * sign_corrections[4];
+    sol[6 * 7 + 5] = (theta6_viii + offsets[5]) * sign_corrections[5];
+
+    for (int i = 0; i < 8; i++)
+    {
+        sol[6 * i + 0] = ofClamp(sol[6 * i + 0], ofDegToRad(joint_limit_min[0]) * sign_corrections[0] - offsets[0], ofDegToRad(joint_limit_max[0]) * sign_corrections[0] - offsets[0]);
+        sol[6 * i + 1] = ofClamp(sol[6 * i + 1], ofDegToRad(joint_limit_min[1]) * sign_corrections[1] - offsets[1], ofDegToRad(joint_limit_max[1]) * sign_corrections[1] - offsets[1]);
+        sol[6 * i + 2] = ofClamp(sol[6 * i + 2], ofDegToRad(joint_limit_min[2]) * sign_corrections[2] - offsets[2], ofDegToRad(joint_limit_max[2]) * sign_corrections[2] - offsets[2]);
+        sol[6 * i + 3] = ofClamp(sol[6 * i + 3], ofDegToRad(joint_limit_min[3]) * sign_corrections[3] - offsets[3], ofDegToRad(joint_limit_max[3]) * sign_corrections[3] - offsets[3]);
+        sol[6 * i + 4] = ofClamp(sol[6 * i + 4], ofDegToRad(joint_limit_min[4]) * sign_corrections[4] - offsets[4], ofDegToRad(joint_limit_max[4]) * sign_corrections[4] - offsets[4]);
+        sol[6 * i + 5] = ofClamp(sol[6 * i + 5], ofDegToRad(joint_limit_min[5]) * sign_corrections[5] - offsets[5], ofDegToRad(joint_limit_max[5]) * sign_corrections[5] - offsets[5]);
+    }
+
+    return 8;
+}
 
 #pragma mark - IK Utils
+
+float InverseKinematics::get(ofMatrix4x4 mat, int row, int col)
+{
+
+    return (mat.getPtr())[row * 4 + col];
+}
 //------------------------------------------------------------------
-ofVec3f InverseKinematics::getYawPitchRoll( ofQuaternion aquat ) {
+ofVec3f InverseKinematics::getYawPitchRoll(ofQuaternion aquat)
+{
     float qx = aquat.x();
     float qy = aquat.y();
     float qz = aquat.z();
     float qw = aquat.w();
-    
-    float yaw   =  atan2(2*qx*qy + 2*qw*qz, qw*qw + qx*qx - qy*qy - qz*qz);
-    float pitch = -asin(2*qw*qy - 2*qx*qz);
-    float roll  = -atan2(2*qy*qz + 2*qw*qx, -qw*qw + qx*qx + qy*qy - qz*qz);
-    
-    return ofVec3f( yaw, pitch, roll );
+
+    float yaw = atan2(2 * qx * qy + 2 * qw * qz, qw * qw + qx * qx - qy * qy - qz * qz);
+    float pitch = -asin(2 * qw * qy - 2 * qx * qz);
+    float roll = -atan2(2 * qy * qz + 2 * qw * qx, -qw * qw + qx * qx + qy * qy - qz * qz);
+
+    return ofVec3f(yaw, pitch, roll);
 }
 
 //------------------------------------------------------------------
-float InverseKinematics::getNeckAngleAlignedWithVector(RobotModel * actualPose, ofVec3f avec ) {
-    // let's figure out the head position //
-    ofQuaternion orotate;
-    orotate.makeRotate( ofVec3f(1,0,0), ofVec3f(0,-1,0) );
-    
-    ofVec3f upAxis( 1,0,0 );
-    ofVec3f diff = avec.getNormalized();//ttarget - actualPose->nodes[3].getGlobalPosition();
-    ofQuaternion tquat;
-    ofVec3f txaxis = upAxis * orotate;
-    tquat.makeRotate( txaxis, diff );
-    
-    ofMatrix4x4 invParent(ofMatrix4x4::getInverseOf(actualPose->nodes[3].getParent()->getGlobalTransformMatrix()));
-    ofMatrix4x4 m44(ofMatrix4x4(tquat) * invParent);
-    ofQuaternion localRot = m44.getRotate();
-    
-    ofVec3f newYPR = getYawPitchRoll( localRot );
-    //        targetPose[ 3 ] = PI-newYPR.z + PI/2;
-    //    ttargetAngles[ 3 ] = newYPR.z + PI/2;
-    return newYPR.z;// + PI/2.f;
-}
-
-//------------------------------------------------------------------
-ofVec3f InverseKinematics::lerp( ofVec3f aStartVec, ofVec3f aEndVec, float aLerpAmnt ) {
+ofVec3f InverseKinematics::lerp(ofVec3f aStartVec, ofVec3f aEndVec, float aLerpAmnt)
+{
     ofVec3f tmp;
-    tmp.x = ofLerp( aStartVec.x, aEndVec.x, aLerpAmnt );
-    tmp.y = ofLerp( aStartVec.y, aEndVec.y, aLerpAmnt );
-    tmp.z = ofLerp( aStartVec.z, aEndVec.z, aLerpAmnt );
+    tmp.x = ofLerp(aStartVec.x, aEndVec.x, aLerpAmnt);
+    tmp.y = ofLerp(aStartVec.y, aEndVec.y, aLerpAmnt);
+    tmp.z = ofLerp(aStartVec.z, aEndVec.z, aLerpAmnt);
     return tmp;
 }
 
-//float ofAngleDifferenceRadians(float currentAngle, float targetAngle) {
-//    return  ofWrapRadians(targetAngle - currentAngle);
-//}
-
 //--------------------------------------------------
-float InverseKinematics::lerpRadians(float currentAngle, float targetAngle, float pct, float alerp ) {
+float InverseKinematics::lerpRadians(float currentAngle, float targetAngle, float pct, float alerp)
+{
     //    return ofWrapRadians( currentAngle + (targetAngle - currentAngle) * pct );
     // lets add a lerp //
-    float tLerpAmnt = ofAngleDifferenceDegrees( currentAngle, targetAngle ) * pct * alerp;
-    return ofWrapRadians( currentAngle + tLerpAmnt );
+    float tLerpAmnt = ofAngleDifferenceDegrees(currentAngle, targetAngle) * pct * alerp;
+    return ofWrapRadians(currentAngle + tLerpAmnt);
     //    return ofWrapRadians( currentAngle + ofAngleDifferenceRadians( currentAngle, targetAngle ) * pct );
     //    return ofWrapRadians(currentAngle + ofWrapRadians( ofWrapRadians(targetAngle)-ofWrapRadians(currentAngle), -PI, PI ) * pct, -PI, PI);
     //    return ofWrapRadians(currentAngle + ofWrapRadians( targetAngle-currentAngle, -PI, PI ) * pct, -PI, PI);
 }
 
-//------------------------------------------------------------------
-ofVec3f InverseKinematics::getIKRobotTargetForWorldPos( ofVec3f aWorldTarget, bool bRepel ) {
-    ofVec3f retTarget = aWorldTarget;
-    retTarget.z     = getZValueForIkRobotLocalY( retTarget.y, aWorldTarget.z );
-    retTarget.x     = 0.1;
-    return retTarget;
+// ----------------------------------------------------------
+void InverseKinematics::setSWParams(float a1, float a2, float b, float c1, float c2, float c3, float c4)
+{
+    this->a1 = a1;
+    a2_2 = a2;
+    this->b = b;
+    this->c1 = c1;
+    this->c2 = c2;
+    this->c3 = c3;
+    this->c4 = c4;
 }
 
-//------------------------------------------------------------------
-vector<double> InverseKinematics::lookAtJoints(RobotModel * actualPose,  vector<double> targetPose, float aDeltaTimef, ofVec3f targetPos ) {
-    // figure out the global orientation of the models //
-    // look at person //
-    
-    vector< double > ttargetAngles = targetPose;
-    
-    ofVec3f ttarget = targetPos;
-    
-    if( actualPose->nodes.size() >= 4 && targetPose.size() >= 4 ) {
-        
-        //START THEO
-        
-        //        facePos = mModelActual->nodes[5].getGlobalPosition();
-        //        faceVec = mModelActual->tcpNode.getGlobalPosition() - facePos;
-        //        personVec = apos - facePos;
-        //
-        //        personVec.normalize();
-        //        faceVec.normalize();
-        //
-        //
-        //        ofPoint delta = personVec-faceVec;
-        //
-        //        float angleZ = atan2(delta.y, delta.x);
-        ////        targetJointPos[ 4 ] = angleZ;
-        //
-        //        debugString = " angleZ " + ofToString(angleZ * RAD_TO_DEG) + "\n";
-        //END THEO
-        
-        
-        // start Nick //
-        // having these values exactly zero can make weird things happen //
-        if( ttarget.x == 0 ) {
-            ttarget.x = 0.01;
-        }
-        if( ttarget.y == 0 ) {
-            ttarget.y = 0.01;
-        }
-        if( ttarget.z == 0 ) {
-            ttarget.z = 0.01;
-        }
-        
-        // let's figure out the head position //
-        ofQuaternion orotate;
-        orotate.makeRotate( 0, ofVec3f(0,0,1) );
-        
-        ofVec3f upAxis( 1,0,0 );
-        ofVec3f diff = ttarget - actualPose->nodes[4].getGlobalPosition();
-        diff.normalize();
-        ofQuaternion tquat;
-        ofVec3f txaxis = upAxis * orotate;
-        tquat.makeRotate( txaxis, diff );
-        
-        ofMatrix4x4 tinvParent(ofMatrix4x4::getInverseOf(actualPose->nodes[4].getParent()->getGlobalTransformMatrix()));
-        ofMatrix4x4 tm44(ofMatrix4x4(tquat) * tinvParent);
-        ofVec3f newYPR = getYawPitchRoll( tm44.getRotate() );
-        ttargetAngles[ 4 ] = newYPR.x + PI/2;
-        
-        orotate.makeRotate( ofVec3f(1,0,0), ofVec3f(0,-1,0) );
-        
-        
-        // if the base is pointing towards a user on one side of the robot and the robot tries to look
-        // at a user behind it, the head peeks upside down //
-        ofVec3f cBaseLook = -actualPose->nodes[0].getXAxis();
-        // this is the direction that the base is pointing, it has no parent, so we should be able to use the axis as is //
-        
-        
-        upAxis.set( 1,0,0 );
-        diff = ttarget - actualPose->nodes[3].getGlobalPosition();
-        diff.normalize();
-        
-        
-        txaxis = upAxis * orotate;
-        tquat.makeRotate( txaxis, diff );
-        
-        ofMatrix4x4 invParent(ofMatrix4x4::getInverseOf(actualPose->nodes[3].getParent()->getGlobalTransformMatrix()));
-        ofMatrix4x4 m44(ofMatrix4x4(tquat) * invParent);
-        ofQuaternion localRot = m44.getRotate();
-        
-        newYPR = getYawPitchRoll( localRot );
-        //        targetJointPos[ 3 ] = PI-newYPR.z + PI/2;
-        ttargetAngles[ 3 ] = newYPR.z + PI/2;
-        
-    }
-    return ttargetAngles;
-    
-}
+void InverseKinematics::setDHParams(float d1, float a2, float a3, float d4, float d5, float d6)
+{
 
-//------------------------------------------------------------------
-float InverseKinematics::getZValueForIkRobotLocalY( float aLocalY, float aWorldZ ) {
-    float retZ = ikRobotMinZ;
-    
-    float tstartPctOfWidth  = MIN( mIKRampStartPct, mIKRampEndPct );
-    float tendPctOfWidth    = MAX( mIKRampEndPct, mIKRampStartPct );
-    float tPctOfHeight      = mIKRampHeightPct;
-    
-    float twidth    = fabs( ikRobotMaxY - ikRobotMinY);
-    float theight   = fabs( ikRobotMaxZ - ikRobotMinZ );
-    
-    float wpct = ofMap( aLocalY, ikRobotMinY, ikRobotMaxY, 0.f, 1.f, true );
-    float thpct = 0.f;
-    if( wpct >= tstartPctOfWidth && wpct < tendPctOfWidth ) {
-        float tpct = ofMap( wpct, tstartPctOfWidth, tendPctOfWidth, 0.f, 1.f, true );
-        thpct = sin( tpct * PI );
-        thpct = powf( thpct, 2 );
-    }
-    
-    
-    float bottomZ   = ikRobotMinZ + thpct * (tPctOfHeight * theight);
-    retZ            = ofClamp(aWorldZ, bottomZ, ikRobotMaxZ );
-    
-    
-    return retZ;
-}
-
-
-void InverseKinematics::draw(){
-    if(mIKArm) mIKArm->draw();
-    if(mIKArmInverted)mIKArmInverted->draw();
+    this->d1 = d1;
+    this->a2 = a2;
+    this->a3 = a3;
+    this->d4 = d4;
+    this->d5 = d5;
+    this->d6 = d6;
 }

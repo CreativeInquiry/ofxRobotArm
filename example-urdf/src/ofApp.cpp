@@ -6,7 +6,7 @@ void ofApp::setup(){
     ofSetFrameRate(120);
     // setup scene
     setup_scene();
-    robot1.setup("192.168.0.1", (string)"relaxed_ik_core/config/urdfs/irb120.urdf", ofxRobotArm::IRB120);
+    robot1.setup("192.168.0.1", (string)"relaxed_ik_core/config/urdfs/irb120.urdf", ofxRobotArm::IRB120, ofxRobotArm::RELAXED, true);
     // robot2.setup("192.168.0.1", (string)"relaxed_ik_core/config/urdfs/irb120.urdf", ofxRobotArm::IRB120);
 
     // setup robot
@@ -447,7 +447,7 @@ void ofApp::keypressed_gizmo(int key){
         case '0':
             break;
         case OF_KEY_RETURN:
-            tcp.setGlobalPosition(robot1.desiredModel.forwardPose.getPosition());
+            tcp.setGlobalPosition(robot1.desiredModel.getForwardPose().getPosition());
             tcp_target.getMatrix().setTranslation(tcp.getPosition());
             break;
         case ' ':
