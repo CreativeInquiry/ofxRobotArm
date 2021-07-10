@@ -104,7 +104,7 @@ void RobotController::connectRobot(bool offline)
 
 void RobotController::createModels(string urdfpath)
 {
-    desiredModel.setup(urdfpath,robotType);
+    desiredModel.setup(urdfpath, robotType);
     actualModel.setup(urdfpath, robotType);
 }
 

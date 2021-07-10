@@ -14,6 +14,8 @@ namespace ofxRobotArm{
         public:
             URDFModel();
             ~URDFModel();
+            
+            void setup(string path, RobotType type);
             bool setup(string path, bool forceFixedBase, bool mergeFixedJoints, bool printDebug, bool parseSensors, ofxRobotArm::RobotType type);
             void load(string filepath);
            

@@ -10,6 +10,7 @@
 #pragma once
 #include "ofMain.h"
 #include "ofxAssimpModelLoader.h"
+#include "ofxSTL.h"
 #include "Synchronized.h"
 #include "ofxXmlSettings.h"
 #include "Pose.h"

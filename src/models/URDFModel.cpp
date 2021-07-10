@@ -10,6 +10,8 @@ URDFModel::~URDFModel()
 {
 
 }
+
+
 void URDFModel::load(string filepath)
 {
     ofxXmlSettings xml;
@@ -98,6 +100,10 @@ void URDFModel::load(string filepath)
             }
         }
     }
+}
+
+void URDFModel::setup(string path, RobotType type){
+    setup(path, false, false, true, false, type);
 }
 
 bool URDFModel::setup(string path, bool forceFixedBase, bool mergeFixedJoints, bool printDebug, bool parseSensors, ofxRobotArm::RobotType type){

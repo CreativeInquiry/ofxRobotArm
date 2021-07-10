@@ -9,4 +9,5 @@ ofxPoco
 ofxYAML
 ofxXmlSettings
 ofxRobotArm
+ofxSTL
 ofxTiming

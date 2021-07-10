@@ -10,5 +10,5 @@ ${PREFIX}CreativeInquiry/ofxTiming
 ${PREFIX}NickHardeman/ofxGizmo
 ${PREFIX}arturoc/ofxEasing
 ${PREFIX}michaelbaisch/ofxYAML
-
+${PREFIX}danzeeeman/ofxSTL
 cd ../addons/ofxRobotArm
