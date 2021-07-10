@@ -11,6 +11,41 @@ RobotController::~RobotController()
 {
 }
 
+void RobotController::setup(string ipAddress, string urdfPath, RobotType robotType, IKType ikType, bool offline)
+{
+    this->robotType = robotType;
+    this->ipAddress = ipAddress;
+
+    createRobot(this->robotType);
+    createModels(urdfPath);
+    connectRobot(offline);
+    initKinematics(ikType);
+    setupParams();
+}
+
+void RobotController::createRobot(RobotType type)
+{
+    if (type == UR3 || type == UR5 || type == UR10)
+    {
+        robot = new URDriver();
+    }
+    else if (type == IRB120)
+    {
+        robot = new ABBDriver();
+    }
+    else if (type == XARM7)
+    {
+        robot = new XARMDriver(type);
+    }
+}
+
+void RobotController::createModels(string urdfpath)
+{
+    desiredModel.setup(urdfpath, robotType);
+    actualModel.setup(urdfpath, robotType);
+}
+
+
 void RobotController::setupParams()
 {
 
@@ -52,34 +87,9 @@ void RobotController::setupParams()
     forwardTCPPosition.set("Forward TCP Pos", ofVec3f(0, 0, 0), ofVec3f(-1, -1, -1), ofVec3f(1, 1, 1));
 }
 
-void RobotController::setup(string ipAddress, string urdfPath, RobotType robotType, IKType ikType, bool offline)
-{
-    this->robotType = robotType;
-    this->ipAddress = ipAddress;
-
-    createRobot(this->robotType);
-    createModels(urdfPath);
-    connectRobot(offline);
-    initKinematics(ikType);
-    setupParams();
-}
 
 
-void RobotController::createRobot(RobotType type)
-{
-    if (type == UR3 || type == UR5 || type == UR10)
-    {
-        robot = new URDriver();
-    }
-    else if (type == IRB120)
-    {
-        robot = new ABBDriver();
-    }
-    else if (type == XARM7)
-    {
-        robot = new XARMDriver(type);
-    }
-}
+
 
 void RobotController::connectRobot(bool offline)
 {
@@ -102,11 +112,6 @@ void RobotController::connectRobot(bool offline)
     }
 }
 
-void RobotController::createModels(string urdfpath)
-{
-    desiredModel.setup(urdfpath, robotType);
-    actualModel.setup(urdfpath, robotType);
-}
 
 void RobotController::setNthJoint(double pose)
 {

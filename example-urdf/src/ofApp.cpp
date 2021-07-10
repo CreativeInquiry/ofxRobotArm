@@ -110,7 +110,7 @@ void ofApp::draw(){
         draw_gui();
     }
     // if robot is LIVE, draw indicator
-    if (robot1.isLive() || robot2.isLive()){
+    if (robot1.isLive()){
         draw_live_robot_warning();
     }
 }
