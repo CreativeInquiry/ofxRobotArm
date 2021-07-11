@@ -24,7 +24,7 @@ void ofApp::setup(){
     tcp.setPosition(tcp.getPosition()*1000);
     initialRot = tcp.getOrientationQuat();
     //IRB120 needs to invert the calculated orientation;
-    initialRot = initialRot.inverse();
+    // initialRot = initialRot.inverse();
     tcp.setOrientation(initialRot);
     tcp_target.setNode(tcp);
 
@@ -74,7 +74,7 @@ void ofApp::update(){
         ofVec3f p = look_target.getTranslation();
         ofMatrix4x4 mat, mat2;
         mat.makeLookAtMatrix(p, tcp_target.getTranslation(), ofVec3f(0, 1, 0));
-        mat = mat.getInverse();
+        // mat = mat.getInverse();
         tcp.setPosition(tcp_target.getTranslation());
         tcp.setOrientation(mat.getRotate());
     }
