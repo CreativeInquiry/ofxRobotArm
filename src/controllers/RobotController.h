@@ -80,8 +80,10 @@ namespace ofxRobotArm {
         ofParameterGroup jointSpeeds;
         ofParameterGroup jointsIK;
         ofParameterGroup robotArmParams;
+        ofxRobotArm::RobotType robotType;
+        ofxRobotArm::IKType ikType;
         
-        protected:
+    protected:
 
         int stopCount = 0;
 
@@ -134,8 +136,7 @@ namespace ofxRobotArm {
         Pose actualTCP;
         Pose targetTCP;
 
-        ofxRobotArm::RobotType robotType;
-        ofxRobotArm::IKType ikType;
+   
     private:
         Pose initPose;
         Pose forwardPose;

@@ -173,11 +173,11 @@ void InverseKinematics::setRobotType(ofxRobotArm::RobotType type)
         c3 = 0.302;
         c4 = 0.072;
 
-        // offsets[2] = -PI / 2;
+        offsets[2] = -PI / 2;
 
         joint_limit_min[0] = -165;
         joint_limit_min[1] = -110;
-        joint_limit_min[2] = -90;
+        joint_limit_min[2] = -100;
         joint_limit_min[3] = -160;
         joint_limit_min[4] = -120;
         joint_limit_min[5] = -400;

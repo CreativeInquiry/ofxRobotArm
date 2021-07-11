@@ -62,8 +62,6 @@ void RobotModel::loadURDF(string path, RobotType type)
         nodes.resize(numJoints);
         poseRadians.resize(numJoints);
 
-        
-        
         for (int i = 0; i < numJoints; i++)
         {
             string type  = xml.getAttribute("joint", "type", "revolute");
