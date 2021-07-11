@@ -90,7 +90,7 @@ void InverseKinematics::setRobotType(ofxRobotArm::RobotType type)
         d5 = 0.08535;
         d6 = 0.0819;
 
-        offsets[0] = PI;
+        // offsets[0] = PI;
 
         joint_limit_min[0] = -360;
         joint_limit_min[1] = -360;
@@ -115,7 +115,7 @@ void InverseKinematics::setRobotType(ofxRobotArm::RobotType type)
         d5 = 0.09465;
         d6 = 0.0823;
 
-        offsets[0] = PI;
+        // offsets[0] = PI;
 
         joint_limit_min[0] = -360;
         joint_limit_min[1] = -360;
@@ -140,7 +140,7 @@ void InverseKinematics::setRobotType(ofxRobotArm::RobotType type)
         d5 = 0.1157;
         d6 = 0.0922;
 
-        offsets[0] = PI;
+        // offsets[0] = PI;
 
         joint_limit_min[0] = -360;
         joint_limit_min[1] = -360;
@@ -173,7 +173,7 @@ void InverseKinematics::setRobotType(ofxRobotArm::RobotType type)
         c3 = 0.302;
         c4 = 0.072;
 
-        offsets[2] = -PI / 2;
+        // offsets[2] = -PI / 2;
 
         joint_limit_min[0] = -165;
         joint_limit_min[1] = -110;

@@ -6,7 +6,7 @@ void ofApp::setup(){
     ofSetFrameRate(120);
     // setup scene
     setup_scene();
-    robot1.setup("192.168.0.1", (string)"relaxed_ik_core/config/urdfs/ur10.urdf", ofxRobotArm::UR10, ofxRobotArm::RELAXED, true);
+    robot1.setup("192.168.0.1", (string)"relaxed_ik_core/config/urdfs/ur10.urdf", ofxRobotArm::UR10, ofxRobotArm::HK, true);
 //    robot2.setup("192.168.0.1", (string)"relaxed_ik_core/config/urdfs/irb120.urdf", ofxRobotArm::IRB120, ofxRobotArm::SW, true);
 
     // setup robot
