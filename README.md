@@ -14,7 +14,7 @@
 ![IRB120](data/ezgif-6-9aa1f3bbb920%20(1).gif)
 
 ## About
-`ofxRobotArm` is an openFrameworks addon for doing creative things with robot arms. The goal of the addon is to remove as many technical barriers as possible to get up and running with robots. We've included an example of how to get up and running with ofxRobotArm and your Robot Arm.  By developing `ofxRobotArm` for openFrameworks, we hope to help you extend human-robot interaction in new and diverse ways.
+`ofxRobotArm` is an openFrameworks addon for doing creative things with robot arms. The goal of the addon is to remove as many technical barriers as possible to get up and running with robots. We've included an example of how to get up and running with ofxRobotArm and your robot arm.  By developing `ofxRobotArm` for openFrameworks, we hope to help you extend human-robot interaction in new and diverse ways.
 
 Currently the addon is configured to work with Universal Robot's and ABB robot arms (untested).  KUKA and xArm Support is pending. 
 
