@@ -30,6 +30,7 @@ Non Core Addon depedencies
 - ofxEasing
 - ofxTiming
 - ofxYAML
+- ofxSTL
 
 You will need to download the other precompiled dependencies via GIT LSF
 
@@ -46,15 +47,18 @@ On Mac you will need to unzip the boost.zip and replace the version shipped with
 
 
 ## Overview
-`ofxRobotArm` is structured in multiple parts: [Controllers](/src/controllers), [Drivers](/src/drivers), [Kinematics](/src/kinematics), [Path](/src/path), [Utils](/src/utils), and [World](/src/world).  Controllers contain the main RobotController and other useful controllers.  Drivers contains the drivers for each manufacture ofxRobotArm supports: Universal Robots, ABB, KUKA, and many more.  Kinematics contains the kinematic model for each arm, inverse kinematic sovlers, and the relaxedIK sovler thread. Path contains helper classes for interfacing with paths.  Utils contain many useful utilities. World contains useful classes for describing the working enviroment. 
+`ofxRobotArm` is structured in multiple parts: [Controllers](/src/controllers), [Drivers](/src/drivers), [Kinematics](/src/kinematics), [Model](/src/model), [Path](/src/path), [Utils](/src/utils), and [World](/src/world).  [Controllers](/src/controllers) contain the main RobotController and other useful controllers.  [Drivers](/src/drivers) contains the drivers for each manufacture ofxRobotArm supports: Universal Robots, ABB, KUKA, and many more coming.  [Kinematics](/src/kinematics) contains the forward and inverse kinematic solvers.  [Model](/src/model) contains the representation of the robot arm loaded from a URDF.  [Path](/src/path) contains helper classes for interfacing with paths.  [Utils](/src/utils) contain many useful utilities. [World](/src/world) contains useful classes for describing the working enviroment. 
 
 
 ## Examples
-We've also included a number of example projects that show you the most common ways of programming 6-axis robots:
+We've also included an [example project](example-urdf) that show you the most common ways of programming 6-axis robots:
 
-**1. Direct Manipulation**
- - [`example-urdf`](/example-urdf) lets you use your mouse to drag around and rotate your robot.
- 
+    **1. FOLLOW_GIZMO 
+    The Robot follows the end effector goal position and prientation represented as a gizmo. This allows for direct manipulation of the end effector pose.
+    **2. LOOK_AT_TARGET
+    The orientation of the end effector is set by the look-at transform from the end effector Pose to the look at target gizmo.  
+    **3. FOLLOW_CIRCLE
+    This mode follows a sprial path that is generated at run time.  The orientation is set by the end effector goal gizmo. 
 
 ## Licensing
 `ofxRobotArm` is licensed under the [THE ANTI-CAPITALIST SOFTWARE LICENSE (v 1.4)](LICENSE) 
@@ -78,8 +82,7 @@ Here are some of the references and resources that have made `ofxRobotArm` possi
 
 
 ## Known Issues
- There are several known issues:
-
+ There are several known issues but please report anything you see out of place or weird.  There are known weirdness with the initial orientation with some bots, requiring the invsere of the read orienation.  If you would like to help out with these issue please file a bug or start a discussion. 
  
 
 ## Future Development
