@@ -85,7 +85,7 @@ Here are some of the references and resources that have made `ofxRobotArm` possi
 
 
 ## Known Issues
- There are several known issues but please report anything you see out of place or weird.  There are known weirdness with the initial orientation with some bots, requiring the invsere of the read orienation.  If you would like to help out with these issue please file a bug or start a discussion. 
+ There are several known issues but please report anything you see out of place or weird.  There are known weirdnesses with the initial orientation with some bots, requiring the invsere of the read orientation.  If you would like to help out with these issue please file a bug or start a discussion. 
  
 
 ## Future Development
