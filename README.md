@@ -21,6 +21,8 @@ Currently the addon is configured to work with Universal Robot's and ABB robot a
 Development for `ofxRobotArm` was sponsored by [The Frank-Ratchye STUDIO for Creative Inquiry](http://studioforcreativeinquiry.org/). 
 Technical development was lead by [Dan Moore](http://makeitdoathing.com) and [Madeline Gannon](https://atonaton.com).
 
+### For Mac and Linux Only (Pending Windows support the URDriver needs to be rewritten)
+
 ![KinematicModel](data/ezgif.com-video-to-gif%20(1).gif)
 
 ## Dependencies
