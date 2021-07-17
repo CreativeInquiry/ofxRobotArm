@@ -10,7 +10,6 @@
 #include "XARMDriver.h"
 #include "InverseKinematics.h"
 #include "URDFModel.h"
-#include "ofxIKArm.h"
 #include "RobotConstants.hpp"
 #include "Plane.h"
 

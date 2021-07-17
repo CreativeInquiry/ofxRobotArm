@@ -2,7 +2,6 @@
 #include "ofMain.h"
 #include "RobotModel.h"
 #include "Pose.h"
-#include "ofxIKArm.h"
 #include "RobotConstants.hpp"
 #include "RelaxedIKSolver.h"
 //
@@ -115,8 +114,6 @@ namespace ofxRobotArm
         ofParameter<bool> bControlIkWithMouse;
         ofParameter<bool> bOnlyUseInverseIk;
 
-        shared_ptr<ofxIKArm> mIKArm;
-        shared_ptr<ofxIKArm> mIKArmInverted;
         vector<vector<double>> preSol;
 
         RelaxedIKSolver relaxedIK;

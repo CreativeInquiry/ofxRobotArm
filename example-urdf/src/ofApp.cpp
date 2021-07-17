@@ -415,6 +415,9 @@ void ofApp::keypressed_camera(int key){
 
 //--------------------------------------------------------------
 void ofApp::keypressed_gizmo(int key){
+    ofMatrix4x4 lookAt;
+    ofMatrix4x4 mat;
+    char k = key;
     switch (key) {
         case '1':
             FOLLOW_MODE = FOLLOW_GIZMO;
@@ -427,65 +430,53 @@ void ofApp::keypressed_gizmo(int key){
             break;
         case '4':
             tcp.setOrientation(initialRot);
-            tcp_target.getMatrix().setRotate(initialRot);
-        case '5':
-            break;
-        case '6':
-            break;
-        case '7':
-            break;
-        case '8':
-            break;
-        case '9':
-            break;
-        case '0':
+            mat.setRotate(initialRot);
             break;
         case OF_KEY_RETURN:
             tcp.setGlobalPosition(robot1.desiredModel.getForwardPose().getPosition());
-            tcp_target.getMatrix().setTranslation(tcp.getPosition());
             break;
         case ' ':
             tcp.setGlobalPosition(robot1.getActualTCPNode().getPosition()*1000);
-            tcp_target.getMatrix().setTranslation(tcp.getPosition());
             break;
         case '!':
             tcp.setGlobalPosition(robot1.getActualTCPNode().getPosition()*1000+ofVec3f(0, 0, 200));
-            tcp_target.getMatrix().setTranslation(tcp.getPosition());
             break;
         case '@':
             tcp.setGlobalPosition(robot1.getActualTCPNode().getPosition()*1000+ofVec3f(100, 0, 100));
-            tcp_target.getMatrix().setTranslation(tcp.getPosition());
             break;
         case '#':
             tcp.setGlobalPosition(ofVec3f(400, 100, 400));
-            tcp_target.getMatrix().setTranslation(tcp.getPosition());
             break;
         case '$':
             tcp.setGlobalPosition(ofVec3f(200, 200, 200));
-            tcp_target.getMatrix().setTranslation(tcp.getPosition());
             break;
         case '%':
             tcp.setGlobalPosition(robot1.getActualTCPNode().getPosition()*1000+ofVec3f(100, 0, 0));
-            tcp_target.getMatrix().setTranslation(tcp.getPosition());
             break;
         case '^':
             tcp.setGlobalPosition(ofVec3f(600, 300, 600));
-            tcp_target.getMatrix().setTranslation(tcp.getPosition());
             break;
         case '&':
-            look_target.getMatrix().setTranslation(0, 0, 1000);
+            lookAt.setTranslation(0, 0, 100);
+            look_target.setMatrix(lookAt);
             break;
         case '*':
-            look_target.getMatrix().setTranslation(1000, 0, 0);
+            lookAt.setTranslation(0, 0, 100);
+            look_target.setMatrix(lookAt);
             break;
         case '(':
-            look_target.getMatrix().setTranslation(1000, 1000, 0);
+            lookAt.setTranslation(0, 0, 100);
+            look_target.setMatrix(lookAt);
             break;
         case ')':
-            look_target.getMatrix().setTranslation(tcp.getPosition()+ofVec3f(10, 0, 0));
+            lookAt.setTranslation(tcp.getPosition()+ofVec3f(0, 0, 10));
+            look_target.setMatrix(lookAt);
             break;
             
     }
+    
+    mat.setTranslation(tcp.getPosition());
+    tcp_target.setMatrix(mat);
     
 }
 
