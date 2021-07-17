@@ -362,11 +362,14 @@ void RobotController::setDesired(ofNode target)
     this->target = target;
 }
 
-ofNode RobotController::getActualTCPNode()
+ofNode RobotController::getTCPNode()
 {
-    return forwardNode;
+    return actualModel.getTCPNode();
 }
 
+ofNode RobotController::getForwardNode(){
+    return forwardNode;
+}
 
 
 void RobotController::close()

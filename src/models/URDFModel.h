@@ -10,7 +10,7 @@ namespace ofxRobotArm{
         
     };
 
-    class URDFModel : public RobotModel{
+    class URDFModel {
         public:
             URDFModel();
             ~URDFModel();

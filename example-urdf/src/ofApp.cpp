@@ -20,7 +20,7 @@ void ofApp::setup(){
     robot1.setToolOffset(offset);
 //    robot2.setToolOffset(offset);
     
-    tcp = robot1.getActualTCPNode();
+    tcp = robot1.getForwardNode();
     tcp.setPosition(tcp.getPosition()*1000);
     initialRot = tcp.getOrientationQuat();
     //IRB120 needs to invert the calculated orientation;
@@ -436,25 +436,33 @@ void ofApp::keypressed_gizmo(int key){
             tcp.setGlobalPosition(robot1.desiredModel.getForwardPose().getPosition());
             break;
         case ' ':
-            tcp.setGlobalPosition(robot1.getActualTCPNode().getPosition()*1000);
+            tcp.setGlobalPosition(robot1.getForwardNode().getPosition()*1000);
             break;
         case '!':
-            tcp.setGlobalPosition(robot1.getActualTCPNode().getPosition()*1000+ofVec3f(0, 0, 200));
+            tcp.setGlobalPosition(robot1.getForwardNode().getPosition()*1000+ofVec3f(0, 0, 200));
             break;
         case '@':
-            tcp.setGlobalPosition(robot1.getActualTCPNode().getPosition()*1000+ofVec3f(100, 0, 100));
+            tcp.setGlobalPosition(robot1.getForwardNode().getPosition()*1000+ofVec3f(100, 0, 100));
             break;
         case '#':
             tcp.setGlobalPosition(ofVec3f(400, 100, 400));
+            mat.setTranslation(tcp.getPosition());
+            tcp_target.setMatrix(mat);
             break;
         case '$':
             tcp.setGlobalPosition(ofVec3f(200, 200, 200));
+            mat.setTranslation(tcp.getPosition());
+            tcp_target.setMatrix(mat);
             break;
         case '%':
-            tcp.setGlobalPosition(robot1.getActualTCPNode().getPosition()*1000+ofVec3f(100, 0, 0));
+            tcp.setGlobalPosition(robot1.getForwardNode().getPosition()*1000+ofVec3f(100, 0, 0));
+            mat.setTranslation(tcp.getPosition());
+            tcp_target.setMatrix(mat);
             break;
         case '^':
             tcp.setGlobalPosition(ofVec3f(600, 300, 600));
+            mat.setTranslation(tcp.getPosition());
+            tcp_target.setMatrix(mat);
             break;
         case '&':
             lookAt.setTranslation(0, 0, 100);
@@ -475,8 +483,7 @@ void ofApp::keypressed_gizmo(int key){
             
     }
     
-    mat.setTranslation(tcp.getPosition());
-    tcp_target.setMatrix(mat);
+
     
 }
 

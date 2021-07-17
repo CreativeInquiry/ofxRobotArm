@@ -15,6 +15,7 @@
 #include "ofxXmlSettings.h"
 #include "Pose.h"
 #include "RobotConstants.hpp"
+#include "URDFModel.h"
 
 namespace ofxRobotArm
 {
@@ -43,7 +44,7 @@ namespace ofxRobotArm
         void setForwardPose(ofNode pose);
         void setEndEffector(string filename);
         void clearEndEffector();
-
+        ofNode getTCPNode();
         ofNode getTool();
         void setToolOffset(ofVec3f localOffset);
         ofQuaternion getToolPointQuaternion();

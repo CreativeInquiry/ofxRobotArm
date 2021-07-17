@@ -30,6 +30,11 @@ ofNode RobotModel::getForwardPose(){
     return forwardPose;
 }
 
+ofNode RobotModel::getTCPNode(){
+    return tcpNode;
+}
+
+
 void RobotModel::loadURDF(string path, RobotType type)
 {
     this->type = type;
