@@ -6,7 +6,7 @@ void ofApp::setup(){
     ofSetFrameRate(120);
     // setup scene
     setup_scene();
-    robot1.setup("192.168.0.1", (string)"relaxed_ik_core/config/urdfs/ur10.urdf", ofxRobotArm::UR10, ofxRobotArm::RELAXED, true);
+    robot1.setup("192.168.0.1", (string)"relaxed_ik_core/config/urdfs/ur5.urdf", ofxRobotArm::UR5, ofxRobotArm::RELAXED, true);
 //    robot2.setup("192.168.0.1", (string)"relaxed_ik_core/config/urdfs/irb120.urdf", ofxRobotArm::IRB120, ofxRobotArm::SW, true);
 
     // setup robot
@@ -24,7 +24,7 @@ void ofApp::setup(){
     tcp.setPosition(tcp.getPosition()*1000);
     initialRot = tcp.getOrientationQuat();
     //IRB120 needs to invert the calculated orientation;
-    initialRot = initialRot.inverse();
+//    initialRot = initialRot.inverse();
     tcp.setOrientation(initialRot);
     tcp_target.setNode(tcp);
 
@@ -434,15 +434,23 @@ void ofApp::keypressed_gizmo(int key){
             break;
         case OF_KEY_RETURN:
             tcp.setGlobalPosition(robot1.desiredModel.getForwardPose().getPosition());
+            mat.setTranslation(tcp.getPosition());
+            tcp_target.setMatrix(mat);
             break;
         case ' ':
             tcp.setGlobalPosition(robot1.getForwardNode().getPosition()*1000);
+            mat.setTranslation(tcp.getPosition());
+            tcp_target.setMatrix(mat);
             break;
         case '!':
             tcp.setGlobalPosition(robot1.getForwardNode().getPosition()*1000+ofVec3f(0, 0, 200));
+            mat.setTranslation(tcp.getPosition());
+            tcp_target.setMatrix(mat);
             break;
         case '@':
             tcp.setGlobalPosition(robot1.getForwardNode().getPosition()*1000+ofVec3f(100, 0, 100));
+            mat.setTranslation(tcp.getPosition());
+            tcp_target.setMatrix(mat);
             break;
         case '#':
             tcp.setGlobalPosition(ofVec3f(400, 100, 400));
