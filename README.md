@@ -87,6 +87,8 @@ Here are some of the references and resources that have made `ofxRobotArm` possi
 ## Known Issues
  There are several known issues but please report anything you see out of place or weird.  There are known weirdnesses with the initial orientation with some bots, requiring the invsere of the read orientation.  If you would like to help out with this issue please go [here](https://github.com/CreativeInquiry/ofxRobotArm/issues/32)
  
+ ## Building on Big Sur and XCode Version 12.5.1 (12E507) is not working at the moment!
+ 
 
 ## Future Development
 
