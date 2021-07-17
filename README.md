@@ -1,4 +1,7 @@
 # ofxRobotArm V2021.BETA.1
+## UNTESTED ON BOTS 
+## USE AT YOUR OWN RISK 
+## PLEASE HELP FIX THE BUGS
 ###### An openFrameworks addon for controlling and interacting with robot arms.
 
   - [About](#about)
