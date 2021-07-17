@@ -22,7 +22,9 @@ Development for `ofxRobotArm` was sponsored by [The Frank-Ratchye STUDIO for Cre
 Technical development was lead by [Dan Moore](http://makeitdoathing.com) and [Madeline Gannon](https://atonaton.com).
 
 ### For Mac and Linux Only (Pending Windows support the URDriver needs to be rewritten)
-### Building on macOS 11.4 Big Sur and XCode Version 12.5.1 (12E507) is not working at the moment!
+### Building on macOS 11.4 Big Sur and XCode Version 12.5.1 (12E507) is sort of working at the moment!
+You need to turn on ```Build Active Architecture Only``` in the Architectures of ```Build Settings``` otherwise it won't link.  We need the dependencies recompiled for arm64 and x86_64. 
+
 ### Tested on Ubuntu 20.04 and macOS 10.15
 
 ![KinematicModel](data/ezgif.com-video-to-gif%20(1).gif)
