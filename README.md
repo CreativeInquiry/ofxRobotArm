@@ -1,4 +1,7 @@
 # ofxRobotArm V2021.BETA.1
+## UNTESTED ON BOTS 
+## USE AT YOUR OWN RISK 
+## PLEASE HELP FIX THE BUGS
 ###### An openFrameworks addon for controlling and interacting with robot arms.
 
   - [About](#about)
@@ -91,7 +94,7 @@ Here are some of the references and resources that have made `ofxRobotArm` possi
 ## Known Issues
  There are several known issues but please report anything you see out of place or weird.  There are known weirdnesses with the initial orientation with some bots, requiring the invsere of the read orientation.  If you would like to help out with this issue please go [here](https://github.com/CreativeInquiry/ofxRobotArm/issues/32)
  
- 
+ ![UR5](data/Screen%20Shot%202021-07-17%20at%207.35.26%20PM.png)
 
 ## Future Development
 
