@@ -15,11 +15,7 @@ RobotModel::RobotModel()
 RobotModel::~RobotModel()
 {
 }
-void RobotModel::setForwardPose(ofNode pose)
-{
-    forwardPose.setGlobalPosition(pose.getGlobalPosition() * 1000);
-    forwardPose.setGlobalOrientation(pose.getGlobalOrientation());
-}
+
 
 void RobotModel::setup(string path, RobotType type)
 {
@@ -90,6 +86,7 @@ void RobotModel::loadURDF(string path, RobotType type)
                 p.axis = ofVec3f(ofToFloat(ax[0]), ofToFloat(ax[1]), ofToFloat(ax[2]));
                 vector<string> ro = ofSplitString(rot, " ");
                 p.rotOffset = ofVec3f(ofToFloat(ro[0]), ofToFloat(ro[1]), ofToFloat(ro[2]));
+                ofLog()<<"ROT OFFSET"<<p.rotOffset<<endl;
                 p.rotation = 0;
                 p.orientation.makeRotate(ofRadToDeg(ofToFloat(ro[0])), ofVec3f(1, 0, 0),
                                          ofRadToDeg(ofToFloat(ro[1])), ofVec3f(0, 1, 0),
@@ -105,10 +102,13 @@ void RobotModel::loadURDF(string path, RobotType type)
                 nodes[i].setOrientation(pose[i].orientation);
             }
         }
-        toolNode.setParent(nodes[5]);        
+        toolNode.setParent(nodes[nodes.size()-1]);        
         originNode.setPosition(ofVec3f(0, 0, 0));
 
         nodes[0].setParent(originNode);
+        
+        setForwardPose(toolNode);
+        setTCPPose(pose[pose.size()-1]);
 
 
         for (int i = 0; i < numLinks; i++)
@@ -164,6 +164,23 @@ void RobotModel::setOrigin(ofVec3f pos, ofQuaternion orientation)
     originNode.setGlobalOrientation(orientation);
 }
 
+void RobotModel::setForwardPose(ofNode pose)
+{
+    forwardPose.setGlobalPosition(pose.getGlobalPosition());
+    forwardPose.setGlobalOrientation(pose.getGlobalOrientation());
+}
+
+void RobotModel::setTCPPose(Pose pose)
+{
+    tool = pose;
+    ofMatrix4x4 mat;
+    mat.makeRotationMatrix(toolNode.getGlobalOrientation());
+    ofVec3f pos = toolNode.getPosition() / 1000.0;
+    tool.position = tool.position - pos * mat;
+    tcpNode.setPosition(tool.position * 1000);
+    tcpNode.setOrientation(pose.orientation);
+}
+
 ofQuaternion RobotModel::getToolPointQuaternion()
 {
     return toolNode.getGlobalOrientation();
@@ -178,17 +195,6 @@ void RobotModel::setToolOffset(ofVec3f localOffset)
 {
     this->localOffset = localOffset;
     toolNode.setPosition(this->localOffset);
-}
-
-void RobotModel::setTCPPose(Pose pose)
-{
-    tool = pose;
-    ofMatrix4x4 mat;
-    mat.makeRotationMatrix(toolNode.getGlobalOrientation());
-    ofVec3f pos = toolNode.getPosition() / 1000.0;
-    tool.position = tool.position - pos * mat;
-    tcpNode.setPosition(tool.position * 1000);
-    tcpNode.setOrientation(pose.orientation);
 }
 
 Pose RobotModel::getModifiedTCPPose()

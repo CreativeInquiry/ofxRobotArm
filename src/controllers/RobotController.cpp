@@ -364,7 +364,7 @@ void RobotController::setDesired(ofNode target)
 
 ofNode RobotController::getTCPNode()
 {
-    return actualModel.getTCPNode();
+    return actualModel.getForwardPose();
 }
 
 ofNode RobotController::getForwardNode(){
@@ -387,6 +387,7 @@ void RobotController::draw(ofColor color, bool debug)
     {
         actualModel.drawMesh(color, debug);
         actualModel.draw(color, debug);
+        actualModel.drawSkeleton();
     }
     ofPopMatrix();
 }

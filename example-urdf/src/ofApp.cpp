@@ -20,9 +20,10 @@ void ofApp::setup(){
     robot1.setToolOffset(offset);
 //    robot2.setToolOffset(offset);
     
-    tcp = robot1.getForwardNode();
-    tcp.setPosition(tcp.getPosition()*1000);
-    initialRot = tcp.getOrientationQuat();
+    ofNode node = robot1.getTCPNode();
+    tcp.setPosition(node.getGlobalPosition());
+    tcp.setOrientation(node.getGlobalOrientation());
+    initialRot = tcp.getGlobalOrientation();
     //IRB120 needs to invert the calculated orientation;
 //    initialRot = initialRot.inverse();
     tcp.setOrientation(initialRot);
@@ -74,7 +75,7 @@ void ofApp::update(){
         ofVec3f p = look_target.getTranslation();
         ofMatrix4x4 mat, mat2;
         mat.makeLookAtMatrix(p, tcp_target.getTranslation(), ofVec3f(0, 1, 0));
-        mat = mat.getInverse();
+//        mat = mat.getInverse();
         tcp.setPosition(tcp_target.getTranslation());
         tcp.setOrientation(mat.getRotate());
     }
@@ -112,7 +113,7 @@ void ofApp::draw(){
         draw_gui();
     }
     // if robot is LIVE, draw indicator
-    if (robot1.isLive() || robot2.isLive()){
+    if (robot1.isLive()){
         draw_live_robot_warning();
     }
 }
@@ -438,7 +439,7 @@ void ofApp::keypressed_gizmo(int key){
             tcp_target.setMatrix(mat);
             break;
         case ' ':
-            tcp.setGlobalPosition(robot1.getForwardNode().getPosition()*1000);
+            tcp.setGlobalPosition(robot1.actualModel.getForwardPose().getPosition());
             mat.setTranslation(tcp.getPosition());
             tcp_target.setMatrix(mat);
             break;
