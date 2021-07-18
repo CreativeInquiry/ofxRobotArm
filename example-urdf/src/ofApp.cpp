@@ -6,19 +6,17 @@ void ofApp::setup(){
     ofSetFrameRate(120);
     // setup scene
     setup_scene();
-    robot1.setup("192.168.0.1", (string)"relaxed_ik_core/config/urdfs/ur5.urdf", ofxRobotArm::UR5, ofxRobotArm::RELAXED, true);
+    robot1.setup("192.168.0.1", (string)"relaxed_ik_core/config/urdfs/irb120.urdf", ofxRobotArm::IRB120, ofxRobotArm::RELAXED, true);
+    robot1.setToolOffset(offset);
 //    robot2.setup("192.168.0.1", (string)"relaxed_ik_core/config/urdfs/irb120.urdf", ofxRobotArm::IRB120, ofxRobotArm::SW, true);
+//    robot2.setToolOffset(offset);
+//    robot2.setRobotOrigin(ofVec3f(1000, 0, 0), ofQuaternion());
 
     // setup robot
     // robot.setup(robotParams);    // change IP string to your robot's IP address
     
     // setup gui
     setup_gui();
-    // start robot
-    robot1.start();
-//    robot2.start();
-    robot1.setToolOffset(offset);
-//    robot2.setToolOffset(offset);
     
     ofNode node = robot1.getTCPNode();
     tcp.setPosition(node.getGlobalPosition());
@@ -56,6 +54,11 @@ void ofApp::setup(){
     line.close();
 
     FOLLOW_MODE = FOLLOW_GIZMO;
+    
+    
+    // start robot
+    robot1.start();
+    robot2.start();
 }
 
 //--------------------------------------------------------------

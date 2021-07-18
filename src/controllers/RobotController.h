@@ -136,6 +136,8 @@ namespace ofxRobotArm {
 
         ofxRobotArm::RobotType robotType;
         ofxRobotArm::IKType ikType;
+        
+        
     private:
         Pose initPose;
         Pose forwardPose;
