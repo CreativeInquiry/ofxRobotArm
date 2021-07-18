@@ -90,7 +90,7 @@ void InverseKinematics::setRobotType(ofxRobotArm::RobotType type)
         d5 = 0.08535;
         d6 = 0.0819;
 
-        offsets[0] = PI;
+//        offsets[0] = PI;
 
         joint_limit_min[0] = -360;
         joint_limit_min[1] = -360;
@@ -115,7 +115,8 @@ void InverseKinematics::setRobotType(ofxRobotArm::RobotType type)
         d5 = 0.09465;
         d6 = 0.0823;
 
-        offsets[0] = PI;
+//        offsets[0] = PI;
+//        sign_corrections[0] = -1;
 
         joint_limit_min[0] = -360;
         joint_limit_min[1] = -360;
@@ -140,7 +141,7 @@ void InverseKinematics::setRobotType(ofxRobotArm::RobotType type)
         d5 = 0.1157;
         d6 = 0.0922;
 
-        offsets[0] = PI;
+//        offsets[0] = PI;
 
         joint_limit_min[0] = -360;
         joint_limit_min[1] = -360;
@@ -295,60 +296,47 @@ ofMatrix4x4 InverseKinematics::forwardHK(double o, double t, double th, double f
     return toOF(transform6);
 }
 
-void InverseKinematics::forwardHK(const double *q, double *T)
+void InverseKinematics::forward( double *q, double *T){
+    
+}
+
+void InverseKinematics::forwardHK(double *q, double *T)
 {
-    double s1 = sin(*q), c1 = cos(*q);
-    q++;
-    double q23 = *q, q234 = *q, s2 = sin(*q), c2 = cos(*q);
-    q++;
-    double s3 = sin(*q), c3 = cos(*q);
-    q23 += *q;
-    q234 += *q;
-    q++;
-    double s4 = sin(*q), c4 = cos(*q);
-    q234 += *q;
-    q++;
-    double s5 = sin(*q), c5 = cos(*q);
-    q++;
+    for (int j = 0; j < 6; j++)
+    {
+        q[j] = q[j] * sign_corrections[j] - offsets[j];
+    }
+    double s1 = sin(*q), c1 = cos(*q); q++;
+    double q23 = *q, q234 = *q, s2 = sin(*q), c2 = cos(*q); q++;
+    double s3 = sin(*q), c3 = cos(*q); q23 += *q; q234 += *q; q++;
+    double s4 = sin(*q), c4 = cos(*q); q234 += *q; q++;
+    double s5 = sin(*q), c5 = cos(*q); q++;
     double s6 = sin(*q), c6 = cos(*q);
     double s23 = sin(q23), c23 = cos(q23);
     double s234 = sin(q234), c234 = cos(q234);
-    *T = c234 * c1 * s5 - c5 * s1;
+    *T = c234*c1*s5 - c5*s1;
     T++;
-    *T = c6 * (s1 * s5 + c234 * c1 * c5) - s234 * c1 * s6;
-    T++;
-    *T = -s6 * (s1 * s5 + c234 * c1 * c5) - s234 * c1 * c6;
-    T++;
-    *T = d6 * c234 * c1 * s5 - a3 * c23 * c1 - a2 * c1 * c2 - d6 * c5 * s1 - d5 * s234 * c1 - d4 * s1;
-    T++;
-    *T = c1 * c5 + c234 * s1 * s5;
-    T++;
-    *T = -c6 * (c1 * s5 - c234 * c5 * s1) - s234 * s1 * s6;
-    T++;
-    *T = s6 * (c1 * s5 - c234 * c5 * s1) - s234 * c6 * s1;
-    T++;
-    *T = d6 * (c1 * c5 + c234 * s1 * s5) + d4 * c1 - a3 * c23 * s1 - a2 * c2 * s1 - d5 * s234 * s1;
-    T++;
-    *T = -s234 * s5;
-    T++;
-    *T = -c234 * s6 - s234 * c5 * c6;
-    T++;
-    *T = s234 * c5 * s6 - c234 * c6;
-    T++;
-    *T = d1 + a3 * s23 + a2 * s2 - d5 * (c23 * c4 - s23 * s4) - d6 * s5 * (c23 * s4 + s23 * c4);
-    T++;
-    *T = 0.0;
-    T++;
-    *T = 0.0;
-    T++;
-    *T = 0.0;
-    T++;
-    *T = 1.0;
+    *T = c6*(s1*s5 + c234*c1*c5) - s234*c1*s6; T++;
+    *T = -s6*(s1*s5 + c234*c1*c5) - s234*c1*c6; T++;
+    *T = d6*c234*c1*s5 - a3*c23*c1 - a2*c1*c2 - d6*c5*s1 - d5*s234*c1 - d4*s1; T++;
+    *T = c1*c5 + c234*s1*s5; T++;
+    *T = -c6*(c1*s5 - c234*c5*s1) - s234*s1*s6; T++;
+    *T = s6*(c1*s5 - c234*c5*s1) - s234*c6*s1; T++;
+    *T = d6*(c1*c5 + c234*s1*s5) + d4*c1 - a3*c23*s1 - a2*c2*s1 - d5*s234*s1; T++;
+    *T = -s234*s5; T++;
+    *T = -c234*s6 - s234*c5*c6; T++;
+    *T = s234*c5*s6 - c234*c6; T++;
+    *T = d1 + a3*s23 + a2*s2 - d5*(c23*c4 - s23*s4) - d6*s5*(c23*s4 + s23*c4); T++;
+    *T = 0.0; T++; *T = 0.0; T++; *T = 0.0; T++; *T = 1.0;
 }
 
-void InverseKinematics::forward_allHK(const double *q, double *T1, double *T2, double *T3,
+void InverseKinematics::forward_allHK(double *q, double *T1, double *T2, double *T3,
                                       double *T4, double *T5, double *T6)
 {
+    for (int j = 0; j < 6; j++)
+    {
+        q[j] = q[j] * sign_corrections[j] - offsets[j];
+    }
     double s1 = sin(*q), c1 = cos(*q);
     q++; // q1
     double q23 = *q, q234 = *q, s2 = sin(*q), c2 = cos(*q);
@@ -582,7 +570,7 @@ void InverseKinematics::forward_allHK(const double *q, double *T1, double *T2, d
     }
 }
 
-int InverseKinematics::inverseHK(const double *T, double *q_sols, double q6_des)
+int InverseKinematics::inverseHK(double *T, double *q_sols, double q6_des)
 {
     int num_sols = 0;
     double T02 = -*T;

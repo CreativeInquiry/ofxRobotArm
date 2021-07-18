@@ -44,6 +44,7 @@ namespace ofxRobotArm
         ofMatrix4x4 forwardKinematics(vector<double> pose);
         vector<vector<double>> inverseKinematics(ofxRobotArm::Pose targetPose, ofxRobotArm::Pose currentPose);
         
+        void forward(double *q, double *T);
 
         void setRelaxedPose(vector<double> pose);
         vector<double> inverseRelaxed(Pose targetPose, Pose currentPose);
@@ -63,9 +64,9 @@ namespace ofxRobotArm
         
         
         ofMatrix4x4 forwardHK(double o, double t, double th, double f, double fi, double s);
-        void forwardHK(const double *q, double *T);
-        void forward_allHK(const double *q, double *T1, double *T2, double *T3, double *T4, double *T5, double *T6);
-        int inverseHK(const double *T, double *q_sols, double q6_des = 0.0);
+        void forwardHK(double *q, double *T);
+        void forward_allHK(double *q, double *T1, double *T2, double *T3, double *T4, double *T5, double *T6);
+        int inverseHK(double *T, double *q_sols, double q6_des = 0.0);
 
 
         void harmonizeTowardZero(double *qs)
