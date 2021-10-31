@@ -33,7 +33,7 @@ namespace ofxRobotArm
     public:
         ~InverseKinematics();
         InverseKinematics();
-        void setup(ofxRobotArm::RobotType robotType, ofxRobotArm::IKType ikType, vector<double> pose);
+        void setup(ofxRobotArm::RobotType robotType, ofxRobotArm::IKType ikType, vector<double> pose, RobotModel * model);
 
         void setSWParams(float _a1, float _a2, float _b, float _c1, float _c2, float _c3, float _c4);
         void setDHParams(float d1, float a2, float a3, float d4, float d5, float d6);
@@ -68,6 +68,7 @@ namespace ofxRobotArm
         void forward_allHK(double *q, double *T1, double *T2, double *T3, double *T4, double *T5, double *T6);
         int inverseHK(double *T, double *q_sols, double q6_des = 0.0);
 
+        void computeDH(RobotModel * model);
 
         void harmonizeTowardZero(double *qs)
         {

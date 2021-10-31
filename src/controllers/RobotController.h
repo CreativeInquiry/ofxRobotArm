@@ -8,6 +8,7 @@
 #include "URDriver.h"
 #include "ABBDriver.h"
 #include "XARMDriver.h"
+#include "PandaDriver.h"
 #include "InverseKinematics.h"
 #include "URDFModel.h"
 #include "RobotConstants.hpp"

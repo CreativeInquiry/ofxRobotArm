@@ -6,24 +6,16 @@ void ofApp::setup(){
     ofSetFrameRate(120);
     // setup scene
     setup_scene();
-    robot1.setup("192.168.0.1", (string)"relaxed_ik_core/config/urdfs/irb120.urdf", ofxRobotArm::IRB120, ofxRobotArm::RELAXED, true);
-    robot1.setToolOffset(offset);
-//    robot2.setup("192.168.0.1", (string)"relaxed_ik_core/config/urdfs/irb120.urdf", ofxRobotArm::IRB120, ofxRobotArm::SW, true);
-//    robot2.setToolOffset(offset);
-//    robot2.setRobotOrigin(ofVec3f(1000, 0, 0), ofQuaternion());
+    robot.setup("192.168.0.1", (string)"relaxed_ik_core/config/urdfs/ur5.urdf", ofxRobotArm::UR5, ofxRobotArm::RELAXED, true);
+    robot.setToolOffset(offset);
 
-    // setup robot
-    // robot.setup(robotParams);    // change IP string to your robot's IP address
-    
     // setup gui
     setup_gui();
     
-    ofNode node = robot1.getTCPNode();
-    tcp.setPosition(node.getGlobalPosition());
-    tcp.setOrientation(node.getGlobalOrientation());
-    initialRot = tcp.getGlobalOrientation();
-    //IRB120 needs to invert the calculated orientation;
-//    initialRot = initialRot.inverse();
+    ofNode node = robot.getForwardNode();
+    tcp.setPosition(node.getGlobalPosition()*1000);
+    tcp.setOrientation(node.getOrientationQuat());
+    initialRot = glm::inverse(tcp.getGlobalOrientation());
     tcp.setOrientation(initialRot);
     tcp_target.setNode(tcp);
 
@@ -49,7 +41,7 @@ void ofApp::setup(){
     home.set(300, 0, 555);
     
     for(int i = 0 ; i < 360; i++){
-        line.addVertex(ofVec3f(350, 0, 150)+ofVec3f(((i+1)/360)*150, 0.6*i*sin(ofDegToRad(i)), i*cos(ofDegToRad(i))));
+        line.addVertex(ofVec3f(350, 0, 150)+ofVec3f(((i+1)/360)*15, 0.6*i*sin(ofDegToRad(i)), i*cos(ofDegToRad(i))));
     }
     line.close();
 
@@ -57,8 +49,7 @@ void ofApp::setup(){
     
     
     // start robot
-    robot1.start();
-    robot2.start();
+    robot.start();
 }
 
 //--------------------------------------------------------------
@@ -95,9 +86,9 @@ void ofApp::update(){
     }
 
 
-    robot1.setToolOffset(offset);
-    robot1.setDesired(tcp);
-    robot1.update();
+    robot.setToolOffset(offset);
+    robot.setDesired(tcp);
+    robot.update();
 
 //    robot2.setToolOffset(offset);
 //    robot2.setDesired(tcp);
@@ -116,7 +107,7 @@ void ofApp::draw(){
         draw_gui();
     }
     // if robot is LIVE, draw indicator
-    if (robot1.isLive()){
+    if (robot.isLive()){
         draw_live_robot_warning();
     }
 }
@@ -134,14 +125,14 @@ void ofApp::draw_scene(){
     ofDrawAxis(1500);
     ofDrawGrid(100, 10, false, false, false, true);
     // Draw Real Robot
-    robot1.draw(robot1.isLive()?ofColor::green:ofColor::red);
+    robot.draw(robot.isLive()?ofColor::green:ofColor::red);
     // Draw Desired Robot
-    robot1.drawDesired(ofColor::whiteSmoke);
+    robot.drawDesired(ofColor::whiteSmoke);
 
-    // Draw Real Robot
-    robot2.draw(robot2.isLive()?ofColor::green:ofColor::red);
-    // // Draw Desired Robot
-    robot2.drawDesired(ofColor::whiteSmoke);
+    // Draw Real Robot 2
+//    robot2.draw(robot2.isLive()?ofColor::green:ofColor::red);
+    // // Draw Desired Robot 2
+//    robot2.drawDesired(ofColor::whiteSmoke);
 
     ofPushStyle();
     ofSetColor(ofColor::aqua);
@@ -182,7 +173,7 @@ void ofApp::setup_gui(){
     params.add(show_side.set("SIDE", false));
     params.add(show_perspective.set("PERSP", false));
     
-    params.add(offset.set("offset", ofVec3f(0, 0, 0), ofVec3f(-300, -300, -300), ofVec3f(300, 300, 300)));
+    params.add(offset.set("Tool Offset", ofVec3f(0, 0, 0), ofVec3f(-300, -300, -300), ofVec3f(300, 300, 300)));
     
     show_top.addListener(this, &ofApp::listener_show_top);
     show_front.addListener(this, &ofApp::listener_show_front);
@@ -198,14 +189,14 @@ void ofApp::setup_gui(){
     panel_robot.add(rot.set("TCP ROT", ofVec4f(0, 0, 0, 0)));
     panel_robot.add(feedSpeed.set("Feed Speed", 0.0001, 0.0001, 0.5));
     panel_robot.add(FOLLOW_MODE.set("Follow Mode", 1, 1, 3));
-    panel_robot.add(robot1.robotArmParams);
+    panel_robot.add(robot.robotArmParams);
     // panel_robot.add(robot2.robotArmParams);
 
 
     panel_joints.setup("Joints");
-    panel_joints.add(robot1.joints);
+    panel_joints.add(robot.joints);
     // panel_joints.add(robot2.joints);
-    panel_joints.setPosition(panel_robot.getPosition().x, panel_robot.getPosition().y + panel_robot.getHeight() + 5);
+    panel_joints.setPosition(panel_robot.getPosition().x+panel_robot.getWidth(), panel_robot.getPosition().y);
     
     ofSetCircleResolution(60);
 }
@@ -370,8 +361,8 @@ void ofApp::keypressed_robot(int key){
             break;
         case 'm':
         case 'M':
-            robot1.toggleLive();
-            robot2.toggleLive();
+            robot.toggleLive();
+//            robot2.toggleLive();
             break;
         case OF_KEY_LEFT:
             break;
@@ -437,22 +428,23 @@ void ofApp::keypressed_gizmo(int key){
             mat.setRotate(initialRot);
             break;
         case OF_KEY_RETURN:
-            tcp.setGlobalPosition(robot1.desiredModel.getForwardPose().getPosition());
+            tcp.setGlobalPosition(robot.desiredModel.getForwardPose().getPosition());
             mat.setTranslation(tcp.getPosition());
             tcp_target.setMatrix(mat);
             break;
         case ' ':
-            tcp.setGlobalPosition(robot1.actualModel.getForwardPose().getPosition());
+            tcp.setGlobalPosition(robot.actualModel.getForwardPose().getPosition());
             mat.setTranslation(tcp.getPosition());
+            mat.setRotate(initialRot);
             tcp_target.setMatrix(mat);
             break;
         case '!':
-            tcp.setGlobalPosition(robot1.getForwardNode().getPosition()*1000+ofVec3f(0, 0, 200));
+            tcp.setGlobalPosition(robot.getForwardNode().getPosition()*1000+ofVec3f(0, 0, 200));
             mat.setTranslation(tcp.getPosition());
             tcp_target.setMatrix(mat);
             break;
         case '@':
-            tcp.setGlobalPosition(robot1.getForwardNode().getPosition()*1000+ofVec3f(100, 0, 100));
+            tcp.setGlobalPosition(robot.getForwardNode().getPosition()*1000+ofVec3f(100, 0, 100));
             mat.setTranslation(tcp.getPosition());
             tcp_target.setMatrix(mat);
             break;
@@ -467,7 +459,7 @@ void ofApp::keypressed_gizmo(int key){
             tcp_target.setMatrix(mat);
             break;
         case '%':
-            tcp.setGlobalPosition(robot1.getForwardNode().getPosition()*1000+ofVec3f(100, 0, 0));
+            tcp.setGlobalPosition(robot.getForwardNode().getPosition()*1000+ofVec3f(100, 0, 0));
             mat.setTranslation(tcp.getPosition());
             tcp_target.setMatrix(mat);
             break;

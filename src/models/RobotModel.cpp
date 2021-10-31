@@ -19,7 +19,9 @@ RobotModel::~RobotModel()
 
 void RobotModel::setup(string path, RobotType type)
 {
-    loadURDF(path, type);
+    this->type = type;
+    loadURDF(path);
+//    parseURDF(path);
 }
 
 ofNode RobotModel::getForwardPose(){
@@ -31,9 +33,12 @@ ofNode RobotModel::getTCPNode(){
 }
 
 
-void RobotModel::loadURDF(string path, RobotType type)
+void RobotModel::parseURDF(string path){
+
+}
+
+void RobotModel::loadURDF(string path)
 {
-    this->type = type;
     ofxXmlSettings xml;
     if (xml.load(ofToDataPath(path)))
     {
@@ -67,39 +72,42 @@ void RobotModel::loadURDF(string path, RobotType type)
         
         for (int i = 0; i < numJoints; i++)
         {
-            string type  = xml.getAttribute("joint", "type", "revolute");
-            string name  = xml.getAttribute("joint", "name", "");
+            string type  = xml.getAttribute("joint", "type", "revolute", i);
+            string name  = xml.getAttribute("joint", "name", "", i);
             
-            if(xml.pushTag("joint", i)){
-                string xyz = xml.getAttribute("origin", "xyz", "0.0 0.0 0.0", 0);
-                string rot = xml.getAttribute("origin", "rpy", "0.0 0.0 0.0", 0);
-                jointMin[i] = xml.getAttribute("limit", "lower", -TWO_PI, 0);
-                jointMax[i] = xml.getAttribute("limit", "upper", TWO_PI, 0);
-                string axis = xml.getAttribute("axis", "xyz", "0.0 0.0 0.0", 0);
-                
-                Pose p;
-                p.name = name;
-                p.type = type;
-                vector<string> pos = ofSplitString(xyz, " ");
-                p.position = ofVec3f(ofToFloat(pos[0]), ofToFloat(pos[1]), ofToFloat(pos[2]));
-                vector<string> ax = ofSplitString(axis, " ");
-                p.axis = ofVec3f(ofToFloat(ax[0]), ofToFloat(ax[1]), ofToFloat(ax[2]));
-                vector<string> ro = ofSplitString(rot, " ");
-                p.rotOffset = ofVec3f(ofToFloat(ro[0]), ofToFloat(ro[1]), ofToFloat(ro[2]));
-                ofLog()<<"ROT OFFSET"<<p.rotOffset<<endl;
-                p.rotation = 0;
-                p.orientation.makeRotate(ofRadToDeg(ofToFloat(ro[0])), ofVec3f(1, 0, 0),
-                                         ofRadToDeg(ofToFloat(ro[1])), ofVec3f(0, 1, 0),
-                                         ofRadToDeg(ofToFloat(ro[2])), ofVec3f(0, 0, 1));
-                pose[i] = p;
-                xml.popTag();
-                
-                if(i > 0){
-                    pose[i].offset = pose[i].position - pose[i-1].position;
-                    nodes[i].setParent(nodes[i-1]);
+            if(ofIsStringInString(type, "revolute")){
+                if(xml.pushTag("joint", i)){
+             
+                    string xyz = xml.getAttribute("origin", "xyz", "0.0 0.0 0.0", 0);
+                    string rot = xml.getAttribute("origin", "rpy", "0.0 0.0 0.0", 0);
+                    jointMin[i] = xml.getAttribute("limit", "lower", -TWO_PI, 0);
+                    jointMax[i] = xml.getAttribute("limit", "upper", TWO_PI, 0);
+                    string axis = xml.getAttribute("axis", "xyz", "0 0 0", 0);
+                    
+                    Pose p;
+                    p.name = name;
+                    p.type = type;
+                    vector<string> pos = ofSplitString(xyz, " ");
+                    p.position = ofVec3f(ofToFloat(pos[0]), ofToFloat(pos[1]), ofToFloat(pos[2]));
+                    vector<string> ax = ofSplitString(axis, " ");
+                    p.axis = ofVec3f(ofToFloat(ax[0]), ofToFloat(ax[1]), ofToFloat(ax[2]));
+                    vector<string> ro = ofSplitString(rot, " ");
+                    p.rotOffset = ofVec3f(ofToFloat(ro[0]), ofToFloat(ro[1]), ofToFloat(ro[2]));
+                    p.rotation = 0;
+                    p.orientation.makeRotate(ofRadToDeg(ofToFloat(ro[0])), ofVec3f(1, 0, 0),
+                                             ofRadToDeg(ofToFloat(ro[1])), ofVec3f(0, 1, 0),
+                                             ofRadToDeg(ofToFloat(ro[2])), ofVec3f(0, 0, 1));
+                    pose[i] = p;
+             
+                    xml.popTag();
+                    
+                    if(i > 0){
+                        pose[i].offset = pose[i].position - pose[i-1].position;
+                        nodes[i].setParent(nodes[i-1]);
+                    }
+                    nodes[i].setPosition(pose[i].position * 1000);
+                    nodes[i].setOrientation(pose[i].orientation);
                 }
-                nodes[i].setPosition(pose[i].position * 1000);
-                nodes[i].setOrientation(pose[i].orientation);
             }
         }
         toolNode.setParent(nodes[nodes.size()-1]);        
@@ -115,11 +123,17 @@ void RobotModel::loadURDF(string path, RobotType type)
         {
             if (xml.pushTag("link", i))
             {
-                
+                if(xml.pushTag("inertial"))
+                {
+                    
+                    string xyz = xml.getAttribute("origin", "xyz", "0.0 0.0 0.0", 0);
+                    vector<string> pos = ofSplitString(xyz, " ");
+                    pose[i].link_offset = ofVec3f(ofToFloat(pos[0]), ofToFloat(pos[1]), ofToFloat(pos[2]));
+                    xml.popTag();
+                }
                 if (xml.pushTag("visual"))
                 {
                     if (xml.pushTag("geometry"))
-                        ;
                     {
                         string path = ofToDataPath(xml.getAttribute("mesh", "filename", "", 0), true);
                         if (path != "")
@@ -173,8 +187,7 @@ void RobotModel::setForwardPose(ofNode pose)
 void RobotModel::setTCPPose(Pose pose)
 {
     tool = pose;
-    ofMatrix4x4 mat;
-    mat.makeRotationMatrix(toolNode.getGlobalOrientation());
+    ofMatrix4x4 mat = toolNode.getLocalTransformMatrix();
     ofVec3f pos = toolNode.getPosition() / 1000.0;
     tool.position = tool.position - pos * mat;
     tcpNode.setPosition(tool.position * 1000);
@@ -265,7 +278,7 @@ void RobotModel::drawSkeleton()
                     {
                         ofMultMatrix(joint.getGlobalTransformMatrix());
                         ofMatrix4x4 mat;
-                        mat.makeRotationMatrix(-pose[i].rotation, pose[i].axis);
+                        mat.makeRotationMatrix(pose[i].rotation, pose[i].axis);
                         ofMultMatrix(mat);
                         ofScale(70, 70, 70);
                         ofSetLineWidth(3);
@@ -286,7 +299,7 @@ void RobotModel::drawSkeleton()
                     {
                         ofMultMatrix(joint.getGlobalTransformMatrix());
                         ofMatrix4x4 mat;
-                        mat.makeRotationMatrix(-pose[i].rotation, pose[i].axis);
+                        mat.makeRotationMatrix(pose[i].rotation, pose[i].axis);
                         ofMultMatrix(mat);
                         ofScale(70, 70, 70);
                         ofSetLineWidth(3);
@@ -400,7 +413,7 @@ void RobotModel::drawMesh(ofColor color, bool bDrawDebug)
                 {
                     ofPushMatrix();
                     {
-                        ofMultMatrix(nodes[i - 1].getGlobalTransformMatrix());
+                        ofMultMatrix(nodes[i-1].getGlobalTransformMatrix());
                         ofScale(1000, 1000, 1000);
                         ofSetColor(face);
                         mesh.drawFaces();

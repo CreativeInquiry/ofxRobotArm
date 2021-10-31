@@ -10,6 +10,7 @@
 namespace ofxRobotArm {
     struct Pose{
         ofVec3f offset;
+        ofVec3f link_offset;
         ofVec3f rotOffset;
         ofVec3f axis;
         ofVec3f position;

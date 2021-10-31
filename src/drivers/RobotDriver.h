@@ -33,6 +33,7 @@ namespace ofxRobotArm
         virtual void toggleTeachMode() = 0;
         virtual void setTeachMode(bool enabled) = 0;
         virtual void threadedFunction() = 0;
+        virtual vector<double> getInitPose() = 0;
 
         vector<double> getAchievablePosition(vector<double> position)
         {
@@ -183,10 +184,6 @@ namespace ofxRobotArm
             bStop = false;
             unlock();
         }
-
-        
-        
-        virtual vector<double> getInitPose() = 0;
         // Robot Arm
 
         bool bTeachModeEnabled;

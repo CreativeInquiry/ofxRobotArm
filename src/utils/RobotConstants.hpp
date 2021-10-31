@@ -14,6 +14,7 @@ namespace ofxRobotArm{
         UR10,
         IRB120,
         XARM7,
+        PANDA
     };
     enum IKType{
         SW,

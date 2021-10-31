@@ -64,6 +64,7 @@ URDriver::~URDriver(){
 
 vector<double> URDriver::getInitPose(){
     vector<double> foo;
+
     foo.assign(6, 0.001);
     foo[0] = 3.14;
     foo[1] = 0.01;

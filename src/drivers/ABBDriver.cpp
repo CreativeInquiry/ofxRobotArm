@@ -267,12 +267,9 @@ void ABBDriver::threadedFunction(){
                             timeNow = ofGetElapsedTimef();
                             if( bMove || timeNow-lastTimeSentMove >= 1.0/60.0){
                                 currentPose = getAchievablePosition(currentPose);
-                                output.mutable_robot()->mutable_joints()->mutable_position()->set_values(0, currentPose[0]);
-                                output.mutable_robot()->mutable_joints()->mutable_position()->set_values(1, currentPose[1]);
-                                output.mutable_robot()->mutable_joints()->mutable_position()->set_values(2, currentPose[2]);
-                                output.mutable_robot()->mutable_joints()->mutable_position()->set_values(3, currentPose[3]);
-                                output.mutable_robot()->mutable_joints()->mutable_position()->set_values(4, currentPose[4]);
-                                output.mutable_robot()->mutable_joints()->mutable_position()->set_values(5, currentPose[5]);
+                                for(int i = 0 ; i < currentPose.size(); i++){
+                                    output.mutable_robot()->mutable_joints()->mutable_position()->set_values(i, currentPose[i]);
+                                }
                                 if(!bMove){
                                     deccelCount--;
                                     if( deccelCount < 0){

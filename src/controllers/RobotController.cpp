@@ -37,6 +37,9 @@ void RobotController::createRobot(RobotType type)
     {
         robot = new XARMDriver(type);
     }
+    else if(type == PANDA){
+        robot = new PandaDriver();
+    }
 }
 
 void RobotController::createModels(string urdfpath)
@@ -103,8 +106,8 @@ void RobotController::setupParams()
     joints.add(tcpPosition.set("Actual Robot TCP POS", ofVec3f(0, 0, 0), ofVec3f(-1, -1, -1), ofVec3f(1, 1, 1)));
     joints.add(tcpOrientation.set("Actual Robot TCP ORIENT", ofVec4f(0, 0, 0, 1), ofVec4f(-1, -1, -1, -1), ofVec4f(1, 1, 1, 1)));
     joints.add(calcTCPOrientation.set("Relaxed Robot TCP ORIENT", ofVec4f(0, 0, 0, 1), ofVec4f(-1, -1, -1, -1), ofVec4f(1, 1, 1, 1)));
-    forwardTCPOrientation.set("Forward TCP ORIENT", ofVec4f(0, 0, 0, 1), ofVec4f(-1, -1, -1, -1), ofVec4f(1, 1, 1, 1));
-    forwardTCPPosition.set("Forward TCP Pos", ofVec3f(0, 0, 0), ofVec3f(-1, -1, -1), ofVec3f(1, 1, 1));
+    joints.add(forwardTCPOrientation.set("Forward TCP ORIENT", ofVec4f(0, 0, 0, 1), ofVec4f(-1, -1, -1, -1), ofVec4f(1, 1, 1, 1)));
+    joints.add(forwardTCPPosition.set("Forward TCP Pos", ofVec3f(0, 0, 0), ofVec3f(-1, -1, -1), ofVec3f(1, 1, 1)));
 }
 
 void RobotController::setNthJoint(double pose)
@@ -131,7 +134,7 @@ void RobotController::initKinematics(ofxRobotArm::IKType ikType)
         robotArmParams.add(smooth);
         smoothedWeights.push_back(smooth);
     }
-    inverseKinematics.setup(robotType, ikType, pose);
+    inverseKinematics.setup(robotType, ikType, pose, &actualModel);
     ofMatrix4x4 forwardIK = inverseKinematics.forwardKinematics(pose);
     forwardNode.setGlobalPosition(forwardIK.getTranslation());
     forwardNode.setGlobalOrientation(forwardIK.getRotate());
@@ -212,13 +215,13 @@ void RobotController::setTeachMode(bool teachMode)
 void RobotController::updateIK(Pose pose)
 {
 
-    ofQuaternion rot = initPose.orientation * pose.orientation;
-    calcTCPOrientation = ofVec4f(rot.x(), rot.y(), rot.z(), rot.w());
-    
     targetPoses = inverseKinematics.inverseKinematics(pose, initPose);
     if(targetPoses.size() > 0){
         targetPose = targetPoses[0];
     }
+    
+    ofQuaternion rot = initPose.orientation * pose.orientation;
+    calcTCPOrientation = ofVec4f(rot.x(), rot.y(), rot.z(), rot.w());
 
     int i = 0;
     for (auto p : targetPose)
@@ -244,6 +247,7 @@ void RobotController::update()
     updateRobotData();
     updateIK(desiredModel.getModifiedTCPPose());
     updateMovement();
+    
 }
 
 void RobotController::update(vector<double> _pose)
@@ -269,6 +273,7 @@ void RobotController::updateRobotData()
     // pass the current joints from the robot to the kinematic solver
 
     currentPose = getCurrentPose();
+
     if(currentPose.size() > 0){
         actualModel.setPose(currentPose);
 
@@ -278,6 +283,9 @@ void RobotController::updateRobotData()
         forwardNode.setGlobalOrientation(forwardIK.getRotate());
         forwardPose.position = translation;
         forwardPose.orientation = forwardIK.getRotate();
+        
+        forwardTCPPosition = forwardIK.getTranslation()*1000;
+        forwardTCPOrientation = forwardIK.getRotate().asVec4();
 
         actualModel.setForwardPose(forwardNode);
 
@@ -285,9 +293,8 @@ void RobotController::updateRobotData()
         tcpPosition = actualTCP.position;
         actualModel.setTCPPose(actualTCP);
 
-        ofQuaternion tcpO = actualTCP.orientation;
-        tcpOrientation = ofVec4f(tcpO.x(), tcpO.y(), tcpO.z(), tcpO.w());
-        // update GUI params
+        tcpOrientation = actualTCP.orientation.asVec4();
+
         int i = 0;
         for (auto p : pCurrentPose)
         {
@@ -364,7 +371,7 @@ void RobotController::setDesired(ofNode target)
 
 ofNode RobotController::getTCPNode()
 {
-    return actualModel.getForwardPose();
+    return actualModel.getTool();
 }
 
 ofNode RobotController::getForwardNode(){

@@ -47,7 +47,7 @@ InverseKinematics::~InverseKinematics()
 {
 }
 
-void InverseKinematics::setup(ofxRobotArm::RobotType robotType, ofxRobotArm::IKType ikType, vector<double> pose)
+void InverseKinematics::setup(ofxRobotArm::RobotType robotType, ofxRobotArm::IKType ikType, vector<double> pose, RobotModel * model)
 {
     params.setName("IKArm Commands");
     params.add(bControlIkWithMouse.set("ControlIkWithMouse", false));
@@ -62,11 +62,49 @@ void InverseKinematics::setup(ofxRobotArm::RobotType robotType, ofxRobotArm::IKT
     params.add(mIKRampStartPct.set("IKRampStartPct", 0.3, 0.0, 1.0));
     params.add(mIKRampEndPct.set("IKRampEndPct", 1.5, 1.0, 2.0));
     params.add(mIKRampHeightPct.set("IKRampHeightPct", 0.3, 0.0, 1.0));
+
+    
+    offsets.assign(model->nodes.size(), 0);
+    sign_corrections.assign(model->nodes.size(), 1);
+    joint_limit_max.resize(model->nodes.size());
+    joint_limit_min.resize(model->nodes.size());
+    for(int i = 0 ; i < joint_limit_max.size(); i++){
+        joint_limit_max[i] = model->jointMax[i];
+        joint_limit_min[i] = model->jointMin[i];
+    }
+    computeDH(model);
+    
+    
     setRobotType(robotType);
     setIKType(ikType);
     setRelaxedPose(pose);
     initPose = pose;
+    
 }
+
+void InverseKinematics::computeDH(RobotModel * model){
+    if(model->type == UR3 || model->type == UR5 || model->type == UR10){
+        d1 = model->nodes[0].getZ() - model->nodes[1].getZ();
+        d1 /= 1000;
+        ofLog()<<"d1 "<<d1<<endl;
+        a2 = -1*(model->nodes[2].getZ() - model->nodes[1].getZ());
+        a2 /= 1000;
+        ofLog()<<"a2 "<<a2<<endl;
+        a3 = -1*(model->nodes[3].getZ() - model->nodes[4].getZ());
+        a3 /= 1000;
+        ofLog()<<"a3 "<<a3<<endl;
+        d4 = model->nodes[3].getY()-model->nodes[2].getY();
+        d4 /= 1000;
+        ofLog()<<"d4 "<<d4<<endl;
+        d5 = model->nodes[5].getZ()-model->nodes[4].getZ();
+        d5 /= 1000;
+        ofLog()<<"d5 "<<d5<<endl;
+        d6 = model->nodes[6].getY()-model->nodes[5].getY();
+        d6 /= 1000;
+        ofLog()<<"d6 "<<d6<<endl;
+    }
+}
+
 
 void InverseKinematics::setIKType(ofxRobotArm::IKType type){
     ikType = type;
@@ -77,10 +115,7 @@ void InverseKinematics::setRobotType(ofxRobotArm::RobotType type)
 {
     robotType = type;
 
-    offsets.assign(6, 0);
-    sign_corrections.assign(6, 1);
-    joint_limit_min.assign(6, 0);
-    joint_limit_max.assign(6, 0);
+
     if (robotType == UR3)
     {
         d1 = 0.1519;
@@ -89,22 +124,6 @@ void InverseKinematics::setRobotType(ofxRobotArm::RobotType type)
         d4 = 0.11235;
         d5 = 0.08535;
         d6 = 0.0819;
-
-//        offsets[0] = PI;
-
-        joint_limit_min[0] = -360;
-        joint_limit_min[1] = -360;
-        joint_limit_min[2] = -360;
-        joint_limit_min[3] = -360;
-        joint_limit_min[4] = -360;
-        joint_limit_min[5] = -360;
-
-        joint_limit_max[0] = 360;
-        joint_limit_max[1] = 360;
-        joint_limit_max[2] = 360;
-        joint_limit_max[3] = 360;
-        joint_limit_max[4] = 360;
-        joint_limit_max[5] = 360;
     }
     else if (robotType == UR5)
     {
@@ -114,23 +133,6 @@ void InverseKinematics::setRobotType(ofxRobotArm::RobotType type)
         d4 = 0.10915;
         d5 = 0.09465;
         d6 = 0.0823;
-
-//        offsets[0] = PI;
-//        sign_corrections[0] = -1;
-
-        joint_limit_min[0] = -360;
-        joint_limit_min[1] = -360;
-        joint_limit_min[2] = -360;
-        joint_limit_min[3] = -360;
-        joint_limit_min[4] = -360;
-        joint_limit_min[5] = -360;
-
-        joint_limit_max[0] = 360;
-        joint_limit_max[1] = 360;
-        joint_limit_max[2] = 360;
-        joint_limit_max[3] = 360;
-        joint_limit_max[4] = 360;
-        joint_limit_max[5] = 360;
     }
     else if (robotType == UR10)
     {
@@ -140,22 +142,6 @@ void InverseKinematics::setRobotType(ofxRobotArm::RobotType type)
         d4 = 0.163941;
         d5 = 0.1157;
         d6 = 0.0922;
-
-//        offsets[0] = PI;
-
-        joint_limit_min[0] = -360;
-        joint_limit_min[1] = -360;
-        joint_limit_min[2] = -360;
-        joint_limit_min[3] = -360;
-        joint_limit_min[4] = -360;
-        joint_limit_min[5] = -360;
-
-        joint_limit_max[0] = 360;
-        joint_limit_max[1] = 360;
-        joint_limit_max[2] = 360;
-        joint_limit_max[3] = 360;
-        joint_limit_max[4] = 360;
-        joint_limit_max[5] = 360;
     }
     else if (robotType == IRB120)
     {
@@ -175,20 +161,6 @@ void InverseKinematics::setRobotType(ofxRobotArm::RobotType type)
         c4 = 0.072;
 
         offsets[2] = -PI / 2;
-
-        joint_limit_min[0] = -165;
-        joint_limit_min[1] = -110;
-        joint_limit_min[2] = -90;
-        joint_limit_min[3] = -160;
-        joint_limit_min[4] = -120;
-        joint_limit_min[5] = -400;
-
-        joint_limit_max[0] = 165;
-        joint_limit_max[1] = 110;
-        joint_limit_max[2] = 70;
-        joint_limit_max[3] = 160;
-        joint_limit_max[4] = 120;
-        joint_limit_max[5] = 400;
     }
     vector<double> pose(6.0, 0);
 }

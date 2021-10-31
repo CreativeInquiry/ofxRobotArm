@@ -16,6 +16,7 @@
 #include "Pose.h"
 #include "RobotConstants.hpp"
 #include "URDFModel.h"
+#include "URDFParser.h"
 
 namespace ofxRobotArm
 {
@@ -31,7 +32,8 @@ namespace ofxRobotArm
         void setOrigin(ofNode node);
         void setOrigin(ofVec3f pos, ofQuaternion orientation);
   
-        void loadURDF(string path, RobotType type);
+        void parseURDF(string path);
+        void loadURDF(string path);
         void loadModel(string path);
 
         void drawSkeleton();
@@ -71,5 +73,7 @@ namespace ofxRobotArm
         ofNode tcpNode;
         ofNode toolNode;
         vector<ofNode> nodes;
+        UrdfParser parser;
+        UrdfModel urdf;
     };
 }
