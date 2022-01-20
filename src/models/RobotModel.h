@@ -64,7 +64,7 @@ namespace ofxRobotArm
         vector<double> jointMin;
         vector<double> jointMax;
         Pose tool;
-
+        
 
         ofNode originNode;
         Pose dtoolPoint;

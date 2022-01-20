@@ -132,6 +132,7 @@ namespace ofxRobotArm {
         ofParameter<bool> bHome;
 
         std::string ipAddress;
+        int port;
         Pose actualTCP;
         Pose targetTCP;
 

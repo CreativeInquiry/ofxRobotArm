@@ -60,7 +60,7 @@ void RobotController::connectRobot(bool offline)
         }
         else if (robotType == IRB120)
         {
-            robot->setup(ipAddress, 0, 1);
+            robot->setup(5556, 0, 1);
         }
         else if (robotType == XARM7)
         {
@@ -181,8 +181,8 @@ void RobotController::setEndEffector(string filename)
 
 void RobotController::setToolOffset(ofVec3f local)
 {
-    desiredModel.setToolOffset(local);
-    actualModel.setToolOffset(local);
+    desiredModel.setToolOffset(local/1000);
+    actualModel.setToolOffset(local/1000);
 }
 
 void RobotController::start()
@@ -394,7 +394,7 @@ void RobotController::draw(ofColor color, bool debug)
     {
         actualModel.drawMesh(color, debug);
         actualModel.draw(color, debug);
-        actualModel.drawSkeleton();
+//        actualModel.drawSkeleton();
     }
     ofPopMatrix();
 }
@@ -407,7 +407,7 @@ void RobotController::drawDesired(ofColor color)
     {
         desiredModel.drawMesh(color, false);
         desiredModel.draw(color, false);
-        desiredModel.drawSkeleton();
+//        desiredModel.drawSkeleton();
     }
     ofPopMatrix();
 

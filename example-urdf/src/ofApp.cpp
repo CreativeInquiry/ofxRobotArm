@@ -4,9 +4,10 @@ using namespace ofxRobotArm;
 //--------------------------------------------------------------
 void ofApp::setup(){
     ofSetFrameRate(120);
+    ofBackground(0, 0, 0);
     // setup scene
     setup_scene();
-    robot.setup("192.168.0.1", (string)"relaxed_ik_core/config/urdfs/ur5.urdf", ofxRobotArm::UR5, ofxRobotArm::RELAXED, true);
+    robot.setup("192.168.125.1", (string)"relaxed_ik_core/config/urdfs/irb120.urdf", ofxRobotArm::IRB120, ofxRobotArm::RELAXED, true);
     robot.setToolOffset(offset);
 
     // setup gui
@@ -97,7 +98,7 @@ void ofApp::update(){
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-    ofBackground(20);
+//    ofBackground(20);
     
     // Draw 3D Scene
     draw_scene();
@@ -134,10 +135,10 @@ void ofApp::draw_scene(){
     // // Draw Desired Robot 2
 //    robot2.drawDesired(ofColor::whiteSmoke);
 
-    ofPushStyle();
-    ofSetColor(ofColor::aqua);
-    line.draw();
-    ofPopStyle();
+//    ofPushStyle();
+//    ofSetColor(ofColor::aqua);
+//    line.draw();
+//    ofPopStyle();
     
     look_target.draw(cam);
     tcp_target.draw(cam);
@@ -428,12 +429,12 @@ void ofApp::keypressed_gizmo(int key){
             mat.setRotate(initialRot);
             break;
         case OF_KEY_RETURN:
-            tcp.setGlobalPosition(robot.desiredModel.getForwardPose().getPosition());
+            tcp.setGlobalPosition(robot.desiredModel.getForwardPose().getPosition()*1000);
             mat.setTranslation(tcp.getPosition());
             tcp_target.setMatrix(mat);
             break;
         case ' ':
-            tcp.setGlobalPosition(robot.actualModel.getForwardPose().getPosition());
+            tcp.setGlobalPosition(robot.actualModel.getForwardPose().getPosition()*1000);
             mat.setTranslation(tcp.getPosition());
             mat.setRotate(initialRot);
             tcp_target.setMatrix(mat);

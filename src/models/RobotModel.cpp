@@ -75,7 +75,7 @@ void RobotModel::loadURDF(string path)
             string type  = xml.getAttribute("joint", "type", "revolute", i);
             string name  = xml.getAttribute("joint", "name", "", i);
             
-            if(ofIsStringInString(type, "revolute")){
+//            if(ofIsStringInString(type, "revolute")){
                 if(xml.pushTag("joint", i)){
              
                     string xyz = xml.getAttribute("origin", "xyz", "0.0 0.0 0.0", 0);
@@ -109,7 +109,7 @@ void RobotModel::loadURDF(string path)
                     nodes[i].setOrientation(pose[i].orientation);
                 }
             }
-        }
+//        }
         toolNode.setParent(nodes[nodes.size()-1]);        
         originNode.setPosition(ofVec3f(0, 0, 0));
 
@@ -188,9 +188,9 @@ void RobotModel::setTCPPose(Pose pose)
 {
     tool = pose;
     ofMatrix4x4 mat = toolNode.getLocalTransformMatrix();
-    ofVec3f pos = toolNode.getPosition() / 1000.0;
+    ofVec3f pos = toolNode.getPosition();
     tool.position = tool.position - pos * mat;
-    tcpNode.setPosition(tool.position * 1000);
+    tcpNode.setPosition(tool.position);
     tcpNode.setOrientation(pose.orientation);
 }
 
@@ -346,9 +346,9 @@ void RobotModel::drawSkeleton()
                 ofDrawBitmapString("pos: " + ofToString(p), p + ofVec3f(0, 0, 40));
             }
             
-            if (i == 5)
+            if (i == nodes.size()-1)
             {
-                ofSetColor(255, 0, 255, 100);
+                ofSetColor(255, 0, 0, 100);
                 toolNode.draw();
                 
                 ofSetColor(colorOne, 100);
