@@ -1,0 +1,33 @@
+MODULE wef(SYSMODULE)
+    !Miscellaneous Variables
+    !Start Position
+    VAR jointtarget startPosition:=[[0,0,0,0,0,0],[9E+09,9E+09,9E+09,9E+09,9E+09,9E+09]];
+    
+    !EGM Variables
+    VAR egmident RobotArm;
+    VAR egmstate state;
+    !Convergence Limits
+    CONST egm_minmax cartesianLimit:=[-1,1]; !Cartesian convergence: +/-1 mm
+    CONST egm_minmax orientationLimit:=[-2,2]; !Orientation convergence: +/-2 degrees
+    CONST egm_minmax jointLimit:=[-0.1,0.1]; !Joint convergence: +/-0.1 degrees
+    !World Object
+    TASK PERS wobjdata RobotArm_WObject:=[FALSE,TRUE,"",[[0,0,0],[1,0,0,0]],[[0,0,0],[1,0,0,0]]];
+    !Correction frame
+    VAR pose correctionFrame:=[[0,0,0],[1,0,0,0]];
+    VAR pose correctionFrameOffs:=[[0,0,0],[1,0,0,0]]; !Offset = 0
+    !Sensor frame
+    VAR pose sensorFrame:=[[0,0,0],[1,0,0,0]];
+    VAR pose sensotrFrameOffs:=[[0,0,0],[1,0,0,0]]; !Offset = 0
+    
+    !World Zone
+    VAR wzstationary RobotArm_WZ;
+    
+    PROC wz_setup()
+        VAR shapedata bounds;
+        CONST pos lowpt:=[-750,-240,250];
+        CONST pos highpt:=[750,240,1500];
+        WZBoxDef\Outside,bounds,lowpt,highpt;
+        WZLimSup\Stat,RobotArm_WZ,bounds;
+        TPWrite "World Zone initialized.";
+    ENDPROC
+ENDMODULE
