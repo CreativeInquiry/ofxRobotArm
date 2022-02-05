@@ -40,9 +40,10 @@ public:
     void setPose(vector<double> pose);
     
     ofxRobotArm::Pose getToolPose();
-    abb::egm::EGMControllerInterface* robot;
-    boost::asio::io_service * io_service;
-    boost::thread_group * thread_group;
+    
+    std::unique_ptr<abb::egm::EGMControllerInterface> robot;
+    boost::asio::io_service io_service;
+    boost::thread_group thread_group; //NOTE
     // Robot Arm
     
     bool wait = true;

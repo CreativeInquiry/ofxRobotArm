@@ -60,7 +60,7 @@ void RobotController::connectRobot(bool offline)
         }
         else if (robotType == IRB120)
         {
-            robot->setup(5556, 0, 1);
+            robot->setup(6510, 0, 1);
         }
         else if (robotType == XARM7)
         {

@@ -14,8 +14,6 @@ ABBDriver::ABBDriver(){
     currentSpeed.assign(numJoints, 0.0);
     acceleration = 0.0;
     robot       = NULL;
-    io_service = NULL;
-    thread_group = NULL;
     bStarted    =false;
 
     
@@ -33,10 +31,8 @@ ABBDriver::ABBDriver(){
 }
 
 ABBDriver::~ABBDriver(){
-    if(robot){
+    if(robot->isInitialized()){
         disconnect();
-        delete robot;
-        robot = NULL;
     }
 }
 
@@ -95,7 +91,7 @@ void ABBDriver::setup(string ipAddress, int port, double minPayload, double maxP
 }
 
 void ABBDriver::setup(int port, double minPayload, double maxPayload){
-    cout << "ABBDriver :: setup : " << port << endl;
+    ofLog(OF_LOG_NOTICE) << "ABBDriver :: setup : " << port << endl;
 
     
     char buf[256];
@@ -124,7 +120,18 @@ void ABBDriver::setup(int port, double minPayload, double maxPayload){
     bStarted = false;
 
     bTriedOnce = false;
+    
+    
+    robot = std::make_unique<abb::egm::EGMControllerInterface>(io_service, port);
 
+    if(!robot->isInitialized())
+    {
+        ofLog(OF_LOG_ERROR)<<"EGM interface failed to initialize (e.g. due to port already bound)"<<endl;
+    }else{
+        ofLog(OF_LOG_NOTICE)<<"EGM interface initialized"<<endl;
+    }
+    
+    thread_group.create_thread(boost::bind(&boost::asio::io_service::run, &io_service));
 }
 void ABBDriver::start(){
     ofLog(OF_LOG_NOTICE)<<"Starting ABBDriver Controller"<<endl;
@@ -146,10 +153,8 @@ bool ABBDriver::isConnected() {
 
 
 void ABBDriver::disconnect(){
-    if( robot != NULL ){
-        robot = NULL;
-        delete robot;
-    }
+    io_service.stop();
+    thread_group.join_all();
 }
 
 bool ABBDriver::isDataReady(){
@@ -236,6 +241,8 @@ void ABBDriver::threadedFunction(){
                         {
                             wait = robot->getStatus().rapid_execution_state() != abb::egm::wrapper::Status_RAPIDExecutionState_RAPID_RUNNING;
                         }
+                    }else{
+                        ofLogError()<<"NOT CONNECTRED"<<endl;
                     }
                 }else{
                     bStarted = true;
