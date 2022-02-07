@@ -49,6 +49,7 @@ public:
     bool wait = true;
     abb::egm::wrapper::Input input;
     abb::egm::wrapper::Joints actualPose;
+    abb::egm::wrapper::Joints initial_positions;
 //    abb::egm::wrapper:: actualPose;
     const int egm_rate = 250.0; // [Hz] (EGM communication rate, specified by the EGMActPose RAPID instruction).
     int sequence_number = 0;    // [-] (sequence number of a received EGM message).

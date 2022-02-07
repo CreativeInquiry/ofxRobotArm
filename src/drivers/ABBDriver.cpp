@@ -121,8 +121,8 @@ void ABBDriver::setup(int port, double minPayload, double maxPayload){
 
     bTriedOnce = false;
     
-    
-    robot = std::make_unique<abb::egm::EGMControllerInterface>(io_service, port);
+    abb::egm::BaseConfiguration configuration;
+    robot = std::make_unique<abb::egm::EGMControllerInterface>(io_service, port, configuration);
 
     if(!robot->isInitialized())
     {
@@ -132,6 +132,7 @@ void ABBDriver::setup(int port, double minPayload, double maxPayload){
     }
     
     thread_group.create_thread(boost::bind(&boost::asio::io_service::run, &io_service));
+    wait = true;
 }
 void ABBDriver::start(){
     ofLog(OF_LOG_NOTICE)<<"Starting ABBDriver Controller"<<endl;
@@ -243,6 +244,7 @@ void ABBDriver::threadedFunction(){
                         }
                     }else{
                         ofLogError()<<"NOT CONNECTRED"<<endl;
+                        abb::egm::wrapper::Status s = robot->getStatus();
                     }
                 }else{
                     bStarted = true;
@@ -257,16 +259,21 @@ void ABBDriver::threadedFunction(){
                 sequence_number = input.header().sequence_number();
                 actualPose.CopyFrom(input.feedback().robot().joints().position());
                 for(int i = 0 ; i < actualPose.values_size(); i++){
-                    poseRaw.getBack()[i] = actualPose.values(i);
+                    poseRaw.getBack()[i] = ofDegToRad(actualPose.values(i));
                 }
                 currentPoseRadian = poseRaw.getBack();
                 poseProcessed.getBack() = poseRaw.getBack();
                 if(sequence_number == 0)
                 {
                     output.Clear();
+                    initial_positions.CopyFrom(input.feedback().robot().joints().position());
+                    output.mutable_robot()->mutable_joints()->mutable_position()->CopyFrom(initial_positions);
+                    
                 }
                 else
                 {
+                    initial_positions.CopyFrom(input.feedback().robot().joints().position());
+                    output.mutable_robot()->mutable_joints()->mutable_position()->CopyFrom(initial_positions);
                     time = sequence_number/((double) egm_rate);
                     if(bMoveWithPos){
                         //if we aren't moving but deccelCount isn't 0 lets deccelerate
@@ -274,8 +281,13 @@ void ABBDriver::threadedFunction(){
                             timeNow = ofGetElapsedTimef();
                             if( bMove || timeNow-lastTimeSentMove >= 1.0/60.0){
                                 currentPose = getAchievablePosition(currentPose);
-                                for(int i = 0 ; i < currentPose.size(); i++){
-                                    output.mutable_robot()->mutable_joints()->mutable_position()->set_values(i, currentPose[i]);
+                                if(output.mutable_robot()->mutable_joints()->mutable_position()->values_size() == currentPose.size())
+                                {
+                                    for(int i = 0 ; i < currentPose.size(); i++){
+                                        output.mutable_robot()->mutable_joints()->mutable_position()->set_values(i, ofRadToDeg(currentPose[i]));
+                                    }
+                                }else{
+                                    ofLog()<<"OUTPUT NOT BIG ENOUGH size "<<output.mutable_robot()->mutable_joints()->mutable_position()->values_size()<<endl;
                                 }
                                 if(!bMove){
                                     deccelCount--;
