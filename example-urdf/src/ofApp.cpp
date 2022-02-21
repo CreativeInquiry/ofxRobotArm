@@ -42,7 +42,7 @@ void ofApp::setup(){
     home.set(300, 0, 555);
     
     for(int i = 0 ; i < 360; i++){
-        line.addVertex(ofVec3f(350, 0, 150)+ofVec3f(((i+1)/360)*15, 0.6*i*sin(ofDegToRad(i)), i*cos(ofDegToRad(i))));
+        line.addVertex(ofVec3f(350, 0, 350)+ofVec3f(0, 150*sin(ofDegToRad(i)), 150*cos(ofDegToRad(i))));
     }
     line.close();
 
@@ -135,10 +135,10 @@ void ofApp::draw_scene(){
     // // Draw Desired Robot 2
 //    robot2.drawDesired(ofColor::whiteSmoke);
 
-//    ofPushStyle();
-//    ofSetColor(ofColor::aqua);
-//    line.draw();
-//    ofPopStyle();
+    ofPushStyle();
+    ofSetColor(ofColor::aqua);
+    line.draw();
+    ofPopStyle();
     
     look_target.draw(cam);
     tcp_target.draw(cam);

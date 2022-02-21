@@ -2,5 +2,14 @@
 loaded_robot:
   name: irb120_info.yaml # please enter the name of the corresponding info file
   link_radius: 0.05 # by default
-  objective_mode: ECA
+  # please select from noECA, ECA, ECA3, and ECAA
+  # noECA: doesn't incorporate environment collision avoidance
+  # ECA (by default): incorporates environment collision avoidance
+  # ECA3: incorporates environment collision avoidance, but only considers end-effector position goal matching,
+  #       and does not try to match the orientation of goals
+  # ECAA: incorporates environment collision avoidance, adaptively adjusts the weight on the orientation
+  #       matching objectives on-the-fly, such that the importance of orientationmatching is reduced
+  #       when the robot is close to a collision state and raised to its standard value
+  #       when the robot is not close to a collision.
+  objective_mode: ECA #
   input_device: keyboard
