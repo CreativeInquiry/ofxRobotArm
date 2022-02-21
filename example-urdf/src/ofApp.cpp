@@ -63,7 +63,7 @@ void ofApp::update(){
     {
         tcp.setPosition(tcp_target.getTranslation());
         ofQuaternion q = tcp_target.getRotation();
-        tcp.setOrientation(q);
+        tcp.setOrientation(q.inverse());
     }
     else if(FOLLOW_MODE == LOOK_AT_TARGET)
     {
@@ -72,7 +72,7 @@ void ofApp::update(){
         mat.makeLookAtMatrix(p, tcp_target.getTranslation(), ofVec3f(0, 1, 0));
 //        mat = mat.getInverse();
         tcp.setPosition(tcp_target.getTranslation());
-        tcp.setOrientation(mat.getRotate());
+        tcp.setOrientation(mat.getInverse().getRotate());
     }
     else if(FOLLOW_MODE == FOLLOW_CIRCLE)
     {
@@ -86,7 +86,7 @@ void ofApp::update(){
         tcp.setPosition(p);
         ofMatrix4x4 mat;
         mat.makeLookAtMatrix(look_target.getTranslation(), p, ofVec3f(0, 1, 0));
-        tcp.setOrientation(mat.getRotate());
+        tcp.setOrientation(mat.getInverse().getRotate());
     }
 
 
