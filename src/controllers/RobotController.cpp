@@ -75,9 +75,6 @@ void RobotController::setupParams()
     robotArmParams.setName("Robot Controls");
     robotArmParams.add(bLive.set("Live", false));
     robotArmParams.add(bTeachMode.set("Enable Teach Mode", false));
-    robotArmParams.add(bUseIKFast.set("Use IKFast", false));
-    robotArmParams.add(bUseRelaxedIK.set("Use RelaxedIK", true));
-    robotArmParams.add(bUseIKArm.set("Use IKArm", false));
     robotArmParams.add(bDoReconnect.set("TryReconnect", false));
     robotArmParams.add(bSmoothPose.set("Smooth Pose", true));
     robotArmParams.add(bOverrideNthJoint.set("Override Nth Joint", false));
@@ -245,7 +242,7 @@ void RobotController::updateIK(Pose pose)
 void RobotController::update()
 {
     updateRobotData();
-    updateIK(desiredModel.getModifiedTCPPose());
+    if(!bSetPoseExternally)updateIK(desiredModel.getModifiedTCPPose());
     updateMovement();
     
 }
@@ -394,7 +391,7 @@ void RobotController::draw(ofColor color, bool debug)
     {
         actualModel.drawMesh(color, debug);
         actualModel.draw(color, debug);
-//        actualModel.drawSkeleton();
+        actualModel.drawSkeleton();
     }
     ofPopMatrix();
 }
@@ -407,7 +404,7 @@ void RobotController::drawDesired(ofColor color)
     {
         desiredModel.drawMesh(color, false);
         desiredModel.draw(color, false);
-//        desiredModel.drawSkeleton();
+        desiredModel.drawSkeleton();
     }
     ofPopMatrix();
 

@@ -125,9 +125,6 @@ namespace ofxRobotArm {
         ofParameter<bool> bCopy;
     
         ofParameter<bool> bDoReconnect;
-        ofParameter<bool> bUseIKFast;
-        ofParameter<bool> bUseRelaxedIK;
-        ofParameter<bool> bUseIKArm;
         ofParameter<bool> bSetPoseExternally;
         ofParameter<bool> bHome;
 

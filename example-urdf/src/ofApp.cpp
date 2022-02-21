@@ -7,7 +7,7 @@ void ofApp::setup(){
     ofBackground(0, 0, 0);
     // setup scene
     setup_scene();
-    robot.setup("192.168.125.201", (string)"relaxed_ik_core/config/urdfs/irb120.urdf", ofxRobotArm::IRB120, ofxRobotArm::RELAXED, false);
+    robot.setup("192.168.125.201", (string)"relaxed_ik_core/config/urdfs/irb120.urdf", ofxRobotArm::IRB120, ofxRobotArm::SW, false);
     robot.setToolOffset(offset);
 
     // setup gui
@@ -42,7 +42,7 @@ void ofApp::setup(){
     home.set(300, 0, 555);
     
     for(int i = 0 ; i < 360; i++){
-        line.addVertex(ofVec3f(350, 0, 350)+ofVec3f(0, 150*sin(ofDegToRad(i)), 150*cos(ofDegToRad(i))));
+        line.addVertex(ofVec3f(500, 0, 200)+ofVec3f(0, 250*sin(ofDegToRad(i)), 250*cos(ofDegToRad(i))));
     }
     line.close();
 
@@ -81,9 +81,12 @@ void ofApp::update(){
         {
             t = 0;
         }
+        
         ofVec3f p = line.getPointAtPercent(t);
         tcp.setPosition(p);
-        tcp.setOrientation(tcp_target.getRotation());
+        ofMatrix4x4 mat;
+        mat.makeLookAtMatrix(look_target.getTranslation(), p, ofVec3f(0, 1, 0));
+        tcp.setOrientation(mat.getRotate());
     }
 
 
@@ -91,9 +94,6 @@ void ofApp::update(){
     robot.setDesired(tcp);
     robot.update();
 
-//    robot2.setToolOffset(offset);
-//    robot2.setDesired(tcp);
-//    robot2.update();
 }
 
 //--------------------------------------------------------------
@@ -125,15 +125,11 @@ void ofApp::draw_scene(){
     cam.begin();
     ofDrawAxis(1500);
     ofDrawGrid(100, 10, false, false, false, true);
-    // Draw Real Robot
-    robot.draw(robot.isLive()?ofColor::green:ofColor::red);
+    
     // Draw Desired Robot
     robot.drawDesired(ofColor::whiteSmoke);
-
-    // Draw Real Robot 2
-//    robot2.draw(robot2.isLive()?ofColor::green:ofColor::red);
-    // // Draw Desired Robot 2
-//    robot2.drawDesired(ofColor::whiteSmoke);
+    // Draw Real Robot
+    robot.draw(robot.isLive()?ofColor(0, 255, 0, 100):ofColor(255, 0, 0, 100));
 
     ofPushStyle();
     ofSetColor(ofColor::aqua);
