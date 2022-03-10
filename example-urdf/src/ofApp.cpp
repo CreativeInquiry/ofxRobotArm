@@ -7,7 +7,7 @@ void ofApp::setup(){
     ofBackground(0, 0, 0);
     // setup scene
     setup_scene();
-    robot.setup("192.168.125.201", (string)"relaxed_ik_core/config/urdfs/irb120.urdf", ofxRobotArm::IRB120, ofxRobotArm::SW, false);
+    robot.setup("192.168.125.201", (string)"relaxed_ik_core/config/urdfs/irb120.urdf", ofxRobotArm::IRB120, ofxRobotArm::RELAXED, false);
     robot.setToolOffset(offset);
 
     // setup gui
@@ -42,7 +42,7 @@ void ofApp::setup(){
     home.set(300, 0, 555);
     
     for(int i = 0 ; i < 360; i++){
-        line.addVertex(ofVec3f(500, 0, 200)+ofVec3f(0, 250*sin(ofDegToRad(i)), 250*cos(ofDegToRad(i))));
+        line.addVertex(ofVec3f(400, 0, 300)+ofVec3f(0, 200*sin(ofDegToRad(i)), 150*cos(ofDegToRad(i))));
     }
     line.close();
 
@@ -63,7 +63,7 @@ void ofApp::update(){
     {
         tcp.setPosition(tcp_target.getTranslation());
         ofQuaternion q = tcp_target.getRotation();
-        tcp.setOrientation(q.inverse());
+        tcp.setOrientation(q);
     }
     else if(FOLLOW_MODE == LOOK_AT_TARGET)
     {
@@ -72,7 +72,7 @@ void ofApp::update(){
         mat.makeLookAtMatrix(p, tcp_target.getTranslation(), ofVec3f(0, 1, 0));
 //        mat = mat.getInverse();
         tcp.setPosition(tcp_target.getTranslation());
-        tcp.setOrientation(mat.getInverse().getRotate());
+        tcp.setOrientation(mat.getRotate());
     }
     else if(FOLLOW_MODE == FOLLOW_CIRCLE)
     {
@@ -86,7 +86,7 @@ void ofApp::update(){
         tcp.setPosition(p);
         ofMatrix4x4 mat;
         mat.makeLookAtMatrix(look_target.getTranslation(), p, ofVec3f(0, 1, 0));
-        tcp.setOrientation(mat.getInverse().getRotate());
+        tcp.setOrientation(mat.getRotate());
     }
 
 
