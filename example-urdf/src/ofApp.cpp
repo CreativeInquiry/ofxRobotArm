@@ -63,7 +63,8 @@ void ofApp::update(){
     {
         tcp.setPosition(tcp_target.getTranslation());
         ofQuaternion q = tcp_target.getRotation();
-        tcp.setOrientation(q);
+        // FOR ofxRobotArm::SW you need to invert this
+        tcp.setOrientation(q);//q.inverse());
     }
     else if(FOLLOW_MODE == LOOK_AT_TARGET)
     {
@@ -124,7 +125,11 @@ void ofApp::setup_scene(){
 void ofApp::draw_scene(){
     cam.begin();
     ofDrawAxis(1500);
-    ofDrawGrid(100, 10, false, false, false, true);
+    ofSetColor(ofColor::dimGrey, 200);
+    ofPushMatrix();
+    ofRotateDeg(90, 0, 1, 0);
+    ofDrawGridPlane(100, 10, false);
+    ofPopMatrix();
     
     // Draw Desired Robot
     robot.drawDesired(ofColor::whiteSmoke);
@@ -132,7 +137,7 @@ void ofApp::draw_scene(){
     robot.drawActual(robot.isLive()?ofColor(0, 255, 0, 100):ofColor(255, 0, 0, 100));
 
     ofPushStyle();
-    ofSetColor(ofColor::aqua);
+    ofSetColor(ofColor::magenta);
     line.draw();
     ofPopStyle();
     
