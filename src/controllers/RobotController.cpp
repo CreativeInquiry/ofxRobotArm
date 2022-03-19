@@ -11,13 +11,14 @@ RobotController::~RobotController()
 {
 }
 
-void RobotController::setup(string ipAddress, string urdfPath, RobotType robotType, IKType ikType, bool offline)
+void RobotController::setup(string ipAddress, int port, string urdfPath, RobotType robotType, IKType ikType, bool offline)
 {
     this->robotType = robotType;
     this->ipAddress = ipAddress;
-
+    this->port = port;
+    
     createRobot(this->robotType);
-    createModels(urdfPath);
+    loadModels(urdfPath);
     connectRobot(offline);
     initKinematics(ikType);
     setupParams();
@@ -42,7 +43,7 @@ void RobotController::createRobot(RobotType type)
     }
 }
 
-void RobotController::createModels(string urdfpath)
+void RobotController::loadModels(string urdfpath)
 {
     desiredModel.setup(urdfpath, robotType);
     actualModel.setup(urdfpath, robotType);

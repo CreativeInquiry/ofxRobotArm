@@ -23,9 +23,9 @@ namespace ofxRobotArm {
         
         /// \brief creates and connects to a new robot using a default IP Address
         /// \params params default parameters for the robot & GUI
-        void setup(string ipAddress, string urdfPath, RobotType robotType, IKType ikType, bool offline);
+        void setup(string ipAddress, int port, string urdfPath, RobotType robotType, IKType ikType, bool offline);
         void createRobot(RobotType type);
-        void createModels(string urdfpath);
+        void loadModels(string urdfpath);
         void connectRobot(bool offline);
         void setupParams();
         

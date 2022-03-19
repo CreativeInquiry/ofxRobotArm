@@ -87,8 +87,6 @@ void ofApp::update(){
     
 
  
-
-
     robot.setToolOffset(offset);
     robot.setDesiredPose(tcp);
     robot.update();
