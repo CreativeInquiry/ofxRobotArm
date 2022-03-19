@@ -38,10 +38,7 @@ public:
     ofxGizmo look_target;
     void keypressed_gizmo(int key);
     
-    
-    int FOLLOW_GIZMO = 1;
-    int LOOK_AT_TARGET = 2;
-    int FOLLOW_CIRCLE = 3;
+
     // Scene
     void setup_scene();
     void update_scene();
@@ -71,10 +68,14 @@ public:
     ofxPanel panel_robot;
     ofxPanel panel_joints;
     
+    
+    
     ofParameter<float> feedSpeed;
     ofParameter<ofVec3f> offset;
     ofParameter<ofVec4f> rot;
     ofParameter<int> FOLLOW_MODE;
+    ofParameter<bool> bDrawCircle;
+    ofParameter<bool> bLookAtTarget;
     void draw_live_robot_warning();
     float minY, maxY;
     

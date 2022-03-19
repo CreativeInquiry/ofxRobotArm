@@ -62,6 +62,7 @@ namespace ofxRobotArm {
         void close();
         vector<double> getCurrentPose();
         bool isLive();
+        bool isConnected();
         void toggleLive();
 
         RobotDriver * robot;

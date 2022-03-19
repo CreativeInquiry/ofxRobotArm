@@ -160,6 +160,11 @@ bool RobotController::isLive()
     return bLive.get();
 }
 
+bool RobotController::isConnected()
+{
+    return robot->isConnected();
+}
+
 void RobotController::setHomePose(vector<double> pose)
 {
     homePose = pose;

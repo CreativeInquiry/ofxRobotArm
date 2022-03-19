@@ -46,8 +46,6 @@ void ofApp::setup(){
     }
     line.close();
 
-    FOLLOW_MODE = FOLLOW_GIZMO;
-    
     
     // start robot
     robot.start();
@@ -58,24 +56,8 @@ void ofApp::update(){
     ofQuaternion q = tcp_target.getRotation();
     rot = ofVec4f(q.x(), q.y(), q.z(), q.w());
     
-
-    if(FOLLOW_MODE == FOLLOW_GIZMO)
-    {
-        tcp.setPosition(tcp_target.getTranslation());
-        ofQuaternion q = tcp_target.getRotation();
-        // FOR ofxRobotArm::SW you need to invert this
-        tcp.setOrientation(q);//q.inverse());
-    }
-    else if(FOLLOW_MODE == LOOK_AT_TARGET)
-    {
-        ofVec3f p = look_target.getTranslation();
-        ofMatrix4x4 mat, mat2;
-        mat.makeLookAtMatrix(p, tcp_target.getTranslation(), ofVec3f(0, 1, 0));
-//        mat = mat.getInverse();
-        tcp.setPosition(tcp_target.getTranslation());
-        tcp.setOrientation(mat.getRotate());
-    }
-    else if(FOLLOW_MODE == FOLLOW_CIRCLE)
+    
+    if(bDrawCircle)
     {
         t+=feedSpeed*1/60;
         if(t>1)
@@ -85,10 +67,26 @@ void ofApp::update(){
         
         ofVec3f p = line.getPointAtPercent(t);
         tcp.setPosition(p);
+    }
+    else
+    {
+        tcp.setPosition(tcp_target.getTranslation());
+    }
+    
+    if(bLookAtTarget)
+    {
+        ofVec3f p = look_target.getTranslation();
         ofMatrix4x4 mat;
-        mat.makeLookAtMatrix(look_target.getTranslation(), p, ofVec3f(0, 1, 0));
+        mat.makeLookAtMatrix(p, tcp.getPosition(), ofVec3f(0, 1, 0));
         tcp.setOrientation(mat.getRotate());
     }
+    else
+    {
+        tcp.setOrientation(tcp_target.getRotation());
+    }
+    
+
+ 
 
 
     robot.setToolOffset(offset);
@@ -134,7 +132,8 @@ void ofApp::draw_scene(){
     // Draw Desired Robot
     robot.drawDesired(ofColor::whiteSmoke);
     // Draw Real Robot
-    robot.drawActual(robot.isLive()?ofColor(0, 255, 0, 100):ofColor(255, 0, 0, 100));
+    if(robot.isConnected())
+        robot.drawActual(robot.isLive()?ofColor(0, 255, 0, 100):ofColor(255, 0, 0, 100));
 
     ofPushStyle();
     ofSetColor(ofColor::magenta);
@@ -190,7 +189,9 @@ void ofApp::setup_gui(){
 
     panel_robot.add(rot.set("TCP ROT", ofVec4f(0, 0, 0, 0)));
     panel_robot.add(feedSpeed.set("Feed Speed", 0.0001, 0.0001, 0.5));
-    panel_robot.add(FOLLOW_MODE.set("Follow Mode", 1, 1, 3));
+    panel_robot.add(FOLLOW_MODE.set("Follow Mode", 1, 1, 2));
+    panel_robot.add(bDrawCircle.set("Draw Circle", false));
+    panel_robot.add(bLookAtTarget.set("Look ar Target", false));
     panel_robot.add(robot.robotArmParams);
     // panel_robot.add(robot2.robotArmParams);
 
@@ -416,13 +417,10 @@ void ofApp::keypressed_gizmo(int key){
     char k = key;
     switch (key) {
         case '1':
-            FOLLOW_MODE = FOLLOW_GIZMO;
+            bDrawCircle = !bDrawCircle;
             break;
         case '2':
-            FOLLOW_MODE = LOOK_AT_TARGET;
-            break;
-        case '3':
-            FOLLOW_MODE = FOLLOW_CIRCLE;
+            bLookAtTarget =!bLookAtTarget;
             break;
         case '4':
             tcp.setOrientation(initialRot);
@@ -431,6 +429,7 @@ void ofApp::keypressed_gizmo(int key){
         case OF_KEY_RETURN:
             tcp.setGlobalPosition(robot.desiredModel.getForwardPose().getPosition()*1000);
             mat.setTranslation(tcp.getPosition());
+            mat.setRotate(initialRot);
             tcp_target.setMatrix(mat);
             break;
         case ' ':
