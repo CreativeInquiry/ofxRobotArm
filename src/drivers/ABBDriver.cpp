@@ -93,27 +93,6 @@ void ABBDriver::setup(string ipAddress, int port, double minPayload, double maxP
 void ABBDriver::setup(int port, double minPayload, double maxPayload){
     ofLog(OF_LOG_NOTICE) << "ABBDriver :: setup : " << port << endl;
 
-    
-    char buf[256];
-//    vector<string> foo = robot->getJointNames();
-    std::string joint_prefix = "ur_";
-    std::vector<std::string> joint_names;
-    joint_prefix = "ABBDriver-";
-    joint_names.push_back(joint_prefix + "joint_1");
-    joint_names.push_back(joint_prefix + "joint_2");
-    joint_names.push_back(joint_prefix + "joint_3");
-    joint_names.push_back(joint_prefix + "joint_4");
-    joint_names.push_back(joint_prefix + "joint_5");
-    joint_names.push_back(joint_prefix + "joint_6");
-
-    //Bounds for SetPayload service
-    //Using a very conservative value as it should be set through the parameter server
-    double min_payload = minPayload;
-    double max_payload = maxPayload;
-    
-    sprintf(buf, "Bounds for set_payload service calls: [%f, %f]",
-            min_payload, max_payload);
-    ofLog(OF_LOG_NOTICE)<<buf;
     poseProcessed.swapBack();
     poseRaw.swapBack();
     toolPoseRaw.swapBack();

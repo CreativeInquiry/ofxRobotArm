@@ -359,7 +359,6 @@ void ofApp::keypressed_robot(int key){
         case 'm':
         case 'M':
             robot.toggleLive();
-//            robot2.toggleLive();
             break;
         case OF_KEY_LEFT:
             break;
@@ -513,7 +512,6 @@ void ofApp::mouseDragged(int x, int y, int button){
 
 //--------------------------------------------------------------
 void ofApp::mousePressed(int x, int y, int button){
-    // Disable the camera if we're interacting with the GUI
     if (disable_camera()){
         cam.disableMouseInput();
     }
@@ -523,7 +521,6 @@ void ofApp::mouseScrolled(int x, int y, float scrollX, float scrollY ){
     if (disable_camera()){
         cam.disableMouseInput();
     }
-    // ofLog(OF_LOG_NOTICE)<<"CAM "<<cam.getPosition()<<" "<<cam.getOrientationQuat()<<endl;
 }
 
 //--------------------------------------------------------------

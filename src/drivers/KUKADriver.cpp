@@ -84,10 +84,6 @@ void KUKADriver::setup(string ipaddress, int port, double minPayload, double max
     memcpy(buffer, ipaddress.c_str(), size + 1);
     robot.startCommunicator(buffer, port);
 
-    //Bounds for SetPayload service
-    //Using a very conservative value as it should be set through the parameter server
-    double min_payload = minPayload;
-    double max_payload = maxPayload;
     
     poseProcessed.swapBack();
     poseRaw.swapBack();
