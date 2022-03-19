@@ -42,7 +42,7 @@ void ofApp::setup(){
     home.set(300, 0, 555);
     
     for(int i = 0 ; i < 360; i++){
-        line.addVertex(ofVec3f(400, 0, 300)+ofVec3f(0, 200*sin(ofDegToRad(i)), 150*cos(ofDegToRad(i))));
+        line.addVertex(ofVec3f(400, 0, 300)+ofVec3f(i/5, 200*sin(ofDegToRad(i)), 150*cos(ofDegToRad(i))));
     }
     line.close();
 
@@ -91,7 +91,7 @@ void ofApp::update(){
 
 
     robot.setToolOffset(offset);
-    robot.setDesired(tcp);
+    robot.setDesiredPose(tcp);
     robot.update();
 
 }
@@ -129,7 +129,7 @@ void ofApp::draw_scene(){
     // Draw Desired Robot
     robot.drawDesired(ofColor::whiteSmoke);
     // Draw Real Robot
-    robot.draw(robot.isLive()?ofColor(0, 255, 0, 100):ofColor(255, 0, 0, 100));
+    robot.drawActual(robot.isLive()?ofColor(0, 255, 0, 100):ofColor(255, 0, 0, 100));
 
     ofPushStyle();
     ofSetColor(ofColor::aqua);

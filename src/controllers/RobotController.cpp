@@ -165,7 +165,7 @@ void RobotController::setHomePose(vector<double> pose)
     homePose = pose;
 }
 
-bool RobotController::arePoseControlledExternally()
+bool RobotController::isPoseControlledExternally()
 {
     return bSetPoseExternally;
 }
@@ -217,7 +217,7 @@ void RobotController::updateIK(Pose pose)
         targetPose = targetPoses[0];
     }
     
-    ofQuaternion rot = initPose.orientation * pose.orientation;
+    ofQuaternion rot = initPose.orientation.inverse() * pose.orientation;
     calcTCPOrientation = ofVec4f(rot.x(), rot.y(), rot.z(), rot.w());
 
     int i = 0;
@@ -357,7 +357,7 @@ void RobotController::updateMovement()
     }
 }
 
-void RobotController::setDesired(ofNode target)
+void RobotController::setDesiredPose(ofNode target)
 {
     // convert from mm to m
     targetTCP.position = (target.getGlobalPosition()) / 1000.0;
@@ -385,13 +385,13 @@ void RobotController::close()
 }
 
 #pragma mark - drawing
-void RobotController::draw(ofColor color, bool debug)
+void RobotController::drawActual(ofColor color, bool debug)
 {
     ofPushMatrix();
     {
         actualModel.drawMesh(color, debug);
         actualModel.draw(color, debug);
-        actualModel.drawSkeleton();
+//        actualModel.drawSkeleton();
     }
     ofPopMatrix();
 }

@@ -51,10 +51,10 @@ namespace ofxRobotArm {
         void update(vector<double> pose);
         void updateIK(Pose pose);
         
-        void setDesired(ofNode target);  
-        void draw(ofColor color = ofColor(255,255,255,255), bool debug = false);
+        void setDesiredPose(ofNode target);
+        void drawActual(ofColor color = ofColor(255,255,255,255), bool debug = false);
         void drawDesired(ofColor color = ofColor(255,255,255,255));
-        bool arePoseControlledExternally();
+        bool isPoseControlledExternally();
         void setToolOffset(ofVec3f local);
         ofNode getTCPNode();
         ofNode getForwardNode();

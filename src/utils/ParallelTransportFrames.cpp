@@ -138,8 +138,8 @@ namespace ofxRobotArm
         {
             ofPushMatrix();
             ofMultMatrix(frames[i]);
-            ofRotate(90, 0, 1, 0);
-            ofCircle(0, 0, axisSize * 2.f);
+            ofRotateDeg(90, 0, 1, 0);
+            ofDrawCircle(0, 0, axisSize * 2.f);
             ofDrawAxis(axisSize);
             ofPopMatrix();
         }
