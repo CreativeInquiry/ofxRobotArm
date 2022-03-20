@@ -11,10 +11,11 @@ void ofApp::setup(){
     
 
     robot.createRobot(ofxRobotArm::IRB120);
-//    robot.loadURDF("relaxed_ik_core/config/urdfs/irb120.urdf");
+    robot.loadURDF("relaxed_ik_core/config/urdfs/irb120.urdf");
     robot.setPoseExternally(true);
     robot.setPort(robot_port);
     robot.setupRobot(false);
+    robot.initKinematics(ofxRobotArm::SW);
     robot.setupParams();
    
     for (int i=0; i<num_dofs; i++)
