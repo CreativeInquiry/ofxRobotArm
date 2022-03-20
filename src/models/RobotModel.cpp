@@ -350,32 +350,6 @@ void RobotModel::drawSkeleton()
             {
                 ofSetColor(255, 0, 0, 100);
                 toolNode.draw();
-                
-                ofSetColor(colorOne, 100);
-                tcpNode.draw();
-                ofVec3f tcp = tcpNode.getGlobalPosition();
-                ofVec3f endJoint = nodes[i].getGlobalPosition();
-                p = tcp - endJoint;
-                dist = p.length();
-                ofSetColor(colorOne, 100);
-                ofDrawLine(endJoint, tcp);
-                ofDrawBitmapString("TCP Desired Pose", tcp + ofVec3f(0, 0, 20));
-                ofDrawBitmapString("dist: " + ofToString(dist), endJoint + p.normalize() * dist / 2 + ofVec3f(0, 0, -40));
-                ofDrawBitmapString("pos:  " + ofToString(tcp), tcp + ofVec3f(0, 0, 80));
-                
-                ofVec3f fwp = forwardPose.getGlobalPosition();
-                p = fwp - endJoint;
-                dist = p.length();
-                ofSetColor(colorTwo, 100);
-                forwardPose.draw();
-                if (fwp.distance(tcp) > 20)
-                {
-                    ofSetColor(colorTwo, 100);
-                    ofDrawLine(endJoint, fwp);
-                    ofDrawBitmapString("Forward Pose", fwp + ofVec3f(0, 0, 20));
-                    ofDrawBitmapString("dist: " + ofToString(dist), endJoint + p.normalize() * dist / 2 + ofVec3f(0, 0, -40));
-                    ofDrawBitmapString("pos:  " + ofToString(fwp), fwp + ofVec3f(0, 0, 80));
-                }
             }
             
             i++;

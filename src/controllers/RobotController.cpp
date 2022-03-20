@@ -14,14 +14,21 @@ RobotController::~RobotController()
 void RobotController::setup(string ipAddress, int port, string urdfPath, RobotType robotType, IKType ikType, bool offline)
 {
     this->robotType = robotType;
-    this->ipAddress = ipAddress;
-    this->port = port;
+    setAddress(ipAddress);
+    setPort(port);
     
     createRobot(this->robotType);
-    loadModels(urdfPath);
+    loadURDF(urdfPath);
     connectRobot(offline);
     initKinematics(ikType);
     setupParams();
+}
+
+void RobotController::setAddress(string ipAddress){
+    this->ipAddress = ipAddress;
+}
+void RobotController::setPort(int port){
+    this->port = port;
 }
 
 void RobotController::createRobot(RobotType type)
@@ -43,13 +50,13 @@ void RobotController::createRobot(RobotType type)
     }
 }
 
-void RobotController::loadModels(string urdfpath)
+void RobotController::loadURDF(string urdfpath)
 {
     desiredModel.setup(urdfpath, robotType);
     actualModel.setup(urdfpath, robotType);
 }
 
-void RobotController::connectRobot(bool offline)
+void RobotController::setupRobot(bool offline)
 {
     if (!offline && robot != nullptr)
     {
@@ -67,6 +74,14 @@ void RobotController::connectRobot(bool offline)
         {
             robot->setup(ipAddress, 0, 1);
         }
+    }
+}
+
+void RobotController::disconnectRobot()
+{
+    if (robot != nullptr)
+    {
+        robot->disconnect();
     }
 }
 
@@ -97,9 +112,6 @@ void RobotController::setupParams()
         pIkPose.push_back(ofParameter<double>());
         jointsIK.add(pIkPose.back().set("ik joint " + ofToString(i), 0, -360, 360));
     }
-
-    pathRecorderParams.setName("Path Recording");
-    pathRecorderParams.add(bRecord.set("Record", false));
 
     joints.add(tcpPosition.set("Actual Robot TCP POS", ofVec3f(0, 0, 0), ofVec3f(-1, -1, -1), ofVec3f(1, 1, 1)));
     joints.add(tcpOrientation.set("Actual Robot TCP ORIENT", ofVec4f(0, 0, 0, 1), ofVec4f(-1, -1, -1, -1), ofVec4f(1, 1, 1, 1)));

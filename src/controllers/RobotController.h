@@ -25,8 +25,12 @@ namespace ofxRobotArm {
         /// \params params default parameters for the robot & GUI
         void setup(string ipAddress, int port, string urdfPath, RobotType robotType, IKType ikType, bool offline);
         void createRobot(RobotType type);
-        void loadModels(string urdfpath);
-        void connectRobot(bool offline);
+        
+        void setAddress(string ipAddress);
+        void setPort(int port);
+        void loadURDF(string urdfpath);
+        void setupRobot(bool offline);
+        void disconnectRobot();
         void setupParams();
         
         void initKinematics(ofxRobotArm::IKType type);
@@ -36,7 +40,7 @@ namespace ofxRobotArm {
         void setHomePose(vector<double> pose);
         void setIKType(ofxRobotArm::IKType ikType);
         
-        void start();
+        void startConnection();
 
         /// \brief creates and connects to a new robot
         /// \params ipAddress ipAddress of the robot
@@ -77,7 +81,6 @@ namespace ofxRobotArm {
         ofNode forwardNode;
     
         ofParameterGroup joints;
-        ofParameterGroup safety;
         ofParameterGroup targetJoints;
         ofParameterGroup jointSpeeds;
         ofParameterGroup jointsIK;
@@ -110,9 +113,6 @@ namespace ofxRobotArm {
         ofParameter<ofVec3f> forwardTCPPosition;
         ofParameter<ofVec3f> tcpPosition;
         ofParameter<ofVec3f> tcpOffset;
-        
-        ofParameter<bool> bRecord;
-        ofParameterGroup pathRecorderParams;
         
         ofParameter<double> followLerp;
         

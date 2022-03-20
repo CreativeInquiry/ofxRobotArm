@@ -2,6 +2,10 @@ ofxAssimpModelLoader
 ofxGui
 ofxYAML
 ofxXmlSettings
-ofxRobotArm
+ofxEasing
+ofxGizmo
+ofxNetwork
+ofxPoco
 ofxSTL
 ofxTiming
+ofxRobotArm

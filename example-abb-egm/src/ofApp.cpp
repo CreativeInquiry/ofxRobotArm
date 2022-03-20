@@ -11,6 +11,10 @@ void ofApp::setup(){
     
 
     robot.createRobot(ofxRobotArm::IRB120);
+    robot.setupRobot(false);
+    robot.loadURDF("relaxed_ik_core/config/urdfs/irb120.urdf");
+    
+   
     for (int i=0; i<num_dofs; i++)
         joint_position_targets.push_back(0.0);
     
@@ -45,7 +49,7 @@ void ofApp::setup_gui(){
     params.add(animate.set("Animate_Joints", false));
     
     params_comms.setName("Communications");
-    params_comms.add(robot_ip_address.set("IP ADDR:", "127.0.0.1"));
+    params_comms.add(robot_port.set("Port:", 6510));
     params_comms.add(robot_status.set("STATUS:", "NOT CONNECTED"));
     params_comms.add(robot_connect.set("Connect", false));
     robot_connect.addListener(this, &ofApp::on_robot_connect);
@@ -115,7 +119,8 @@ void ofApp::on_joint_changed(ofAbstractParameter &e){
 void ofApp::on_robot_connect(bool & val){
     if (val){
         robot_status.set("CONNECTING");
-        robot.connect(robot_ip_address);
+        robot.setPort(robot_port);
+        robot.startConnection();
         if (robot.robot->isConnected())
             robot_status.set("CONNECTED");
         else{
@@ -123,7 +128,7 @@ void ofApp::on_robot_connect(bool & val){
         }
     }
     else{
-        robot.disconnect();
+        robot.disconnectRobot();
         robot_status.set("DISCONNECTED");
     }
 }

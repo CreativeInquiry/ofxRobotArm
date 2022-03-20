@@ -55,7 +55,7 @@ class ofApp : public ofBaseApp{
         void on_get_current_joint_positions(bool & val);
         
         ofParameterGroup params_comms;
-        ofParameter<string> robot_ip_address;
+        ofParameter<int> robot_port;
         ofParameter<string> robot_status;
         ofParameter<bool> robot_connect;
         void on_robot_connect(bool & val);
