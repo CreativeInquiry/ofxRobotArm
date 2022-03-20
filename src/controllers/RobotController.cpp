@@ -19,7 +19,7 @@ void RobotController::setup(string ipAddress, int port, string urdfPath, RobotTy
     
     createRobot(this->robotType);
     loadURDF(urdfPath);
-    connectRobot(offline);
+    setupRobot(offline);
     initKinematics(ikType);
     setupParams();
 }
@@ -33,19 +33,20 @@ void RobotController::setPort(int port){
 
 void RobotController::createRobot(RobotType type)
 {
-    if (type == UR3 || type == UR5 || type == UR10)
+    robotType = type;
+    if (robotType == UR3 || robotType == UR5 || robotType == UR10)
     {
         robot = new URDriver();
     }
-    else if (type == IRB120)
+    else if (robotType == IRB120)
     {
         robot = new ABBDriver();
     }
-    else if (type == XARM7)
+    else if (robotType == XARM7)
     {
         robot = new XARMDriver(type);
     }
-    else if(type == PANDA){
+    else if(robotType == PANDA){
         robot = new PandaDriver();
     }
 }
@@ -163,6 +164,10 @@ void RobotController::setIKType(ofxRobotArm::IKType ikType){
     inverseKinematics.setIKType(ikType);
 }
 
+void RobotController::setPoseExternally(bool externally){
+    bSetPoseExternally = externally;
+}
+
 void RobotController::toggleLive()
 {
     bLive = !bLive;
@@ -200,13 +205,12 @@ void RobotController::setToolOffset(ofVec3f local)
     actualModel.setToolOffset(local/1000);
 }
 
-void RobotController::start()
+void RobotController::startConnection()
 {
     // Start the connection to the actual robot over TCP/IP
     if(robot != nullptr){
         robot->start();
     }
-    
 }
 
 vector<double> RobotController::getCurrentPose()

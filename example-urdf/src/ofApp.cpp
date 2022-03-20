@@ -48,7 +48,7 @@ void ofApp::setup(){
 
     
     // start robot
-    robot.start();
+    robot.startConnection();
 }
 
 //--------------------------------------------------------------

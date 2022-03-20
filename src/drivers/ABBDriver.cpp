@@ -11,6 +11,7 @@
 #include "ABBDriver.h"
 using namespace ofxRobotArm;
 ABBDriver::ABBDriver(){
+    ofLog()<<"ABBDriver"<<endl;
     currentSpeed.assign(numJoints, 0.0);
     acceleration = 0.0;
     robot       = NULL;
@@ -135,6 +136,7 @@ bool ABBDriver::isConnected() {
 void ABBDriver::disconnect(){
     io_service.stop();
     thread_group.join_all();
+    stopThread();
 }
 
 bool ABBDriver::isDataReady(){
