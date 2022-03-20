@@ -56,11 +56,7 @@ public:
     double time = 0.0;          // [seconds] (elapsed time during an EGM communication session).
 
     abb::egm::wrapper::Output output;
-    double position_reference = 0.0;      // [mm].
-    double orientation_reference = 0.0;   // [degrees].
-    double position_amplitude = 100.0;    // [mm].
-    double orientation_amplitude = -10.0; // [degrees].
-    double frequency = 0.25;
+
     double numJoints = 6;
 };
 }
