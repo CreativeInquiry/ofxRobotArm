@@ -69,6 +69,8 @@ namespace ofxRobotArm {
         bool isLive();
         bool isConnected();
         void toggleLive();
+        
+        void setEnableMovement(bool move);
 
         RobotDriver * robot;
         RobotModel desiredModel;

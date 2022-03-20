@@ -33,6 +33,7 @@ class ofApp : public ofBaseApp{
         ofxRobotArm::RobotController robot;
         int num_dofs = 6;
         vector<double> joint_position_targets;
+       
     
         // EGM Values
         //    abb::egm::wrapper::Joints actualPose;
@@ -58,6 +59,8 @@ class ofApp : public ofBaseApp{
         ofParameter<int> robot_port;
         ofParameter<string> robot_status;
         ofParameter<bool> robot_connect;
+        ofParameter<bool> robot_move;
+        void on_move_robot(bool & move);
         void on_robot_connect(bool & val);
         
         ofParameterGroup params_robot;

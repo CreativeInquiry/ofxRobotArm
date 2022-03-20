@@ -55,6 +55,8 @@ void ofApp::setup_gui(){
     params_comms.add(robot_port.set("Port:", 6510));
     params_comms.add(robot_status.set("STATUS:", "NOT CONNECTED"));
     params_comms.add(robot_connect.set("Connect", false));
+    params_comms.add(robot_move.set("Move", false));
+    robot_move.addListener(this, &ofApp::on_move_robot);
     robot_connect.addListener(this, &ofApp::on_robot_connect);
     
     
@@ -97,7 +99,7 @@ void ofApp::on_get_current_joint_positions(bool &val){
         if (robot.robot->isConnected()){
             auto curr_positions = robot.getCurrentPose();
             for (int i=0; i<num_dofs; i++)
-                joint_sliders[i].set(curr_positions[i]);
+                joint_sliders[i].set(ofRadToDeg(curr_positions[i]));
             get_current_joint_positions = false;
         }
         else{
@@ -106,10 +108,14 @@ void ofApp::on_get_current_joint_positions(bool &val){
     }
 }
 
+void ofApp::on_move_robot(bool & move){
+    robot.setEnableMovement(move);
+}
+
 //--------------------------------------------------------------
 void ofApp::on_joint_changed(ofAbstractParameter &e){
     int index = stoi(string(1,e.getName().back()));
-    joint_position_targets[index] = joint_sliders[index].get();
+    joint_position_targets[index] = ofDegToRad(joint_sliders[index].get());
     
     if (robot.robot->isConnected()){
         robot.update(joint_position_targets);

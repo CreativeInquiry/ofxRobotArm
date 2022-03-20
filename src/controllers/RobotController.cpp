@@ -183,6 +183,10 @@ bool RobotController::isConnected()
     return robot->isConnected();
 }
 
+void RobotController::setEnableMovement(bool move){
+    bLive = move;
+}
+
 void RobotController::setHomePose(vector<double> pose)
 {
     homePose = pose;
