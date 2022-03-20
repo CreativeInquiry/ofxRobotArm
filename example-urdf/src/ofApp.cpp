@@ -42,7 +42,7 @@ void ofApp::setup(){
     home.set(300, 0, 555);
     
     for(int i = 0 ; i < 360; i++){
-        line.addVertex(ofVec3f(400, 0, 300)+ofVec3f(i/5, 200*sin(ofDegToRad(i)), 150*cos(ofDegToRad(i))));
+        line.addVertex(ofVec3f(400, 0, 300)+ofVec3f(25*sin(ofDegToRad(i)), 100*sin(ofDegToRad(i)), 150*cos(ofDegToRad(i))));
     }
     line.close();
 
@@ -82,7 +82,8 @@ void ofApp::update(){
     }
     else
     {
-        tcp.setOrientation(tcp_target.getRotation());
+        auto q = tcp_target.getRotation();
+        tcp.setOrientation(q);//glm::inverse(q));
     }
     
 
