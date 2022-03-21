@@ -3,7 +3,7 @@
 #include "ofMain.h"
 #include "ofxGui.h"
 #include "ofxGizmo.h"
-#include "RobotController.h"
+#include "LegacyRobotController.h"
 class ofApp : public ofBaseApp{
     
 public:
@@ -28,7 +28,7 @@ public:
     ofNode lookAtNode;
     ofQuaternion initialRot;
     // Robot
-    ofxRobotArm::RobotController robot;
+    ofxRobotArm::LegacyRobotController robot;
 //    ofxRobotArm::RobotController robot2;
 
     void keypressed_robot(int key);

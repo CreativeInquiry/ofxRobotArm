@@ -16,10 +16,10 @@
 
 namespace ofxRobotArm {
     
-    class RobotController {
+    class LegacyRobotController {
     public:
-        RobotController();
-        ~RobotController();
+        LegacyRobotController();
+        ~LegacyRobotController();
         
         /// \brief creates and connects to a new robot using a default IP Address
         /// \params params default parameters for the robot & GUI

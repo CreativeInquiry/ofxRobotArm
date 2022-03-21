@@ -11,5 +11,5 @@ loaded_robot:
   #       matching objectives on-the-fly, such that the importance of orientationmatching is reduced
   #       when the robot is close to a collision state and raised to its standard value
   #       when the robot is not close to a collision.
-  objective_mode: ECAA #
+  objective_mode: ECA3 #
   input_device: keyboard
