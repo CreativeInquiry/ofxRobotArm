@@ -10,16 +10,11 @@ void ofApp::setup(){
     setup_gui();
     
 
-    robot.createRobot(ofxRobotArm::IRB120);
-    robot.loadURDF("relaxed_ik_core/config/urdfs/irb120.urdf");
-    robot.setPoseExternally(true);
+    robot.setType(ofxRobotArm::IRB120);
     robot.setPort(robot_port);
-    robot.setupRobot(false);
-    robot.initKinematics(ofxRobotArm::SW);
-    robot.setupParams();
    
-    for (int i=0; i<num_dofs; i++)
-        joint_position_targets.push_back(0.0);
+    joint_position_targets.assign(num_dofs, 0.0);
+    joint_smoothing_values.assign(num_dofs, 0.1);
     
 }
 
@@ -118,7 +113,7 @@ void ofApp::on_joint_changed(ofAbstractParameter &e){
     joint_position_targets[index] = ofDegToRad(joint_sliders[index].get());
     
     if (robot.robot->isConnected()){
-        robot.update(joint_position_targets);
+        robot.update(joint_position_targets, joint_smoothing_values);
     }
     
     cout << ofToString(joint_position_targets) << endl;
@@ -129,7 +124,7 @@ void ofApp::on_robot_connect(bool & val){
     if (val){
         robot_status.set("CONNECTING");
         robot.setPort(robot_port);
-        robot.startConnection();
+        robot.connect();
         if (robot.robot->isConnected())
             robot_status.set("CONNECTED");
         else{
@@ -137,9 +132,10 @@ void ofApp::on_robot_connect(bool & val){
         }
     }
     else{
-        robot.disconnectRobot();
+        robot.disconnect();
         robot_status.set("DISCONNECTED");
     }
+    
 }
 
 //--------------------------------------------------------------

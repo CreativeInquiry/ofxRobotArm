@@ -33,6 +33,7 @@ class ofApp : public ofBaseApp{
         ofxRobotArm::RobotController robot;
         int num_dofs = 6;
         vector<double> joint_position_targets;
+        vector<double> joint_smoothing_values;
        
     
         // EGM Values

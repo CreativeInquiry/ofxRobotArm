@@ -10,7 +10,7 @@ using namespace ofxRobotArm;
 
 
 RobotController::RobotController(){
-    
+    bMove.set("Move Robot", false);
 }
 
 
@@ -99,4 +99,8 @@ vector<double> RobotController::getCurrentPose(){
 
 bool RobotController::isConnected(){
     return robot->isConnected();
+}
+
+void RobotController::setEnableMovement(bool move){
+    bMove = move;
 }

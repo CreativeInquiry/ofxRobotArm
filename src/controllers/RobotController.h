@@ -31,6 +31,8 @@ namespace ofxRobotArm {
             void setAddress(string ipAddress);
             void setPort(int port);
         
+            void setEnableMovement(bool move);
+        
             bool isConnected();
             
             vector<double> getCurrentPose();
@@ -43,6 +45,7 @@ namespace ofxRobotArm {
             vector<double> targetPose;
             vector<double> currentPose;
         
+            ofParameter<bool> bMove;
             ofParameter<bool> bDoReconnect;
           
             
