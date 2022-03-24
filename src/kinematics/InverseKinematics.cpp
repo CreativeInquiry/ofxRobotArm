@@ -226,7 +226,7 @@ void InverseKinematics::setRobotType(ofxRobotArm::RobotType type)
         d5 = 0.0;
         d6 = 0.135;
 
-        a1 = 0.200;
+        a1 = 0.175;
         a2_2 = -0.175;
         b = 0;
         c1 = 0.495;
