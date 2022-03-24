@@ -38,7 +38,7 @@ void LegacyRobotController::createRobot(RobotType type)
     {
         robot = new URDriver();
     }
-    else if (robotType == IRB120)
+    else if (robotType == IRB120 || robotType == IRB4600 || robotType == IRB6700) 
     {
         robot = new ABBDriver();
     }
@@ -67,7 +67,7 @@ void LegacyRobotController::setupRobot(bool offline)
         {
             robot->setup(ipAddress, 0, 1);
         }
-        else if (robotType == IRB120)
+        else if (robotType == IRB120 || robotType == IRB4600 || robotType == IRB6700)
         {
             robot->setup(port, 0, 1);
         }

@@ -217,6 +217,72 @@ void InverseKinematics::setRobotType(ofxRobotArm::RobotType type)
         joint_limit_max[4] = 120;
         joint_limit_max[5] = 400;
     }
+    else if (robotType == IRB4600)
+    {
+        d1 = 0.495;
+        a2 = 0.900;
+        a3 = 0.175;
+        d4 = 0.960;
+        d5 = 0.0;
+        d6 = 0.135;
+
+        a1 = 0.200;
+        a2_2 = -0.175;
+        b = 0;
+        c1 = 0.495;
+        c2 = 0.900;
+        c3 = 0.960;
+        c4 = 0.135;
+
+        offsets[2] = -PI / 2;
+        
+        joint_limit_min[0] = -180;
+        joint_limit_min[1] = -90;
+        joint_limit_min[2] = -180;
+        joint_limit_min[3] = -400;
+        joint_limit_min[4] = -125;
+        joint_limit_min[5] = -400;
+
+        joint_limit_max[0] = 180;
+        joint_limit_max[1] = 150;
+        joint_limit_max[2] = 75;
+        joint_limit_max[3] = 400;
+        joint_limit_max[4] = 120;
+        joint_limit_max[5] = 400;
+    }
+    else if (robotType == IRB6700)
+    {
+        d1 = 0.290;
+        a2 = 0.270;
+        a3 = -0.070;
+        d4 = 0.302;
+        d5 = 0.0;
+        d6 = 0.072;
+
+        a1 = 0;
+        a2_2 = -0.070;
+        b = 0;
+        c1 = 0.270;
+        c2 = 0.290;
+        c3 = 0.302;
+        c4 = 0.072;
+
+        offsets[2] = -PI / 2;
+        
+        joint_limit_min[0] = -15;
+        joint_limit_min[1] = -110;
+        joint_limit_min[2] = -90;
+        joint_limit_min[3] = -160;
+        joint_limit_min[4] = -120;
+        joint_limit_min[5] = -400;
+
+        joint_limit_max[0] = 165;
+        joint_limit_max[1] = 110;
+        joint_limit_max[2] = 70;
+        joint_limit_max[3] = 160;
+        joint_limit_max[4] = 120;
+        joint_limit_max[5] = 400;
+    }
     vector<double> pose(6.0, 0);
 }
 
@@ -251,9 +317,9 @@ vector<vector<double>> InverseKinematics::inverseKinematics(Pose targetPose, Pos
             fooSol.push_back(q_sols[i * 6 + 3]);
             fooSol.push_back(q_sols[i * 6 + 4]);
             fooSol.push_back(q_sols[i * 6 + 5]);
-            if (isValid(&fooSol[0]))
+            if (isValid(fooSol))
             {
-                harmonizeTowardZero(&fooSol[0]);
+                harmonizeTowardZero(fooSol);
                 sols.push_back(fooSol);
             }
         }
@@ -272,9 +338,9 @@ vector<vector<double>> InverseKinematics::inverseKinematics(Pose targetPose, Pos
             fooSol.push_back(q_sols[i * 6 + 3]);
             fooSol.push_back(q_sols[i * 6 + 4]);
             fooSol.push_back(q_sols[i * 6 + 5]);
-            if (isValid(&fooSol[0]))
+            if (isValid(fooSol))
             {
-                harmonizeTowardZero(&fooSol[0]);
+                harmonizeTowardZero(fooSol);
                 sols.push_back(fooSol);
             }
         }
@@ -298,7 +364,7 @@ ofMatrix4x4 InverseKinematics::forwardKinematics(vector<double> pose)
     {
         return forwardHK(pose[0], pose[1], pose[2], pose[3], pose[4], pose[5]);
     }
-    if (robotType == IRB120)
+    if (robotType == IRB120 || robotType == IRB4600 || robotType == IRB6700)
     {
         ofMatrix4x4 mat;
         return forwardSW(pose[0], pose[1], pose[2], pose[3], pose[4], pose[5]);
@@ -949,18 +1015,104 @@ int InverseKinematics::inverseSW(ofMatrix4x4 pose, double *sol)
     double theta5_vi = -theta5_ii;
     double theta5_vii = -theta5_iii;
     double theta5_viii = -theta5_iv;
+    
+    double zero_threshold = 1e-6;
+    double theta6_i = 0;
+    if (std::abs(theta5_i) < zero_threshold)
+    {
+        theta4_i = 0;
+        glm::vec3 xe(get(pose, 0, 0), get(pose, 1, 0), get(pose, 2, 0));
+        glm::vec3 col1 = glm::vec3(-std::sin(theta1_i), std::cos(theta1_i), 0);  // yc
+        glm::vec3 col2  = glm::vec3(get(pose, 0, 2), get(pose, 1, 2), get(pose, 2, 2)); // zc and ze are equal
+        glm::vec3 col3 = glm::cross(col1, col2);// xc
+        glm::mat3x3 Rc = glm::mat3x3(col1.x, col1.y, col1.z, col2.x, col2.y, col2.z, col3.x, col3.y, col3.z);
+        glm::vec3 xec = glm::transpose(Rc) * xe;
+        theta6_i = std::atan2(xec.y, xec.x);
+    }else{
+       double theta4_iy = get(pose, 1, 2) * cos1[0] - get(pose, 0, 2) * sin1[0];
+       double theta4_ix = get(pose, 0, 2) * c23[0] * cos1[0] + get(pose, 1, 2) * c23[0] * sin1[0] - get(pose, 2, 2) * s23[0];
+       theta4_i = std::atan2(theta4_iy, theta4_ix);
 
-    double theta6_i = std::atan2(get(pose, 0, 1) * s23[0] * cos1[0] + get(pose, 1, 1) * s23[0] * sin1[0] + get(pose, 2, 1) * c23[0],
-                                 -get(pose, 0, 0) * s23[0] * cos1[0] - get(pose, 1, 0) * s23[0] * sin1[0] - get(pose, 2, 0) * c23[0]);
+       double theta6_iy = get(pose, 0, 1) * s23[0] * cos1[0] + get(pose, 1, 1) * s23[0] * sin1[0] + get(pose, 2, 1) * c23[0];
+       double theta6_ix = -get(pose, 0, 0) * s23[0] * cos1[0] - get(pose, 1, 0) * s23[0] * sin1[0] - get(pose, 2, 0) * c23[0];
+       theta6_i = std::atan2(theta6_iy, theta6_ix);
+    }
+    
+    double theta6_ii;
+    if (std::abs(theta5_ii) < zero_threshold)
+    {
+        theta4_ii = 0;
+        glm::vec3 xe(get(pose, 0, 0), get(pose, 1, 0), get(pose, 2, 0));
+        glm::vec3 col1 = glm::vec3(-std::sin(theta1_i), std::cos(theta1_i), 0);  // yc
+        glm::vec3 col2  = glm::vec3(get(pose, 0, 2), get(pose, 1, 2), get(pose, 2, 2)); // zc and ze are equal
+        glm::vec3 col3 = glm::cross(col1, col2);// xc
+        glm::mat3x3 Rc = glm::mat3x3(col1.x, col1.y, col1.z, col2.x, col2.y, col2.z, col3.x, col3.y, col3.z);
+        glm::vec3 xec = glm::transpose(Rc) * xe;
+        theta6_ii = std::atan2(xec.y, xec.x);
+    }
+    else
+    {
+        double theta4_iiy = get(pose, 1, 2) * cos1[1] - get(pose, 0, 2) * sin1[1];
+        double theta4_iix = get(pose, 0, 2) * c23[1] * cos1[1] + get(pose,1, 2) * c23[1] * sin1[1] - get(pose, 2, 2) * s23[1];
+        theta4_ii = std::atan2(theta4_iiy, theta4_iix);
 
-    double theta6_ii = std::atan2(get(pose, 0, 1) * s23[1] * cos1[1] + get(pose, 1, 1) * s23[1] * sin1[1] + get(pose, 2, 1) * c23[1],
-                                  -get(pose, 0, 0) * s23[1] * cos1[1] - get(pose, 1, 0) * s23[1] * sin1[1] - get(pose, 2, 0) * c23[1]);
+        double theta6_iiy = get(pose, 0, 1) * s23[1] * cos1[1] + get(pose, 1, 1) * s23[1] * sin1[1] + get(pose, 2, 1) * c23[1];
+        double theta6_iix = -get(pose, 0, 0) * s23[1] * cos1[1] - get(pose, 1, 0) * s23[1] * sin1[1] - get(pose, 2, 0) * c23[1];
+        theta6_ii = std::atan2(theta6_iiy, theta6_iix);
+    }
 
-    double theta6_iii = std::atan2(get(pose, 0, 1) * s23[2] * cos1[2] + get(pose, 1, 1) * s23[2] * sin1[2] + get(pose, 2, 1) * c23[2],
-                                   -get(pose, 0, 0) * s23[2] * cos1[2] - get(pose, 1, 0) * s23[2] * sin1[2] - get(pose, 2, 0) * c23[2]);
+    double theta6_iii;
+    if (std::abs(theta5_iii) < zero_threshold)
+    {
+        theta4_iii = 0;
+        glm::vec3 xe(get(pose, 0, 0), get(pose, 1, 0), get(pose, 2, 0));
+        glm::vec3 col1 = glm::vec3(-std::sin(theta1_ii), std::cos(theta1_ii), 0);  // yc
+        glm::vec3 col2  = glm::vec3(get(pose, 0, 2), get(pose, 1, 2), get(pose, 2, 2)); // zc and ze are equal
+        glm::vec3 col3 = glm::cross(col1, col2);// xc
+        glm::mat3x3 Rc = glm::mat3x3(col1.x, col1.y, col1.z, col2.x, col2.y, col2.z, col3.x, col3.y, col3.z);
+        glm::vec3 xec = glm::transpose(Rc) * xe;
+        theta6_iii = std::atan2(xec.y, xec.x);
+    }
+    else
+    {
+        double theta4_iiiy = get(pose, 1, 2) * cos1[1] - get(pose, 0, 2) * sin1[1];
+        double theta4_iiix = get(pose, 0, 2) * c23[1] * cos1[1] + get(pose,1, 2) * c23[1] * sin1[1] - get(pose, 2, 2) * s23[1];
+        theta4_iii = std::atan2(theta4_iiiy, theta4_iiix);
 
-    double theta6_iv = std::atan2(get(pose, 0, 1) * s23[3] * cos1[3] + get(pose, 1, 1) * s23[3] * sin1[3] + get(pose, 2, 1) * c23[3],
-                                  -get(pose, 0, 0) * s23[3] * cos1[3] - get(pose, 1, 0) * s23[3] * sin1[3] - get(pose, 2, 0) * c23[3]);
+        double theta6_iiiy = get(pose, 0, 1) * s23[1] * cos1[1] + get(pose, 1, 1) * s23[1] * sin1[1] + get(pose, 2, 1) * c23[1];
+        double theta6_iiix = -get(pose, 0, 0) * s23[1] * cos1[1] - get(pose, 1, 0) * s23[1] * sin1[1] - get(pose, 2, 0) * c23[1];
+        theta6_iii = std::atan2(theta6_iiiy, theta6_iiix);
+    }
+
+    
+    double theta6_iv;
+    if (std::abs(theta5_iv) < zero_threshold)
+    {
+        theta4_iv = 0;
+        glm::vec3 xe(get(pose, 0, 0), get(pose, 1, 0), get(pose, 2, 0));
+        glm::vec3 col1 = glm::vec3(-std::sin(theta1_ii), std::cos(theta1_ii), 0);  // yc
+        glm::vec3 col2  = glm::vec3(get(pose, 0, 2), get(pose, 1, 2), get(pose, 2, 2)); // zc and ze are equal
+        glm::vec3 col3 = glm::cross(col1, col2);// xc
+        glm::mat3x3 Rc = glm::mat3x3(col1.x, col1.y, col1.z, col2.x, col2.y, col2.z, col3.x, col3.y, col3.z);
+        glm::vec3 xec = glm::transpose(Rc) * xe;
+        theta6_iv = std::atan2(xec.y, xec.x);
+    }
+    else
+    {
+        double theta4_ivy = get(pose, 1, 2) * cos1[1] - get(pose, 0, 2) * sin1[1];
+        double theta4_ivx = get(pose, 0, 2) * c23[1] * cos1[1] + get(pose,1, 2) * c23[1] * sin1[1] - get(pose, 2, 2) * s23[1];
+        theta4_iv = std::atan2(theta4_ivy, theta4_ivx);
+
+        double theta6_ivy = get(pose, 0, 1) * s23[1] * cos1[1] + get(pose, 1, 1) * s23[1] * sin1[1] + get(pose, 2, 1) * c23[1];
+        double theta6_ivx = -get(pose, 0, 0) * s23[1] * cos1[1] - get(pose, 1, 0) * s23[1] * sin1[1] - get(pose, 2, 0) * c23[1];
+        theta6_iv = std::atan2(theta6_ivy, theta6_ivx);
+    }
+    
+    
+    theta4_v = theta4_i + PI;
+    theta4_vi = theta4_ii + PI;
+    theta4_vii = theta4_iii + PI;
+    theta4_viii = theta4_iv + PI;
 
     double theta6_v = theta6_i - PI;
     double theta6_vi = theta6_ii - PI;

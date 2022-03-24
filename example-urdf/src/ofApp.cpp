@@ -7,7 +7,7 @@ void ofApp::setup(){
     ofBackground(0, 0, 0);
     // setup scene
     setup_scene();
-    robot.setup("192.168.125.201", 6510, (string)"relaxed_ik_core/config/urdfs/irb120.urdf", ofxRobotArm::IRB120, ofxRobotArm::RELAXED, false);
+    robot.setup("192.168.125.201", 6510, (string)"relaxed_ik_core/config/urdfs/irb4600_60_205.urdf", ofxRobotArm::IRB4600, ofxRobotArm::SW, false);
     robot.setToolOffset(offset);
 
     // setup gui
@@ -42,7 +42,7 @@ void ofApp::setup(){
     home.set(300, 0, 555);
     
     for(int i = 0 ; i < 360; i++){
-        line.addVertex(ofVec3f(400, 0, 300)+ofVec3f(25*sin(ofDegToRad(i)), 100*sin(ofDegToRad(i)), 150*cos(ofDegToRad(i))));
+        line.addVertex(ofVec3f(800, 100, 800)+ofVec3f(425*sin(ofDegToRad(i)), 250*sin(ofDegToRad(i)), 550*cos(ofDegToRad(i))));
     }
     line.close();
 

@@ -2,35 +2,30 @@
 
 //--------------------------------------------------------------
 void ofApp::setup(){
-    
     // OF mac retina screen bug: https://github.com/openframeworks/openFrameworks/issues/5943#issuecomment-377696206
     screen_coord_scale = ((ofAppGLFWWindow *)(ofGetWindowPtr()))->getPixelScreenCoordScale();
     ofSetWindowShape(screen_coord_scale*ofGetWidth(), screen_coord_scale*ofGetHeight());
     
     setup_gui();
     
-
     robot.setType(ofxRobotArm::IRB120);
     robot.setPort(robot_port);
    
     joint_position_targets.assign(num_dofs, 0.0);
     joint_smoothing_values.assign(num_dofs, 0.1);
-    
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
-    
     // Animate a joint value to send to the robot
     if (animate){
-        double min = -300;
-        double max = 300;
+        double min = -10;
+        double max = 10;
         double val = ofMap(sin(ofGetElapsedTimef()), -1, 1, max, min, max);
         if (joint_sliders.size() > 0){
             joint_sliders[0].set(val);
         }
     }
-
 }
 
 //--------------------------------------------------------------
@@ -76,7 +71,6 @@ void ofApp::setup_gui(){
     panel.add(params_comms);
     panel.add(params_robot);
     panel.setPosition(10,10);
-
 }
 
 //--------------------------------------------------------------
@@ -95,12 +89,12 @@ void ofApp::on_get_current_joint_positions(bool &val){
             auto curr_positions = robot.getCurrentPose();
             for (int i=0; i<num_dofs; i++)
                 joint_sliders[i].set(ofRadToDeg(curr_positions[i]));
-            get_current_joint_positions = false;
         }
         else{
             ofLogWarning("ofApp::on_get_current_joint_positions", "Robot is not connected yet.");
         }
     }
+    get_current_joint_positions = false;
 }
 
 void ofApp::on_move_robot(bool & move){
@@ -129,12 +123,14 @@ void ofApp::on_robot_connect(bool & val){
             robot_status.set("CONNECTED");
         else{
             robot_status.set("NOT CONNECTED");
+            robot_connect = false;
         }
     }
     else{
         robot.disconnect();
         robot_status.set("DISCONNECTED");
     }
+    
     
 }
 

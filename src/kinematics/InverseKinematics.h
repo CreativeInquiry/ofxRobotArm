@@ -69,23 +69,24 @@ namespace ofxRobotArm
         int inverseHK(double *T, double *q_sols, double q6_des = 0.0);
 
         void computeDH(RobotModel * model);
+        
 
-        void harmonizeTowardZero(double *qs)
+        void harmonizeTowardZero(vector<double>& qs)
         {
-            for (int i = 0; i < 6; i++)
+            for (auto& q : qs)
             {
-                if (qs[i] >= PI)
-                    qs[i] -= TWO_PI;
-                else if (qs[i] <= -PI)
-                    qs[i] += TWO_PI;
+                if (q >= PI)
+                    q -= TWO_PI;
+                else if (q <= -PI)
+                    q += TWO_PI;
             }
         };
 
-        bool isValid(const double *qs)
+        bool isValid(vector<double>& qs)
         {
-            return std::isfinite(qs[0]) && std::isfinite(qs[1]) && std::isfinite(qs[2]) && std::isfinite(qs[3]) &&
-                   std::isfinite(qs[4]) && std::isfinite(qs[5]);
-        };
+          return std::isfinite(qs[0]) && std::isfinite(qs[1]) && std::isfinite(qs[2]) && std::isfinite(qs[3]) &&
+                 std::isfinite(qs[4]) && std::isfinite(qs[5]);
+        }
 
         void inverse(ofMatrix4x4 *target, vector<vector<double>> &sol);
 
