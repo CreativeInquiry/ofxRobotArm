@@ -1,0 +1,17 @@
+urdf_file_name: "irb4600_60_205.urdf"
+fixed_frame: "base_link"
+joint_names: [ [ "joint_1", "joint_2", "joint_3", "joint_4", "joint_5", "joint_6" ] ]
+joint_ordering: [ "joint_1", "joint_2", "joint_3", "joint_4", "joint_5", "joint_6" ]
+ee_fixed_joints: [ "link_6-tool0" ]
+starting_config: [ 0.001, 0.001, 0.001, 0.001, 0.001, 0.001 ]
+collision_file_name: "collision_4600.yaml"
+collision_nn_file: "irb4600_60_205_nn"
+path_to_src: "/root/relaxed/src/relaxed_ik/src"
+axis_types: [ [ "z", "y", "y", "x", "y", "x" ] ]
+velocity_limits: [ 3.054, 3.054, 3.054, 4.363, 4.363, 6.283 ]
+joint_limits: [ [-3.141,3.141], [-1.57,2.617], [-3.141,1.308], [-6.981,6.981], [-2.181,2.094], [-6.981,6.981] ]
+displacements: [ [ [0.175,0.0,0.0], [0.0,0.0,0.9], [0.0,0.0,0.175], [0.96,0.0,0.0], [0.135,0.0,0.0], [0.0,0.0,0.0] ] ]
+disp_offsets: [ [0.0,0.0,0.495] ]
+rot_offsets: [ [ [0.0,0.0,0.0], [0.0,0.0,0.0], [0.0,0.0,0.0], [0.0,0.0,0.0], [0.0,0.0,0.0], [0.0,0.0,0.0], [0.0,1.57079632679,0.0] ] ]
+joint_types: [ [ "revolute", "revolute", "revolute", "revolute", "revolute", "revolute" ] ]
+joint_state_define_func_file: "irb4600_60_205_joint_state_define"
