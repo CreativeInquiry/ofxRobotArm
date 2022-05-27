@@ -315,7 +315,7 @@ void ofApp::keypressed_gizmo(int key){
         case 'r':
         case 'R':
             // reset the orientation
-            tcp_target.getMatrix().setRotate(ofQuaternion(0,0,0,1));
+            //tcp_target.getMatrix().setRotate(ofQuaternion(0,0,0,1));
             break;
     }
     

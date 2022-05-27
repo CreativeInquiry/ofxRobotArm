@@ -22,7 +22,7 @@ namespace ofxRobotArm {
         /// \params params default parameters for the robot & GUI
         void setup(RobotParameters & params);
         
-        void setup(string ipAddress, RobotType type);
+        void setup(string ipAddress, RobotType type, bool offline=false);
         void start();
         
         /// \brief creates and connects to a new robot

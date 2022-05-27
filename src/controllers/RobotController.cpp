@@ -21,7 +21,7 @@ void RobotController::setup(RobotParameters & params) {
     setup(params.ipAddress, params, false);
 }
 
-void RobotController::setup(string ipAddress, RobotType type){
+void RobotController::setup(string ipAddress, RobotType type, bool offline){
     
     this->type = type;
     
@@ -41,7 +41,12 @@ void RobotController::setup(string ipAddress, RobotType type){
     actualArm.setup(type);
     
     // pass the ip address to the robot
-    robot.setAllowReconnect(true);
+    if(offline){
+        robot.setAllowReconnect(false);
+    }
+    else{
+        robot.setAllowReconnect(true);
+    }
     robot.setup(ipAddress,0,1);
 }
 
@@ -583,7 +588,7 @@ void RobotController::drawIK(){
 
 void RobotController::drawPreview(ofFloatColor color){
     previewArm.draw(color, false);
-    tcp_plane.draw();
+//    tcp_plane.draw();
 }
 
 void RobotController::enableControlJointsExternally() {
