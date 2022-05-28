@@ -60,7 +60,7 @@ namespace ofxRobotArm {
         Plane tcp_plane;
         void set_live(bool val);
         
-        void moveArm();
+        //void moveArm();
         void draw(ofFloatColor color = ofFloatColor(1,1,1,1), bool debug = false);
         void drawPreview(ofFloatColor color = ofFloatColor(1,1,1,1));
 //        void drawPreviews();
@@ -80,6 +80,8 @@ namespace ofxRobotArm {
 //        RobotParameters * robotParams;
         RobotParameters robotParams;
         RobotKinematicModel previewArm;
+        vector<Joint> getPreviewJoints();
+        vector<ofNode> getPreviewJointNodes();
         vector<RobotKinematicModel*> previewArms;
         
         RobotKinematicModel actualArm;

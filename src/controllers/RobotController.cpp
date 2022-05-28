@@ -485,6 +485,11 @@ void RobotController::update(){
         robotParams.targetPose[i] = ofRadToDeg(tpose);
     }
     previewArm.setPose(targetPose);
+    cout << "target pose:\t[";
+    for (auto p : targetPose){
+        cout << p << ", ";
+    }
+    cout << "]" << endl;
 }
 void RobotController::update(vector<double> _pose){
     targetPose = _pose;
