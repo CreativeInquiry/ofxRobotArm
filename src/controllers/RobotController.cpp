@@ -1,4 +1,5 @@
 #include "RobotController.h"
+//#define PRINT_POSE
 // Copyright (c) 2016, Daniel Moore, Madeline Gannon, and The Frank-Ratchye STUDIO for Creative Inquiry All rights reserved.
 //
 using namespace ofxRobotArm;
@@ -414,6 +415,21 @@ void RobotController::updateIKFast(){
             if( isnan(tpose) ) {
                 tpose = 0.f;
             }
+            
+            // FIXME: Joint Wrapping
+            // limit joints by a buffer to minimize joint wrapping
+            float buffer = ofDegToRad(2);
+            tpose = ofMap(tpose, ofDegToRad(-360), ofDegToRad(360), ofDegToRad(-360) + buffer, ofDegToRad(360) - buffer);
+            // map Joint 0 to +angle only (only tested at 180º)
+            if (tpose < 0 && i == 0){
+                tpose = ofMap(tpose, ofDegToRad(-360), 0, 0, ofDegToRad(360));
+            }
+            // lock Joint 6 to 0º
+            else if (i==5){
+                tpose = 0;
+            }
+            targetPose[i] = tpose;
+            
             robotParams.ikPose[i] = tpose;
         }
     }
@@ -429,6 +445,7 @@ void RobotController::updateIKArm(){
             if( isnan(tpose) ) {
                 tpose = 0.f;
             }
+            
             robotParams.ikPose[i] = tpose;
         }
         
@@ -485,11 +502,13 @@ void RobotController::update(){
         robotParams.targetPose[i] = ofRadToDeg(tpose);
     }
     previewArm.setPose(targetPose);
+#ifdef PRINT_POSE
     cout << "target pose:\t[";
     for (auto p : targetPose){
-        cout << p << ", ";
+        cout << ofRadToDeg(p) << ", ";
     }
     cout << "]" << endl;
+#endif
 }
 void RobotController::update(vector<double> _pose){
     targetPose = _pose;

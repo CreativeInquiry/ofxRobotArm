@@ -92,6 +92,19 @@ namespace ofxRobotArm {
         RobotArmSafety robotSafety;
         
         void setEndEffector(string filename);
+        
+        vector<double> boundSolution(vector<double> thetas)
+        {
+            for (auto theta : thetas)
+            {
+                if (abs(theta) > PI)
+                {
+                    double sign = abs(theta) / theta;
+                    theta = theta - (sign * TWO_PI);
+                }
+            }
+            return thetas;
+        };
 
     protected:
         vector <double> stopPosition;
