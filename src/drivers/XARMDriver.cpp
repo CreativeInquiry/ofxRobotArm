@@ -71,29 +71,29 @@ void XARMDriver::threadedFunction() {
         int ret;
         unsigned char version[40];
         ret = robot->get_version(version);
-        printf("ret=%d, version: %s\n", ret, version);
+//        printf("ret=%d, version: %s\n", ret, version);
 
         int state;
         ret = robot->get_state(&state);
-        printf("ret=%d, state: %d, mode: %d\n", ret, state, robot->mode);
+//        printf("ret=%d, state: %d, mode: %d\n", ret, state, robot->mode);
 
         int cmdnum;
         ret = robot->get_cmdnum(&cmdnum);
-        printf("ret=%d, cmdnum: %d\n", ret, cmdnum);
+//        printf("ret=%d, cmdnum: %d\n", ret, cmdnum);
 
         int err_warn[2];
         ret = robot->get_err_warn_code(err_warn);
-        printf("ret=%d, err: %d, warn: %d\n", ret, err_warn[0], err_warn[1]);
+//        printf("ret=%d, err: %d, warn: %d\n", ret, err_warn[0], err_warn[1]);
 
         fp32 pose[6];
         ret = robot->get_position(pose);
-        printf("ret=%d, ", ret);
-        print_nvect("pose: ", pose, 6);
+//        printf("ret=%d, ", ret);
+//        print_nvect("pose: ", pose, 6);
 
         fp32 angles[7];
         ret = robot->get_servo_angle(angles);
-        printf("ret=%d, ", ret);
-        print_nvect("angles: ", angles, 7);
+//        printf("ret=%d, ", ret);
+//        print_nvect("angles: ", angles, 7);
         
         if(bMove && currentPose.size() > 0){
             timeNow = ofGetElapsedTimef();

@@ -22,7 +22,7 @@ int SIGN(double x)
 /// \brief Converts a 4x4 matrix to a 1D array
 /// \param input ofMatrix4x4 to convert
 /// \return row-major array in UR World Cords
-double* InverseKinematics::toIK(ofMatrix4x4 input)
+double*InverseKinematics::toIK(ofMatrix4x4 input)
 {
     double *T = new double[16];
     for (int i = 0; i < 4; i++)

@@ -60,14 +60,6 @@ void RelaxedIKSolver::setInitialPose(vector<double> pose){
     unlock();
 }
 
-void RelaxedIKSolver::setAngle(double angleX, double angleY, double angleZ){
-    lock();
-    this->angleX = angleX;
-    this->angleY = angleY;
-    this->angleZ = angleZ;
-    unlock();
-}
-
 void RelaxedIKSolver::threadedFunction(){
     while(isThreadRunning()){
         lock();

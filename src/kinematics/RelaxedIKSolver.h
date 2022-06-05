@@ -31,10 +31,7 @@ public:
     Pose actualPose;
     Synchronized<vector<double>> currentPose;
     
-    void setAngle(double angleX, double angleY, double angleZ);
-    double angleX, angleY, angleZ;
-    
-    
+
     uint64_t getFrame();
     uint64_t frameNum;
     uint64_t frameAvg;
