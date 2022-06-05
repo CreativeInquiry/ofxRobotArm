@@ -34,88 +34,39 @@ namespace ofxRobotArm
         ~InverseKinematics();
         InverseKinematics();
         void setup(ofxRobotArm::RobotType robotType, ofxRobotArm::IKType ikType, vector<double> pose, RobotModel * model);
-
         void setSWParams(float _a1, float _a2, float _b, float _c1, float _c2, float _c3, float _c4);
         void setDHParams(float d1, float a2, float a3, float d4, float d5, float d6);
-
         void setRobotType(ofxRobotArm::RobotType type);
         void setIKType(ofxRobotArm::IKType type);
         //int selectSolution(vector<vector<double> > & inversePosition, vector<double> currentQ, vector<double> weight);
         ofMatrix4x4 forwardKinematics(vector<double> pose);
         vector<vector<double>> inverseKinematics(ofxRobotArm::Pose targetPose, ofxRobotArm::Pose currentPose);
-        
         void forward(double *q, double *T);
-
         void setRelaxedPose(vector<double> pose);
         vector<double> inverseRelaxed(Pose targetPose, Pose currentPose);
-        
-        
         vector<vector<double>> inverseHK(ofxRobotArm::Pose targetPose);
         vector<vector<double>> inverseSW(ofxRobotArm::Pose targetPose);
-
-        ofVec3f getYawPitchRoll(ofQuaternion aquat);
-        ofVec3f lerp(ofVec3f aStartVec, ofVec3f aEndVec, float aLerpAmnt);
-        float lerpRadians(float currentAngle, float targetAngle, float pct, float alerp);
-
         //adapted from https://github.com/Jmeyer1292/opw_kinematics/blob/master/include/opw_kinematics/opw_kinematics_impl.h
         // based upon An Analytical Solution of the Inverse Kinematics Problem of Industrial Serial Manipulators with an Ortho-parallel Basis and a Spherical Wrist
         ofMatrix4x4 forwardSW(double t1, double t2, double t3, double t4, double t5, double t6);
         int inverseSW(ofMatrix4x4 pose, double *sol);
-        
-        
         ofMatrix4x4 forwardHK(double o, double t, double th, double f, double fi, double s);
         void forwardHK(double *q, double *T);
         void forward_allHK(double *q, double *T1, double *T2, double *T3, double *T4, double *T5, double *T6);
         int inverseHK(double *T, double *q_sols, double q6_des = 0.0);
-
         void computeDH(RobotModel * model);
-        
-
-        void harmonizeTowardZero(vector<double>& qs)
-        {
-            for (auto& q : qs)
-            {
-                if (q >= PI)
-                    q -= TWO_PI;
-                else if (q <= -PI)
-                    q += TWO_PI;
-            }
-        };
-
-        bool isValid(vector<double>& qs)
-        {
-          return std::isfinite(qs[0]) && std::isfinite(qs[1]) && std::isfinite(qs[2]) && std::isfinite(qs[3]) &&
-                 std::isfinite(qs[4]) && std::isfinite(qs[5]);
-        }
-
+        void harmonizeTowardZero(vector<double>& qs);
+        bool isValid(vector<double>& qs);
         void inverse(ofMatrix4x4 *target, vector<vector<double>> &sol);
 
-        vector<double> boundSolution(vector<double> thetas)
-        {
-            for (auto theta : thetas)
-            {
-                if (abs(theta) > PI)
-                {
-                    double sign = abs(theta) / theta;
-                    theta = theta - (sign * TWO_PI);
-                }
-            }
-            return thetas;
-        };
+        vector<double> boundSolution(vector<double> thetas);
+        double * toIK(ofMatrix4x4 input);
+        ofMatrix4x4 toOF(double *T);
 
         vector<double> initPose;
         ofxRobotArm::RobotType robotType;
         ofxRobotArm::IKType ikType;
         ofParameterGroup params;
-        ofParameter<float> mIKRampStartPct, mIKRampEndPct;
-        ofParameter<float> mIKRampHeightPct;
-
-        ofParameter<float> ikRobotMinY, ikRobotMaxY;
-        ofParameter<float> ikRobotMinZ, ikRobotMaxZ;
-
-        ofParameter<bool> bUseRelaxedIK;
-        ofParameter<bool> bControlIkWithMouse;
-        ofParameter<bool> bOnlyUseInverseIk;
 
         vector<vector<double>> preSol;
 

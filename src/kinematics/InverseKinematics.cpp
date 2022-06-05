@@ -5,6 +5,15 @@
 using namespace ofxRobotArm;
 const static double ANGLE_THRESH = ofDegToRad(30);
 const double ZERO_THRESH = 0.00000001;
+
+InverseKinematics::InverseKinematics()
+{
+}
+
+InverseKinematics::~InverseKinematics()
+{
+}
+
 int SIGN(double x)
 {
     return (x > 0) - (x < 0);
@@ -13,7 +22,7 @@ int SIGN(double x)
 /// \brief Converts a 4x4 matrix to a 1D array
 /// \param input ofMatrix4x4 to convert
 /// \return row-major array in UR World Cords
-double *toIK(ofMatrix4x4 input)
+double* InverseKinematics::toIK(ofMatrix4x4 input)
 {
     double *T = new double[16];
     for (int i = 0; i < 4; i++)
@@ -26,7 +35,7 @@ double *toIK(ofMatrix4x4 input)
     return T;
 }
 
-ofMatrix4x4 toOF(double *T)
+ofMatrix4x4 InverseKinematics::toOF(double *T)
 {
     ofMatrix4x4 output;
     for (int i = 0; i < 4; i++)
@@ -39,29 +48,53 @@ ofMatrix4x4 toOF(double *T)
     return output;
 }
 
-InverseKinematics::InverseKinematics()
+void InverseKinematics::harmonizeTowardZero(vector<double>& qs)
 {
+    for (auto& q : qs)
+    {
+        if (q >= PI)
+            q -= TWO_PI;
+        else if (q <= -PI)
+            q += TWO_PI;
+    }
+};
+
+bool InverseKinematics::isValid(vector<double>& qs)
+{
+  return std::isfinite(qs[0]) && std::isfinite(qs[1]) && std::isfinite(qs[2]) && std::isfinite(qs[3]) &&
+         std::isfinite(qs[4]) && std::isfinite(qs[5]);
 }
 
-InverseKinematics::~InverseKinematics()
+vector<double> InverseKinematics::boundSolution(vector<double> thetas)
 {
-}
+    for (auto theta : thetas)
+    {
+        if (abs(theta) > PI)
+        {
+            double sign = abs(theta) / theta;
+            theta = theta - (sign * TWO_PI);
+        }
+    }
+    return thetas;
+};
+
+
 
 void InverseKinematics::setup(ofxRobotArm::RobotType robotType, ofxRobotArm::IKType ikType, vector<double> pose, RobotModel * model)
 {
-    params.setName("IKArm Commands");
-    params.add(bControlIkWithMouse.set("ControlIkWithMouse", false));
-    params.add(bOnlyUseInverseIk.set("OnlyUseInverseIK", true));
-
-    params.add(ikRobotMinY.set("IkRobotMinY", -725, -2000, 2000));
-    params.add(ikRobotMaxY.set("IkRobotMaxY", 0, -2000, 2000));
-
-    params.add(ikRobotMinZ.set("IkRobotMinZ", 300, -500, 3000));
-    params.add(ikRobotMaxZ.set("IkRobotMaxZ", 700, -500, 3000));
-
-    params.add(mIKRampStartPct.set("IKRampStartPct", 0.3, 0.0, 1.0));
-    params.add(mIKRampEndPct.set("IKRampEndPct", 1.5, 1.0, 2.0));
-    params.add(mIKRampHeightPct.set("IKRampHeightPct", 0.3, 0.0, 1.0));
+//    params.setName("IKArm Commands");
+//    params.add(bControlIkWithMouse.set("ControlIkWithMouse", false));
+//    params.add(bOnlyUseInverseIk.set("OnlyUseInverseIK", true));
+//
+//    params.add(ikRobotMinY.set("IkRobotMinY", -725, -2000, 2000));
+//    params.add(ikRobotMaxY.set("IkRobotMaxY", 0, -2000, 2000));
+//
+//    params.add(ikRobotMinZ.set("IkRobotMinZ", 300, -500, 3000));
+//    params.add(ikRobotMaxZ.set("IkRobotMaxZ", 700, -500, 3000));
+//
+//    params.add(mIKRampStartPct.set("IKRampStartPct", 0.3, 0.0, 1.0));
+//    params.add(mIKRampEndPct.set("IKRampEndPct", 1.5, 1.0, 2.0));
+//    params.add(mIKRampHeightPct.set("IKRampHeightPct", 0.3, 0.0, 1.0));
 
 
     offsets.assign(model->nodes.size(), 0);
@@ -389,9 +422,6 @@ ofMatrix4x4 InverseKinematics::forwardHK(double o, double t, double th, double f
     return toOF(transform6);
 }
 
-void InverseKinematics::forward( double *q, double *T){
-    
-}
 
 void InverseKinematics::forwardHK(double *q, double *T)
 {
@@ -1194,42 +1224,6 @@ float InverseKinematics::get(ofMatrix4x4 mat, int row, int col)
 {
 
     return (mat.getPtr())[row * 4 + col];
-}
-//------------------------------------------------------------------
-ofVec3f InverseKinematics::getYawPitchRoll(ofQuaternion aquat)
-{
-    float qx = aquat.x();
-    float qy = aquat.y();
-    float qz = aquat.z();
-    float qw = aquat.w();
-
-    float yaw = atan2(2 * qx * qy + 2 * qw * qz, qw * qw + qx * qx - qy * qy - qz * qz);
-    float pitch = -asin(2 * qw * qy - 2 * qx * qz);
-    float roll = -atan2(2 * qy * qz + 2 * qw * qx, -qw * qw + qx * qx + qy * qy - qz * qz);
-
-    return ofVec3f(yaw, pitch, roll);
-}
-
-//------------------------------------------------------------------
-ofVec3f InverseKinematics::lerp(ofVec3f aStartVec, ofVec3f aEndVec, float aLerpAmnt)
-{
-    ofVec3f tmp;
-    tmp.x = ofLerp(aStartVec.x, aEndVec.x, aLerpAmnt);
-    tmp.y = ofLerp(aStartVec.y, aEndVec.y, aLerpAmnt);
-    tmp.z = ofLerp(aStartVec.z, aEndVec.z, aLerpAmnt);
-    return tmp;
-}
-
-//--------------------------------------------------
-float InverseKinematics::lerpRadians(float currentAngle, float targetAngle, float pct, float alerp)
-{
-    //    return ofWrapRadians( currentAngle + (targetAngle - currentAngle) * pct );
-    // lets add a lerp //
-    float tLerpAmnt = ofAngleDifferenceDegrees(currentAngle, targetAngle) * pct * alerp;
-    return ofWrapRadians(currentAngle + tLerpAmnt);
-    //    return ofWrapRadians( currentAngle + ofAngleDifferenceRadians( currentAngle, targetAngle ) * pct );
-    //    return ofWrapRadians(currentAngle + ofWrapRadians( ofWrapRadians(targetAngle)-ofWrapRadians(currentAngle), -PI, PI ) * pct, -PI, PI);
-    //    return ofWrapRadians(currentAngle + ofWrapRadians( targetAngle-currentAngle, -PI, PI ) * pct, -PI, PI);
 }
 
 // ----------------------------------------------------------
