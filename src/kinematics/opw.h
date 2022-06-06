@@ -1,5 +1,5 @@
 //
-//  opw.hpp
+//  OPWIK.hpp
 //  example-ik
 //
 //  Created by Dan Moore on 6/5/22.
@@ -9,10 +9,10 @@
 #include "ofMain.h"
 #include "IK.h"
 namespace ofxRobotArm {
-    class OPW : public IK{
+    class OPWIK : public IK{
         public:
-            OPW(){ };
-            ~OPW(){ };
+            OPWIK(){ };
+            ~OPWIK(){ };
             
             void setup(vector<double> offsets,
                        vector<double> sign_corrections,

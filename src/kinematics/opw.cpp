@@ -1,21 +1,21 @@
 //
-//  opw.cpp
+//  OPWIK.cpp
 //  example-ik
 //
 //  Created by Dan Moore on 6/5/22.
 //
 
-#include "opw.h"
+#include "OPW.h"
 using namespace ofxRobotArm;
 
-void OPW::setup(vector<double> offsets,
+void OPWIK::setup(vector<double> offsets,
            vector<double> sign_corrections,
            vector<double> joint_limit_min,
                 vector<double> joint_limit_max){
     
 }
 
-void  OPW::setParams(vector<double> params){
+void  OPWIK::setParams(vector<double> params){
     
     a1 = params[0];
     a2 = params[1];
@@ -26,12 +26,12 @@ void  OPW::setParams(vector<double> params){
     c4 = params[6];
     
 }
-void  OPW::computeParams(RobotModel robot){
+void  OPWIK::computeParams(RobotModel robot){
     
     
 }
 
-ofMatrix4x4 OPW::forward(vector<double> pose){
+ofMatrix4x4 OPWIK::forward(vector<double> pose){
     
     ofMatrix4x4 sol;
     double q[pose.size()];
@@ -87,7 +87,7 @@ ofMatrix4x4 OPW::forward(vector<double> pose){
 }
 
 
-vector<vector<double> > OPW::inverse(ofMatrix4x4 pose){
+vector<vector<double> > OPWIK::inverse(ofMatrix4x4 pose){
     double sol[8 * 6];
     vector<vector<double> > sols;
     ofVec3f c = pose.getTranslation() - ofMatrix4x4::transform3x3(pose, ofVec3f(0, 0, 1)) * c4;

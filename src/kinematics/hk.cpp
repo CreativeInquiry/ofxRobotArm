@@ -8,14 +8,14 @@
 #include "hk.h"
 using namespace ofxRobotArm;
 
-void HK::setup(vector<double> offsets,
+void HKIK::setup(vector<double> offsets,
            vector<double> sign_corrections,
            vector<double> joint_limit_min,
                 vector<double> joint_limit_max){
     
 }
 
-void HK::setParams(vector<double> params){
+void HKIK::setParams(vector<double> params){
     
     d1 = params[0];
     a2 = params[1];
@@ -25,7 +25,7 @@ void HK::setParams(vector<double> params){
     d6 = params[5];
     
 }
-void HK::computeParams(RobotModel model){
+void HKIK::computeParams(RobotModel model){
     d1 = (model.nodes[0].getZ() - model.nodes[1].getZ())/1000;
     ofLog()<<"d1 "<<d1<<endl;
     a2 = -1*(model.nodes[2].getZ() - model.nodes[1].getZ())/ 1000;
@@ -40,7 +40,7 @@ void HK::computeParams(RobotModel model){
     ofLog()<<"d6 "<<d6<<endl;
 }
 
-ofMatrix4x4 HK::forward(vector<double> pose){
+ofMatrix4x4 HKIK::forward(vector<double> pose){
     double *q = new double[6];
     for (int j = 0; j < 6; j++)
     {
@@ -76,7 +76,7 @@ ofMatrix4x4 HK::forward(vector<double> pose){
     return sol;
 }
 
-vector<vector<double>> HK::inverse(ofMatrix4x4 pose){
+vector<vector<double>> HKIK::inverse(ofMatrix4x4 pose){
     double *T = new double[16];
     T = toIK(pose);
     double q_sols[8 * 6];

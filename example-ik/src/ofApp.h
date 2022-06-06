@@ -3,7 +3,7 @@
 #include "ofMain.h"
 #include "RobotController.h"
 #include "hk.h"
-#include "kinematics/opw.h"
+#include "opw.h"
 class ofApp : public ofBaseApp{
 
     public:
@@ -23,7 +23,9 @@ class ofApp : public ofBaseApp{
         void dragEvent(ofDragInfo dragInfo);
         void gotMessage(ofMessage msg);
     
-        ofxRobotArm::HK hawkinsKelseyKinematics;
-        ofxRobotArm::OPW sphericalWristKinematics;
+    
+        ofxRobotArm::OPWIK sphericalWristKinematics;
+        ofxRobotArm::HKIK hawkinsKelseyKinematics;
+        
     
 };

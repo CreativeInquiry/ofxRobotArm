@@ -10,10 +10,10 @@
 #include "ofMain.h"
 #include "IK.h"
 namespace ofxRobotArm {
-    class HK : public IK{
+    class HKIK : public IK{
         public:
-            HK(){ };
-            ~HK(){ };
+            HKIK(){ };
+            ~HKIK(){ };
             
             void setup(vector<double> offsets,
                        vector<double> sign_corrections,
