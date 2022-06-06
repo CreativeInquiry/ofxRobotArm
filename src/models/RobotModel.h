@@ -27,19 +27,18 @@ namespace ofxRobotArm
         RobotModel();
         ~RobotModel();
         // void setup(RobotType type);
+        void setup(string path);
         void setup(string path, RobotType type);
+        void loadURDF(string path);
 
         void setOrigin(ofNode node);
         void setOrigin(ofVec3f pos, ofQuaternion orientation);
   
-        void parseURDF(string path);
-        void loadURDF(string path);
-        void loadModel(string path);
+   
 
         void drawSkeleton();
         void drawMesh(ofColor color = ofColor::white, bool bDrawDebug = true);
         void draw(ofColor color = ofColor::white, bool bDrawDebug = true);
-        void drawArc(float aStartAngleDegrees, float aEndAngleDegrees, ofVec3f aForwardAxis, ofVec3f aSideAxis,  bool fill = false);
         void setToolMesh(ofMesh mesh);
         void setPose(vector<double> pose);
         void setTCPPose(Pose pose);
@@ -52,6 +51,8 @@ namespace ofxRobotArm
         ofQuaternion getToolPointQuaternion();
         Pose getModifiedTCPPose();
         ofNode getForwardPose();
+        
+        int getNumJoints();
 
         RobotType type;
         ofxAssimpModelLoader loader;
@@ -75,5 +76,8 @@ namespace ofxRobotArm
         vector<ofNode> nodes;
         UrdfParser parser;
         UrdfModel urdf;
+        
+    private:
+        void drawArc(float aStartAngleDegrees, float aEndAngleDegrees, ofVec3f aForwardAxis, ofVec3f aSideAxis,  bool fill = false);
     };
 }

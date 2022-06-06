@@ -12,7 +12,10 @@ void OPWIK::setup(vector<double> offsets,
            vector<double> sign_corrections,
            vector<double> joint_limit_min,
                 vector<double> joint_limit_max){
-    
+    this->offsets = offsets;
+    this->sign_corrections = sign_corrections;
+    this->joint_limit_max = joint_limit_max;
+    this->joint_limit_min = joint_limit_min;
 }
 
 void  OPWIK::setParams(vector<double> params){

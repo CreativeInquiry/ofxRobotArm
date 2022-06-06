@@ -16,6 +16,11 @@ RobotModel::~RobotModel()
 {
 }
 
+void RobotModel::setup(string path)
+{
+    loadURDF(path);
+}
+
 
 void RobotModel::setup(string path, RobotType type)
 {
@@ -32,10 +37,6 @@ ofNode RobotModel::getTCPNode(){
     return tcpNode;
 }
 
-
-void RobotModel::parseURDF(string path){
-
-}
 
 void RobotModel::loadURDF(string path)
 {
@@ -430,6 +431,10 @@ void RobotModel::draw(ofColor color, bool bDrawDebug)
     ofPopMatrix();
 }
 
+int RobotModel::getNumJoints(){
+    return pose.size();
+}
+
 void RobotModel::drawArc(float aStartAngleDegrees, float aEndAngleDegrees, ofVec3f aForwardAxis, ofVec3f aSideAxis, bool fill)
 {
     float startDegrees = aStartAngleDegrees;
@@ -467,3 +472,5 @@ void RobotModel::drawArc(float aStartAngleDegrees, float aEndAngleDegrees, ofVec
     
     tmesh.draw();
 }
+
+
