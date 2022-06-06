@@ -8,6 +8,7 @@
 
 #pragma once
 #include "ofMain.h"
+#include "RobotModel.h"
 namespace ofxRobotArm {
     class IK{
         public:
@@ -23,7 +24,8 @@ namespace ofxRobotArm {
         virtual ofMatrix4x4 forward(vector<double> pose) = 0;
         virtual vector<vector<double> > inverse(ofMatrix4x4 pose) = 0;
         
-        
+        const double ANGLE_THRESH = ofDegToRad(30);
+        const double ZERO_THRESH = 0.00000001;
     protected:
         void harmonizeTowardZero(vector<double>& qs){
             for (auto& q : qs)
@@ -53,8 +55,18 @@ namespace ofxRobotArm {
             }
             return thetas;
         };
+        
+        float get(ofMatrix4x4 mat, int row, int col)
+        {
 
-    private:
+            return (mat.getPtr())[row * 4 + col];
+        };
+        
+        int SIGN(double x)
+        {
+            return (x > 0) - (x < 0);
+        };
+
         vector<double> offsets;
         vector<double> sign_corrections;
         vector<double> joint_limit_min;

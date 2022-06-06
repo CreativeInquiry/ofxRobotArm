@@ -5,17 +5,17 @@
 //  Created by Dan Moore on 6/5/22.
 //
 
-#include "opw.hpp"
-using ofxRobotArm;
+#include "opw.h"
+using namespace ofxRobotArm;
 
-void OWP::setup(vector<double> offsets,
+void OPW::setup(vector<double> offsets,
            vector<double> sign_corrections,
            vector<double> joint_limit_min,
                 vector<double> joint_limit_max){
     
 }
 
-void  OWP::setParams(vector<double> params){
+void  OPW::setParams(vector<double> params){
     
     a1 = params[0];
     a2 = params[1];
@@ -26,12 +26,12 @@ void  OWP::setParams(vector<double> params){
     c4 = params[6];
     
 }
-void  OWP::computeParams(RobotModel robot){
+void  OPW::computeParams(RobotModel robot){
     
     
 }
 
-ofMatrix4x4 OWP::forward(vector<double> pose){
+ofMatrix4x4 OPW::forward(vector<double> pose){
     
     ofMatrix4x4 sol;
     double q[pose.size()];
@@ -87,9 +87,9 @@ ofMatrix4x4 OWP::forward(vector<double> pose){
 }
 
 
-vector<double> OWP::inverse(ofMatrix4x4 pose){
+vector<vector<double> > OPW::inverse(ofMatrix4x4 pose){
     double sol[8 * 6];
-    vector<vector<double> > sol;
+    vector<vector<double> > sols;
     ofVec3f c = pose.getTranslation() - ofMatrix4x4::transform3x3(pose, ofVec3f(0, 0, 1)) * c4;
     double nx1 = std::sqrt(pow(c.x, 2) + pow(c.y, 2) - pow(b, 2)) - a1;
 
@@ -103,7 +103,7 @@ vector<double> OWP::inverse(ofMatrix4x4 pose){
 
     double tmp4 = nx1 + 2 * a1;
     double s2_2 = pow(tmp4, 2) + pow(tmp3, 2);
-    double kappa_2 = pow(a2_2, 2) + pow(c3, 2);
+    double kappa_2 = pow(a2, 2) + pow(c3, 2);
 
     double c2_2 = c2 * c2;
 
@@ -123,12 +123,12 @@ vector<double> OWP::inverse(ofMatrix4x4 pose){
     double tmp7 = s1_2 - c2_2 - kappa_2;
     double tmp8 = s2_2 - c2_2 - kappa_2;
     double tmp9 = 2 * c2 * std::sqrt(kappa_2);
-    double theta3_i = std::acos(tmp7 / tmp9) - std::atan2(a2_2, c3);
+    double theta3_i = std::acos(tmp7 / tmp9) - std::atan2(a2, c3);
 
-    double theta3_ii = -std::acos(tmp7 / tmp9) - std::atan2(a2_2, c3);
+    double theta3_ii = -std::acos(tmp7 / tmp9) - std::atan2(a2, c3);
 
-    double theta3_iii = std::acos(tmp8 / tmp9) - std::atan2(a2_2, c3);
-    double theta3_iv = -std::acos(tmp8 / tmp9) - std::atan2(a2_2, c3);
+    double theta3_iii = std::acos(tmp8 / tmp9) - std::atan2(a2, c3);
+    double theta3_iv = -std::acos(tmp8 / tmp9) - std::atan2(a2, c3);
 
     // Now for the orientation part...
     double s23[4];
@@ -348,7 +348,6 @@ vector<double> OWP::inverse(ofMatrix4x4 pose){
     sol[6 * 7 + 4] = (theta5_viii + offsets[4]) * sign_corrections[4];
     sol[6 * 7 + 5] = (theta6_viii + offsets[5]) * sign_corrections[5];
     
-    vector<vector<double> > sols;
 
     for (int i = 0; i < 8; i++)
     {

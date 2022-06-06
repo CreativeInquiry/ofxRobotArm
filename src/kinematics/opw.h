@@ -9,10 +9,10 @@
 #include "ofMain.h"
 #include "IK.h"
 namespace ofxRobotArm {
-    class OWP : public IK{
+    class OPW : public IK{
         public:
-            OWP(){ };
-            ~OWP(){ };
+            OPW(){ };
+            ~OPW(){ };
             
             void setup(vector<double> offsets,
                        vector<double> sign_corrections,
