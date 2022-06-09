@@ -6,6 +6,7 @@ void ofApp::setup(){
    
     sign_correction.assign(6, 1.0);
     offsets.assign(6, 0.0);
+    offsets[2] = -PI / 2;
     joint_limit_min.assign(6, 0.0);
     joint_limit_max.assign(6, 0.0);
     
@@ -35,7 +36,7 @@ void ofApp::setup(){
     params.clear();
     
     
-    offsets[2] = -PI / 2;
+ 
    
     sphericalWristKinematics.setup(offsets, sign_correction, joint_limit_min,  joint_limit_max);
     params.push_back(175);
