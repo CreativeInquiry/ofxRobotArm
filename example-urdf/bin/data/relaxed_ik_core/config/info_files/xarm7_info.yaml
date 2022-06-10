@@ -1,0 +1,17 @@
+urdf_file_name: "xarm7.urdf"
+fixed_frame: "link_base"
+joint_names: [ [ "joint1", "joint2", "joint3", "joint4", "joint5", "joint6", "joint7" ] ]
+joint_ordering: [ "joint1", "joint2", "joint3", "joint4", "joint5", "joint6", "joint7" ]
+ee_fixed_joints: [ "joint_eef" ]
+starting_config: [ 0.001, 0.001, 0.001, 0.001, 0.001, 0.001, 0.001 ]
+collision_file_name: "collision_xarm7.yaml"
+collision_nn_file: "xarm7_nn"
+path_to_src: "/home/dantheman/src/workspace/src/relaxed_ik/src"
+axis_types: [ [ "z", "z", "z", "z", "z", "z", "z" ] ]
+velocity_limits: [ 3.14, 3.14, 3.14, 3.14, 3.14, 3.14, 3.14 ]
+joint_limits: [ [-6.283185307179586,6.283185307179586], [-2.059,2.0944], [-6.283185307179586,6.283185307179586], [-0.19198,3.927], [-6.283185307179586,6.283185307179586], [-1.69297,3.141592653589793], [-6.283185307179586,6.283185307179586] ]
+displacements: [ [ [0.0,0.0,0.0], [0.0,-0.293,0.0], [0.0525,0.0,0.0], [0.0775,-0.3425,0.0], [0.0,0.0,0.0], [0.076,0.097,0.0], [0.0,0.0,0.0] ] ]
+disp_offsets: [ [0.0,0.0,0.267] ]
+rot_offsets: [ [ [0.0,0.0,0.0], [-1.5708,0.0,0.0], [1.5708,0.0,0.0], [1.5708,0.0,0.0], [1.5708,0.0,0.0], [1.5708,0.0,0.0], [-1.5708,0.0,0.0], [0.0,0.0,0.0] ] ]
+joint_types: [ [ "revolute", "revolute", "revolute", "revolute", "revolute", "revolute", "revolute" ] ]
+joint_state_define_func_file: "xarm7_joint_state_define"

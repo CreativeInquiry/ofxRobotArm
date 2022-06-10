@@ -7,7 +7,7 @@ void ofApp::setup(){
     ofBackground(0, 0, 0);
     // setup scene
     setup_scene();
-    robot.setup("192.168.125.201", 6510, (string)"relaxed_ik_core/config/urdfs/irb120.urdf", ofxRobotArm::IRB120, ofxRobotArm::RELAXED, false);
+    robot.setup("192.168.125.201", 6510, (string)"relaxed_ik_core/config/urdfs/irb4600_60_205.urdf", ofxRobotArm::IRB4600, ofxRobotArm::RELAXED, false);
     robot.setToolOffset(offset);
 
     // setup gui

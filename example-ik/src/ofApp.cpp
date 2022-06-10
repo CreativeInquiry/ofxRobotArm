@@ -24,21 +24,8 @@ void ofApp::setup(){
     joint_limit_max[4] = 120;
     joint_limit_max[5] = 400;
     
-    hawkinsKelseyKinematics.setup(offsets, sign_correction, joint_limit_min,  joint_limit_max);
-    vector<double> params;
-    params.push_back(495);
-    params.push_back(900);
-    params.push_back(175);
-    params.push_back(960);
-    params.push_back(0.0);
-    params.push_back(135);
-    hawkinsKelseyKinematics.setParams(params);
-    params.clear();
-    
-    
- 
-   
     sphericalWristKinematics.setup(offsets, sign_correction, joint_limit_min,  joint_limit_max);
+    vector<double> params;
     params.push_back(175);
     params.push_back(-175);
     params.push_back(0);
