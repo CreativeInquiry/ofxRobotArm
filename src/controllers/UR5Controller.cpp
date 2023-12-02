@@ -455,7 +455,7 @@ void UR5Controller::safetyCheck(){
     robotSafety.setCurrentRobotArmAnlges(robot.getCurrentPose());
     robotSafety.setDesiredAngles(targetPose);
     robotSafety.update(*previewArm);
-    robotSafety.update(1/60);
+    robotSafety.update(1.0/60.0f);
     targetPose = robotSafety.getDesiredAngles();
     
 }

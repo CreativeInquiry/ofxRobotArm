@@ -28,12 +28,12 @@ namespace ofxRobotArm{
         virtual void draw(){};
         virtual void draw(bool showNormals){};
         virtual void keyPressed(int key){};
-        virtual vector<Path *> getPaths(){};
+        virtual vector<Path *> getPaths()=0;
         
         virtual void transform(ofVec3f pos){};
         virtual void transform(ofMatrix4x4 m44){};
         
-        virtual Joint getTargetPoint(float t){};
+        virtual Joint getTargetPoint(float t)=0;
         virtual void addPoint(ofVec3f pt){};
         virtual void addStroke(ofPolyline stroke){};
         virtual void setCorners(vector<ofPoint> pts){};
